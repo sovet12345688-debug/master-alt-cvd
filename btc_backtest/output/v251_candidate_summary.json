@@ -1,0 +1,59 @@
+{
+  "schema": "MASTER_BTC_TREND_V2.5.1_PRECONF_CANDIDATE",
+  "generated_utc": "2026-09-02T12:39:54.937438+00:00",
+  "events": 40,
+  "definition": "Candidate EARLY intentionally removes Price Persistence/full reclaim/R:R and uses common Final Structural SL + plan-level risk-cap concept. This is TEST ONLY, not MASTER change.",
+  "candidates": {
+    "A_strict_pre": {
+      "signals": 5,
+      "paired_fast": 5,
+      "early_before_fast": 1,
+      "same_time": 2,
+      "early_after_fast": 2,
+      "median_lead_h": 46.0,
+      "sl_first_pct": 40.0,
+      "tp1_first_pct": 40.0,
+      "median_ret4h_pct": -0.59,
+      "median_ret24h_pct": -1.95,
+      "median_ret72h_pct": 2.12,
+      "median_mfe_pct": 3.92,
+      "median_mae_pct": -10.09
+    },
+    "B_balanced_pre": {
+      "signals": 9,
+      "paired_fast": 8,
+      "early_before_fast": 1,
+      "same_time": 4,
+      "early_after_fast": 3,
+      "median_lead_h": 46.0,
+      "sl_first_pct": 33.3,
+      "tp1_first_pct": 22.2,
+      "median_ret4h_pct": -0.56,
+      "median_ret24h_pct": -1.95,
+      "median_ret72h_pct": 2.12,
+      "median_mfe_pct": 3.92,
+      "median_mae_pct": -10.09
+    },
+    "C_deep_pre": {
+      "signals": 5,
+      "paired_fast": 5,
+      "early_before_fast": 0,
+      "same_time": 4,
+      "early_after_fast": 1,
+      "sl_first_pct": 20.0,
+      "tp1_first_pct": 20.0,
+      "median_ret4h_pct": -0.56,
+      "median_ret24h_pct": -1.95,
+      "median_ret72h_pct": 2.12,
+      "median_mfe_pct": 3.92,
+      "median_mae_pct": -10.09
+    }
+  },
+  "fast": {
+    "signals": 11,
+    "sl_first_pct": 9.1,
+    "tp1_first_pct": 45.5,
+    "median_24h_pct": 1.6,
+    "median_72h_pct": 2.12
+  }
+}
