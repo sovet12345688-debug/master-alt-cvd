@@ -1,0 +1,79 @@
+{
+  "schema": "MASTER_BTC_TREND_V2.5_BACKTEST_V1",
+  "generated_utc": "2026-09-02T12:25:00.832933+00:00",
+  "data": {
+    "source": "Binance Vision USD-M Futures BTCUSDT 1h monthly klines",
+    "start": "2023-09-01 00:00:00+00:00",
+    "end": "2026-08-31 23:00:00+00:00",
+    "rows": 26304,
+    "download_failures": []
+  },
+  "methodology": {
+    "type": "Stage-1 quantitative proxy; no-lookahead plan registration; OI/Funding excluded",
+    "taker_proxy": "kline taker-buy quote vs total quote; not wallet CVD",
+    "v24_proxy": "first valid FAST 1H or 4H confirmation, Zone>=80, Reaction>=65, RR>=3",
+    "v25_strict": "Zone>=82 + Fear + Exhaustion>=70 + Early>=75 + RR>=4 + >=3 independent reversal groups",
+    "same_bar": "SL-first conservative",
+    "limitations": [
+      "No historical OI/Funding axis in Stage-1",
+      "No ETF/macro severe-risk veto in signal simulation",
+      "Zone/score rules are deterministic proxies of visual MASTER rules",
+      "Fees/funding/slippage excluded"
+    ]
+  },
+  "plans": 22,
+  "full": {
+    "events": 40,
+    "fear_events": 37,
+    "confirm": {
+      "signals": 0
+    },
+    "strict_v25": {
+      "signals": 0
+    },
+    "moderate": {
+      "signals": 0
+    },
+    "loose": {
+      "signals": 0
+    },
+    "strict_vs_confirm_pairs": 0
+  },
+  "in_sample_2023_09_to_2025_02": {
+    "events": 16,
+    "fear_events": 14,
+    "confirm": {
+      "signals": 0
+    },
+    "strict_v25": {
+      "signals": 0
+    },
+    "moderate": {
+      "signals": 0
+    },
+    "loose": {
+      "signals": 0
+    },
+    "strict_vs_confirm_pairs": 0
+  },
+  "out_of_sample_2025_03_to_2026_09": {
+    "events": 24,
+    "fear_events": 23,
+    "confirm": {
+      "signals": 0
+    },
+    "strict_v25": {
+      "signals": 0
+    },
+    "moderate": {
+      "signals": 0
+    },
+    "loose": {
+      "signals": 0
+    },
+    "strict_vs_confirm_pairs": 0
+  },
+  "preliminary_decision": [
+    "STRICT EARLY sample <10: do not optimize thresholds yet; keep EARLY small/experimental."
+  ]
+}
