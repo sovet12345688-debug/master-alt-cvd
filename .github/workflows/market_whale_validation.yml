@@ -1,32 +1,26 @@
-name: TEST MARKET Whale Recorder
+name: MARKET Whale Recorder Hourly
 
 on:
-  push:
-    branches: [market-whale-recorder-v1]
-    paths:
-      - 'market_whales/collector.py'
-      - 'market_whales/baseline_guard.py'
-      - 'market_whales/config.json'
-      - 'market_whales/requirements.txt'
-      - '.github/workflows/market_whale_validation.yml'
+  schedule:
+    - cron: '37 * * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: market-whale-validation
+  group: market-whale-hourly
   cancel-in-progress: false
 
 jobs:
-  validate:
+  collect:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Checkout isolated branch
+      - name: Checkout main
         uses: actions/checkout@v4
         with:
-          ref: market-whale-recorder-v1
+          ref: main
           fetch-depth: 0
 
       - name: Set up Python
@@ -37,13 +31,11 @@ jobs:
       - name: Install
         run: pip install -r market_whales/requirements.txt
 
-      - name: Syntax check
+      - name: Syntax and baseline-guard self-test
         run: |
           python -m py_compile market_whales/collector.py
           python -m py_compile market_whales/baseline_guard.py
-
-      - name: Baseline guard unit test
-        run: python market_whales/baseline_guard.py --self-test
+          python market_whales/baseline_guard.py --self-test
 
       - name: Collect live Hyperliquid whale data
         run: python market_whales/collector.py
@@ -51,11 +43,11 @@ jobs:
       - name: Apply baseline false-positive guard
         run: python market_whales/baseline_guard.py
 
-      - name: Validate output
+      - name: Validate production output
         run: |
-          cat market_whales/state/recorder_state.json
           python - <<'PY'
           import json, sys
+          from datetime import datetime, timezone
           s=json.load(open('market_whales/state/recorder_state.json'))
           p=json.load(open('market_whales/output/latest_summary.json'))
           e=json.load(open('market_whales/output/latest_events.json'))
@@ -63,8 +55,9 @@ jobs:
           candidates=s.get('candidate_wallets',0)
           queried=s.get('queried_wallets',0)
           failures=s.get('query_failures',0)
+          last_run=s.get('last_run_utc')
           print('leaderboard=',leaderboard,'candidates=',candidates,'queried=',queried,'failures=',failures)
-          print('active_market_whales=',s.get('active_market_whales'),'large_change_events=',s.get('large_change_events'),'baseline_suppressed=',s.get('baseline_suppressed_events'))
+          print('active_market_whales=',s.get('active_market_whales'),'large_change_events=',s.get('large_change_events'))
           if leaderboard < 1000:
               sys.exit('Validation failed: leaderboard unexpectedly small')
           if candidates < 50 or queried < 50:
@@ -75,9 +68,15 @@ jobs:
               sys.exit('Validation failed: wrong output schema')
           if s.get('baseline_guard') != 'PASS' or p.get('baseline_guard') != 'PASS' or e.get('baseline_guard') != 'PASS':
               sys.exit('Validation failed: baseline guard did not pass')
+          if not last_run:
+              sys.exit('Validation failed: missing last_run_utc')
+          dt=datetime.fromisoformat(last_run.replace('Z','+00:00'))
+          age=(datetime.now(timezone.utc)-dt).total_seconds()
+          if age > 900:
+              sys.exit('Validation failed: stale output')
           PY
 
-      - name: Save validation snapshot to test branch
+      - name: Save hourly whale snapshot
         run: |
           git config user.name "market-whale-recorder-bot"
           git config user.email "market-whale-recorder-bot@users.noreply.github.com"
@@ -85,7 +84,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No generated data changes"
           else
-            git commit -m "test: market whale recorder guarded live snapshot"
-            git pull --rebase origin market-whale-recorder-v1
-            git push origin HEAD:market-whale-recorder-v1
+            git commit -m "data: hourly MARKET whale snapshot"
+            git pull --rebase origin main
+            git push origin HEAD:main
           fi
