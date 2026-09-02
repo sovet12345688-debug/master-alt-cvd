@@ -6,6 +6,7 @@ on:
     paths:
       - 'btc_backtest/run_v25_backtest.py'
       - 'btc_backtest/diagnose_v25_backtest.py'
+      - 'btc_backtest/diagnose_v25_tactical.py'
 
 permissions:
   contents: write
@@ -13,7 +14,7 @@ permissions:
 jobs:
   backtest:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,6 +28,8 @@ jobs:
         run: python btc_backtest/run_v25_backtest.py
       - name: Run V2.5 diagnostic pass
         run: python btc_backtest/diagnose_v25_backtest.py
+      - name: Run tactical-invalidation sensitivity pass
+        run: python btc_backtest/diagnose_v25_tactical.py
       - name: Commit auditable results
         run: |
           git config user.name "github-actions[bot]"
