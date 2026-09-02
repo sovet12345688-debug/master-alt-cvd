@@ -1,4 +1,4 @@
-name: FINAL20 Free CVD Update
+name: FINAL20 V2.2.1 CVD Update
 
 on:
   workflow_dispatch:
@@ -41,6 +41,9 @@ jobs:
       - name: Install
         run: pip install -r requirements.txt
 
+      - name: Self test
+        run: python whale_cvd_collector.py --mode self-test
+
       - name: Run collector
         env:
           MODE: ${{ github.event.inputs.mode || 'auto' }}
@@ -55,6 +58,9 @@ jobs:
           else
             python whale_cvd_collector.py --mode update
           fi
+
+      - name: Validate data quality
+        run: python whale_cvd_collector.py --mode validate
 
       - name: Commit compact outputs
         run: |
