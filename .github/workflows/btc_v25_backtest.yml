@@ -20,8 +20,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install dependency
-        run: python -m pip install --upgrade requests
+      - name: Install dependencies
+        run: python -m pip install --upgrade requests pandas numpy
       - name: Run V2.5 backtest
         run: python btc_backtest/run_v25_backtest.py
       - name: Commit auditable results
