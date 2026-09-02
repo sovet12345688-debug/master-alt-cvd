@@ -1,0 +1,68 @@
+{
+  "schema": "MASTER_BTC_TREND_V2.5_DIAGNOSTIC_V2",
+  "generated_utc": "2026-09-02T12:29:15.983960+00:00",
+  "data_rows": 26304,
+  "plans": 22,
+  "zone_touch_events": 40,
+  "download_failures": [],
+  "window_test": "24h original proxy vs 72h diagnostic",
+  "variants": {
+    "early_core72": {
+      "signals": 3,
+      "sl_first_rate_pct": 0.0,
+      "tp1_first_rate_pct": 66.7,
+      "median_ret4h_pct": -0.56,
+      "median_ret24h_pct": 0.03,
+      "median_ret72h_pct": 3.25,
+      "median_mfe_pct": 7.53,
+      "median_mae_pct": -7.95
+    },
+    "early_rr3_72": {
+      "signals": 0
+    },
+    "early_rr35_72": {
+      "signals": 0
+    },
+    "early_rr4_72": {
+      "signals": 0
+    },
+    "fast_core72": {
+      "signals": 11,
+      "sl_first_rate_pct": 9.1,
+      "tp1_first_rate_pct": 45.5,
+      "median_ret4h_pct": 0.53,
+      "median_ret24h_pct": 1.6,
+      "median_ret72h_pct": 2.12,
+      "median_mfe_pct": 6.05,
+      "median_mae_pct": -7.95
+    },
+    "fast_rr3_72": {
+      "signals": 0
+    }
+  },
+  "rr_mid_distribution": {
+    "median": 0.56,
+    "ge3_events": 6,
+    "ge35_events": 5,
+    "ge4_events": 5,
+    "zone1_median": 0.26,
+    "zone2_median": 0.87,
+    "zone3_median": 5.75
+  },
+  "gate_reach": {
+    "zone_ge82_events": 8,
+    "fear72_events": 39,
+    "exhaust70_events": 25,
+    "early75_events": 31,
+    "reaction65_events": 39,
+    "independent3_events": 39,
+    "early_core_simultaneous_events_24h": 2,
+    "early_core_simultaneous_events_72h": 3,
+    "fast_core_simultaneous_events_72h": 11
+  },
+  "interpretation_notes": [
+    "Stage-1 still excludes historical OI/Funding and ETF/macro veto.",
+    "actual-close variants are causally executable proxies; zone-mid RR is sensitivity only, not assumed fill.",
+    "No MASTER threshold is changed by this diagnostic."
+  ]
+}
