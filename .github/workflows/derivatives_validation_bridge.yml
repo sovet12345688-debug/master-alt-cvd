@@ -1,0 +1,59 @@
+name: TEST Derivatives History Engine
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout isolated derivatives test branch
+        uses: actions/checkout@v4
+        with:
+          ref: derivatives-engine-v1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install
+        run: pip install -r derivatives/requirements.txt
+
+      - name: Syntax check
+        run: python -m py_compile derivatives/collector.py
+
+      - name: Collect live Binance OI/Funding
+        run: python derivatives/collector.py
+
+      - name: Validate result
+        run: |
+          cat derivatives/state/collector_state.json
+          python - <<'PY'
+          import json, sys
+          p=json.load(open('derivatives/output/latest_summary.json'))
+          assets=p.get('assets',[])
+          ok=sum(x.get('status')=='OK' for x in assets)
+          na=len(assets)-ok
+          print('asset_count=',len(assets),'ok=',ok,'na=',na)
+          for x in assets:
+              print(x.get('symbol'), x.get('status'), x.get('derivatives_state'))
+          if len(assets) < 1 or ok < 1:
+              sys.exit('Validation failed: no successful market data')
+          PY
+
+      - name: Save validation output to test branch
+        run: |
+          git config user.name "derivatives-history-bot"
+          git config user.email "derivatives-history-bot@users.noreply.github.com"
+          git add derivatives/data derivatives/output derivatives/state
+          if git diff --cached --quiet; then
+            echo "No data changes"
+          else
+            git commit -m "test: live derivatives validation snapshot"
+            git push origin HEAD:derivatives-engine-v1
+          fi
