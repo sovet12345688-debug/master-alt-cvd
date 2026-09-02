@@ -1,9 +1,10 @@
 {
-  "venue": "binance_usdm",
+  "provider_priority": ["bitget_usdt_futures", "bybit_linear"],
   "quote": "USDT",
   "include_btc": true,
   "inherit_alt2_final20": true,
   "snapshot_interval_minutes": 60,
   "windows_hours": [1, 4, 24],
-  "history_retention_days": 90
+  "history_retention_days": 90,
+  "rule": "Use one venue per run. Never compare OI across different venues."
 }
