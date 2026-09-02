@@ -1,0 +1,66 @@
+name: FINAL20 Free CVD Update
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "auto = bootstrap if needed, otherwise update"
+        required: true
+        default: "auto"
+        type: choice
+        options:
+          - auto
+          - update
+          - bootstrap
+  schedule:
+    # Retry four times a day. If the latest Binance daily archive is not ready,
+    # the collector does NOT advance state and will retry next run.
+    - cron: "20 */6 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: final20-cvd
+  cancel-in-progress: false
+
+jobs:
+  cvd:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      - name: Run collector
+        env:
+          MODE: ${{ github.event.inputs.mode || 'auto' }}
+        run: |
+          if [ "$MODE" = "bootstrap" ]; then
+            python whale_cvd_collector.py --mode bootstrap --lookback-days 182
+          elif [ "$MODE" = "update" ]; then
+            python whale_cvd_collector.py --mode update
+          elif [ ! -f state/collector_state.json ] || [ ! -f data/daily_cvd_bins.csv ]; then
+            echo "No baseline found -> automatic 26W bootstrap"
+            python whale_cvd_collector.py --mode bootstrap --lookback-days 182
+          else
+            python whale_cvd_collector.py --mode update
+          fi
+
+      - name: Commit compact outputs
+        run: |
+          git config user.name "final20-cvd-bot"
+          git config user.email "final20-cvd-bot@users.noreply.github.com"
+          git add data/daily_cvd_bins.csv state/collector_state.json output/
+          git diff --cached --quiet && exit 0
+          git commit -m "Update FINAL20 CVD data"
+          git push
