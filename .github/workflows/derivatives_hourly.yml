@@ -1,0 +1,48 @@
+name: MASTER Derivatives Hourly
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '7 * * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: master-derivatives-hourly
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: derivatives-engine-v1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: derivatives/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r derivatives/requirements.txt
+
+      - name: Collect OI and funding
+        run: python derivatives/collector.py
+
+      - name: Commit updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add derivatives/data derivatives/output derivatives/state
+          if git diff --cached --quiet; then
+            echo "No data changes"
+          else
+            git commit -m "data: hourly derivatives snapshot"
+            git push origin HEAD:derivatives-engine-v1
+          fi
