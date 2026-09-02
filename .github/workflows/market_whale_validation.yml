@@ -5,6 +5,7 @@ on:
     branches: [market-whale-recorder-v1]
     paths:
       - 'market_whales/collector.py'
+      - 'market_whales/baseline_guard.py'
       - 'market_whales/config.json'
       - 'market_whales/requirements.txt'
       - '.github/workflows/market_whale_validation.yml'
@@ -37,10 +38,18 @@ jobs:
         run: pip install -r market_whales/requirements.txt
 
       - name: Syntax check
-        run: python -m py_compile market_whales/collector.py
+        run: |
+          python -m py_compile market_whales/collector.py
+          python -m py_compile market_whales/baseline_guard.py
+
+      - name: Baseline guard unit test
+        run: python market_whales/baseline_guard.py --self-test
 
       - name: Collect live Hyperliquid whale data
         run: python market_whales/collector.py
+
+      - name: Apply baseline false-positive guard
+        run: python market_whales/baseline_guard.py
 
       - name: Validate output
         run: |
@@ -49,12 +58,13 @@ jobs:
           import json, sys
           s=json.load(open('market_whales/state/recorder_state.json'))
           p=json.load(open('market_whales/output/latest_summary.json'))
+          e=json.load(open('market_whales/output/latest_events.json'))
           leaderboard=s.get('leaderboard_rows',0)
           candidates=s.get('candidate_wallets',0)
           queried=s.get('queried_wallets',0)
           failures=s.get('query_failures',0)
           print('leaderboard=',leaderboard,'candidates=',candidates,'queried=',queried,'failures=',failures)
-          print('active_market_whales=',s.get('active_market_whales'),'large_change_events=',s.get('large_change_events'))
+          print('active_market_whales=',s.get('active_market_whales'),'large_change_events=',s.get('large_change_events'),'baseline_suppressed=',s.get('baseline_suppressed_events'))
           if leaderboard < 1000:
               sys.exit('Validation failed: leaderboard unexpectedly small')
           if candidates < 50 or queried < 50:
@@ -63,6 +73,8 @@ jobs:
               sys.exit('Validation failed: query failure rate >10%')
           if p.get('engine') != 'MASTER_MARKET_WHALE_TIME_SERIES_V1':
               sys.exit('Validation failed: wrong output schema')
+          if s.get('baseline_guard') != 'PASS' or p.get('baseline_guard') != 'PASS' or e.get('baseline_guard') != 'PASS':
+              sys.exit('Validation failed: baseline guard did not pass')
           PY
 
       - name: Save validation snapshot to test branch
@@ -73,7 +85,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No generated data changes"
           else
-            git commit -m "test: market whale recorder live snapshot"
+            git commit -m "test: market whale recorder guarded live snapshot"
             git pull --rebase origin market-whale-recorder-v1
             git push origin HEAD:market-whale-recorder-v1
           fi
