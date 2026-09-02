@@ -17,10 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Checkout
+      - name: Checkout main
         uses: actions/checkout@v4
         with:
-          ref: derivatives-engine-v1
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -32,17 +32,28 @@ jobs:
       - name: Install dependencies
         run: pip install -r derivatives/requirements.txt
 
-      - name: Collect OI and funding
+      - name: Collect live derivatives OI and funding
         run: python derivatives/collector.py
+
+      - name: Validate collection
+        run: |
+          python - <<'PY'
+          import json, sys
+          s=json.load(open('derivatives/state/collector_state.json'))
+          print(s)
+          if s.get('ok_count', 0) < 1:
+              sys.exit('No successful derivatives snapshots')
+          PY
 
       - name: Commit updated data
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "derivatives-history-bot"
+          git config user.email "derivatives-history-bot@users.noreply.github.com"
           git add derivatives/data derivatives/output derivatives/state
           if git diff --cached --quiet; then
             echo "No data changes"
           else
             git commit -m "data: hourly derivatives snapshot"
-            git push origin HEAD:derivatives-engine-v1
+            git pull --rebase origin main
+            git push origin HEAD:main
           fi
