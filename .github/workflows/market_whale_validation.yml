@@ -1,0 +1,90 @@
+name: MARKET Whale Recorder Hourly
+
+on:
+  schedule:
+    - cron: '37 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-whale-hourly
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install
+        run: pip install -r market_whales/requirements.txt
+
+      - name: Syntax and baseline-guard self-test
+        run: |
+          python -m py_compile market_whales/collector.py
+          python -m py_compile market_whales/baseline_guard.py
+          python market_whales/baseline_guard.py --self-test
+
+      - name: Collect live Hyperliquid whale data
+        run: python market_whales/collector.py
+
+      - name: Apply baseline false-positive guard
+        run: python market_whales/baseline_guard.py
+
+      - name: Validate production output
+        run: |
+          python - <<'PY'
+          import json, sys
+          from datetime import datetime, timezone
+          s=json.load(open('market_whales/state/recorder_state.json'))
+          p=json.load(open('market_whales/output/latest_summary.json'))
+          e=json.load(open('market_whales/output/latest_events.json'))
+          leaderboard=s.get('leaderboard_rows',0)
+          candidates=s.get('candidate_wallets',0)
+          queried=s.get('queried_wallets',0)
+          failures=s.get('query_failures',0)
+          last_run=s.get('last_run_utc')
+          print('leaderboard=',leaderboard,'candidates=',candidates,'queried=',queried,'failures=',failures)
+          print('active_market_whales=',s.get('active_market_whales'),'large_change_events=',s.get('large_change_events'))
+          if leaderboard < 1000:
+              sys.exit('Validation failed: leaderboard unexpectedly small')
+          if candidates < 50 or queried < 50:
+              sys.exit('Validation failed: candidate/query coverage too small')
+          if queried > 0 and failures / (queried + failures) > 0.10:
+              sys.exit('Validation failed: query failure rate >10%')
+          if p.get('engine') != 'MASTER_MARKET_WHALE_TIME_SERIES_V1':
+              sys.exit('Validation failed: wrong output schema')
+          if s.get('baseline_guard') != 'PASS' or p.get('baseline_guard') != 'PASS' or e.get('baseline_guard') != 'PASS':
+              sys.exit('Validation failed: baseline guard did not pass')
+          if not last_run:
+              sys.exit('Validation failed: missing last_run_utc')
+          dt=datetime.fromisoformat(last_run.replace('Z','+00:00'))
+          age=(datetime.now(timezone.utc)-dt).total_seconds()
+          if age > 900:
+              sys.exit('Validation failed: stale output')
+          PY
+
+      - name: Save hourly whale snapshot
+        run: |
+          git config user.name "market-whale-recorder-bot"
+          git config user.email "market-whale-recorder-bot@users.noreply.github.com"
+          git add market_whales/data market_whales/output market_whales/state
+          if git diff --cached --quiet; then
+            echo "No generated data changes"
+          else
+            git commit -m "data: hourly MARKET whale snapshot"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
