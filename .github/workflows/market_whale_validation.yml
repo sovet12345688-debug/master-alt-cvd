@@ -1,0 +1,79 @@
+name: TEST MARKET Whale Recorder
+
+on:
+  push:
+    branches: [market-whale-recorder-v1]
+    paths:
+      - 'market_whales/collector.py'
+      - 'market_whales/config.json'
+      - 'market_whales/requirements.txt'
+      - '.github/workflows/market_whale_validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-whale-validation
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout isolated branch
+        uses: actions/checkout@v4
+        with:
+          ref: market-whale-recorder-v1
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install
+        run: pip install -r market_whales/requirements.txt
+
+      - name: Syntax check
+        run: python -m py_compile market_whales/collector.py
+
+      - name: Collect live Hyperliquid whale data
+        run: python market_whales/collector.py
+
+      - name: Validate output
+        run: |
+          cat market_whales/state/recorder_state.json
+          python - <<'PY'
+          import json, sys
+          s=json.load(open('market_whales/state/recorder_state.json'))
+          p=json.load(open('market_whales/output/latest_summary.json'))
+          leaderboard=s.get('leaderboard_rows',0)
+          candidates=s.get('candidate_wallets',0)
+          queried=s.get('queried_wallets',0)
+          failures=s.get('query_failures',0)
+          print('leaderboard=',leaderboard,'candidates=',candidates,'queried=',queried,'failures=',failures)
+          print('active_market_whales=',s.get('active_market_whales'),'large_change_events=',s.get('large_change_events'))
+          if leaderboard < 1000:
+              sys.exit('Validation failed: leaderboard unexpectedly small')
+          if candidates < 50 or queried < 50:
+              sys.exit('Validation failed: candidate/query coverage too small')
+          if queried > 0 and failures / (queried + failures) > 0.10:
+              sys.exit('Validation failed: query failure rate >10%')
+          if p.get('engine') != 'MASTER_MARKET_WHALE_TIME_SERIES_V1':
+              sys.exit('Validation failed: wrong output schema')
+          PY
+
+      - name: Save validation snapshot to test branch
+        run: |
+          git config user.name "market-whale-recorder-bot"
+          git config user.email "market-whale-recorder-bot@users.noreply.github.com"
+          git add market_whales/data market_whales/output market_whales/state
+          if git diff --cached --quiet; then
+            echo "No generated data changes"
+          else
+            git commit -m "test: market whale recorder live snapshot"
+            git pull --rebase origin market-whale-recorder-v1
+            git push origin HEAD:market-whale-recorder-v1
+          fi
