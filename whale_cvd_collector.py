@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-MASTER ALT V2.1 - FREE LARGE-TRADE SPOT CVD COLLECTOR
+MASTER ALT V2.2.1 - FREE LARGE-TRADE SPOT CVD COLLECTOR
 
 Data:
 - Binance Spot public archive: https://data.binance.vision/
@@ -34,7 +34,8 @@ import sys
 import tempfile
 import time
 import zipfile
-from collections import defaultdict
+import hashlib
+from collections import defaultdict, Counter
 from datetime import datetime, timedelta, timezone, date
 from pathlib import Path
 from typing import Dict, Iterable, List, Tuple, Optional
@@ -43,7 +44,7 @@ import requests
 
 ARCHIVE = "https://data.binance.vision/data/spot"
 API = "https://data-api.binance.vision"
-UA = "MASTER-ALT-V2.1-Free-CVD/1.0"
+UA = "MASTER-ALT-V2.2.1-Free-CVD/2.2.1"
 SESSION = requests.Session()
 SESSION.headers.update({"User-Agent": UA})
 
@@ -59,7 +60,9 @@ STATE_FILE = STATE_DIR / "collector_state.json"
 SUMMARY_JSON = OUTPUT_DIR / "final20_cvd_summary.json"
 SUMMARY_CSV = OUTPUT_DIR / "final20_cvd_summary.csv"
 TOP5_CSV = OUTPUT_DIR / "large_trade_cvd_top5.csv"
+STEALTH_TOP5_CSV = OUTPUT_DIR / "stealth_accumulation_top5.csv"
 COVERAGE_CSV = OUTPUT_DIR / "coverage.csv"
+SCHEMA_VERSION = "2.2.1"
 
 UTC = timezone.utc
 
@@ -346,210 +349,438 @@ def simple_slope(vals: List[float]) -> Optional[float]:
 
 
 def build_daily_index(agg: dict):
-    idx = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: {"buy":0.0,"sell":0.0})))
+    idx = defaultdict(lambda: defaultdict(lambda: defaultdict(
+        lambda: {"buy":0.0,"sell":0.0,"buy_count":0,"sell_count":0}
+    )))
     for (sym, ds, b), v in agg.items():
         idx[sym][ds][b]["buy"] += v["buy_usdt"]
         idx[sym][ds][b]["sell"] += v["sell_usdt"]
+        idx[sym][ds][b]["buy_count"] += v.get("buy_count", 0)
+        idx[sym][ds][b]["sell_count"] += v.get("sell_count", 0)
     return idx
 
 
 def window_stats(sym: str, idx: dict, end: date, weeks: int, bins: list, large_bins: list, retail_bins: list):
+    """
+    DATA QUALITY LOCK:
+    - data_coverage_pct = archive/trading-day presence (any trade bin)
+    - large_activity_pct = share of observed days that actually had W/MW trades
+    These are intentionally separate. A day with no large trade is NOT a missing-data day.
+    """
     start = end - timedelta(days=weeks*7-1)
-    expected = weeks*7
+    expected = weeks * 7
     daymap = idx.get(sym, {})
+    all_bin_names = [x["name"] for x in bins]
+
     observed_dates = sorted({
         ds for ds in daymap
         if start <= date.fromisoformat(ds) <= end
-        and any(daymap[ds][b]["buy"] + daymap[ds][b]["sell"] > 0 for b in [x["name"] for x in bins])
+        and any(daymap[ds][b]["buy"] + daymap[ds][b]["sell"] > 0 for b in all_bin_names)
     })
-    coverage = len(observed_dates)/expected*100.0
+    data_coverage = (len(observed_dates) / expected * 100.0) if expected else 0.0
 
     def collect(binset):
         recs = []
         for ds in observed_dates:
             buy = sum(daymap[ds][b]["buy"] for b in binset)
             sell = sum(daymap[ds][b]["sell"] for b in binset)
-            recs.append({"date": date.fromisoformat(ds), "buy":buy, "sell":sell})
+            buy_count = sum(daymap[ds][b]["buy_count"] for b in binset)
+            sell_count = sum(daymap[ds][b]["sell_count"] for b in binset)
+            recs.append({
+                "date": date.fromisoformat(ds), "buy": buy, "sell": sell,
+                "buy_count": buy_count, "sell_count": sell_count
+            })
         return recs
 
     large = collect(large_bins)
     retail = collect(retail_bins)
     w_only = collect(["W"])
+    all_trades = collect(all_bin_names)
 
-    # Weekly NCVD sequence for slope
+    large_active = [r for r in large if (r["buy"] + r["sell"]) > 0]
+    large_activity_days = len(large_active)
+    large_activity_pct = (large_activity_days / len(observed_dates) * 100.0) if observed_dates else 0.0
+    large_trade_count = sum(r["buy_count"] + r["sell_count"] for r in large_active)
+
+    total_large_notional = sum(r["buy"] + r["sell"] for r in large)
+    total_all_notional = sum(r["buy"] + r["sell"] for r in all_trades)
+    large_notional_share_pct = (total_large_notional / total_all_notional * 100.0) if total_all_notional else None
+
+    # Weekly Large NCVD sequence. Weeks without W/MW trades are omitted, not zero-filled.
     weekly = defaultdict(lambda: {"buy":0.0,"sell":0.0})
-    for r in large:
+    for r in large_active:
         iso = r["date"].isocalendar()
         key = (iso.year, iso.week)
         weekly[key]["buy"] += r["buy"]; weekly[key]["sell"] += r["sell"]
+
     weekly_vals = []
     for k in sorted(weekly):
         v = weekly[k]
-        den = v["buy"]+v["sell"]
+        den = v["buy"] + v["sell"]
         if den:
-            weekly_vals.append((v["buy"]-v["sell"])/den*100.0)
+            weekly_vals.append((v["buy"] - v["sell"]) / den * 100.0)
+
+    positive_week_ratio = None
+    if weekly_vals:
+        positive_week_ratio = sum(1 for x in weekly_vals if x > 0) / len(weekly_vals) * 100.0
 
     return {
-        "coverage_pct": round(coverage,2),
+        "data_coverage_pct": round(data_coverage, 2),
+        "large_activity_days": large_activity_days,
+        "large_activity_pct": round(large_activity_pct, 2),
+        "large_active_weeks": len(weekly_vals),
+        "large_trade_count": int(large_trade_count),
+        "large_notional_share_pct": None if large_notional_share_pct is None else round(large_notional_share_pct, 4),
         "large_ncvd": ncvd_for(large),
         "retail_ncvd": ncvd_for(retail),
         "w_ncvd": ncvd_for(w_only),
         "large_weekly_slope": simple_slope(weekly_vals),
+        "positive_week_ratio": positive_week_ratio,
         "observed_days": len(observed_dates)
     }
 
 
-def price_features(klines: List[dict], btc_klines: List[dict]):
+def ema(values: List[float], period: int) -> Optional[float]:
+    if len(values) < period:
+        return None
+    alpha = 2.0 / (period + 1.0)
+    e = sum(values[:period]) / period
+    for v in values[period:]:
+        e = alpha * v + (1 - alpha) * e
+    return e
+
+
+def price_features(klines: List[dict], btc_klines: List[dict], asof: date):
+    """Use only completed D1 bars at or before the common CVD as-of date."""
+    klines = [x for x in klines if x["date"] <= asof]
+    btc_klines = [x for x in btc_klines if x["date"] <= asof]
     if len(klines) < 60 or len(btc_klines) < 60:
         return {}
-    # align simply by date
+
     km = {x["date"]:x for x in klines}
     bm = {x["date"]:x for x in btc_klines}
     common = sorted(set(km) & set(bm))
     if len(common) < 60:
         return {}
+
     def ret(days, m):
         ds = common[-1]
         base_target = ds - timedelta(days=days)
         candidates = [d for d in common if d <= base_target]
-        if not candidates: return None
+        if not candidates:
+            return None
         d0 = candidates[-1]
-        return (m[ds]["close"]/m[d0]["close"]-1)*100
-    coin4 = ret(28, km); btc4 = ret(28, bm)
+        return (m[ds]["close"] / m[d0]["close"] - 1) * 100
+
+    coin7, coin4 = ret(7, km), ret(28, km)
+    btc7, btc4 = ret(7, bm), ret(28, bm)
+
     last28 = [km[d] for d in common[-28:]]
     prev28 = [km[d] for d in common[-56:-28]]
     recent_low = min(x["low"] for x in last28)
     prev_low = min(x["low"] for x in prev28) if prev28 else recent_low
-    low_def = (recent_low/prev_low-1)*100 if prev_low else 0
-    v4 = sum(x["quote_volume"] for x in last28)/max(1,len(last28))
-    vp = sum(x["quote_volume"] for x in prev28)/max(1,len(prev28)) if prev28 else v4
+    low_def = (recent_low / prev_low - 1) * 100 if prev_low else None
+
+    v4 = sum(x["quote_volume"] for x in last28) / max(1, len(last28))
+    vp = sum(x["quote_volume"] for x in prev28) / max(1, len(prev28)) if prev28 else None
+
+    closes = [km[d]["close"] for d in common]
+    e20 = ema(closes, 20)
+    close = km[common[-1]]["close"]
+    ext_ema20 = ((close / e20) - 1) * 100 if e20 else None
+
+    rs7 = (coin7 - btc7) if coin7 is not None and btc7 is not None else None
+    rs4 = (coin4 - btc4) if coin4 is not None and btc4 is not None else None
+    rs_improving = None
+    if rs7 is not None and rs4 is not None:
+        rs_improving = (rs7 >= 0) or (rs7 >= rs4 + 2.0)
+
+    # Hard non-chase gate for STEALTH only. Flow score remains independent.
+    non_chase = None
+    if coin7 is not None and coin4 is not None and ext_ema20 is not None:
+        non_chase = (coin7 <= 10.0 and coin4 <= 20.0 and ext_ema20 <= 10.0)
+
     return {
+        "price_7d_pct": coin7,
         "price_4w_pct": coin4,
+        "btc_7d_pct": btc7,
         "btc_4w_pct": btc4,
-        "rs_btc_4w_pp": (coin4-btc4) if coin4 is not None and btc4 is not None else None,
+        "rs_btc_7d_pp": rs7,
+        "rs_btc_4w_pp": rs4,
+        "rs_improving": rs_improving,
         "low_defense_pct": low_def,
-        "volume_persistence_ratio": (v4/vp) if vp else None,
-        "current": km[common[-1]]["close"]
+        "volume_persistence_ratio": (v4 / vp) if vp else None,
+        "price_close_asof": close,
+        "ema20_asof": e20,
+        "extension_vs_ema20_pct": ext_ema20,
+        "non_chase_gate": non_chase
     }
 
 
-def cvd_score(wins: dict, pf: dict, min_cov: float) -> Optional[float]:
-    if any(wins[w]["coverage_pct"] < min_cov for w in (26,13,7,4)):
+def determine_common_asof(idx: dict, symbols: List[str]) -> Optional[date]:
+    """
+    SAME COMPLETED-DATE LOCK:
+    pick the modal latest archive date across symbols. Scored rows must match exactly.
+    This prevents one early/late archive from mixing timestamps.
+    """
+    latest = []
+    for sym in symbols:
+        dates = [date.fromisoformat(ds) for ds in idx.get(sym, {}).keys()]
+        if dates:
+            latest.append(max(dates))
+    if not latest:
         return None
-    n26,n13,n7,n4 = [wins[w]["large_ncvd"] or 0 for w in (26,13,7,4)]
-    w7,w4 = wins[7]["w_ncvd"] or 0, wins[4]["w_ncvd"] or 0
-    r7,r4 = wins[7]["retail_ncvd"] or 0, wins[4]["retail_ncvd"] or 0
+    counts = Counter(latest)
+    max_count = max(counts.values())
+    candidates = [d for d, c in counts.items() if c == max_count]
+    return max(candidates)
 
-    # 1) Large direction/persistence 25
-    weighted = 0.20*n26 + 0.25*n13 + 0.25*n7 + 0.30*n4
-    s1 = map_range(weighted, -10, 10, 0, 25)
 
-    # 2) W-only flow 15
-    s2 = map_range(0.4*w7 + 0.6*w4, -10, 10, 0, 15)
+def large_flow_score(wins: dict, min_cov: float, timestamp_locked: bool) -> Optional[float]:
+    """Pure order-flow score. No price, RS or NonChase inputs."""
+    if not timestamp_locked:
+        return None
+    if any(wins[w]["data_coverage_pct"] < min_cov for w in (26,13,7,4)):
+        return None
 
-    # 3) Acceleration 15 (nested-window improvement)
-    accel = 0.6*(n4-n7) + 0.4*(n7-n13)
-    s3 = map_range(accel, -5, 5, 0, 15)
+    required = [
+        wins[26]["large_ncvd"], wins[13]["large_ncvd"],
+        wins[7]["large_ncvd"], wins[4]["large_ncvd"],
+        wins[7]["retail_ncvd"], wins[4]["retail_ncvd"]
+    ]
+    # Missing Large CVD is UNKNOWN, never zero.
+    if any(v is None for v in required):
+        return None
 
-    # 4) Large vs Retail divergence 20
-    div = 0.4*(n7-r7) + 0.6*(n4-r4)
-    s4 = map_range(div, -10, 10, 0, 20)
+    n26, n13, n7, n4, r7, r4 = required
 
-    # 5) Price vs Large divergence 10
+    # 1) Large direction/persistence 35
+    weighted = 0.15*n26 + 0.20*n13 + 0.25*n7 + 0.40*n4
+    s1 = map_range(weighted, -10, 10, 0, 35)
+
+    # 2) Recent acceleration 25
+    accel = 0.65*(n4-n7) + 0.35*(n7-n13)
+    s2 = map_range(accel, -8, 8, 0, 25)
+
+    # 3) Large vs Retail divergence 25
+    div = 0.35*(n7-r7) + 0.65*(n4-r4)
+    s3 = map_range(div, -10, 10, 0, 25)
+
+    # 4) Weekly persistence 15
+    ratios = [wins[7]["positive_week_ratio"], wins[4]["positive_week_ratio"]]
+    ratios = [x for x in ratios if x is not None]
+    if ratios:
+        s4 = clamp(sum(ratios) / len(ratios) / 100.0 * 15.0, 0, 15)
+    else:
+        s4 = 0.0
+
+    return round(clamp(s1+s2+s3+s4, 0, 100), 1)
+
+
+def flow_label(score: Optional[float]) -> Optional[str]:
+    if score is None: return None
+    if score >= 85: return "STRONG_LARGE_BUY_FLOW"
+    if score >= 70: return "LARGE_BUY_FLOW"
+    if score >= 55: return "POSITIVE_FLOW"
+    if score >= 45: return "NEUTRAL_FLOW"
+    return "SELL_FLOW"
+
+
+def stealth_score(wins: dict, pf: dict, flow_score: Optional[float],
+                  min_cov: float, timestamp_locked: bool) -> Optional[float]:
+    """
+    Stealth is NOT the same as flow.
+    Requires price context + retail weakness + non-chase + structure proxies.
+    """
+    if flow_score is None or not timestamp_locked:
+        return None
+    if any(wins[w]["data_coverage_pct"] < min_cov for w in (7,4)):
+        return None
+    if wins[7]["large_ncvd"] is None or wins[4]["large_ncvd"] is None:
+        return None
+    if wins[7]["retail_ncvd"] is None or wins[4]["retail_ncvd"] is None:
+        return None
+    if pf.get("non_chase_gate") is None:
+        return None
+
+    n7, n4 = wins[7]["large_ncvd"], wins[4]["large_ncvd"]
+    r7, r4 = wins[7]["retail_ncvd"], wins[4]["retail_ncvd"]
     p4 = pf.get("price_4w_pct")
     if p4 is None:
-        s5 = 5
-    elif p4 <= 0 and n4 >= 5:
-        s5 = 10
-    elif p4 <= 3 and n4 >= 3:
-        s5 = 8
-    elif n4 > 0:
-        s5 = 6
+        return None
+
+    # Flow foundation 35
+    s1 = flow_score / 100.0 * 35.0
+
+    # Price-vs-Large divergence 20: best when price is quiet/weak while Large CVD positive.
+    if n4 > 0:
+        divergence = n4 - max(p4, 0) * 0.5
+        s2 = map_range(divergence, -5, 20, 0, 20)
     else:
-        s5 = 2
+        s2 = 0.0
 
-    # 6) Base / low defense 5
+    # Retail weakness / divergence 15
+    retail_div = 0.35*(n7-r7) + 0.65*(n4-r4)
+    s3 = map_range(retail_div, -5, 12, 0, 15)
+
+    # Non-chase 15 (hard gate reflected in label below)
+    s4 = 15.0 if pf.get("non_chase_gate") else 0.0
+
+    # Low defense 5
     ld = pf.get("low_defense_pct")
-    s6 = 2.5 if ld is None else (5 if ld >= -2 else 3 if ld >= -5 else 1)
+    s5 = 2.5 if ld is None else (5 if ld >= -2 else 3 if ld >= -5 else 1)
 
-    # 7) Volume persistence 5
+    # Volume persistence 5
     vr = pf.get("volume_persistence_ratio")
-    s7 = 2.5 if vr is None else (5 if vr >= 0.9 else 3 if vr >= 0.7 else 1)
+    s6 = 2.5 if vr is None else (5 if vr >= 0.9 else 3 if vr >= 0.7 else 1)
 
-    # 8) RS/BTC 5
-    rs = pf.get("rs_btc_4w_pp")
-    s8 = 2.5 if rs is None else (5 if rs >= 5 else 3 if rs >= 0 else 1 if rs >= -5 else 0)
+    # RS improvement 5
+    rsimp = pf.get("rs_improving")
+    s7 = 2.5 if rsimp is None else (5 if rsimp else 0)
 
-    return round(clamp(s1+s2+s3+s4+s5+s6+s7+s8, 0, 100), 1)
-
-
-def judgement(score: Optional[float]) -> Optional[str]:
-    if score is None: return None
-    if score >= 85: return "VERY_STRONG_STEALTH_PROXY"
-    if score >= 75: return "STEALTH_ACCUMULATION_PROXY"
-    if score >= 65: return "LARGE_TRADE_ABSORPTION_CANDIDATE"
-    if score >= 50: return "WATCH"
-    return "WEAK"
+    return round(clamp(s1+s2+s3+s4+s5+s6+s7, 0, 100), 1)
 
 
-def summarize(config: dict, agg: dict, asof: date):
-    idx = build_daily_index(agg)
-    btc_klines = fetch_klines("BTCUSDT", 220)
-    results = []
-    for sym in config["symbols"]:
-        if not symbol_exists(sym):
-            results.append({"symbol":sym, "ticker":config["ticker_labels"].get(sym,sym), "supported":False})
+def stealth_label(score: Optional[float], flow_score: Optional[float], wins: dict, pf: dict) -> Optional[str]:
+    if score is None or flow_score is None:
+        return None
+
+    # Hard gates: strong enough flow, non-chasing price, and repeated recent Large activity.
+    activity_ok = (
+        wins[4]["large_active_weeks"] >= 2
+        and wins[4]["large_trade_count"] >= 3
+        and wins[4]["large_ncvd"] is not None
+        and wins[7]["large_ncvd"] is not None
+    )
+    hard_ok = (
+        flow_score >= 70
+        and pf.get("non_chase_gate") is True
+        and activity_ok
+        and wins[4]["large_ncvd"] > 0
+    )
+    if not hard_ok:
+        return "FLOW_ONLY_OR_WAIT"
+    if score >= 85:
+        return "STRONG_STEALTH_CANDIDATE"
+    if score >= 75:
+        return "STEALTH_CANDIDATE"
+    return "WATCH"
+
+
+def build_cvd_run_id(results: list, common_asof: date) -> str:
+    core = []
+    for r in results:
+        if not r.get("supported"):
             continue
-        wins = {}
-        for w in config["windows_weeks"]:
-            wins[w] = window_stats(sym, idx, asof, w, config["bins_usdt"], config["large_bins"], config["retail_bins"])
-        kl = fetch_klines(sym, 220)
-        pf = price_features(kl, btc_klines)
-        score = cvd_score(wins, pf, config["min_cvd_coverage_pct"])
+        core.append([
+            r.get("symbol"), r.get("timestamp_locked"),
+            r.get("flow_score"), r.get("stealth_score"),
+            r.get("windows", {}).get("26", {}).get("large_ncvd"),
+            r.get("windows", {}).get("13", {}).get("large_ncvd"),
+            r.get("windows", {}).get("7", {}).get("large_ncvd"),
+            r.get("windows", {}).get("4", {}).get("large_ncvd")
+        ])
+    digest = hashlib.sha256(json.dumps(core, sort_keys=True).encode("utf-8")).hexdigest()[:12]
+    return f"CVD-{common_asof.isoformat()}-{digest}"
+
+def summarize(config: dict, agg: dict, requested_asof: Optional[date]=None):
+    idx = build_daily_index(agg)
+    common_asof = determine_common_asof(idx, config["symbols"])
+    if common_asof is None:
+        raise RuntimeError("No common completed CVD date available")
+
+    btc_klines = fetch_klines("BTCUSDT", 240)
+    results = []
+
+    for sym in config["symbols"]:
+        ticker = config["ticker_labels"].get(sym, sym)
+        if not symbol_exists(sym):
+            results.append({"symbol":sym, "ticker":ticker, "supported":False})
+            continue
+
+        sym_dates = [date.fromisoformat(ds) for ds in idx.get(sym, {}).keys()]
+        latest_date = max(sym_dates) if sym_dates else None
+        timestamp_locked = (latest_date == common_asof)
+
+        wins = {
+            w: window_stats(sym, idx, common_asof, w,
+                            config["bins_usdt"], config["large_bins"], config["retail_bins"])
+            for w in config["windows_weeks"]
+        }
+
+        kl = fetch_klines(sym, 240)
+        pf = price_features(kl, btc_klines, common_asof)
+
+        flow = large_flow_score(wins, config["min_cvd_coverage_pct"], timestamp_locked)
+        stealth = stealth_score(wins, pf, flow, config["min_cvd_coverage_pct"], timestamp_locked)
+        slabel = stealth_label(stealth, flow, wins, pf)
+
         row = {
-            "symbol":sym,
-            "ticker":config["ticker_labels"].get(sym,sym),
-            "supported":True,
-            "asof":asof.isoformat(),
-            "current":pf.get("current"),
-            "cvd_score":score,
-            "judgement":judgement(score),
+            "symbol":sym, "ticker":ticker, "supported":True,
+            "cvd_asof_utc":common_asof.isoformat(),
+            "symbol_latest_cvd_date":None if latest_date is None else latest_date.isoformat(),
+            "timestamp_locked":timestamp_locked,
+            "price_close_asof":pf.get("price_close_asof"),
+            "flow_score":flow,
+            "flow_label":flow_label(flow),
+            "stealth_score":stealth,
+            "stealth_label":slabel,
+            "non_chase_gate":pf.get("non_chase_gate"),
+            "price_7d_pct":pf.get("price_7d_pct"),
             "price_4w_pct":pf.get("price_4w_pct"),
+            "extension_vs_ema20_pct":pf.get("extension_vs_ema20_pct"),
+            "rs_btc_7d_pp":pf.get("rs_btc_7d_pp"),
             "rs_btc_4w_pp":pf.get("rs_btc_4w_pp"),
+            "rs_improving":pf.get("rs_improving"),
             "low_defense_pct":pf.get("low_defense_pct"),
             "volume_persistence_ratio":pf.get("volume_persistence_ratio"),
             "windows":{}
         }
+
         for w in config["windows_weeks"]:
             x = wins[w]
             row["windows"][str(w)] = {
-                "coverage_pct":x["coverage_pct"],
+                "data_coverage_pct":x["data_coverage_pct"],
+                "large_activity_days":x["large_activity_days"],
+                "large_activity_pct":x["large_activity_pct"],
+                "large_active_weeks":x["large_active_weeks"],
+                "large_trade_count":x["large_trade_count"],
+                "large_notional_share_pct":x["large_notional_share_pct"],
                 "large_ncvd":None if x["large_ncvd"] is None else round(x["large_ncvd"],3),
                 "retail_ncvd":None if x["retail_ncvd"] is None else round(x["retail_ncvd"],3),
                 "w_ncvd":None if x["w_ncvd"] is None else round(x["w_ncvd"],3),
                 "large_weekly_slope":None if x["large_weekly_slope"] is None else round(x["large_weekly_slope"],3),
+                "positive_week_ratio":None if x["positive_week_ratio"] is None else round(x["positive_week_ratio"],2),
                 "state":arrow(x["large_ncvd"], x["large_weekly_slope"])
             }
         results.append(row)
 
+    cvd_run_id = build_cvd_run_id(results, common_asof)
     payload = {
-        "master":"MASTER ALT V2.1",
-        "patch":"FREE LARGE-TRADE SPOT CVD",
+        "schema_version":SCHEMA_VERSION,
+        "master":"MASTER ALT V2.2.1",
+        "patch":"CVD DATA QUALITY PATCH",
         "venue":"Binance Spot",
-        "asof":asof.isoformat(),
-        "generated_at":datetime.now(UTC).isoformat(),
-        "warning":"Order-size CVD only; not wallet identity.",
+        "cvd_run_id":cvd_run_id,
+        "cvd_asof_utc":common_asof.isoformat(),
+        "generated_at_utc":datetime.now(UTC).isoformat(),
+        "warning":"Order-size CVD only; not wallet identity. Flow and Stealth are separate.",
         "results":results
     }
     SUMMARY_JSON.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
     fields = [
-        "ticker","symbol","supported","current","cvd_score","judgement",
+        "ticker","symbol","supported","cvd_asof_utc","symbol_latest_cvd_date","timestamp_locked",
+        "price_close_asof","flow_score","flow_label","stealth_score","stealth_label","non_chase_gate",
+        "price_7d_pct","price_4w_pct","extension_vs_ema20_pct","rs_btc_7d_pp","rs_btc_4w_pp","rs_improving",
         "26W","13W","7W","4W",
         "large_ncvd_26w","large_ncvd_13w","large_ncvd_7w","large_ncvd_4w",
-        "retail_ncvd_7w","retail_ncvd_4w","price_4w_pct","rs_btc_4w_pp",
-        "coverage_26w","coverage_13w","coverage_7w","coverage_4w"
+        "retail_ncvd_7w","retail_ncvd_4w",
+        "data_cov_26w","data_cov_13w","data_cov_7w","data_cov_4w",
+        "large_activity_26w","large_activity_13w","large_activity_7w","large_activity_4w",
+        "large_active_weeks_4w","large_trade_count_4w","large_notional_share_4w"
     ]
+
     flat = []
     for r in results:
         x = {k:r.get(k) for k in fields}
@@ -558,40 +789,106 @@ def summarize(config: dict, agg: dict, asof: date):
                 wx = r["windows"][str(w)]
                 x[f"{w}W"] = wx["state"]
                 x[f"large_ncvd_{w}w"] = wx["large_ncvd"]
-                x[f"coverage_{w}w"] = wx["coverage_pct"]
+                x[f"data_cov_{w}w"] = wx["data_coverage_pct"]
+                x[f"large_activity_{w}w"] = wx["large_activity_pct"]
             x["retail_ncvd_7w"] = r["windows"]["7"]["retail_ncvd"]
             x["retail_ncvd_4w"] = r["windows"]["4"]["retail_ncvd"]
+            x["large_active_weeks_4w"] = r["windows"]["4"]["large_active_weeks"]
+            x["large_trade_count_4w"] = r["windows"]["4"]["large_trade_count"]
+            x["large_notional_share_4w"] = r["windows"]["4"]["large_notional_share_pct"]
         flat.append(x)
 
     with SUMMARY_CSV.open("w", encoding="utf-8", newline="") as f:
         w = csv.DictWriter(f, fieldnames=fields)
         w.writeheader(); w.writerows(flat)
 
-    ranked = [r for r in results if r.get("cvd_score") is not None]
-    ranked.sort(key=lambda x:x["cvd_score"], reverse=True)
-    top = ranked[:5]
-    topfields = ["rank","ticker","cvd_score","judgement","26W","13W","7W","4W","large_4w","retail_4w","price_4w_pct","rs_btc_4w_pp"]
+    # Pure order-flow TOP5. Stealth is intentionally NOT used here.
+    ranked_flow = [r for r in results if r.get("flow_score") is not None]
+    ranked_flow.sort(key=lambda x:x["flow_score"], reverse=True)
+    top = ranked_flow[:5]
+    topfields = [
+        "rank","ticker","flow_score","flow_label","stealth_score","stealth_label","non_chase_gate",
+        "26W","13W","7W","4W","large_4w","retail_4w","price_4w_pct","rs_btc_4w_pp",
+        "large_activity_4w","large_trade_count_4w"
+    ]
     with TOP5_CSV.open("w", encoding="utf-8", newline="") as f:
         w = csv.DictWriter(f, fieldnames=topfields); w.writeheader()
         for i,r in enumerate(top,1):
             w.writerow({
-                "rank":i,"ticker":r["ticker"],"cvd_score":r["cvd_score"],"judgement":r["judgement"],
+                "rank":i,"ticker":r["ticker"],"flow_score":r["flow_score"],"flow_label":r["flow_label"],
+                "stealth_score":r["stealth_score"],"stealth_label":r["stealth_label"],
+                "non_chase_gate":r["non_chase_gate"],
                 "26W":r["windows"]["26"]["state"],"13W":r["windows"]["13"]["state"],
                 "7W":r["windows"]["7"]["state"],"4W":r["windows"]["4"]["state"],
                 "large_4w":r["windows"]["4"]["large_ncvd"],
                 "retail_4w":r["windows"]["4"]["retail_ncvd"],
-                "price_4w_pct":r.get("price_4w_pct"),"rs_btc_4w_pp":r.get("rs_btc_4w_pp")
+                "price_4w_pct":r.get("price_4w_pct"),"rs_btc_4w_pp":r.get("rs_btc_4w_pp"),
+                "large_activity_4w":r["windows"]["4"]["large_activity_pct"],
+                "large_trade_count_4w":r["windows"]["4"]["large_trade_count"]
+            })
+
+    # Stealth TOP5 only among hard-gate candidates.
+    stealth_ranked = [
+        r for r in results
+        if r.get("stealth_score") is not None
+        and r.get("stealth_label") in {"STEALTH_CANDIDATE","STRONG_STEALTH_CANDIDATE"}
+    ]
+    stealth_ranked.sort(key=lambda x:x["stealth_score"], reverse=True)
+    with STEALTH_TOP5_CSV.open("w", encoding="utf-8", newline="") as f:
+        sf = ["rank","ticker","stealth_score","stealth_label","flow_score","non_chase_gate",
+              "large_7w","large_4w","retail_4w","price_7d_pct","price_4w_pct",
+              "extension_vs_ema20_pct","rs_btc_7d_pp","rs_btc_4w_pp"]
+        w = csv.DictWriter(f, fieldnames=sf); w.writeheader()
+        for i,r in enumerate(stealth_ranked[:5],1):
+            w.writerow({
+                "rank":i,"ticker":r["ticker"],"stealth_score":r["stealth_score"],
+                "stealth_label":r["stealth_label"],"flow_score":r["flow_score"],
+                "non_chase_gate":r["non_chase_gate"],
+                "large_7w":r["windows"]["7"]["large_ncvd"],
+                "large_4w":r["windows"]["4"]["large_ncvd"],
+                "retail_4w":r["windows"]["4"]["retail_ncvd"],
+                "price_7d_pct":r.get("price_7d_pct"),"price_4w_pct":r.get("price_4w_pct"),
+                "extension_vs_ema20_pct":r.get("extension_vs_ema20_pct"),
+                "rs_btc_7d_pp":r.get("rs_btc_7d_pp"),"rs_btc_4w_pp":r.get("rs_btc_4w_pp")
             })
 
     with COVERAGE_CSV.open("w", encoding="utf-8", newline="") as f:
-        fields2=["ticker","symbol","supported","26W","13W","7W","4W"]
-        w=csv.DictWriter(f, fieldnames=fields2); w.writeheader()
+        fields2 = ["ticker","symbol","supported","timestamp_locked",
+                   "data_26W","data_13W","data_7W","data_4W",
+                   "large_activity_26W","large_activity_13W","large_activity_7W","large_activity_4W"]
+        w = csv.DictWriter(f, fieldnames=fields2); w.writeheader()
         for r in results:
-            row={"ticker":r["ticker"],"symbol":r["symbol"],"supported":r["supported"]}
+            row = {
+                "ticker":r["ticker"],"symbol":r["symbol"],"supported":r["supported"],
+                "timestamp_locked":r.get("timestamp_locked")
+            }
             if r.get("supported"):
-                for ww in (26,13,7,4): row[f"{ww}W"]=r["windows"][str(ww)]["coverage_pct"]
+                for ww in (26,13,7,4):
+                    row[f"data_{ww}W"] = r["windows"][str(ww)]["data_coverage_pct"]
+                    row[f"large_activity_{ww}W"] = r["windows"][str(ww)]["large_activity_pct"]
             w.writerow(row)
 
+
+def validate_outputs():
+    if not SUMMARY_JSON.exists():
+        raise RuntimeError("summary json missing")
+    payload = json.loads(SUMMARY_JSON.read_text(encoding="utf-8"))
+    assert payload.get("schema_version") == SCHEMA_VERSION
+    asof = payload.get("cvd_asof_utc")
+    assert asof
+    for r in payload.get("results", []):
+        if not r.get("supported"):
+            continue
+        # A scored row must be same-date locked.
+        if r.get("flow_score") is not None:
+            assert r.get("timestamp_locked") is True
+            for ww in ("26","13","7","4"):
+                assert r["windows"][ww]["large_ncvd"] is not None
+        # Stealth candidate must pass NonChase and have flow.
+        if r.get("stealth_label") in {"STEALTH_CANDIDATE","STRONG_STEALTH_CANDIDATE"}:
+            assert r.get("non_chase_gate") is True
+            assert r.get("flow_score") is not None and r["flow_score"] >= 70
+    print(f"VALIDATION OK | schema={SCHEMA_VERSION} | asof={asof} | run_id={payload.get('cvd_run_id')}")
 
 def bootstrap(config: dict, lookback_days: int, only: Optional[List[str]]=None):
     end = datetime.now(UTC).date() - timedelta(days=1)  # completed daily archive only
@@ -609,7 +906,9 @@ def bootstrap(config: dict, lookback_days: int, only: Optional[List[str]]=None):
             continue
         try:
             bootstrap_symbol(sym, start, end, config["bins_usdt"], agg)
-            state["last_completed_date"][sym] = end.isoformat()
+            actual_dates = [date.fromisoformat(ds) for (ss, ds, _b) in agg.keys() if ss == sym]
+            if actual_dates:
+                state["last_completed_date"][sym] = max(actual_dates).isoformat()
             state["unsupported"].pop(sym, None)
             write_daily(agg)
             save_state(state)
@@ -665,13 +964,15 @@ def self_test():
     assert bin_name(100000,bins)=="W"
     assert bin_name(1000000,bins)=="MW"
     assert arrow(6,1)=="↑↑" and arrow(-6,-1)=="↓↓"
-    print("SELF TEST OK")
+    # Missing CVD must stay None; never silently become zero.
+    assert ncvd_for([{"buy":0.0,"sell":0.0}]) is None
+    print("SELF TEST OK | V2.2.1")
 
 
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--config", default=str(BASE_DIR/"final20_config.json"))
-    ap.add_argument("--mode", choices=["bootstrap","update","summarize","self-test"], default="update")
+    ap.add_argument("--mode", choices=["bootstrap","update","summarize","validate","self-test"], default="update")
     ap.add_argument("--lookback-days", type=int, default=None)
     ap.add_argument("--symbols", nargs="*", default=None, help="Optional subset, e.g. SUIUSDT ONDOUSDT")
     args=ap.parse_args()
@@ -686,8 +987,9 @@ def main():
         update(cfg)
     elif args.mode=="summarize":
         agg=read_daily_existing()
-        asof=datetime.now(UTC).date()-timedelta(days=1)
-        summarize(cfg,agg,asof)
+        summarize(cfg, agg)
+    elif args.mode=="validate":
+        validate_outputs()
 
 
 if __name__=="__main__":
