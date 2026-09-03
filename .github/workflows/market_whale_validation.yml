@@ -31,22 +31,23 @@ jobs:
       - name: Install
         run: pip install -r market_whales/requirements.txt
 
-      - name: Syntax and baseline-guard self-test
+      - name: Syntax + size-engine + baseline-guard self-tests
         run: |
-          python -m py_compile market_whales/collector.py
+          python -m py_compile market_whales/collector_v1_1.py
           python -m py_compile market_whales/baseline_guard.py
+          python market_whales/collector_v1_1.py --self-test
           python market_whales/baseline_guard.py --self-test
 
-      - name: Collect live Hyperliquid whale data
-        run: python market_whales/collector.py
+      - name: Collect live Hyperliquid whale data with position size
+        run: python market_whales/collector_v1_1.py
 
-      - name: Apply baseline false-positive guard
+      - name: Apply baseline defense-in-depth guard
         run: python market_whales/baseline_guard.py
 
-      - name: Validate production output
+      - name: Validate production V1.1 output
         run: |
           python - <<'PY'
-          import json, sys
+          import csv,json,sys
           from datetime import datetime, timezone
           s=json.load(open('market_whales/state/recorder_state.json'))
           p=json.load(open('market_whales/output/latest_summary.json'))
@@ -57,23 +58,36 @@ jobs:
           failures=s.get('query_failures',0)
           last_run=s.get('last_run_utc')
           print('leaderboard=',leaderboard,'candidates=',candidates,'queried=',queried,'failures=',failures)
-          print('active_market_whales=',s.get('active_market_whales'),'large_change_events=',s.get('large_change_events'))
+          print('active_market_whales=',s.get('active_market_whales'),'large_change_events=',s.get('large_change_events'),'size_baselines_created=',s.get('size_baselines_created'))
           if leaderboard < 1000:
               sys.exit('Validation failed: leaderboard unexpectedly small')
           if candidates < 50 or queried < 50:
               sys.exit('Validation failed: candidate/query coverage too small')
           if queried > 0 and failures / (queried + failures) > 0.10:
               sys.exit('Validation failed: query failure rate >10%')
-          if p.get('engine') != 'MASTER_MARKET_WHALE_TIME_SERIES_V1':
-              sys.exit('Validation failed: wrong output schema')
+          if p.get('engine') != 'MASTER_MARKET_WHALE_TIME_SERIES_V1_1' or p.get('schema_version')!='1.1':
+              sys.exit('Validation failed: wrong V1.1 output schema')
+          if s.get('size_engine')!='PASS' or s.get('change_basis')!='POSITION_SIZE_SZI' or p.get('change_basis')!='POSITION_SIZE_SZI':
+              sys.exit('Validation failed: size engine/change basis missing')
           if s.get('baseline_guard') != 'PASS' or p.get('baseline_guard') != 'PASS' or e.get('baseline_guard') != 'PASS':
               sys.exit('Validation failed: baseline guard did not pass')
+          for ev in e.get('events',[]):
+              if ev.get('change_basis')!='POSITION_SIZE_SZI':
+                  sys.exit('Validation failed: legacy USD-value change event leaked')
+              if ev.get('action_notional_usd') is None:
+                  sys.exit('Validation failed: event missing action_notional_usd')
+          with open('market_whales/data/positions_history.csv',newline='',encoding='utf-8') as fh:
+              rows=list(csv.DictReader(fh))
+          new=[r for r in rows if r.get('size_schema')=='SZI_V1_1']
+          if not new or not any((r.get('position_size') or '').strip() for r in new):
+              sys.exit('Validation failed: no V1.1 szi rows')
           if not last_run:
               sys.exit('Validation failed: missing last_run_utc')
           dt=datetime.fromisoformat(last_run.replace('Z','+00:00'))
           age=(datetime.now(timezone.utc)-dt).total_seconds()
           if age > 900:
               sys.exit('Validation failed: stale output')
+          print('MARKET_WHALE_V1_1_PRODUCTION_VALIDATION=PASS')
           PY
 
       - name: Save hourly whale snapshot
@@ -84,7 +98,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No generated data changes"
           else
-            git commit -m "data: hourly MARKET whale snapshot"
+            git commit -m "data: hourly MARKET whale V1.1 size snapshot"
             git pull --rebase origin main
             git push origin HEAD:main
           fi
