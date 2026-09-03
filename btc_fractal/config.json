@@ -1,6 +1,6 @@
 {
-  "engine": "BTC_HISTORICAL_REGIME_OUTCOME_V0_2",
-  "schema_version": "0.2",
+  "engine": "BTC_HISTORICAL_REGIME_OUTCOME_V0_3_CONFIRMATION",
+  "schema_version": "0.3",
   "start_date": "2011-01-01",
   "feature_windows_days": [
     7,
@@ -55,17 +55,21 @@
     "macro": 0.15
   },
   "high_confidence_min_score": 75,
-  "acceptance": {
-    "min_oos_accuracy_delta_pp_vs_price_only": 1.0,
-    "min_high_confidence_accuracy_delta_pp_vs_price_only": 2.0,
-    "max_non_price_ablation_flip_rate_pct": 10.0
+  "confirmation_acceptance": {
+    "min_confirmed_cases": 20,
+    "min_confirmed_accuracy_gain_pp": 3.0,
+    "min_conflict_cases": 10,
+    "max_conflict_accuracy_gap_pp": -3.0,
+    "min_both_confirmed_cases": 10,
+    "min_both_confirmed_accuracy_gain_pp": 6.0
   },
   "notes": [
+    "Price-only is the directional core after V0.2 blended-model rejection.",
+    "On-chain and macro are confirmation/conflict layers only and cannot change the base direction.",
     "No future data may be used in feature construction or episode assignment.",
-    "Candidate analogs must have the full requested forward horizon completed before the query date.",
     "Only one analog may represent a point-in-time-defined swing episode.",
     "N/A is excluded and weights are renormalized; N/A is never zero-filled.",
     "MVRVZ_DERIVED_PIT is a point-in-time derived proxy, not a vendor-reported official MVRV Z-Score.",
-    "Derivatives and ETF layers remain separate until the full-history layer passes out-of-sample acceptance."
+    "Derivatives and ETF confirmation layers remain blocked until this confirmation architecture proves useful out of sample."
   ]
 }
