@@ -1,0 +1,27 @@
+{
+  "history_retention_days": 45,
+  "snapshot_interval_minutes": 60,
+  "compare_tolerance_minutes": {
+    "24h": 90,
+    "7d": 180
+  },
+  "fred_series": {
+    "FED_TOTAL_ASSETS": {"id": "WALCL", "unit": "USD millions", "frequency": "weekly"},
+    "FED_RESERVE_BALANCES": {"id": "WRESBAL", "unit": "USD millions", "frequency": "weekly"},
+    "US_TGA": {"id": "WTREGEN", "unit": "USD millions", "frequency": "weekly"},
+    "FED_FUNDS": {"id": "DFF", "unit": "percent", "frequency": "daily"},
+    "US2Y": {"id": "DGS2", "unit": "percent", "frequency": "daily"},
+    "US10Y": {"id": "DGS10", "unit": "percent", "frequency": "daily"},
+    "US30Y": {"id": "DGS30", "unit": "percent", "frequency": "daily"},
+    "US10Y_REAL": {"id": "DFII10", "unit": "percent", "frequency": "daily"},
+    "BROAD_DOLLAR": {"id": "DTWEXBGS", "unit": "index", "frequency": "daily"},
+    "WTI": {"id": "DCOILWTICO", "unit": "USD/barrel", "frequency": "daily"},
+    "BRENT": {"id": "DCOILBRENTEU", "unit": "USD/barrel", "frequency": "daily"},
+    "SP500": {"id": "SP500", "unit": "index", "frequency": "daily"},
+    "NASDAQ": {"id": "NASDAQCOM", "unit": "index", "frequency": "daily"}
+  },
+  "optional_sources": {
+    "defillama_stablecoins": true,
+    "coingecko_global": true
+  }
+}
