@@ -23,18 +23,24 @@ jobs:
       - name: Install
         run: pip install pandas numpy requests
       - name: Compile
-        run: python -m py_compile btc_fractal/run_v26_fractal.py
-      - name: Build and validate
-        run: python btc_fractal/run_v26_fractal.py --mode all
+        run: |
+          python -m py_compile btc_fractal/run_v26_fractal.py
+          python -m py_compile btc_fractal/run_v26_fast.py
+          python -m py_compile btc_fractal/run_v26_v03.py
+          python -m py_compile btc_fractal/run_v26_v031.py
+      - name: Build and validate V0.3.1
+        run: python btc_fractal/run_v26_v031.py
       - name: Show summaries
         run: |
           cat btc_fractal/output/build_meta.json
-          cat btc_fractal/output/current_fractal.json
-          cat btc_fractal/output/walk_forward_summary.json
+          cat btc_fractal/output/current_price_core.json
+          cat btc_fractal/output/current_confirmation.json
+          cat btc_fractal/output/confirmation_walk_forward_summary.json
+          cat btc_fractal/output/v031_validation_summary.json
       - name: Upload validation artifact
         uses: actions/upload-artifact@v4
         with:
-          name: btc-fractal-v26-validation
+          name: btc-fractal-v031-validation
           path: |
             btc_fractal/output/*.json
             btc_fractal/output/*.csv
