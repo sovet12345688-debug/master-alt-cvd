@@ -1,0 +1,80 @@
+name: ALT2 Live Large Flow Hourly
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '27 * * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: alt2-live-large-flow-hourly
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install
+        run: pip install -r live_flow/requirements.txt
+
+      - name: Syntax + self tests
+        run: |
+          python -m py_compile live_flow/collector.py
+          python -m py_compile live_flow/quality_guard.py
+          python live_flow/collector.py --mode self-test
+          python live_flow/quality_guard.py --self-test
+
+      - name: Collect completed-hour Binance Spot flow
+        run: python live_flow/collector.py --mode collect
+
+      - name: Apply low-activity false-positive guard
+        run: python live_flow/quality_guard.py
+
+      - name: Validate collector output
+        run: python live_flow/collector.py --mode validate
+
+      - name: Validate quality guard
+        run: |
+          python - <<'PY'
+          import json, sys
+          p=json.load(open('live_flow/output/live_large_flow_summary.json'))
+          q=p.get('quality_guard',{})
+          if q.get('status')!='PASS' or q.get('min_large_trade_count_for_direction')!=3:
+              sys.exit('quality guard failed')
+          for a in p.get('assets',[]):
+              for k in ('1h','4h','24h'):
+                  w=a.get(k)
+                  if not isinstance(w,dict):
+                      continue
+                  n=w.get('large_trade_count')
+                  if n is not None and n < 3 and w.get('large_cvd_signal') is not None:
+                      sys.exit(f"false directional signal {a['symbol']} {k}")
+          print('QUALITY VALIDATION PASS')
+          PY
+
+      - name: Save hourly snapshot
+        run: |
+          git config user.name "alt2-live-flow-bot"
+          git config user.email "alt2-live-flow-bot@users.noreply.github.com"
+          git add live_flow/data live_flow/output live_flow/state
+          if git diff --cached --quiet; then
+            echo "No generated changes"
+          else
+            git commit -m "data: hourly ALT2 live large flow snapshot"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
