@@ -1,19 +1,45 @@
 {
-  "engine": "BTC_HISTORICAL_REGIME_OUTCOME_V0_1",
-  "schema_version": "0.1",
+  "engine": "BTC_HISTORICAL_REGIME_OUTCOME_V0_2",
+  "schema_version": "0.2",
   "start_date": "2011-01-01",
-  "feature_windows_days": [7, 30, 90, 180, 365],
-  "up_targets_pct": [30, 50, 100, 150, 200],
-  "down_targets_pct": [-20, -30, -50, -70],
-  "outcome_horizons_days": [30, 90, 180, 365],
+  "feature_windows_days": [
+    7,
+    30,
+    90,
+    180,
+    365
+  ],
+  "up_targets_pct": [
+    30,
+    50,
+    100,
+    150,
+    200
+  ],
+  "down_targets_pct": [
+    -20,
+    -30,
+    -50,
+    -70
+  ],
+  "outcome_horizons_days": [
+    30,
+    90,
+    180,
+    365
+  ],
   "analog_top_k": 12,
-  "analog_min_separation_days": 45,
+  "analog_min_separation_days": 21,
+  "episode_reversal_pct": 0.2,
+  "episode_max_days": 365,
   "min_complete_features": 8,
   "min_analog_episodes_high_confidence": 8,
-  "min_distinct_years_high_confidence": 3,
+  "min_distinct_years_high_confidence": 5,
   "community_asset_metrics": [
     "PriceUSD",
     "CapMVRVCur",
+    "CapMrktCurUSD",
+    "SplyCur",
     "CapMVRVZ",
     "CapRealUSD",
     "SOPR",
@@ -22,17 +48,24 @@
     "HashRate"
   ],
   "feature_group_weights": {
-    "price_state": 0.20,
-    "price_path": 0.35,
-    "onchain_state": 0.20,
-    "onchain_path": 0.15,
-    "macro": 0.10
+    "price_state": 0.2,
+    "price_path": 0.4,
+    "onchain_state": 0.15,
+    "onchain_path": 0.1,
+    "macro": 0.15
   },
-  "high_confidence_min_score": 70,
+  "high_confidence_min_score": 75,
+  "acceptance": {
+    "min_oos_accuracy_delta_pp_vs_price_only": 1.0,
+    "min_high_confidence_accuracy_delta_pp_vs_price_only": 2.0,
+    "max_non_price_ablation_flip_rate_pct": 10.0
+  },
   "notes": [
-    "No future data may be used in feature construction.",
+    "No future data may be used in feature construction or episode assignment.",
     "Candidate analogs must have the full requested forward horizon completed before the query date.",
+    "Only one analog may represent a point-in-time-defined swing episode.",
     "N/A is excluded and weights are renormalized; N/A is never zero-filled.",
-    "Derivatives and ETF layers remain separate until sufficient same-definition history exists."
+    "MVRVZ_DERIVED_PIT is a point-in-time derived proxy, not a vendor-reported official MVRV Z-Score.",
+    "Derivatives and ETF layers remain separate until the full-history layer passes out-of-sample acceptance."
   ]
 }
