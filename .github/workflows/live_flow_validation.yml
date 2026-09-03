@@ -7,6 +7,7 @@ on:
       - alt2-live-large-flow-v1
     paths:
       - 'live_flow/collector.py'
+      - 'live_flow/quality_guard.py'
       - 'live_flow/config.json'
       - 'live_flow/requirements.txt'
       - 'live_flow/README.md'
@@ -39,16 +40,36 @@ jobs:
       - name: Install
         run: pip install -r live_flow/requirements.txt
 
-      - name: Syntax + self test
+      - name: Syntax + self tests
         run: |
           python -m py_compile live_flow/collector.py
+          python -m py_compile live_flow/quality_guard.py
           python live_flow/collector.py --mode self-test
+          python live_flow/quality_guard.py --self-test
 
       - name: Collect one completed hour from Binance Spot
         run: python live_flow/collector.py --mode collect
 
+      - name: Apply low-activity false-positive guard
+        run: python live_flow/quality_guard.py
+
       - name: Validate outputs
         run: python live_flow/collector.py --mode validate
+
+      - name: Validate quality guard
+        run: |
+          python - <<'PY'
+          import json, sys
+          p=json.load(open('live_flow/output/live_large_flow_summary.json'))
+          q=p.get('quality_guard',{})
+          if q.get('status')!='PASS' or q.get('min_large_trade_count_for_direction')!=3:
+              sys.exit('quality guard failed')
+          for a in p.get('assets',[]):
+              w=a.get('1h')
+              if isinstance(w,dict) and (w.get('large_trade_count') or 0) < 3 and w.get('large_cvd_signal') is not None:
+                  sys.exit(f"false directional signal: {a['symbol']}")
+          print('QUALITY VALIDATION PASS')
+          PY
 
       - name: Show compact state
         run: |
@@ -59,7 +80,8 @@ jobs:
           print('target=',p['target_completed_hour_utc'])
           for a in p['assets']:
               if a['status']=='OK':
-                  print(a['symbol'], '1H=',a['1h']['large_cvd'], 'large$=',a['1h']['large_notional_usdt'], 'state=',a['flow_state'])
+                  w=a['1h']
+                  print(a['symbol'], '1H_raw=',w['large_cvd_raw'], 'signal=',w['large_cvd_signal'], 'count=',w['large_trade_count'], 'quality=',w['large_activity_quality'], 'state=',a['flow_state'])
           PY
 
       - name: Save test snapshot
@@ -70,7 +92,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No generated changes"
           else
-            git commit -m "test: ALT2 live large flow snapshot"
+            git commit -m "test: ALT2 live large flow guarded snapshot"
             git pull --rebase origin alt2-live-large-flow-v1
             git push origin HEAD:alt2-live-large-flow-v1
           fi
