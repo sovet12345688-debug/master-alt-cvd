@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.1",
+  "history_retention_days": 45,
+  "snapshot_interval_minutes": 60,
+  "compare_tolerance_minutes": {
+    "24h": 90,
+    "7d": 180
+  },
+  "mandatory_metrics": [
+    "US2Y",
+    "US10Y",
+    "US30Y",
+    "US10Y_REAL",
+    "EFFR",
+    "TGA_CLOSING_BALANCE"
+  ],
+  "secondary_metrics": ["SOFR"],
+  "optional_sources": {
+    "defillama_stablecoins": true,
+    "coingecko_global": true
+  },
+  "source_policy": "Same metric + same source only. Current MASTER direct-source verification remains primary; Vault is historical comparison cache only."
+}
