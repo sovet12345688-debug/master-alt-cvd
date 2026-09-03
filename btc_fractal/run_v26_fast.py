@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import math
 import numpy as np
 import pandas as pd
 
-from btc_fractal import run_v26_fractal as core
+import run_v26_fractal as core
 
 
 def similarity_scores_fast(features: pd.DataFrame, query_time: pd.Timestamp, cfg: dict, required_horizon: int = 365) -> pd.DataFrame:
@@ -43,11 +42,7 @@ def similarity_scores_fast(features: pd.DataFrame, query_time: pd.Timestamp, cfg
         group_outputs[g] = sim.where(available)
 
     score = numerator / denominator.replace(0, np.nan)
-    out = pd.DataFrame({
-        "similarity": score,
-        "used_features": used_features,
-        "coverage_weight": denominator,
-    })
+    out = pd.DataFrame({"similarity": score, "used_features": used_features, "coverage_weight": denominator})
     for g, s in group_outputs.items():
         out[f"sim_{g}"] = s
     out = out[(out["used_features"] >= int(cfg["min_complete_features"])) & out["similarity"].notna()]
