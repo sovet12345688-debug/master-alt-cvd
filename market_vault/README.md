@@ -1,4 +1,4 @@
-# MASTER MARKET DATA VAULT V1
+# MASTER MARKET DATA VAULT V1.1
 
 Purpose: preserve same-source historical observations so MASTER MARKET can compare `prior snapshot / 24H / 7D` without reconstructing past values from memory or mixing sources.
 
@@ -8,20 +8,31 @@ Purpose: preserve same-source historical observations so MASTER MARKET can compa
 - Not a replacement for direct current-market verification.
 - A stale/missing Vault metric must never block MASTER MARKET.
 
-## V1 sources
-- FRED official CSV: Fed balance sheet/reserves/TGA, Fed funds, US 2Y/10Y/30Y, 10Y real yield, broad dollar index, WTI, Brent, S&P 500, Nasdaq.
-- DefiLlama Stablecoins: USDT/USDC/total stablecoin supply (optional).
-- CoinGecko Global: total crypto market cap, 24H volume, BTC/ETH dominance (optional).
+## Validated keyless sources
+Mandatory core:
+- U.S. Treasury official XML: 2Y / 10Y / 30Y nominal Treasury yields.
+- U.S. Treasury official real-yield XML: 10Y real yield.
+- Federal Reserve Bank of New York Markets API: EFFR.
+- U.S. Treasury Fiscal Data Daily Treasury Statement: TGA closing balance.
 
-ETF flows are intentionally excluded from V1 until a stable free source is separately validated.
+Secondary:
+- New York Fed Markets API: SOFR.
+
+Optional context:
+- DefiLlama Stablecoins: USDT / USDC / total stablecoin supply.
+- CoinGecko Global: total crypto market cap, 24H volume, BTC/ETH dominance.
+
+FRED was tested from GitHub-hosted U.S. runners and excluded from production V1.1 because repeated requests timed out. Fed balance-sheet/reserve balances, DXY, oil and equity indexes remain direct-source checks inside MASTER MARKET until a reliable GitHub-accessible adapter is separately validated. ETF flows are also intentionally excluded until a stable free source is separately validated.
 
 ## Data model
-`data/market_history.csv` stores one metric row per GitHub snapshot with source observation timestamp and timestamp quality.
+`data/market_history.csv` stores one metric row per GitHub snapshot with the source observation timestamp and timestamp quality.
 
-`output/latest_summary.json` computes comparisons only when the metric AND source match. No cross-source delta is allowed.
+`output/latest_summary.json` computes comparisons only when the metric AND source match. Cross-source deltas are forbidden.
 
 ## Safety
-- Different-frequency macro series remain labeled daily/weekly; repeated hourly snapshots do not imply a new official observation.
-- `new_source_observation_since_prior_snapshot` distinguishes an actual source update from a repeated retrieval of the same observation.
+- Current MARKET verification remains primary. Vault is historical context only.
+- Repeated hourly retrieval of the same daily official observation does not imply a new move.
+- `new_source_observation_since_prior_snapshot` distinguishes a real source update from a repeated snapshot.
 - Missing values are not zero-filled.
-- 24H/7D comparisons remain null until actual history exists within tolerance.
+- 24H / 7D comparisons remain null until actual history exists within tolerance.
+- A source failure removes only that metric from Vault; it must never stop MASTER MARKET.
