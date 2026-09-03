@@ -1,0 +1,74 @@
+name: MARKET Data Vault Hourly
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '52 * * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-data-vault-hourly
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install
+        run: pip install -r market_vault/requirements.txt
+
+      - name: Syntax + self test
+        run: |
+          python -m py_compile market_vault/collector_official.py
+          python market_vault/collector_official.py --mode self-test
+
+      - name: Collect same-source market history snapshot
+        run: python market_vault/collector_official.py --mode collect
+
+      - name: Validate official-source coverage
+        run: python market_vault/collector_official.py --mode validate
+
+      - name: Validate comparison safety
+        run: |
+          python - <<'PY'
+          import json,sys
+          s=json.load(open('market_vault/state/vault_state.json'))
+          p=json.load(open('market_vault/output/latest_summary.json'))
+          if s.get('mandatory_ok',0)<5 or s.get('mandatory_total')!=6:
+              sys.exit('mandatory official coverage failed')
+          if p.get('comparison_rule') != 'same metric + same source only; repeated retrieval of the same official observation is not new movement':
+              sys.exit('comparison source-lock missing')
+          for m in p.get('metrics',[]):
+              for key in ('vs_prior_snapshot','vs_24h','vs_7d'):
+                  b=m.get(key)
+                  if b is not None and b.get('previous_snapshot_hour_utc') is None:
+                      sys.exit(f'invalid comparison {m.get("metric")} {key}')
+          print('MARKET_DATA_VAULT_COMPARISON_SAFETY=PASS')
+          PY
+
+      - name: Save hourly market snapshot
+        run: |
+          git config user.name "market-data-vault-bot"
+          git config user.email "market-data-vault-bot@users.noreply.github.com"
+          git add market_vault/data market_vault/output market_vault/state
+          if git diff --cached --quiet; then
+            echo "No generated data changes"
+          else
+            git commit -m "data: hourly MARKET data vault snapshot"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
