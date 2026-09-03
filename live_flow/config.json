@@ -1,0 +1,13 @@
+{
+  "engine": "ALT2_LIVE_LARGE_FLOW_V1",
+  "source": "Binance Spot public aggTrades API",
+  "api_base": "https://data-api.binance.vision",
+  "windows_hours": [1, 4, 24],
+  "retention_days": 14,
+  "strict_full_window": true,
+  "schedule_minute_utc": 27,
+  "max_pages_per_symbol": 500,
+  "request_timeout_seconds": 20,
+  "request_retries": 4,
+  "rule": "Use completed UTC hours only. Never mix venues. Never treat missing data as zero. Live flow is confirmation/counter-evidence only and cannot bypass ALT2 ENTER gates."
+}
