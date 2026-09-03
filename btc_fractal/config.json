@@ -1,0 +1,38 @@
+{
+  "engine": "BTC_HISTORICAL_REGIME_OUTCOME_V0_1",
+  "schema_version": "0.1",
+  "start_date": "2011-01-01",
+  "feature_windows_days": [7, 30, 90, 180, 365],
+  "up_targets_pct": [30, 50, 100, 150, 200],
+  "down_targets_pct": [-20, -30, -50, -70],
+  "outcome_horizons_days": [30, 90, 180, 365],
+  "analog_top_k": 12,
+  "analog_min_separation_days": 45,
+  "min_complete_features": 8,
+  "min_analog_episodes_high_confidence": 8,
+  "min_distinct_years_high_confidence": 3,
+  "community_asset_metrics": [
+    "PriceUSD",
+    "CapMVRVCur",
+    "CapMVRVZ",
+    "CapRealUSD",
+    "SOPR",
+    "AdrActCnt",
+    "TxCnt",
+    "HashRate"
+  ],
+  "feature_group_weights": {
+    "price_state": 0.20,
+    "price_path": 0.35,
+    "onchain_state": 0.20,
+    "onchain_path": 0.15,
+    "macro": 0.10
+  },
+  "high_confidence_min_score": 70,
+  "notes": [
+    "No future data may be used in feature construction.",
+    "Candidate analogs must have the full requested forward horizon completed before the query date.",
+    "N/A is excluded and weights are renormalized; N/A is never zero-filled.",
+    "Derivatives and ETF layers remain separate until sufficient same-definition history exists."
+  ]
+}
