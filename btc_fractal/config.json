@@ -1,33 +1,11 @@
 {
-  "engine": "BTC_HISTORICAL_REGIME_OUTCOME_V0_3_CONFIRMATION",
-  "schema_version": "0.3",
+  "engine": "BTC_HISTORICAL_REGIME_OUTCOME_V0_3_1",
+  "schema_version": "0.3.1",
   "start_date": "2011-01-01",
-  "feature_windows_days": [
-    7,
-    30,
-    90,
-    180,
-    365
-  ],
-  "up_targets_pct": [
-    30,
-    50,
-    100,
-    150,
-    200
-  ],
-  "down_targets_pct": [
-    -20,
-    -30,
-    -50,
-    -70
-  ],
-  "outcome_horizons_days": [
-    30,
-    90,
-    180,
-    365
-  ],
+  "feature_windows_days": [7, 30, 90, 180, 365],
+  "up_targets_pct": [30, 50, 100, 150, 200],
+  "down_targets_pct": [-20, -30, -50, -70],
+  "outcome_horizons_days": [30, 90, 180, 365],
   "analog_top_k": 12,
   "analog_min_separation_days": 21,
   "episode_reversal_pct": 0.2,
@@ -63,13 +41,22 @@
     "min_both_confirmed_cases": 10,
     "min_both_confirmed_accuracy_gain_pp": 6.0
   },
+  "confidence_calibration_acceptance": {
+    "min_high_cases": 10,
+    "min_medium_cases": 10,
+    "min_high_accuracy_gain_pp": 5.0,
+    "max_high_coverage_pct": 50.0,
+    "monotonic_tolerance_pp": 2.0
+  },
   "notes": [
     "Price-only is the directional core after V0.2 blended-model rejection.",
     "On-chain and macro are confirmation/conflict layers only and cannot change the base direction.",
+    "V0.3.1 requires confidence calibration: HIGH cannot cover the whole sample and must outperform overall OOS accuracy.",
+    "Consensus below 75% cannot be labeled HIGH.",
     "No future data may be used in feature construction or episode assignment.",
     "Only one analog may represent a point-in-time-defined swing episode.",
     "N/A is excluded and weights are renormalized; N/A is never zero-filled.",
     "MVRVZ_DERIVED_PIT is a point-in-time derived proxy, not a vendor-reported official MVRV Z-Score.",
-    "Derivatives and ETF confirmation layers remain blocked until this confirmation architecture proves useful out of sample."
+    "Derivatives and ETF confirmation layers remain blocked until V0.3.1 master_readiness passes."
   ]
 }
