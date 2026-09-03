@@ -1,0 +1,54 @@
+name: TEST MARKET Data Vault Official V1.1
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - market-data-vault-v1
+    paths:
+      - 'market_vault/collector_official.py'
+      - 'market_vault/config.json'
+      - '.github/workflows/market_data_vault_official_validation.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: market-data-vault-v1
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r market_vault/requirements.txt
+      - name: Syntax + self test
+        run: |
+          python -m py_compile market_vault/collector_official.py
+          python market_vault/collector_official.py --mode self-test
+      - name: Collect official/keyless snapshot
+        run: python market_vault/collector_official.py --mode collect
+      - name: Validate official coverage
+        run: python market_vault/collector_official.py --mode validate
+      - name: Show compact result
+        run: |
+          cat market_vault/state/vault_state.json
+          python - <<'PY'
+          import json
+          p=json.load(open('market_vault/output/latest_summary.json'))
+          for m in p.get('metrics',[]):
+              print(m['metric'], m['value'], m['source'], m['source_observation_time'])
+          PY
+      - name: Save test snapshot
+        run: |
+          git config user.name "market-data-vault-official-test-bot"
+          git config user.email "market-data-vault-official-test-bot@users.noreply.github.com"
+          git add market_vault/data market_vault/output market_vault/state
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "test: MARKET data vault official snapshot"
+          git pull --rebase origin market-data-vault-v1
+          git push origin HEAD:market-data-vault-v1
