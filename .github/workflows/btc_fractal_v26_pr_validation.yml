@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: btc-fractal-v26-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -21,13 +25,16 @@ jobs:
       - name: Install
         run: pip install pandas numpy requests
       - name: Compile
-        run: python -m py_compile btc_fractal/run_v26_fractal.py
+        run: |
+          python -m py_compile btc_fractal/run_v26_fractal.py
+          python -m py_compile btc_fractal/run_v26_fast.py
       - name: Build and validate
-        run: python btc_fractal/run_v26_fractal.py --mode all
+        run: python btc_fractal/run_v26_fast.py --mode all
       - name: Show summaries
         run: |
           cat btc_fractal/output/build_meta.json
           cat btc_fractal/output/current_fractal.json
+          cat btc_fractal/output/current_price_only.json
           cat btc_fractal/output/walk_forward_summary.json
       - name: Upload validation artifact
         uses: actions/upload-artifact@v4
