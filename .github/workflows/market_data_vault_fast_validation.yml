@@ -1,0 +1,46 @@
+name: TEST MARKET Data Vault V1 Fast
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - market-data-vault-v1
+    paths:
+      - 'market_vault/collector_fast.py'
+      - '.github/workflows/market_data_vault_fast_validation.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: market-data-vault-v1
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r market_vault/requirements.txt
+      - name: Syntax + self test
+        run: |
+          python -m py_compile market_vault/collector.py market_vault/collector_fast.py
+          cd market_vault && python collector_fast.py --self-test
+      - name: Collect parallel snapshot
+        run: cd market_vault && python collector_fast.py
+      - name: Validate output
+        run: cd market_vault && python collector_fast.py --validate
+      - name: Show state
+        run: cat market_vault/state/vault_state.json
+      - name: Save test snapshot
+        run: |
+          git config user.name "market-data-vault-fast-test-bot"
+          git config user.email "market-data-vault-fast-test-bot@users.noreply.github.com"
+          git add market_vault/data market_vault/output market_vault/state
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "test: MARKET data vault fast snapshot"
+          git pull --rebase origin market-data-vault-v1
+          git push origin HEAD:market-data-vault-v1
