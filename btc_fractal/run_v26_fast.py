@@ -6,6 +6,61 @@ import pandas as pd
 import run_v26_fractal as core
 
 
+def build_event_registry_fast(price: pd.Series, cfg: dict) -> pd.DataFrame:
+    """Vectorized forward-path matrix for all first-passage targets and MFE/MAE horizons."""
+    price = price.dropna().astype(float)
+    arr = price.to_numpy(dtype=float)
+    idx = price.index
+    n = len(arr)
+    max_h = int(max(cfg["outcome_horizons_days"]))
+    usable_n = max(0, n - max_h)
+    if usable_n <= 0:
+        return pd.DataFrame()
+
+    base = arr[:usable_n]
+    future_ret = np.full((usable_n, max_h), np.nan, dtype=float)
+    for d in range(1, max_h + 1):
+        future_ret[:, d - 1] = arr[d:d + usable_n] / base - 1.0
+
+    out: dict[str, object] = {
+        "time": idx[:usable_n],
+        "anchor_price": base,
+    }
+    targets = [int(x) for x in cfg["up_targets_pct"]] + [int(x) for x in cfg["down_targets_pct"]]
+
+    def first_days(mask: np.ndarray) -> np.ndarray:
+        any_hit = mask.any(axis=1)
+        first = np.argmax(mask, axis=1).astype(float) + 1.0
+        first[~any_hit] = np.nan
+        return first
+
+    cache: dict[tuple[int, int], np.ndarray] = {}
+    for h in [int(x) for x in cfg["outcome_horizons_days"]]:
+        block = future_ret[:, :h]
+        out[f"mfe_{h}d"] = np.nanmax(block, axis=1)
+        out[f"mae_{h}d"] = np.nanmin(block, axis=1)
+        for t in targets:
+            mask = block >= t / 100.0 if t > 0 else block <= t / 100.0
+            days = first_days(mask)
+            cache[(t, h)] = days
+            key = f"hit_{'up' if t > 0 else 'dn'}{abs(t)}_{h}d"
+            out[key] = days
+
+    up30 = cache.get((30, 365))
+    dn20 = cache.get((-20, 365))
+    fp = np.full(usable_n, "NONE", dtype=object)
+    if up30 is not None and dn20 is not None:
+        up_ok = np.isfinite(up30); dn_ok = np.isfinite(dn20)
+        fp[up_ok & ~dn_ok] = "UP30_FIRST"
+        fp[dn_ok & ~up_ok] = "DN20_FIRST"
+        both = up_ok & dn_ok
+        fp[both & (up30 < dn20)] = "UP30_FIRST"
+        fp[both & (dn20 < up30)] = "DN20_FIRST"
+        fp[both & (up30 == dn20)] = "SAME_DAY"
+    out["fp_up30_vs_dn20"] = fp
+    return pd.DataFrame(out).set_index("time")
+
+
 def similarity_scores_fast(features: pd.DataFrame, query_time: pd.Timestamp, cfg: dict, required_horizon: int = 365) -> pd.DataFrame:
     if query_time not in features.index:
         raise ValueError(f"query_time {query_time} missing")
@@ -49,6 +104,7 @@ def similarity_scores_fast(features: pd.DataFrame, query_time: pd.Timestamp, cfg
     return out.sort_values("similarity", ascending=False)
 
 
+core.build_event_registry = build_event_registry_fast
 core.similarity_scores = similarity_scores_fast
 
 if __name__ == "__main__":
