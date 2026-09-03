@@ -1,0 +1,40 @@
+name: BTC Fractal V2.6 PR Validation
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'btc_fractal/**'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install
+        run: pip install pandas numpy requests
+      - name: Compile
+        run: python -m py_compile btc_fractal/run_v26_fractal.py
+      - name: Build and validate
+        run: python btc_fractal/run_v26_fractal.py --mode all
+      - name: Show summaries
+        run: |
+          cat btc_fractal/output/build_meta.json
+          cat btc_fractal/output/current_fractal.json
+          cat btc_fractal/output/walk_forward_summary.json
+      - name: Upload validation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-fractal-v26-validation
+          path: |
+            btc_fractal/output/*.json
+            btc_fractal/output/*.csv
+            btc_fractal/data/event_registry.csv
+          retention-days: 14
