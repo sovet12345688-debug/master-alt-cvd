@@ -1,0 +1,70 @@
+name: TEST MARKET Data Vault V1
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - market-data-vault-v1
+    paths:
+      - 'market_vault/**'
+      - '.github/workflows/market_data_vault_validation.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: test-market-data-vault-v1
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout test branch
+        uses: actions/checkout@v4
+        with:
+          ref: market-data-vault-v1
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install
+        run: pip install -r market_vault/requirements.txt
+
+      - name: Syntax + self test
+        run: |
+          python -m py_compile market_vault/collector.py
+          python market_vault/collector.py --mode self-test
+
+      - name: Collect live market history snapshot
+        run: python market_vault/collector.py --mode collect
+
+      - name: Validate output
+        run: python market_vault/collector.py --mode validate
+
+      - name: Show compact state
+        run: |
+          cat market_vault/state/vault_state.json
+          python - <<'PY'
+          import json
+          p=json.load(open('market_vault/output/latest_summary.json'))
+          for m in p.get('metrics',[]):
+              print(m['metric'], m['value'], m['source'], 'prev=',bool(m.get('vs_prior_snapshot')), '24h=',bool(m.get('vs_24h')), '7d=',bool(m.get('vs_7d')))
+          PY
+
+      - name: Save validation snapshot
+        run: |
+          git config user.name "market-data-vault-test-bot"
+          git config user.email "market-data-vault-test-bot@users.noreply.github.com"
+          git add market_vault/data market_vault/output market_vault/state
+          if git diff --cached --quiet; then
+            echo "No generated changes"
+          else
+            git commit -m "test: MARKET data vault snapshot"
+            git pull --rebase origin market-data-vault-v1
+            git push origin HEAD:market-data-vault-v1
+          fi
