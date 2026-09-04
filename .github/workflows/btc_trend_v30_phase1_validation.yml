@@ -4,7 +4,8 @@ on:
   push:
     branches: [btc-trend-v30-build]
     paths:
-      - 'btc_trend_v30/**'
+      - 'btc_trend_v30/run_phase1_origin_chart.py'
+      - 'btc_trend_v30/run_phase1_origin_chart_v02.py'
       - '.github/workflows/btc_trend_v30_phase1_validation.yml'
   workflow_dispatch:
 
