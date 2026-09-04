@@ -15,7 +15,7 @@ concurrency:
 jobs:
   collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
@@ -35,14 +35,21 @@ jobs:
       - name: Collect live derivatives OI and funding
         run: python derivatives/collector.py
 
+      - name: Collect Bitget CVD taker liquidation and basis
+        run: python derivatives/microstructure_collector.py
+
       - name: Validate collection
         run: |
           python - <<'PY'
           import json, sys
-          s=json.load(open('derivatives/state/collector_state.json'))
-          print(s)
-          if s.get('ok_count', 0) < 1:
+          d=json.load(open('derivatives/state/collector_state.json'))
+          m=json.load(open('derivatives/state/microstructure_state.json'))
+          print('derivatives', d)
+          print('microstructure', m)
+          if d.get('ok_count', 0) < 1:
               sys.exit('No successful derivatives snapshots')
+          if (m.get('ok_count', 0) + m.get('partial_count', 0)) < 1:
+              sys.exit('No usable microstructure snapshots')
           PY
 
       - name: Commit updated data
