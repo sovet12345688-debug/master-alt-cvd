@@ -80,6 +80,12 @@ def write_json(path: pathlib.Path, obj: Any) -> None:
     tmp.replace(path)
 
 
+def file_sha(path: pathlib.Path) -> str | None:
+    if not path.exists():
+        return None
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
 def validate_signal(raw: dict[str, Any], now: dt.datetime | None = None) -> dict[str, Any]:
     c = config()
     required = ["signal_id", "observed_at_utc", "source_master", "source_version", "symbol", "direction", "observed_price", "signal_label"]
@@ -151,12 +157,14 @@ def ingest() -> dict[str, int]:
             payload = json.loads(path.read_text())
             items = payload if isinstance(payload, list) else [payload]
             new_rows = []
+            pending_ids = set()
             for item in items:
                 sig = validate_signal(item)
-                if sig["signal_id"] in ids:
+                if sig["signal_id"] in ids or sig["signal_id"] in pending_ids:
                     raise ValueError(f"duplicate signal_id {sig['signal_id']}")
-                ids.add(sig["signal_id"])
+                pending_ids.add(sig["signal_id"])
                 new_rows.append(sig)
+            ids.update(pending_ids)
             rows.extend(new_rows)
             accepted += len(new_rows)
             path.unlink()
@@ -169,14 +177,14 @@ def ingest() -> dict[str, int]:
     return {"accepted": accepted, "rejected_files": rejected}
 
 
-def fetch_klines(symbol: str, start: dt.datetime, end: dt.datetime) -> list[list[Any]]:
+def fetch_klines(symbol: str, start: dt.datetime, end: dt.datetime, session_factory=requests.Session) -> list[list[Any]]:
     """Fetch fully post-signal 5m candles with pagination; exclude the first partial candle."""
     interval_ms = 5 * 60 * 1000
     start_ms = int(start.timestamp() * 1000)
     end_ms = int(end.timestamp() * 1000)
     cursor = ((start_ms + interval_ms - 1) // interval_ms) * interval_ms
     rows: list[list[Any]] = []
-    session = requests.Session()
+    session = session_factory()
     while cursor < end_ms:
         r = session.get(BINANCE_KLINES, params={"symbol": symbol, "interval": "5m", "startTime": cursor, "endTime": end_ms - 1, "limit": 1000}, timeout=20)
         r.raise_for_status()
@@ -220,7 +228,7 @@ def evaluate(now: dt.datetime | None = None, fetcher=fetch_klines) -> dict[str, 
     now = now or now_utc()
     signals = read_jsonl(SIGNALS)
     prior = {r["signal_id"]: r for r in read_jsonl(OUTCOMES)}
-    new_horizons = 0
+    new_horizons = errors = 0
     for s in signals:
         t0 = parse_ts(s["observed_at_utc"])
         rec = prior.get(s["signal_id"], {
@@ -236,7 +244,16 @@ def evaluate(now: dt.datetime | None = None, fetcher=fetch_klines) -> dict[str, 
             if now >= end and rec["horizons"].get(f"{h}H", {}).get("status") != "MATURED":
                 mature.append((h, end))
         if mature:
-            candles = fetcher(s["symbol"], t0, max(end for _, end in mature))
+            try:
+                candles = fetcher(s["symbol"], t0, max(end for _, end in mature))
+                if not candles:
+                    raise RuntimeError("no market-data candles returned")
+                rec.pop("data_unavailable", None)
+            except Exception as e:
+                rec["data_unavailable"] = {"source": c["price_evaluation_source"], "error_type": type(e).__name__, "message": str(e)[:240]}
+                errors += 1
+                prior[s["signal_id"]] = rec
+                continue
             for h, end in mature:
                 end_ms = int(end.timestamp() * 1000)
                 sub = [x for x in candles if int(x[0]) < end_ms and int(x[6]) < end_ms]
@@ -246,10 +263,9 @@ def evaluate(now: dt.datetime | None = None, fetcher=fetch_klines) -> dict[str, 
                     **outcome_metrics(s["direction"], float(s["observed_price"]), sub)
                 }
                 new_horizons += 1
-            rec["last_evaluated_at_utc"] = iso_utc(now)
         prior[s["signal_id"]] = rec
     write_jsonl(OUTCOMES, [prior[k] for k in sorted(prior)])
-    return {"signals": len(signals), "newly_evaluated_horizons": new_horizons}
+    return {"signals": len(signals), "newly_evaluated_horizons": new_horizons, "data_unavailable_signals": errors}
 
 
 def score_band(v: float, c: dict[str, Any]) -> str | None:
@@ -302,6 +318,7 @@ def build_summary(now: dt.datetime | None = None) -> dict[str, Any]:
     summary = {
         "engine": c["engine"], "schema_version": c["schema_version"], "generated_at_utc": iso_utc(now),
         "signal_count": len(signals), "outcome_record_count": len(outcomes),
+        "data_unavailable_count": sum(1 for r in outcomes if r.get("data_unavailable")),
         "matured_counts": {h: sum(1 for r in outcomes if r.get("horizons", {}).get(h, {}).get("status") == "MATURED") for h in horizons},
         "grouped_calibration": {name: {h: aggregate(rows, h) for h in horizons} for name, rows in sorted(groups.items())},
         "calibration_policy": {"auto_master_tuning": False, "recommendations_enabled": False, "min_group_n_for_rate": c["min_group_n_for_rate"], "note": "V0.1 reports observed outcomes only."},
@@ -315,7 +332,7 @@ def write_state(ingest_stats: dict[str, int] | None = None, eval_stats: dict[str
     signals, outcomes = read_jsonl(SIGNALS), read_jsonl(OUTCOMES)
     ids = [r.get("signal_id") for r in signals]
     state = {
-        "engine": c["engine"], "schema_version": c["schema_version"], "last_run_utc": iso_utc(now_utc()),
+        "engine": c["engine"], "schema_version": c["schema_version"], "last_material_run_utc": iso_utc(now_utc()),
         "signal_count": len(signals), "outcome_record_count": len(outcomes), "duplicate_signal_ids": len(ids) - len(set(ids)),
         "ingest": ingest_stats or {}, "evaluation": eval_stats or {},
         "guards": {"append_only_signal_policy": "PASS", "historical_backfill": "BLOCKED", "future_signal_timestamp": "BLOCKED", "na_zero_fill": "BLOCKED", "auto_master_tuning": "BLOCKED"},
@@ -325,11 +342,15 @@ def write_state(ingest_stats: dict[str, int] | None = None, eval_stats: dict[str
 
 
 def run() -> None:
+    before = {"signals": file_sha(SIGNALS), "outcomes": file_sha(OUTCOMES)}
     s = ingest()
     e = evaluate()
-    build_summary()
-    write_state(s, e)
-    print(json.dumps({"ingest": s, "evaluate": e}, indent=2))
+    after = {"signals": file_sha(SIGNALS), "outcomes": file_sha(OUTCOMES)}
+    material = before != after or s["rejected_files"] > 0
+    if material:
+        build_summary()
+        write_state(s, e)
+    print(json.dumps({"ingest": s, "evaluate": e, "material_change": material}, indent=2))
 
 
 def main() -> None:
