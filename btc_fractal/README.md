@@ -1,80 +1,95 @@
-# BTC Historical Regime & Outcome Engine V0.2
+# BTC Historical Regime & Outcome Engine V0.3.2
 
-Purpose: build and validate the independent historical-memory engine proposed for MASTER BTC TREND V2.6 **without changing MASTER BTC TREND execution gates, scores, schedule, or live plan**.
+Purpose: build and validate the independent historical-memory engine proposed for MASTER BTC TREND V2.6 **without changing MASTER BTC TREND scores, entry gates, schedule, or live plan**.
 
-## V0.2 validation order
+## Current status
 
-1. Rebuild the confidence engine so mixed 8:4-style historical outcomes cannot be labeled HIGH confidence.
-2. Replace simple date spacing with point-in-time swing Episode diversification so one cycle cannot fill the analog list with nearby dates.
-3. Expand free on-chain inputs where mathematically defensible. `CapMrktCurUSD` + `CapMVRVCur` are used to derive realized-cap history when available; `MVRVZ_DERIVED_PIT` is explicitly a point-in-time proxy, not a vendor-reported official MVRV Z-Score.
-4. Run domain-removal stability tests for price, on-chain, and macro inputs.
-5. Re-run expanding walk-forward validation against the same price-only baseline.
-6. Build modern-market derivatives and institutional ETF layers only if the full-history complex model passes the locked out-of-sample acceptance gate.
+- V0.1: technical PASS, statistical FAIL.
+- V0.2: confidence and independent-analog fixes worked, but blended price/on-chain/macro model still failed to beat price-only.
+- V0.3: price-core + on-chain/macro confirmation architecture improved apparent accuracy, but confidence degenerated and labeled every walk-forward row HIGH.
+- V0.3.1: fixed the confidence degeneration and exposed the deeper problem: price-core behaved almost like an always-UP classifier and on-chain/macro confirmation did not add reliable OOS utility.
+- V0.3.2: diagnostic repair candidate. It debiases the price-core vote, validates on independent test episodes, adds a naive majority benchmark, and only allows on-chain/macro to rerank a price-similar pool.
 
-## What the engine does
+No version is integrated into MASTER BTC TREND. PR remains pre-integration research only.
 
-- Pulls BTC daily price + community-accessible Coin Metrics on-chain metrics.
-- Pulls official U.S. Treasury 2Y/10Y/30Y and 10Y real yields where available.
-- Builds daily point-in-time-safe features using only information available up to each anchor date.
-- Builds a full Event Registry for +30/+50/+100/+150/+200% and -20/-30/-50/-70% targets over 30/90/180/365 days.
-- Computes first-passage direction (`+30% first` vs `-20% first`).
-- Finds historical analogs with one analog per point-in-time-defined swing Episode.
-- Separates similarity, outcome, and confidence.
-- Runs expanding walk-forward validation.
-- Produces a price-only baseline for mandatory PASS/FAIL comparison.
-- Produces current and walk-forward ablation audits.
+## V0.3.1 failure causes
 
-## Confidence V0.2
+The V0.3.1 artifact showed four structural problems that raw accuracy hid:
 
-HIGH confidence is intentionally difficult. It requires all of the following, not merely a large analog count:
+1. Price-core predicted UP on almost all evaluable rows; balanced accuracy was near random and raw accuracy did not beat a naive always-UP benchmark.
+2. Monthly walk-forward anchors use 365-day first-passage outcomes, so adjacent validation rows have heavily overlapping future windows. They are useful diagnostics but not independent acceptance samples.
+3. Raw analog consensus was used as confidence even though the HIGH subset was not more accurate than the overall sample.
+4. On-chain/macro usability was based on standalone historical similarity confidence, not incremental utility conditional on a comparable price regime.
 
-- score >= 75
-- >=10 directional first-passage cases
-- >=5 distinct historical years
-- >=8 independent Episodes
-- majority share >=80%
-- conservative Wilson lower bound >=58%
+## V0.3.2 design
 
-A 66.7% majority such as 8 vs 4 is therefore not allowed to appear as HIGH confidence.
+### 1. Debiased price core
 
-## Episode rule
+- Price structure remains the directional core.
+- Historical analogs remain one-per-point-in-time Episode.
+- Analog evidence is similarity-weighted.
+- UP/DOWN evidence is adjusted using the point-in-time class prior computed from independent, fully-known historical Episodes only.
+- The prior correction is inverse-square-root rather than full inverse weighting to reduce instability.
+- If adjusted directional support is too close, the engine may `ABSTAIN` instead of forcing a direction.
 
-Episode assignment is point-in-time only. No future price path is used to retroactively relabel a historical date.
+### 2. Independent OOS acceptance
 
-- 20% reversal confirms a new opposite-direction Episode.
-- A 365-day maximum duration forces very long regimes to split.
-- Only one analog can represent an Episode in Top-N selection.
+Monthly walk-forward output is still stored, but acceptance is based on the **first predeclared walk-forward anchor in each point-in-time test Episode**. The validation summary must show:
 
-## Deliberate limits
+- number of independent test Episodes
+- directional coverage
+- raw accuracy
+- balanced accuracy
+- UP and DOWN recall separately
+- prediction mix
+- old price-core comparison
+- naive point-in-time training-majority benchmark
 
-- Historical case ratios are **not probabilities** until calibration succeeds.
-- GitHub Bitget OI/Funding is not forced into 2011+ history.
-- Spot BTC ETF flow is not forced into pre-2024 history.
-- Missing metrics are excluded and weights are renormalized; missing is never zero.
-- `MVRVZ_DERIVED_PIT` is a transparent proxy and must never be presented as an official vendor MVRV Z-Score.
+A model that wins only by predicting UP most of the time cannot pass.
 
-## Outputs
+### 3. Confidence calibration
 
-- `data/historical_raw_daily.csv`
-- `data/historical_features_daily.csv`
-- `data/event_registry.csv`
-- `output/build_meta.json`
-- `output/current_fractal.json`
-- `output/current_price_only.json`
-- `output/ablation_current.json`
-- `output/ablation_walk_forward_summary.json`
-- `output/walk_forward.csv`
-- `output/walk_forward_price_only.csv`
-- `output/walk_forward_summary.json`
-- `output/model_decision.json`
+HIGH confidence is not accepted merely because the analogs agree. On independent OOS Episode rows, HIGH must have enough cases, limited coverage, and materially outperform the model's own overall accuracy. LOW/MEDIUM/HIGH also must not be materially inverted.
 
-## Acceptance logic before MASTER integration
+### 4. Price-conditional non-price confirmation
 
-The complex model passes only if all required gates are met:
+On-chain and macro are no longer allowed to search the full historical universe independently and call the result confirmation. V0.3.2 first creates a wider pool of price-similar independent Episodes; on-chain or macro may only rerank within that pool.
 
-- overall OOS accuracy >= price-only +1.0 percentage point
-- enough HIGH-confidence OOS cases exist
-- HIGH-confidence accuracy >= price-only overall accuracy +2.0 percentage points
-- max on-chain/macro removal direction-flip rate <=10%
+They still cannot change the price-core direction. They can only confirm, contradict, or abstain. Each domain must prove incremental OOS utility before it can be trusted.
 
-If it does not pass, the correct architecture is **price core + on-chain/macro confirmation**, and modern derivatives/ETF layers are not built yet.
+## Locked V0.3.2 core acceptance
+
+The candidate core must satisfy all gates on independent test Episodes:
+
+- at least 30 independent Episodes
+- at least 60% directional coverage
+- balanced accuracy at least 55%
+- balanced-accuracy gain over old price core at least +3pp
+- raw accuracy no worse than naive point-in-time majority by more than 2pp
+- both UP and DOWN recall at least 35%
+- minority prediction share at least 10%
+
+Confidence and non-price confirmation have separate acceptance gates. Layer B derivatives and Layer C ETF/institutional work remain blocked until the required validation gates pass.
+
+## Point-in-time / leakage rules
+
+- Only data available at the historical timestamp may enter features.
+- Candidate analog outcomes must be fully known before the query timestamp.
+- Class priors use fully-known historical Episodes only.
+- Episode assignment is point-in-time and uses no future reversal information.
+- N/A is excluded and never converted to zero.
+- `MVRVZ_DERIVED_PIT` is a transparent point-in-time proxy, not a vendor-reported official MVRV Z-Score.
+- Historical case/support shares are not calibrated probabilities.
+
+## V0.3.2 outputs
+
+- `output/v031_failure_analysis.json`
+- `output/current_v032.json`
+- `output/walk_forward_v032.csv`
+- `output/episode_independent_v032.csv`
+- `output/v032_validation_summary.json`
+- legacy V0.3.1 comparison outputs are retained for audit
+
+## Integration rule
+
+`master_readiness=PASS` is necessary but still not sufficient for live integration. Even after statistical validation, MASTER BTC TREND remains unchanged until the user explicitly approves integration. PR #7 must not be merged merely because CI succeeds technically.
