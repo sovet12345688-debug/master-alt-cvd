@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install
-        run: pip install pandas numpy requests
+        run: pip install pandas numpy requests lxml
       - name: Compile
         run: |
           python -m py_compile btc_fractal/run_v26_fractal.py
@@ -37,22 +37,27 @@ jobs:
           python -m py_compile btc_fractal/run_v26_v040.py
           python -m py_compile btc_fractal/run_v26_v041.py
           python -m py_compile btc_fractal/run_v26_v042.py
-      - name: Build and validate V0.4.2 Layer B same-era
+          python -m py_compile btc_fractal/run_v26_v050.py
+      - name: Revalidate V0.4.2 Layer B same-era
         run: python btc_fractal/run_v26_v042.py
+      - name: Build and validate V0.5.0 Layer C ETF
+        run: python btc_fractal/run_v26_v050.py
       - name: Show summaries
         run: |
           cat btc_fractal/output/build_meta.json
           cat btc_fractal/output/current_v035.json
-          cat btc_fractal/output/current_v042_layer_b.json
-          cat btc_fractal/output/v035_validation_summary.json
           cat btc_fractal/output/v042_validation_summary.json
+          cat btc_fractal/output/current_v050_layer_c.json
+          cat btc_fractal/output/v050_validation_summary.json
       - name: Upload validation artifact
         uses: actions/upload-artifact@v4
         with:
-          name: btc-fractal-v042-layer-b-same-era-validation
+          name: btc-fractal-v050-layer-c-etf-validation
           path: |
             btc_fractal/output/*.json
             btc_fractal/output/*.csv
             btc_fractal/data/event_registry.csv
             btc_fractal/data/layer_b_binance_derivatives_daily.csv
+            btc_fractal/data/layer_c_farside_btc_etf_daily.csv
+            btc_fractal/data/layer_c_farside_btc_etf_features.csv
           retention-days: 14
