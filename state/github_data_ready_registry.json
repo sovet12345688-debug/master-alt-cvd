@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "registry_name": "MONEY_GITHUB_DATA_READY_REGISTRY",
   "purpose": "Persistent state for A/B/C/D/E/F development readiness, version compatibility, final QA, integration history, and regression detection.",
-  "updated_utc": "2026-09-04T06:23:45Z",
+  "updated_utc": "2026-09-04T10:25:44Z",
   "write_policy": "STATE_CHANGE_ONLY",
   "master_auto_modify": false,
   "btc_trend_auto_modify": false,
@@ -82,21 +82,22 @@
       "latest_compatible_version": "MASTER_MARKET_DATA_VAULT_V1/schema1.1/collector1.2-official-keyless",
       "completion_pct": 92,
       "status": "DEVELOPMENT/ACCUMULATING",
-      "final_qa": "WAITING_FOR_ACTUAL_24H_COMPARISONS",
+      "final_qa": "ACTUAL_24H_PASS_PENDING_MISSING_DUPLICATE_WORKFLOW_QA",
       "master_targets": ["MARKET_CURRENT"],
       "master_link": "NOT_INTEGRATED_UNLESS_ACTUAL_READ_ONLY_CLAUSE_VERIFIED",
       "expected_value": 9,
-      "next_action": "Continue same-source history until at least five mandatory metrics have actual 24H comparisons, then run final source-lock/duplicate/workflow QA.",
+      "next_action": "Audit the observed recent hourly gap plus duplicate/workflow health; do not promote to DEV95 until abnormal-missing QA passes.",
       "regression": "NONE_KNOWN",
       "last_dev100_compatible_contract": null,
       "last_alerted_dev100_version": null,
       "evidence": {
-        "snapshot_hour_utc": "2026-09-04T03:00:00Z",
+        "snapshot_hour_utc": "2026-09-04T09:00:00Z",
         "mandatory_coverage": "6/6 = 100%",
         "failures": 0,
-        "history_rows": 280,
+        "history_rows": 378,
         "same_source_rule": "present",
-        "mandatory_24h_comparisons": "not yet populated in latest summary"
+        "mandatory_24h_comparisons": "6/6 mandatory populated in latest summary",
+        "remaining_blocker": "recent hourly missing/duplicate/workflow QA"
       }
     },
     "E": {
