@@ -14,7 +14,8 @@ No MASTER integration is implied by this branch.
 - Required observation timestamp and observed price.
 - Outcome horizons: +4H, +24H, +72H, +7D.
 - Direction-aware return.
-- MFE / MAE from Binance Spot 1H klines.
+- MFE / MAE from Binance public 5-minute klines with pagination through the 7-day horizon.
+- The first partial 5-minute candle after an off-grid signal time is excluded to avoid pre-signal leakage.
 - No future data may enter the stored signal snapshot.
 - N/A stays null; never converted to zero.
 - Aggregated calibration summaries by source MASTER, symbol, direction, signal label, score bands, and optional evidence tags.
@@ -44,7 +45,7 @@ Optional fields:
 2. Retroactive reconstruction of missing MASTER signals is prohibited.
 3. Accepted signal payload is immutable.
 4. Future outcomes are populated only after each horizon matures.
-5. Binance price data is evaluation data only and cannot modify the original signal.
+5. Market price data is evaluation data only and cannot modify the original signal.
 6. N/A is never converted to zero.
 7. Aggregated statistics always expose sample count.
 8. This engine never auto-tunes or rewrites MASTER weights.
