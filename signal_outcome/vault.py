@@ -22,7 +22,7 @@ OUTCOMES = DATA / "outcomes.jsonl"
 SUMMARY = OUTPUT / "latest_summary.json"
 VAULT_STATE = STATE / "vault_state.json"
 UTC = dt.timezone.utc
-BINANCE_KLINES = "https://api.binance.com/api/v3/klines"
+BINANCE_KLINES = "https://data-api.binance.vision/api/v3/klines"
 
 
 def now_utc() -> dt.datetime:
@@ -109,17 +109,18 @@ def validate_signal(raw: dict[str, Any], now: dt.datetime | None = None) -> dict
     if not isinstance(scores, dict):
         raise ValueError("scores must be object")
     clean_scores = {}
-    for k, v in scores.items():
-        if v is None:
+    for k, value in scores.items():
+        if value is None:
             clean_scores[str(k)] = None
-        elif isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(float(v)):
+        elif isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(float(value)):
             raise ValueError(f"score {k} must be numeric or null")
         else:
-            clean_scores[str(k)] = float(v)
+            clean_scores[str(k)] = float(value)
     out["scores"] = clean_scores
-    if not isinstance(out.get("evidence") or {}, dict):
+    evidence = out.get("evidence") or {}
+    if not isinstance(evidence, dict):
         raise ValueError("evidence must be object")
-    out["evidence"] = out.get("evidence") or {}
+    out["evidence"] = evidence
     tags = out.get("tags") or []
     if not isinstance(tags, list) or any(not isinstance(x, str) for x in tags):
         raise ValueError("tags must be string array")
@@ -158,9 +159,32 @@ def ingest() -> dict[str, int]:
 
 
 def fetch_klines(symbol: str, start: dt.datetime, end: dt.datetime) -> list[list[Any]]:
-    r = requests.get(BINANCE_KLINES, params={"symbol": symbol, "interval": "1h", "startTime": int(start.timestamp() * 1000), "endTime": int(end.timestamp() * 1000), "limit": 1000}, timeout=20)
-    r.raise_for_status()
-    return r.json()
+    """Fetch fully post-signal 5m candles with pagination. The first partial candle is excluded."""
+    interval_ms = 5 * 60 * 1000
+    start_ms = int(start.timestamp() * 1000)
+    end_ms = int(end.timestamp() * 1000)
+    first_open = ((start_ms + interval_ms - 1) // interval_ms) * interval_ms
+    cursor = first_open
+    rows: list[list[Any]] = []
+    session = requests.Session()
+    while cursor < end_ms:
+        r = session.get(
+            BINANCE_KLINES,
+            params={"symbol": symbol, "interval": "5m", "startTime": cursor, "endTime": end_ms - 1, "limit": 1000},
+            timeout=20,
+        )
+        r.raise_for_status()
+        batch = r.json()
+        if not batch:
+            break
+        rows.extend(batch)
+        nxt = int(batch[-1][0]) + interval_ms
+        if nxt <= cursor:
+            raise RuntimeError("non-advancing Binance kline pagination")
+        cursor = nxt
+        if len(batch) < 1000:
+            break
+    return rows
 
 
 def outcome_metrics(direction: str, p0: float, candles: list[list[Any]]) -> dict[str, float | None]:
@@ -193,14 +217,28 @@ def evaluate(now: dt.datetime | None = None, fetcher=fetch_klines) -> dict[str, 
     new_horizons = 0
     for s in signals:
         t0 = parse_ts(s["observed_at_utc"])
-        rec = prior.get(s["signal_id"], {"signal_id": s["signal_id"], "symbol": s["symbol"], "source_master": s["source_master"], "source_version": s["source_version"], "direction": s["direction"], "signal_label": s["signal_label"], "observed_at_utc": s["observed_at_utc"], "observed_price": s["observed_price"], "scores": s.get("scores", {}), "evidence": s.get("evidence", {}), "tags": s.get("tags", []), "horizons": {}})
-        mature = [(int(h), t0 + dt.timedelta(hours=int(h))) for h in c["horizons_hours"] if now >= t0 + dt.timedelta(hours=int(h)) and rec["horizons"].get(f"{int(h)}H", {}).get("status") != "MATURED"]
+        rec = prior.get(s["signal_id"], {
+            "signal_id": s["signal_id"], "symbol": s["symbol"], "source_master": s["source_master"],
+            "source_version": s["source_version"], "direction": s["direction"], "signal_label": s["signal_label"],
+            "observed_at_utc": s["observed_at_utc"], "observed_price": s["observed_price"],
+            "scores": s.get("scores", {}), "evidence": s.get("evidence", {}), "tags": s.get("tags", []), "horizons": {}
+        })
+        mature = []
+        for h in c["horizons_hours"]:
+            h = int(h)
+            end = t0 + dt.timedelta(hours=h)
+            if now >= end and rec["horizons"].get(f"{h}H", {}).get("status") != "MATURED":
+                mature.append((h, end))
         if mature:
             candles = fetcher(s["symbol"], t0, max(end for _, end in mature))
             for h, end in mature:
                 end_ms = int(end.timestamp() * 1000)
-                sub = [x for x in candles if int(x[0]) < end_ms and int(x[6]) <= end_ms]
-                rec["horizons"][f"{h}H"] = {"status": "MATURED", "horizon_hours": h, "matured_at_utc": iso_utc(end), **outcome_metrics(s["direction"], float(s["observed_price"]), sub)}
+                sub = [x for x in candles if int(x[0]) < end_ms and int(x[6]) < end_ms]
+                rec["horizons"][f"{h}H"] = {
+                    "status": "MATURED", "horizon_hours": h, "matured_at_utc": iso_utc(end),
+                    "evaluation_interval": c.get("evaluation_interval", "5m"),
+                    **outcome_metrics(s["direction"], float(s["observed_price"]), sub)
+                }
                 new_horizons += 1
             rec["last_evaluated_at_utc"] = iso_utc(now)
         prior[s["signal_id"]] = rec
@@ -222,11 +260,19 @@ def aggregate(rows: list[dict[str, Any]], horizon: str) -> dict[str, Any]:
         if not h or h.get("status") != "MATURED" or h.get("direction_return_pct") is None:
             continue
         vals.append(float(h["direction_return_pct"]))
-        if h.get("mfe_pct") is not None: mfes.append(float(h["mfe_pct"]))
-        if h.get("mae_pct") is not None: maes.append(float(h["mae_pct"]))
+        if h.get("mfe_pct") is not None:
+            mfes.append(float(h["mfe_pct"]))
+        if h.get("mae_pct") is not None:
+            maes.append(float(h["mae_pct"]))
     if not vals:
         return {"n": 0, "positive_rate_pct": None, "avg_direction_return_pct": None, "avg_mfe_pct": None, "avg_mae_pct": None}
-    return {"n": len(vals), "positive_rate_pct": round(sum(v > 0 for v in vals) / len(vals) * 100, 2), "avg_direction_return_pct": round(sum(vals) / len(vals), 4), "avg_mfe_pct": round(sum(mfes) / len(mfes), 4) if mfes else None, "avg_mae_pct": round(sum(maes) / len(maes), 4) if maes else None}
+    return {
+        "n": len(vals),
+        "positive_rate_pct": round(sum(v > 0 for v in vals) / len(vals) * 100, 2),
+        "avg_direction_return_pct": round(sum(vals) / len(vals), 4),
+        "avg_mfe_pct": round(sum(mfes) / len(mfes), 4) if mfes else None,
+        "avg_mae_pct": round(sum(maes) / len(maes), 4) if maes else None,
+    }
 
 
 def build_summary(now: dt.datetime | None = None) -> dict[str, Any]:
@@ -236,37 +282,64 @@ def build_summary(now: dt.datetime | None = None) -> dict[str, Any]:
     signals, outcomes = read_jsonl(SIGNALS), read_jsonl(OUTCOMES)
     groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for r in outcomes:
-        groups[f"master::{r['source_master']}"] .append(r)
-        groups[f"symbol::{r['symbol']}"] .append(r)
-        groups[f"direction::{r['direction']}"] .append(r)
-        groups[f"label::{r['signal_label']}"] .append(r)
-        for tag in r.get("tags", []): groups[f"tag::{tag}"].append(r)
+        groups[f"master::{r['source_master']}"].append(r)
+        groups[f"symbol::{r['symbol']}"].append(r)
+        groups[f"direction::{r['direction']}"].append(r)
+        groups[f"label::{r['signal_label']}"].append(r)
+        for tag in r.get("tags", []):
+            groups[f"tag::{tag}"].append(r)
         for name, value in (r.get("scores") or {}).items():
             if value is not None:
-                b = score_band(float(value), c)
-                if b: groups[f"score::{name}::{b}"].append(r)
+                band = score_band(float(value), c)
+                if band:
+                    groups[f"score::{name}::{band}"].append(r)
     horizons = [f"{int(h)}H" for h in c["horizons_hours"]]
-    summary = {"engine": c["engine"], "schema_version": c["schema_version"], "generated_at_utc": iso_utc(now), "signal_count": len(signals), "outcome_record_count": len(outcomes), "matured_counts": {h: sum(1 for r in outcomes if r.get("horizons", {}).get(h, {}).get("status") == "MATURED") for h in horizons}, "grouped_calibration": {name: {h: aggregate(rows, h) for h in horizons} for name, rows in sorted(groups.items())}, "calibration_policy": {"auto_master_tuning": False, "recommendations_enabled": False, "min_group_n_for_rate": c["min_group_n_for_rate"], "note": "V0.1 reports observed outcomes only."}}
+    summary = {
+        "engine": c["engine"], "schema_version": c["schema_version"], "generated_at_utc": iso_utc(now),
+        "signal_count": len(signals), "outcome_record_count": len(outcomes),
+        "matured_counts": {h: sum(1 for r in outcomes if r.get("horizons", {}).get(h, {}).get("status") == "MATURED") for h in horizons},
+        "grouped_calibration": {name: {h: aggregate(rows, h) for h in horizons} for name, rows in sorted(groups.items())},
+        "calibration_policy": {"auto_master_tuning": False, "recommendations_enabled": False, "min_group_n_for_rate": c["min_group_n_for_rate"], "note": "V0.1 reports observed outcomes only."},
+    }
     write_json(SUMMARY, summary)
     return summary
 
 
 def write_state(ingest_stats: dict[str, int] | None = None, eval_stats: dict[str, int] | None = None) -> dict[str, Any]:
-    c = config(); signals = read_jsonl(SIGNALS); outcomes = read_jsonl(OUTCOMES); ids = [r.get("signal_id") for r in signals]
-    state = {"engine": c["engine"], "schema_version": c["schema_version"], "last_run_utc": iso_utc(now_utc()), "signal_count": len(signals), "outcome_record_count": len(outcomes), "duplicate_signal_ids": len(ids) - len(set(ids)), "ingest": ingest_stats or {}, "evaluation": eval_stats or {}, "guards": {"append_only_signal_policy": "PASS", "historical_backfill": "BLOCKED", "future_signal_timestamp": "BLOCKED", "na_zero_fill": "BLOCKED", "auto_master_tuning": "BLOCKED"}}
-    write_json(VAULT_STATE, state); return state
+    c = config()
+    signals, outcomes = read_jsonl(SIGNALS), read_jsonl(OUTCOMES)
+    ids = [r.get("signal_id") for r in signals]
+    state = {
+        "engine": c["engine"], "schema_version": c["schema_version"], "last_run_utc": iso_utc(now_utc()),
+        "signal_count": len(signals), "outcome_record_count": len(outcomes), "duplicate_signal_ids": len(ids) - len(set(ids)),
+        "ingest": ingest_stats or {}, "evaluation": eval_stats or {},
+        "guards": {"append_only_signal_policy": "PASS", "historical_backfill": "BLOCKED", "future_signal_timestamp": "BLOCKED", "na_zero_fill": "BLOCKED", "auto_master_tuning": "BLOCKED"},
+    }
+    write_json(VAULT_STATE, state)
+    return state
 
 
 def run() -> None:
-    s = ingest(); e = evaluate(); build_summary(); write_state(s, e); print(json.dumps({"ingest": s, "evaluate": e}, indent=2))
+    s = ingest()
+    e = evaluate()
+    build_summary()
+    write_state(s, e)
+    print(json.dumps({"ingest": s, "evaluate": e}, indent=2))
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(); ap.add_argument("command", choices=["ingest", "evaluate", "summary", "run"]); a = ap.parse_args()
-    if a.command == "ingest": print(json.dumps(ingest(), indent=2))
-    elif a.command == "evaluate": print(json.dumps(evaluate(), indent=2))
-    elif a.command == "summary": print(json.dumps(build_summary(), indent=2))
-    else: run()
+    ap = argparse.ArgumentParser()
+    ap.add_argument("command", choices=["ingest", "evaluate", "summary", "run"])
+    a = ap.parse_args()
+    if a.command == "ingest":
+        print(json.dumps(ingest(), indent=2))
+    elif a.command == "evaluate":
+        print(json.dumps(evaluate(), indent=2))
+    elif a.command == "summary":
+        print(json.dumps(build_summary(), indent=2))
+    else:
+        run()
 
 
-if __name__ == "__main__": main()
+if __name__ == "__main__":
+    main()
