@@ -3,6 +3,7 @@ from __future__ import annotations
 import csv
 import json
 import math
+import os
 import time
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -23,7 +24,9 @@ STATE_PATH = STATE_DIR / "microstructure_state.json"
 VENUE = "Bitget USDT Futures"
 SYMBOLS = ["BTCUSDT", "ETHUSDT"]
 TRADE_WINDOW_MINUTES = 60
-MAX_TRADE_PAGES = 60
+# BTC can exceed the old 60k-fill ceiling in a single hour. Keep this configurable,
+# but never mark a capped window FULL: fetch_taker_trades still returns PARTIAL_MAX_PAGES.
+MAX_TRADE_PAGES = max(60, int(os.environ.get("MAX_TRADE_PAGES", "240")))
 MAX_LIQ_PAGES = 50
 
 SESSION = requests.Session()
@@ -303,6 +306,7 @@ def save_latest(summary: list[dict[str, Any]], ended: datetime) -> None:
         "venue": VENUE,
         "generated_at_utc": iso(now_utc()),
         "window_minutes": TRADE_WINDOW_MINUTES,
+        "max_trade_pages": MAX_TRADE_PAGES,
         "rules": {
             "cvd": "Public futures fills; buy notional minus sell notional. Side is public trade/taker direction.",
             "basis": "(markPrice/indexPrice - 1) * 10000, same Bitget futures venue.",
@@ -357,6 +361,7 @@ def main() -> None:
         "last_run_utc": iso(now_utc()),
         "venue": VENUE,
         "symbols": SYMBOLS,
+        "max_trade_pages": MAX_TRADE_PAGES,
         "ok_count": sum(r["status"] == "OK" for r in summary),
         "partial_count": sum(r["status"] == "PARTIAL" for r in summary),
         "na_count": sum(r["status"] == "N/A" for r in summary),
