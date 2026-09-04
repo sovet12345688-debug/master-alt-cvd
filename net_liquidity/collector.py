@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+import time
 from datetime import datetime, timezone, timedelta
 from io import StringIO
 from pathlib import Path
@@ -20,7 +21,7 @@ STATE_PATH = STATE_DIR / "collector_state.json"
 MARKET_VAULT_PATH = ROOT / "market_vault" / "output" / "latest_summary.json"
 
 SESSION = requests.Session()
-SESSION.headers.update({"User-Agent": "MASTER-US-NET-LIQUIDITY/1.0"})
+SESSION.headers.update({"User-Agent": "MASTER-US-NET-LIQUIDITY/1.1"})
 
 
 def now_utc() -> datetime:
@@ -32,20 +33,41 @@ def iso(dt: datetime | None) -> str | None:
 
 
 def fetch_fred_latest(series_id: str) -> dict[str, Any]:
-    url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}"
-    r = SESSION.get(url, timeout=25)
-    r.raise_for_status()
-    rows = list(csv.DictReader(StringIO(r.text)))
-    for row in reversed(rows):
-        raw = row.get(series_id)
-        if raw not in (None, "", "."):
-            return {
-                "series_id": series_id,
-                "observation_date": row.get("DATE") or row.get("observation_date"),
-                "value": float(raw),
-                "source": "Federal Reserve Bank of St. Louis FRED",
-            }
-    raise RuntimeError(f"No valid observation for {series_id}")
+    """Fetch only a recent FRED CSV slice with bounded retries.
+
+    The prior implementation downloaded the full series and occasionally timed out in
+    GitHub Actions. A recent date window is sufficient because this collector needs
+    only the latest valid observation. No value is guessed if all attempts fail.
+    """
+    today = now_utc().date()
+    start = today - timedelta(days=45)
+    params = {"id": series_id, "cosd": start.isoformat(), "coed": today.isoformat()}
+    errors: list[str] = []
+    for attempt in range(1, 5):
+        try:
+            r = SESSION.get(
+                "https://fred.stlouisfed.org/graph/fredgraph.csv",
+                params=params,
+                timeout=(10, 60),
+            )
+            r.raise_for_status()
+            rows = list(csv.DictReader(StringIO(r.text)))
+            for row in reversed(rows):
+                raw = row.get(series_id)
+                if raw not in (None, "", "."):
+                    return {
+                        "series_id": series_id,
+                        "observation_date": row.get("DATE") or row.get("observation_date"),
+                        "value": float(raw),
+                        "source": "Federal Reserve Bank of St. Louis FRED",
+                        "retrieval_mode": "recent_range_csv",
+                    }
+            raise RuntimeError(f"No valid recent observation for {series_id}")
+        except Exception as e:
+            errors.append(f"attempt{attempt}:{type(e).__name__}:{str(e)[:150]}")
+            if attempt < 4:
+                time.sleep(2 ** (attempt - 1))
+    raise RuntimeError(" | ".join(errors))
 
 
 def load_tga_from_market_vault() -> dict[str, Any]:
@@ -115,19 +137,19 @@ def main() -> None:
     try:
         walcl = fetch_fred_latest("WALCL")
     except Exception as e:
-        errors.append(f"WALCL:{type(e).__name__}:{str(e)[:180]}")
+        errors.append(f"WALCL:{type(e).__name__}:{str(e)[:600]}")
     try:
         rrp = fetch_fred_latest("RRPONTSYD")
     except Exception as e:
-        errors.append(f"RRPONTSYD:{type(e).__name__}:{str(e)[:180]}")
+        errors.append(f"RRPONTSYD:{type(e).__name__}:{str(e)[:600]}")
     try:
         tga = load_tga_from_market_vault()
     except Exception as e:
-        errors.append(f"TGA:{type(e).__name__}:{str(e)[:180]}")
+        errors.append(f"TGA:{type(e).__name__}:{str(e)[:300]}")
 
     status = "OK" if walcl and rrp and tga else "N/A"
     net = None
-    components = {}
+    components: dict[str, float] = {}
     if status == "OK":
         # WALCL is USD millions; RRPONTSYD is USD billions; TGA vault is USD millions.
         walcl_usd = float(walcl["value"]) * 1_000_000.0
@@ -154,7 +176,7 @@ def main() -> None:
             return None
 
     payload = {
-        "engine": "MASTER_US_NET_LIQUIDITY_V1",
+        "engine": "MASTER_US_NET_LIQUIDITY_V1_1",
         "generated_at_utc": iso(retrieved),
         "status": status,
         "formula": "Fed Total Assets (WALCL) - Treasury General Account (TGA) - Overnight Reverse Repo (RRPONTSYD)",
