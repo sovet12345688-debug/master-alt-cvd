@@ -1,8 +1,8 @@
 {
-  "schema_version": "1.2",
+  "schema_version": "1.3",
   "master": "MASTER MARKET V1.2",
   "status": "FINAL_CUMULATIVE_LOCK",
-  "updated_kst": "2026-09-04T14:37:00+09:00",
+  "updated_kst": "2026-09-04T15:21:00+09:00",
   "purpose": "Machine-readable cumulative contract for MASTER MARKET. Existing required data, checks, and user-visible output blocks must survive future version upgrades unless the user explicitly orders removal.",
   "no_silent_omission": {
     "enabled": true,
@@ -37,14 +37,14 @@
   },
   "change_windows": {
     "locked_windows": ["1D", "3D", "7D"],
-    "column_order_rule": "For the four locked summary tables, show 1D then 3D then 7D. Existing 7D is preserved.",
+    "column_order_rule": "For the remaining locked summary tables, show 1D then 3D then 7D. Existing 7D is preserved.",
     "data_rule": "Use only actual stored values, actual cumulative flow, or same-source comparable observations. No interpolation or reconstruction. Missing windows remain visible as N/A.",
     "applies_to": [
       "SCREEN1_CORE_5_AXES",
       "SCREEN2_MACRO_TABLE",
-      "SCREEN4_INSTITUTION_WHALE_RETAIL_TABLE",
-      "SCREEN5_CORE_AXIS_TABLE"
-    ]
+      "SCREEN4_INSTITUTION_WHALE_RETAIL_TABLE"
+    ],
+    "screen5_exception": "SCREEN5 core-axis table was explicitly removed by user because it duplicated upstream decision content."
   },
   "schedule": {
     "timezone": "Asia/Seoul",
@@ -79,11 +79,46 @@
   },
   "required_output": {
     "screen_count": 5,
-    "screen1": ["market state","action environment","big-money leader #1","largest risk","5 core axes table columns: axis|current|prior delta|1D|3D|7D|positive/100","institution/whale/retail traffic lights","rotation","market breadth mini-line: total market cap/24H volume/BTC.D/ETH.D","prior change TOP3","7D improve/worsen TOP3"],
-    "screen2": ["table columns: item|current status traffic-light|current value|prior delta|1D|3D|7D|crypto positive score|easy interpretation","Liquidity Lead with 55/65/75","WTI+Brent detail","final crypto-positive summary"],
-    "screen3": ["BTC/ETH ETF 1D/3D/5D/20D","stablecoin supply/mint/burn/treasury/exchange","Crypto Money Inflow","ALT Money Inflow","fixed text: Stablecoin supply increase != actual buy"],
-    "screen4": ["BTC whales max10","ETH whales max10","institution vs whale vs retail table columns: subject|current|prior|1D|3D|7D|positive/100","derivatives subsection must read GitHub OI/Funding 1H/4H/24H when fresh","CVD/Taker/Basis/Depth/Volume visible as value or N/A"],
-    "screen5": ["core-axis table columns: axis|current|prior delta|1D delta|3D delta|7D delta|positive/100","mini-trends only with >=3 actual OFFICIAL points","rotation progress","money frontier","risk radar","final market verdict","Coinness/News TOP5 compact radar","economic calendar compact block","Sean Farrell compact view block score0","Stanley Druckenmiller compact view block score0"],
+    "screen1": [
+      "market state/action environment/big-money leader/largest risk",
+      "5 core axes table columns: axis|status|score|prior delta|1D|3D|7D",
+      "institution/whale/retail traffic lights",
+      "rotation",
+      "market breadth mini-line: total market cap/24H volume/BTC.D/ETH.D",
+      "prior change TOP3 and 7D improve/worsen TOP3",
+      "primary current-market judgement; final verdict not duplicated in screen5"
+    ],
+    "screen2": [
+      "table columns: item|current status traffic-light|current value|prior delta|1D|3D|7D|crypto positive score|easy interpretation",
+      "Liquidity Lead with 55/65/75",
+      "WTI+Brent detail",
+      "final crypto-positive summary"
+    ],
+    "screen3": [
+      "BTC/ETH ETF 1D/3D/5D/20D",
+      "stablecoin supply/mint/burn/treasury/exchange",
+      "Crypto Money Inflow",
+      "ALT Money Inflow",
+      "fixed text: Stablecoin supply increase != actual buy",
+      "visually separate actual institution spot flow from potential stablecoin dry powder"
+    ],
+    "screen4": [
+      "moving whale TOP3 when meaningful position-size changes exist",
+      "BTC whales max10 and ETH whales max10 with ranks 6-10 allowed only as compressed continuation, never deleted",
+      "institution vs whale vs retail table columns: subject|status|score|prior delta|1D|3D|7D|easy interpretation",
+      "mandatory easy-Korean explainer after institution-vs-whale-vs-retail table",
+      "derivatives table columns: asset|price|OI|Funding|OI 1H|OI 4H|OI 24H|judgement|easy interpretation",
+      "CVD/Taker/Long-Short/Liquidation/Basis/Depth/Volume visible in compact line as value or N/A",
+      "mandatory easy-Korean derivatives explainer, including confidence limitation when confirmations are N/A"
+    ],
+    "screen5": [
+      "research/context only; no duplicated core-axis/final-verdict/mini-score/rotation/money-frontier/risk-radar blocks",
+      "Coinness/News TOP5 with time|headline|what changed|BTC-ETH-ALT impact|primary confirmation|owner|score impact and why-it-matters sentence",
+      "economic calendar with KST time|event|prior|expected|actual after release|why important|market condition",
+      "Sean Farrell detailed compact view: latest verified view|change vs prior|key rationale|agreement/conflict with MASTER|reference meaning; score0",
+      "Stanley Druckenmiller detailed compact view: latest verified view|change vs prior|key macro/liquidity rationale|agreement/conflict with MASTER|reference meaning; score0",
+      "on-chain secondary block: STH-SOPR|STH Realized Price|STH-MVRV|Exchange Netflow with current/status|confirmed change|easy interpretation|confidence plus final reinforce/neutral/weaken synthesis"
+    ],
     "footer": "🕒 MASTER MARKET V1.2 | 실행완료: YYYY-MM-DD HH:mm KST | 롱/숏 | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST",
     "watch_footer": "🕒 MASTER MARKET WATCH | 감지완료: YYYY-MM-DD HH:mm KST | 롱/숏 | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST"
   },
