@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import json
 import pathlib
 import tempfile
 
@@ -153,7 +154,6 @@ def test_duplicate_inbox_quarantine() -> None:
         v.INBOX.mkdir()
         now = v.now_utc().replace(microsecond=0)
         payload = [sample(v.iso_utc(now), "DUP"), sample(v.iso_utc(now), "DUP")]
-        import json
         (v.INBOX / "dup.json").write_text(json.dumps(payload))
         r = v.ingest()
         assert r["accepted"] == 0
@@ -161,6 +161,63 @@ def test_duplicate_inbox_quarantine() -> None:
         assert not v.SIGNALS.exists()
         assert len(list(v.REJECTED.glob("*.json"))) == 1
     v.INBOX, v.REJECTED, v.SIGNALS = original
+
+
+def test_full_shadow_cycle_and_summary_n() -> None:
+    original = (v.INBOX, v.REJECTED, v.SIGNALS, v.OUTCOMES, v.SUMMARY, v.VAULT_STATE)
+    with tempfile.TemporaryDirectory() as td:
+        root = pathlib.Path(td)
+        v.INBOX = root / "inbox"
+        v.REJECTED = root / "rejected"
+        v.SIGNALS = root / "signals.jsonl"
+        v.OUTCOMES = root / "outcomes.jsonl"
+        v.SUMMARY = root / "summary.json"
+        v.VAULT_STATE = root / "state.json"
+        v.INBOX.mkdir()
+        t0 = v.now_utc().replace(second=0, microsecond=0)
+        payload = sample(v.iso_utc(t0), "E2E", "BTCUSDT")
+        (v.INBOX / "e2e.json").write_text(json.dumps(payload))
+        ing = v.ingest()
+        assert ing["accepted"] == 1
+        open_ms = int(t0.timestamp() * 1000)
+        candles = [[open_ms, "100", "105", "97", "104", "1", open_ms + 5 * 60 * 1000 - 1]]
+        fake = lambda symbol, start, end: candles
+        ev1 = v.evaluate(now=t0 + dt.timedelta(hours=5), fetcher=fake)
+        assert ev1["newly_evaluated_horizons"] == 1
+        summary = v.build_summary(now=t0 + dt.timedelta(hours=5))
+        assert summary["grouped_calibration"]["master::TEST_MASTER"]["4H"]["n"] == 1
+        sha1 = v.file_sha(v.OUTCOMES)
+        ev2 = v.evaluate(now=t0 + dt.timedelta(hours=5, minutes=1), fetcher=fake)
+        assert ev2["newly_evaluated_horizons"] == 0
+        assert sha1 == v.file_sha(v.OUTCOMES)
+    v.INBOX, v.REJECTED, v.SIGNALS, v.OUTCOMES, v.SUMMARY, v.VAULT_STATE = original
+
+
+def test_run_avoids_heartbeat_rewrite() -> None:
+    original = (v.INBOX, v.REJECTED, v.SIGNALS, v.OUTCOMES, v.SUMMARY, v.VAULT_STATE)
+    with tempfile.TemporaryDirectory() as td:
+        root = pathlib.Path(td)
+        v.INBOX = root / "inbox"
+        v.REJECTED = root / "rejected"
+        v.SIGNALS = root / "signals.jsonl"
+        v.OUTCOMES = root / "outcomes.jsonl"
+        v.SUMMARY = root / "summary.json"
+        v.VAULT_STATE = root / "state.json"
+        v.run()
+        state_sha = v.file_sha(v.VAULT_STATE)
+        summary_sha = v.file_sha(v.SUMMARY)
+        assert state_sha is not None and summary_sha is not None
+        v.run()
+        assert state_sha == v.file_sha(v.VAULT_STATE)
+        assert summary_sha == v.file_sha(v.SUMMARY)
+    v.INBOX, v.REJECTED, v.SIGNALS, v.OUTCOMES, v.SUMMARY, v.VAULT_STATE = original
+
+
+def test_shadow_workflow_is_manual_only() -> None:
+    p = pathlib.Path(".github/workflows/signal_outcome_vault_shadow.yml")
+    text = p.read_text()
+    assert "workflow_dispatch:" in text
+    assert "schedule:" not in text
 
 
 def test_deterministic_jsonl() -> None:
@@ -187,6 +244,9 @@ if __name__ == "__main__":
     test_horizon_maturity_and_idempotency()
     test_bad_symbol_does_not_abort_good_signal()
     test_duplicate_inbox_quarantine()
+    test_full_shadow_cycle_and_summary_n()
+    test_run_avoids_heartbeat_rewrite()
+    test_shadow_workflow_is_manual_only()
     test_deterministic_jsonl()
     test_score_band()
     print("SIGNAL OUTCOME VAULT V0.1 TESTS PASS")
