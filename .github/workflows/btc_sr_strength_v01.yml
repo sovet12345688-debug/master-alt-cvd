@@ -1,0 +1,38 @@
+name: BTC S/R Strength V0.1 Validation
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'btc_sr_strength/**'
+      - '.github/workflows/btc_sr_strength_v01.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-sr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install
+        run: pip install pandas numpy requests
+      - name: Compile
+        run: python -m py_compile btc_sr_strength/run_sr_strength_v01.py
+      - name: Build and backtest
+        run: python btc_sr_strength/run_sr_strength_v01.py
+      - name: Show summary
+        run: cat btc_sr_strength/output/sr_strength_v01_summary.json
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-sr-strength-v01-validation
+          path: |
+            btc_sr_strength/output/*.json
+            btc_sr_strength/output/*.csv
+          retention-days: 14
