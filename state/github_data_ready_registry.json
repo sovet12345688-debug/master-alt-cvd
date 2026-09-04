@@ -2,22 +2,11 @@
   "schema_version": "1.0",
   "registry_name": "MONEY_GITHUB_DATA_READY_REGISTRY",
   "purpose": "Persistent state for A/B/C/D/E development readiness, version compatibility, final QA, integration history, and regression detection.",
-  "updated_utc": "2026-09-04T02:49:55Z",
+  "updated_utc": "2026-09-04T04:08:40Z",
   "write_policy": "STATE_CHANGE_ONLY",
   "master_auto_modify": false,
   "btc_trend_auto_modify": false,
-  "dashboard_columns": [
-    "goal",
-    "engine",
-    "latest_compatible_version",
-    "completion_pct",
-    "status",
-    "final_qa",
-    "master_link",
-    "expected_value",
-    "next_action",
-    "regression"
-  ],
+  "dashboard_columns": ["goal","engine","latest_compatible_version","completion_pct","status","final_qa","master_link","expected_value","next_action","regression"],
   "goals": {
     "A": {
       "engine": "DERIVATIVES_OI_FUNDING",
@@ -25,7 +14,7 @@
       "completion_pct": 95,
       "status": "DEV95_FINAL_QA",
       "final_qa": "PENDING_WORKFLOW_AND_FULL_DUPLICATE_RECHECK",
-      "master_targets": ["ALT_FINAL20_CURRENT", "BTC_TREND_CURRENT"],
+      "master_targets": ["ALT_FINAL20_CURRENT","BTC_TREND_CURRENT"],
       "master_link": "VERIFY_EXISTING_CLAUSES_ONLY_ON_EXPLICIT_USER_REQUEST",
       "expected_value": 8,
       "next_action": "Reconfirm recent production workflow health and full recent-24H duplicate/missing audit before DEV100.",
@@ -33,7 +22,7 @@
       "last_dev100_compatible_contract": null,
       "last_alerted_dev100_version": null,
       "evidence": {
-        "snapshot_utc": "2026-09-04T02:00:00Z",
+        "snapshot_utc": "2026-09-04T03:00:00Z",
         "venue": "Bitget USDT Futures",
         "coverage": "21/21 OK",
         "windows": "1H/4H/24H populated",
@@ -55,12 +44,12 @@
       "last_dev100_compatible_contract": null,
       "last_alerted_dev100_version": null,
       "evidence": {
-        "snapshot_utc": "2026-09-04T02:00:00Z",
+        "snapshot_utc": "2026-09-04T03:00:00Z",
         "engine": "MASTER_MARKET_WHALE_TIME_SERIES_V1_1",
         "schema": "1.1",
         "change_basis": "POSITION_SIZE_SZI",
         "size_engine": "PASS",
-        "query_coverage": "301/301",
+        "query_coverage": "302/302",
         "active_market_whales": 32,
         "24h_change_state": "not yet populated for sampled active whales"
       }
@@ -79,12 +68,12 @@
       "last_dev100_compatible_contract": null,
       "last_alerted_dev100_version": null,
       "evidence": {
-        "target_completed_hour_utc": "2026-09-04T01:00:00Z",
+        "target_completed_hour_utc": "2026-09-04T02:00:00Z",
         "source": "Binance Spot public aggTrades API",
         "supported": "18/18 OK",
         "failures": 0,
-        "24h_hours_observed": 21,
-        "24h_coverage_pct": 87.5,
+        "24h_hours_observed": 22,
+        "24h_coverage_pct": 91.66666666666666,
         "24h_state": "BUILDING_HISTORY"
       }
     },
@@ -102,7 +91,7 @@
       "last_dev100_compatible_contract": null,
       "last_alerted_dev100_version": null,
       "evidence": {
-        "snapshot_hour_utc": "2026-09-04T01:00:00Z",
+        "snapshot_hour_utc": "2026-09-04T03:00:00Z",
         "mandatory_coverage": "6/6 = 100%",
         "failures": 0,
         "history_rows": 280,
@@ -112,23 +101,26 @@
     },
     "E": {
       "engine": "BTC_FRACTAL_LATEST_COMPATIBLE",
-      "latest_compatible_version": "V0.3.7",
+      "latest_compatible_version": "V0.3.7_LAST_AUTO_COMPATIBLE",
       "completion_pct": 89,
-      "status": "DEVELOPMENT_VALIDATION",
-      "final_qa": "LATEST_VALIDATION_IN_PROGRESS",
+      "status": "BREAKING_CHANGE_REVIEW",
+      "final_qa": "V0.6.0_COMPATIBILITY_MANUAL_REVIEW_REQUIRED",
       "master_targets": ["BTC_TREND_CURRENT"],
       "master_link": "AUTO_INTEGRATION_FORBIDDEN",
       "expected_value": 10,
-      "next_action": "Wait for latest V0.3.7 validation and PR validation to complete, then evaluate predeclared statistical acceptance and confidence/confirmation gates.",
+      "next_action": "Manually review V0.4.x/V0.5.x/V0.6.0 architecture changes before accepting V0.6.0 as the new compatible line. Do not modify MASTER BTC TREND.",
       "regression": "NONE_KNOWN",
       "last_dev100_compatible_contract": null,
       "last_alerted_dev100_version": null,
       "evidence": {
         "research_head": "btc-fractal-v26-build",
-        "head_sha": "2c1f80dd206db27d0216be89ac5215eb1615456d",
-        "latest_commit_message": "Fix V0.3.7 timezone-aware turning-zone timestamps",
-        "latest_validation": "in_progress",
-        "prior_v037_validation_failure_observed": true
+        "head_sha": "264e059ad48802da5c0c210667f437d464ec1f0a",
+        "latest_commit_message": "Run BTC fractal V0.6.0 final pre-integration audit",
+        "latest_validation": "completed/success",
+        "artifact": "btc-fractal-v26-validation created",
+        "candidate_version_detected": "V0.6.0",
+        "architecture_change": "V0.4 Layer B + V0.5 Layer C + V0.6 pre-integration audit added; config engine/schema advanced to 0.4.0 family and acceptance/integration contract materially changed",
+        "auto_promotion": "BLOCKED_PENDING_MANUAL_COMPATIBILITY_REVIEW"
       }
     }
   },
@@ -143,6 +135,15 @@
       "to": "V0.3.7",
       "user_alert": false,
       "note": "Version-only progression within active BTC fractal research line; MASTER BTC TREND remains untouched."
+    },
+    {
+      "timestamp_utc": "2026-09-04T04:08:40Z",
+      "goal": "E",
+      "event": "BREAKING_CHANGE_REVIEW_REQUIRED",
+      "from": "V0.3.7",
+      "to": "V0.6.0 candidate",
+      "user_alert": true,
+      "note": "V0.4.x/V0.5.x/V0.6.0 introduce derivatives/ETF layers and a new final pre-integration audit/integration contract. Automatic compatibility promotion blocked. MASTER BTC TREND remains untouched."
     }
   ],
   "rules": {
