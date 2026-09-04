@@ -1,0 +1,52 @@
+name: BTC TREND V3.0 Restart Phase1 Validation
+
+on:
+  push:
+    branches: [btc-trend-v30-restart-final]
+    paths:
+      - 'btc_trend_v30_restart/**'
+      - '.github/workflows/btc_trend_v30_restart_phase1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: btc-trend-v30-restart-phase1-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-restart-phase1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install research dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas requests
+      - name: Run redesigned restart Phase1
+        run: python btc_trend_v30_restart/run_restart_phase1_v01.py
+      - name: Show compact verdict
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          p='btc_trend_v30_restart/output/restart_phase1_v01/summary.json'
+          d=json.load(open(p,encoding='utf-8'))
+          print('STAGE=',d['stage'])
+          print('CHOSEN=',d['chosen_mode'])
+          print('LONG=',d['selected']['LONG'])
+          print('SHORT=',d['selected']['SHORT'])
+          print('FRACTAL_GAIN=',d['soft_fractal_utility_gain_vs_none'])
+          print('ZONE_LONG=',d['zone_quality']['LONG_BUCKETS'])
+          print('ZONE_SHORT=',d['zone_quality']['SHORT_BUCKETS'])
+          print('GATES=',d['gates'])
+          PY
+      - name: Upload restart Phase1 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v30-restart-phase1-v01
+          path: btc_trend_v30_restart/output/restart_phase1_v01/
+          retention-days: 14
