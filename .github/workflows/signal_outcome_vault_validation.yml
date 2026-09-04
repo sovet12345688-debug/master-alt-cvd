@@ -1,0 +1,65 @@
+name: Signal Outcome Vault V0.1 Validation
+
+on:
+  pull_request:
+    paths:
+      - 'signal_outcome/**'
+      - '.github/workflows/signal_outcome_vault_validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: signal-outcome-vault-v01-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Compile
+        run: |
+          python -m py_compile signal_outcome/vault.py
+          python -m py_compile signal_outcome/tests.py
+
+      - name: Unit tests
+        run: PYTHONPATH=. python signal_outcome/tests.py
+
+      - name: Validate empty state
+        run: |
+          PYTHONPATH=. python signal_outcome/vault.py summary
+          python - <<'PY'
+          import json
+          s=json.load(open('signal_outcome/output/latest_summary.json'))
+          assert s['engine']=='SIGNAL_OUTCOME_VAULT'
+          assert s['schema_version']=='0.1'
+          assert s['calibration_policy']['auto_master_tuning'] is False
+          assert s['calibration_policy']['recommendations_enabled'] is False
+          print(s)
+          PY
+
+      - name: Build validation artifact
+        run: |
+          mkdir -p artifact
+          cp signal_outcome/README.md artifact/
+          cp signal_outcome/config.json artifact/
+          cp signal_outcome/output/latest_summary.json artifact/
+
+      - name: Upload validation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: signal-outcome-vault-v01-validation
+          path: artifact
