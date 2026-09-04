@@ -63,12 +63,10 @@ def build_signals(x: pd.DataFrame, side: str, ct: float, tt: float, fw: float, l
         h=h[ok]
         if h.empty: continue
 
-        # The origin is a PRICE origin, so anchor it to the actual local extreme among plausible
-        # candidates, not to the day with the highest indicator score.
+        # Origin is a PRICE origin: anchor to the actual local extreme among plausible candidates.
         if side=='LOW':
             extreme=float(h.low.min())
             near=h[h.low<=extreme*1.03].copy()
-            # among near-equal lows, use score/fractal to select the best contextual date
             fr=near.fractal_long_prior.fillna(50).astype(float)
             rank=near[basecol].astype(float)+fw*(fr-50)
             ot=rank.idxmax(); op=float(near.loc[ot,'low'])
@@ -101,7 +99,6 @@ def choose_stable(train:pd.DataFrame,truth:pd.DataFrame,side:str,allow_fractal:b
         sig=build_signals(train,side,ct,tt,fw)
         ev=b.eval_sig(sig,truth,side)
         p=float(ev['precision_pct'] or 0); r=float(ev['recall_pct'] or 0)
-        # Cross-year stability penalty: do not optimize on one lucky cycle.
         fys=[]
         for yy in sorted(set(truth.time.dt.year)):
             sy=[z for z in sig if pd.Timestamp(z['confirm_time']).year==yy]
@@ -152,7 +149,6 @@ def pred_logit(frame:pd.DataFrame,model):
 def reaction_score(train:pd.DataFrame,test:pd.DataFrame):
     model=fit_logit(train)
     ptr=pred_logit(train,model); pte=pred_logit(test,model)
-    # Convert conditional reaction likelihood to a prior-train percentile-like quality score.
     s=np.sort(ptr)
     ranks=np.searchsorted(s,pte,side='right')/max(len(s),1)
     return 100*ranks, pte
@@ -165,7 +161,6 @@ def zone_oos_v03(R:pd.DataFrame):
         tr=R[(R.resolved_time<cut)&R.success.notna()].copy(); te=R[(R.time.dt.year==y)&R.success.notna()].copy()
         if len(tr)<50 or len(te)<5: continue
         q,p=reaction_score(tr,te); te['reaction_quality']=q; te['reaction_prob_raw']=p
-        # Reach score is intentionally separate; it must not contaminate conditional reaction quality.
         te['reach_score']=te.distance_score
         outs.append(te); years.append({'year':y,'train_n':len(tr),'test_n':len(te)})
     O=pd.concat(outs,ignore_index=True) if outs else pd.DataFrame()
@@ -191,7 +186,8 @@ def zone_gate(c):
 
 def main():
     D,H4,S,T,fail=b.prepare(); p11=b.phase11_scores(D,S); p12=f13.phase12_fast(D,p11); x=p14.add_turn_scores(p12)
-    x=x.join(D[['low','high','drawdown180','rally180']],how='left')
+    # p12 already carries OHLC from the underlying daily frame; only add missing long-horizon context.
+    x=x.join(D[['drawdown180','rally180']],how='left')
     l0r,l0=oos(x,T,'LOW',False); s0r,s0=oos(x,T,'HIGH',False); lfr,lf=oos(x,T,'LOW',True); sfr,sf=oos(x,T,'HIGH',True)
 
     zl=p14.build_zone_registry(D,x,'LOW'); zs=p14.build_zone_registry(D,x,'HIGH')
