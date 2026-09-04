@@ -21,8 +21,9 @@ STATE_PATH = STATE_DIR / "collector_state.json"
 
 TRANSFER_TOPIC = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
 ZERO_TOPIC = "0x" + ("0" * 64)
+LOG_CHUNK_BLOCKS = 50
 SESSION = requests.Session()
-SESSION.headers.update({"User-Agent": "MASTER-STABLECOIN-FLOW/1.0"})
+SESSION.headers.update({"User-Agent": "MASTER-STABLECOIN-FLOW/1.1"})
 
 
 def now_utc() -> datetime:
@@ -110,14 +111,22 @@ def find_block_at_or_before(url: str, target_ts: int, latest_block: int) -> int:
 
 
 def get_logs(url: str, contract: str, from_block: int, to_block: int, from_topic: str) -> list[dict[str, Any]]:
-    params = [{
-        "address": contract,
-        "fromBlock": hex(from_block),
-        "toBlock": hex(to_block),
-        "topics": [TRANSFER_TOPIC, from_topic],
-    }]
-    result = rpc_call(url, "eth_getLogs", params)
-    return result or []
+    """Fetch logs in small block chunks so public RPC range/result limits fail less often."""
+    out: list[dict[str, Any]] = []
+    cursor = from_block
+    while cursor <= to_block:
+        chunk_end = min(to_block, cursor + LOG_CHUNK_BLOCKS - 1)
+        params = [{
+            "address": contract,
+            "fromBlock": hex(cursor),
+            "toBlock": hex(chunk_end),
+            "topics": [TRANSFER_TOPIC, from_topic],
+        }]
+        result = rpc_call(url, "eth_getLogs", params)
+        if result:
+            out.extend(result)
+        cursor = chunk_end + 1
+    return out
 
 
 def decode_transfer(log: dict[str, Any], decimals: int) -> dict[str, Any] | None:
@@ -172,7 +181,7 @@ def collect_token(
                     d["exchange_match"] = exchange_map.get(normalize_address(d["to"]))
                     decoded.append(d)
         except Exception as e:
-            errors.append(f"{source_label}:{type(e).__name__}:{str(e)[:160]}")
+            errors.append(f"{source_label}:{type(e).__name__}:{str(e)[:240]}")
 
     total_issuer_out = sum(x["amount"] for x in decoded)
     exchange_rows = [x for x in decoded if x.get("exchange_match")]
@@ -257,12 +266,14 @@ def main() -> None:
         "chain": "ethereum",
         "rpc_url": rpc_url,
         "block_range": [start_block, latest_block],
+        "log_chunk_blocks": LOG_CHUNK_BLOCKS,
         "rpc_fallback_log": rpc_errors,
         "coverage_rule": cfg.get("coverage_rule"),
         "rules": {
             "USDT": "Confirmed transfers from verified Tether Treasury address. Only destinations matching verified exchange registry count as Treasury->Exchange.",
             "USDC": "Circle does not use one public treasury address for all minting; zero-address mints are used as issuer mint destination proxy. Only verified exchange destinations count as Mint->Exchange.",
             "no_inference": "Unmatched addresses are never classified as exchanges.",
+            "stablecoin_supply": "Stablecoin supply increase is not equivalent to actual crypto spot buying.",
         },
         "assets": assets,
     }
@@ -300,6 +311,7 @@ def main() -> None:
         "partial_count": sum(a["status"] == "PARTIAL" for a in assets),
         "na_count": sum(a["status"] == "N/A" for a in assets),
         "verified_exchange_labels": len(exchange_map),
+        "asset_errors": {a["token"]: a.get("errors", []) for a in assets if a.get("errors")},
     }
     STATE_PATH.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(state, ensure_ascii=False))
