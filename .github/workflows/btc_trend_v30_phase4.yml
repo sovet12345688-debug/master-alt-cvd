@@ -1,0 +1,46 @@
+name: BTC TREND V3.0 Phase4 Target Map Validation
+
+on:
+  push:
+    branches: [btc-trend-v30-build]
+    paths:
+      - 'btc_trend_v30/run_phase4_target_map.py'
+      - '.github/workflows/btc_trend_v30_phase4.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: '1'
+
+jobs:
+  validate-phase4:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install research dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas requests
+      - name: Run Phase4 target-map research
+        run: python btc_trend_v30/run_phase4_target_map.py
+      - name: Show compact verdict
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          p='btc_trend_v30/output/phase4_v01/summary.json'
+          d=json.load(open(p,encoding='utf-8'))
+          print('ENGINE=',d['engine'])
+          for side,v in d['sides'].items(): print(side,'REACH',v['reach'],'REVERSAL',v['reversal'])
+          print('OVERALL=',d['overall_stage'])
+          PY
+      - name: Upload Phase4 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v30-phase4-v01
+          path: btc_trend_v30/output/phase4_v01/
+          retention-days: 14
