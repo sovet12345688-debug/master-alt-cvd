@@ -38,6 +38,7 @@ jobs:
           required_prompt_tokens = [
               'ABSOLUTE ANTI-OMISSION LOCK',
               'FLEXIBLE RECOMMENDATION / CHANGE-MANAGEMENT LOCK',
+              'CHANGE-WINDOW LOCK — 1D / 3D / 7D',
               'recommend freely, explain trade-offs, preserve by default',
               'Coinness',
               'News TOP5',
@@ -82,6 +83,25 @@ jobs:
               if 'explicit user approval' not in str(ep.get(key) or '').lower():
                   raise SystemExit('MASTER MARKET approval regression: ' + key)
 
+          cw = c.get('change_windows') or {}
+          assert cw.get('locked_windows') == ['1D', '3D', '7D'], 'change windows must remain exactly 1D,3D,7D'
+          applies = set(cw.get('applies_to') or [])
+          required_applies = {
+              'SCREEN1_CORE_5_AXES',
+              'SCREEN2_MACRO_TABLE',
+              'SCREEN4_INSTITUTION_WHALE_RETAIL_TABLE',
+              'SCREEN5_CORE_AXIS_TABLE'
+          }
+          if required_applies - applies:
+              raise SystemExit('MASTER MARKET change-window regression: missing table lock')
+
+          ro = c.get('required_output', {})
+          for screen in ['screen1','screen2','screen4','screen5']:
+              text = ' '.join(ro.get(screen) or [])
+              for token in ['1D','3D','7D']:
+                  if token not in text:
+                      raise SystemExit(f'MASTER MARKET {screen} window regression: missing {token}')
+
           required_data_groups = {
               'macro_liquidity', 'crypto_capital_flow', 'market_breadth_rotation',
               'whale', 'derivatives', 'news_and_calendar', 'secondary_confirmation'
@@ -109,4 +129,5 @@ jobs:
           print('MASTER_MARKET_CUMULATIVE_CONTRACT=PASS')
           print('NO_SILENT_OMISSION=PASS')
           print('FLEXIBLE_RECOMMENDATION_POLICY=PASS')
+          print('CHANGE_WINDOWS_1D_3D_7D=PASS')
           PY
