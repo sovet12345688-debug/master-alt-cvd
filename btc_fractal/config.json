@@ -1,6 +1,6 @@
 {
-  "engine": "BTC_HISTORICAL_REGIME_OUTCOME_V0_3_4",
-  "schema_version": "0.3.4",
+  "engine": "BTC_HISTORICAL_REGIME_OUTCOME_V0_3_5",
+  "schema_version": "0.3.5",
   "start_date": "2011-01-01",
   "feature_windows_days": [7, 30, 90, 180, 365],
   "up_targets_pct": [30, 50, 100, 150, 200],
@@ -13,138 +13,58 @@
   "min_complete_features": 8,
   "min_analog_episodes_high_confidence": 8,
   "min_distinct_years_high_confidence": 5,
-  "community_asset_metrics": [
-    "PriceUSD",
-    "CapMVRVCur",
-    "CapMrktCurUSD",
-    "SplyCur",
-    "CapMVRVZ",
-    "CapRealUSD",
-    "SOPR",
-    "AdrActCnt",
-    "TxCnt",
-    "HashRate"
-  ],
-  "feature_group_weights": {
-    "price_state": 0.2,
-    "price_path": 0.4,
-    "onchain_state": 0.15,
-    "onchain_path": 0.1,
-    "macro": 0.15
-  },
+  "community_asset_metrics": ["PriceUSD", "CapMVRVCur", "CapMrktCurUSD", "SplyCur", "CapMVRVZ", "CapRealUSD", "SOPR", "AdrActCnt", "TxCnt", "HashRate"],
+  "feature_group_weights": {"price_state": 0.2, "price_path": 0.4, "onchain_state": 0.15, "onchain_path": 0.1, "macro": 0.15},
   "high_confidence_min_score": 75,
-  "confirmation_acceptance": {
-    "min_confirmed_cases": 20,
-    "min_confirmed_accuracy_gain_pp": 3.0,
-    "min_conflict_cases": 10,
-    "max_conflict_accuracy_gap_pp": -3.0,
-    "min_both_confirmed_cases": 10,
-    "min_both_confirmed_accuracy_gain_pp": 6.0
-  },
-  "confidence_calibration_acceptance": {
-    "min_high_cases": 10,
-    "min_medium_cases": 10,
-    "min_high_accuracy_gain_pp": 5.0,
-    "max_high_coverage_pct": 50.0,
-    "monotonic_tolerance_pp": 2.0
-  },
+  "confirmation_acceptance": {"min_confirmed_cases": 20, "min_confirmed_accuracy_gain_pp": 3.0, "min_conflict_cases": 10, "max_conflict_accuracy_gap_pp": -3.0, "min_both_confirmed_cases": 10, "min_both_confirmed_accuracy_gain_pp": 6.0},
+  "confidence_calibration_acceptance": {"min_high_cases": 10, "min_medium_cases": 10, "min_high_accuracy_gain_pp": 5.0, "max_high_coverage_pct": 50.0, "monotonic_tolerance_pp": 2.0},
   "v032": {
-    "class_prior_exponent": 0.5,
-    "similarity_weight_power": 2.0,
-    "abstain_support_margin": 0.1,
-    "conditional_price_pool_k": 36,
-    "conditional_min_pool": 12,
-    "core_acceptance": {
-      "min_independent_episodes": 30,
-      "min_coverage_pct": 60.0,
-      "min_balanced_accuracy": 55.0,
-      "min_balanced_gain_vs_old_pp": 3.0,
-      "min_accuracy_gap_vs_naive_pp": -2.0,
-      "min_each_class_recall_pct": 35.0,
-      "min_minority_prediction_pct": 10.0
-    },
-    "confidence_acceptance": {
-      "min_high_cases": 8,
-      "min_high_gain_pp": 7.0,
-      "max_high_coverage_pct": 35.0,
-      "monotonic_tolerance_pp": 3.0
-    },
-    "domain_acceptance": {
-      "min_agree_cases": 10,
-      "min_conflict_cases": 8,
-      "min_agree_gain_pp": 3.0,
-      "max_conflict_gap_pp": -3.0
-    }
+    "class_prior_exponent": 0.5, "similarity_weight_power": 2.0, "abstain_support_margin": 0.1, "conditional_price_pool_k": 36, "conditional_min_pool": 12,
+    "core_acceptance": {"min_independent_episodes": 30, "min_coverage_pct": 60.0, "min_balanced_accuracy": 55.0, "min_balanced_gain_vs_old_pp": 3.0, "min_accuracy_gap_vs_naive_pp": -2.0, "min_each_class_recall_pct": 35.0, "min_minority_prediction_pct": 10.0},
+    "confidence_acceptance": {"min_high_cases": 8, "min_high_gain_pp": 7.0, "max_high_coverage_pct": 35.0, "monotonic_tolerance_pp": 3.0},
+    "domain_acceptance": {"min_agree_cases": 10, "min_conflict_cases": 8, "min_agree_gain_pp": 3.0, "max_conflict_gap_pp": -3.0}
   },
   "v033": {
-    "balanced_per_class_k": 5,
-    "min_per_class": 5,
-    "min_class_score_gap": 0.75,
-    "min_pair_wins": 3,
-    "min_metric_wins": 2,
-    "confidence_grade": {
-      "medium_min_gap": 1.5,
-      "high_min_gap": 3.0,
-      "medium_min_pair_wins": 4,
-      "high_min_pair_wins": 5,
-      "medium_min_score": 55,
-      "high_min_score": 75,
-      "high_min_distinct_years": 6
-    },
-    "core_acceptance": {
-      "min_independent_episodes": 30,
-      "min_coverage_pct": 50.0,
-      "min_balanced_accuracy": 55.0,
-      "min_balanced_gain_vs_v032_pp": 3.0,
-      "min_accuracy_gap_vs_always_up_pp": -2.0,
-      "min_each_class_recall_pct": 35.0,
-      "min_minority_prediction_pct": 25.0
-    },
-    "confidence_acceptance": {
-      "min_high_cases": 5,
-      "min_high_gain_pp": 7.0,
-      "max_high_coverage_pct": 30.0,
-      "monotonic_tolerance_pp": 3.0
-    }
+    "balanced_per_class_k": 5, "min_per_class": 5, "min_class_score_gap": 0.75, "min_pair_wins": 3, "min_metric_wins": 2,
+    "confidence_grade": {"medium_min_gap": 1.5, "high_min_gap": 3.0, "medium_min_pair_wins": 4, "high_min_pair_wins": 5, "medium_min_score": 55, "high_min_score": 75, "high_min_distinct_years": 6},
+    "core_acceptance": {"min_independent_episodes": 30, "min_coverage_pct": 50.0, "min_balanced_accuracy": 55.0, "min_balanced_gain_vs_v032_pp": 3.0, "min_accuracy_gap_vs_always_up_pp": -2.0, "min_each_class_recall_pct": 35.0, "min_minority_prediction_pct": 25.0},
+    "confidence_acceptance": {"min_high_cases": 5, "min_high_gain_pp": 7.0, "max_high_coverage_pct": 30.0, "monotonic_tolerance_pp": 3.0}
   },
   "v034": {
+    "top_k_per_regime": 5, "min_regime_representatives": 4, "global_neighbor_k": 24, "full_support_representatives": 10, "full_support_years": 5,
+    "score_weights": {"absolute": 0.4, "normalized": 0.4, "enrichment": 0.2},
+    "direction_min_score_gap": 4.0, "direction_balance_temperature": 9.0,
+    "acceptance": {"min_independent_episodes": 30, "min_direction_coverage_pct": 50.0, "min_balanced_accuracy": 55.0, "min_each_class_recall_pct": 35.0, "min_minority_prediction_pct": 20.0, "min_regime_exact_accuracy": 24.0, "min_regime_top2_accuracy": 45.0}
+  },
+  "v035": {
     "top_k_per_regime": 5,
     "min_regime_representatives": 4,
-    "global_neighbor_k": 24,
     "full_support_representatives": 10,
     "full_support_years": 5,
-    "score_weights": {
-      "absolute": 0.4,
-      "normalized": 0.4,
-      "enrichment": 0.2
-    },
-    "direction_min_score_gap": 4.0,
-    "direction_balance_temperature": 9.0,
+    "score_weights": {"absolute": 0.45, "normalized": 0.55},
+    "direction_min_regime_margin": 3.0,
+    "direction_balance_temperature": 8.0,
     "acceptance": {
       "min_independent_episodes": 30,
-      "min_direction_coverage_pct": 50.0,
-      "min_balanced_accuracy": 55.0,
-      "min_each_class_recall_pct": 35.0,
-      "min_minority_prediction_pct": 20.0,
-      "min_regime_exact_accuracy": 24.0,
-      "min_regime_top2_accuracy": 45.0
+      "min_regime_exact_accuracy": 40.0,
+      "min_exact_gain_vs_naive_pp": 3.0,
+      "min_balanced_top1_recall": 30.0,
+      "min_balanced_top2_recall": 50.0,
+      "min_direction_coverage_pct": 45.0,
+      "min_direction_balanced_accuracy": 55.0,
+      "min_each_direction_recall_pct": 35.0,
+      "min_minority_direction_pct": 20.0
     }
   },
   "notes": [
     "V0.3.1 exposed overconfidence and an almost-always-UP price core.",
     "V0.3.2 improved debiasing but still failed balanced accuracy and down-recall.",
-    "V0.3.3 equalized UP/DOWN analog counts, but equal counts alone did not remove similarity-distribution bias.",
-    "V0.3.4 changes the objective from a single future-direction score to a two-stage engine aligned with the user's actual goal: historical regime similarity first, then forward outcomes of matched historical regimes.",
-    "Stage 1 scores six regimes separately: panic/capitulation, bottom, up-ignition, uptrend, top, and down-ignition.",
-    "A regime score combines absolute similarity, similarity normalized inside that regime's own historical distribution, and nearest-neighbor enrichment, then applies support/diversity quality adjustment.",
-    "Stage 2 reports forward MFE/MAE and target-hit histories for selected dominant-regime analogs. These are historical case rates, never labeled calibrated probabilities unless a later calibration test passes.",
-    "The directional summary remains a secondary output, uses bullish-regime versus bearish-regime evidence, and may ABSTAIN.",
-    "Validation keeps the hard gates: balanced accuracy and both directional recalls. It also adds exact-regime and top-2-regime classification checks.",
-    "Score maximization means improving discrimination, stability, coverage and calibration. Displayed scores must never be inflated by lowering gates or fitting to the current outcome.",
-    "No future data may be used in feature construction, episode assignment, candidate availability or analog scoring. Historical archetype forward labels are used only after their outcome horizon is fully known at query time.",
-    "N/A is excluded and weights are renormalized; N/A is never zero-filled.",
-    "MVRVZ_DERIVED_PIT is a point-in-time derived proxy, not a vendor-reported official MVRV Z-Score.",
-    "On-chain/macro confirmation, derivatives Layer B and ETF Layer C remain blocked until the regime core is validated.",
-    "MASTER BTC TREND scoring, entry gates, schedule and live plan remain untouched."
+    "V0.3.3 equalized UP/DOWN analog counts but did not remove similarity-distribution bias.",
+    "V0.3.4 separated historical regime similarity from historical forward outcomes and showed that regime classification can be more useful than forcing one future-direction score.",
+    "V0.3.5 gives each regime a purpose-specific price feature subspace: bottom/top emphasize location-state, ignition emphasizes short path/turn, and uptrend emphasizes medium-long path.",
+    "Regime validation is now class-balanced and explicitly compared against naive most-common-regime baselines; direction prediction remains a separate secondary layer with unchanged hard quality gates.",
+    "Score maximization means improving validated discrimination, coverage, stability and calibration, never inflating numbers or lowering gates.",
+    "No future data may be used in feature construction, candidate availability, episode assignment or query scoring. Historical outcome labels are only usable once fully known at query time.",
+    "N/A is never zero-filled. MASTER BTC TREND scoring, gates, schedule and live plan remain untouched."
   ]
 }
