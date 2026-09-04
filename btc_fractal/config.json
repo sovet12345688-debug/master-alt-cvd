@@ -1,6 +1,6 @@
 {
-  "engine": "BTC_HISTORICAL_REGIME_OUTCOME_V0_3_7",
-  "schema_version": "0.3.7",
+  "engine": "BTC_HISTORICAL_REGIME_OUTCOME_V0_4_0",
+  "schema_version": "0.4.0",
   "start_date": "2011-01-01",
   "feature_windows_days": [7, 30, 90, 180, 365],
   "up_targets_pct": [30, 50, 100, 150, 200],
@@ -60,13 +60,36 @@
     "high_score_quantile": 0.75,
     "acceptance": {"min_positive_cases": 6, "min_auc": 65.0, "min_top_quartile_lift": 1.5}
   },
+  "v040": {
+    "history_start": "2019-09-08",
+    "download_workers": 20,
+    "min_query_features": 6,
+    "price_pool_k": 40,
+    "per_class_k": 5,
+    "min_per_class": 4,
+    "min_score_gap": 2.0,
+    "min_pair_wins": 3,
+    "acceptance": {
+      "min_modern_evaluable": 12,
+      "min_signal_cases": 10,
+      "min_signal_coverage_pct": 40.0,
+      "min_balanced_accuracy": 55.0,
+      "min_each_recall_pct": 30.0,
+      "min_minority_prediction_pct": 20.0,
+      "min_utility_cases": 6,
+      "min_confirm_gain_pp": 5.0,
+      "max_conflict_gap_pp": -5.0
+    }
+  },
   "notes": [
     "V0.3.5 remains the frozen FULL_PASS six-regime price core and secondary direction layer.",
-    "V0.3.6 retest showed on-chain/macro do not add validated confirmation utility; they remain context-only and cannot alter core direction.",
-    "V0.3.7 adds objective bottom-zone and top-zone specialist scores to address weak BOTTOM/TOP recall without disturbing the passed core.",
-    "Bottom zone requires meaningful drawdown and +30% before -15% within 180d; top zone requires near-high/extended location and -20% before +20% within 180d. Historical labels are usable only after the full forward window is known.",
-    "Specialist validation uses independent PIT episodes, AUC and top-quartile lift, and keeps a minimum positive-case gate. Scores are similarities, not probabilities.",
+    "V0.3.6 showed on-chain/macro do not add validated confirmation utility; they remain context-only and cannot alter core direction.",
+    "V0.3.7 bottom/top specialists are experimental: bottom narrowly missed the locked AUC gate and top failed AUC/lift; neither is validated or integrated.",
+    "V0.4.0 starts Layer B on a separate historical venue: Binance USD-M Futures public archive. This research venue is never mixed with the live MASTER Bitget OI/Funding series.",
+    "Layer B uses real historical OI value, funding rate and taker long/short volume balance when available. Historical CVD remains N/A and is never fabricated.",
+    "All daily derivatives features use a conservative one-UTC-day lag before scoring to prevent same-day look-ahead.",
+    "Layer B is first tested as a price-conditioned confirmation/conflict layer. It cannot change V0.3.5 direction unless independent OOS validation and utility gates pass.",
     "Score maximization means improving validated discrimination, coverage, stability and calibration, never inflating numbers or lowering gates.",
-    "No future leakage into live features, no N/A zero-fill, and MASTER BTC TREND remains untouched."
+    "No future leakage, no N/A zero-fill, no current-outcome tuning, and MASTER BTC TREND remains untouched."
   ]
 }
