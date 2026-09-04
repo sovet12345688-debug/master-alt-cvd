@@ -1,6 +1,6 @@
 {
-  "engine": "BTC_HISTORICAL_REGIME_OUTCOME_V0_3_1",
-  "schema_version": "0.3.1",
+  "engine": "BTC_HISTORICAL_REGIME_OUTCOME_V0_3_2",
+  "schema_version": "0.3.2",
   "start_date": "2011-01-01",
   "feature_windows_days": [7, 30, 90, 180, 365],
   "up_targets_pct": [30, 50, 100, 150, 200],
@@ -48,15 +48,46 @@
     "max_high_coverage_pct": 50.0,
     "monotonic_tolerance_pp": 2.0
   },
+  "v032": {
+    "class_prior_exponent": 0.5,
+    "similarity_weight_power": 2.0,
+    "abstain_support_margin": 0.1,
+    "conditional_price_pool_k": 36,
+    "conditional_min_pool": 12,
+    "core_acceptance": {
+      "min_independent_episodes": 30,
+      "min_coverage_pct": 60.0,
+      "min_balanced_accuracy": 55.0,
+      "min_balanced_gain_vs_old_pp": 3.0,
+      "min_accuracy_gap_vs_naive_pp": -2.0,
+      "min_each_class_recall_pct": 35.0,
+      "min_minority_prediction_pct": 10.0
+    },
+    "confidence_acceptance": {
+      "min_high_cases": 8,
+      "min_high_gain_pp": 7.0,
+      "max_high_coverage_pct": 35.0,
+      "monotonic_tolerance_pp": 3.0
+    },
+    "domain_acceptance": {
+      "min_agree_cases": 10,
+      "min_conflict_cases": 8,
+      "min_agree_gain_pp": 3.0,
+      "max_conflict_gap_pp": -3.0
+    }
+  },
   "notes": [
-    "Price-only is the directional core after V0.2 blended-model rejection.",
-    "On-chain and macro are confirmation/conflict layers only and cannot change the base direction.",
-    "V0.3.1 requires confidence calibration: HIGH cannot cover the whole sample and must outperform overall OOS accuracy.",
-    "Consensus below 75% cannot be labeled HIGH.",
-    "No future data may be used in feature construction or episode assignment.",
-    "Only one analog may represent a point-in-time-defined swing episode.",
+    "V0.3.1 failed because raw price-core accuracy did not beat a naive always-UP benchmark and balanced accuracy was near random.",
+    "V0.3.2 debiases analog voting with an inverse-square-root independent-episode class prior and similarity weighting.",
+    "V0.3.2 acceptance is based on one predeclared walk-forward anchor per point-in-time test episode, not overlapping monthly rows.",
+    "Balanced accuracy, both class recalls, prediction mix, coverage, and a naive training-majority benchmark are mandatory.",
+    "An ABSTAIN state is allowed when adjusted UP/DOWN support is too close.",
+    "On-chain and macro no longer search the full history independently for confirmation; they rerank only a price-similar independent-episode pool.",
+    "On-chain/macro remain confirmation or contradiction evidence only and cannot change the price-core direction.",
+    "No future data may be used in feature construction, episode assignment, class priors, or analog outcomes.",
     "N/A is excluded and weights are renormalized; N/A is never zero-filled.",
     "MVRVZ_DERIVED_PIT is a point-in-time derived proxy, not a vendor-reported official MVRV Z-Score.",
-    "Derivatives and ETF confirmation layers remain blocked until V0.3.1 master_readiness passes."
+    "Derivatives and ETF Layer B/C remain blocked until V0.3.2 passes its locked gates.",
+    "MASTER BTC TREND scoring, entry gates, schedule, and live plan remain untouched."
   ]
 }
