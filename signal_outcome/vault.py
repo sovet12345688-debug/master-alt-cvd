@@ -6,6 +6,7 @@ import hashlib
 import json
 import math
 import pathlib
+import shutil
 from collections import defaultdict
 from typing import Any
 
@@ -14,6 +15,7 @@ import requests
 ROOT = pathlib.Path(__file__).resolve().parent
 CFG = ROOT / "config.json"
 INBOX = ROOT / "inbox"
+REJECTED = ROOT / "rejected"
 DATA = ROOT / "data"
 OUTPUT = ROOT / "output"
 STATE = ROOT / "state"
@@ -45,7 +47,7 @@ def config() -> dict[str, Any]:
 
 
 def ensure_dirs() -> None:
-    for p in (INBOX, DATA, OUTPUT, STATE):
+    for p in (INBOX, REJECTED, DATA, OUTPUT, STATE):
         p.mkdir(parents=True, exist_ok=True)
 
 
@@ -131,6 +133,14 @@ def validate_signal(raw: dict[str, Any], now: dt.datetime | None = None) -> dict
     return out
 
 
+def quarantine(path: pathlib.Path, error: Exception) -> None:
+    ensure_dirs()
+    stamp = now_utc().strftime("%Y%m%dT%H%M%SZ")
+    target = REJECTED / f"{path.stem}__{stamp}{path.suffix}"
+    shutil.move(str(path), str(target))
+    target.with_suffix(target.suffix + ".error.txt").write_text(str(error) + "\n")
+
+
 def ingest() -> dict[str, int]:
     ensure_dirs()
     rows = read_jsonl(SIGNALS)
@@ -152,6 +162,7 @@ def ingest() -> dict[str, int]:
             path.unlink()
         except Exception as e:
             rejected += 1
+            quarantine(path, e)
             print(f"REJECT {path.name}: {e}")
     if accepted:
         write_jsonl(SIGNALS, rows)
@@ -159,20 +170,15 @@ def ingest() -> dict[str, int]:
 
 
 def fetch_klines(symbol: str, start: dt.datetime, end: dt.datetime) -> list[list[Any]]:
-    """Fetch fully post-signal 5m candles with pagination. The first partial candle is excluded."""
+    """Fetch fully post-signal 5m candles with pagination; exclude the first partial candle."""
     interval_ms = 5 * 60 * 1000
     start_ms = int(start.timestamp() * 1000)
     end_ms = int(end.timestamp() * 1000)
-    first_open = ((start_ms + interval_ms - 1) // interval_ms) * interval_ms
-    cursor = first_open
+    cursor = ((start_ms + interval_ms - 1) // interval_ms) * interval_ms
     rows: list[list[Any]] = []
     session = requests.Session()
     while cursor < end_ms:
-        r = session.get(
-            BINANCE_KLINES,
-            params={"symbol": symbol, "interval": "5m", "startTime": cursor, "endTime": end_ms - 1, "limit": 1000},
-            timeout=20,
-        )
+        r = session.get(BINANCE_KLINES, params={"symbol": symbol, "interval": "5m", "startTime": cursor, "endTime": end_ms - 1, "limit": 1000}, timeout=20)
         r.raise_for_status()
         batch = r.json()
         if not batch:
@@ -200,7 +206,7 @@ def outcome_metrics(direction: str, p0: float, candles: list[list[Any]]) -> dict
         mae = (min(lows) / p0 - 1.0) * 100.0
     elif direction == "SHORT":
         dreturn = -raw
-        mfe = (p0 / min(lows) - 1.0) * 100.0
+        mfe = (1.0 - min(lows) / p0) * 100.0
         mae = -(max(highs) / p0 - 1.0) * 100.0
     else:
         dreturn = mfe = mae = None
@@ -267,8 +273,7 @@ def aggregate(rows: list[dict[str, Any]], horizon: str) -> dict[str, Any]:
     if not vals:
         return {"n": 0, "positive_rate_pct": None, "avg_direction_return_pct": None, "avg_mfe_pct": None, "avg_mae_pct": None}
     return {
-        "n": len(vals),
-        "positive_rate_pct": round(sum(v > 0 for v in vals) / len(vals) * 100, 2),
+        "n": len(vals), "positive_rate_pct": round(sum(v > 0 for v in vals) / len(vals) * 100, 2),
         "avg_direction_return_pct": round(sum(vals) / len(vals), 4),
         "avg_mfe_pct": round(sum(mfes) / len(mfes), 4) if mfes else None,
         "avg_mae_pct": round(sum(maes) / len(maes), 4) if maes else None,
