@@ -33,7 +33,7 @@ def test_metrics() -> None:
     assert a["mae_pct"] == -10.0
     b = v.outcome_metrics("SHORT", 100.0, candles)
     assert b["direction_return_pct"] == -15.0
-    assert 11.11 < b["mfe_pct"] < 11.12
+    assert b["mfe_pct"] == 10.0
     assert b["mae_pct"] == -20.0
 
 
