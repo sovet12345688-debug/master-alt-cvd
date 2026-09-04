@@ -5,12 +5,12 @@ on:
     branches: [btc-trend-v30-build]
     paths:
       - 'btc_trend_v30/**'
-      - '.github/workflows/btc_trend_v30_guard.yml'
+      - '.github/workflows/btc_trend_v30_*.yml'
   pull_request:
     branches: [main]
     paths:
       - 'btc_trend_v30/**'
-      - '.github/workflows/btc_trend_v30_guard.yml'
+      - '.github/workflows/btc_trend_v30_*.yml'
   workflow_dispatch:
 
 permissions:
@@ -35,27 +35,31 @@ jobs:
           git fetch origin main:refs/remotes/origin/main
           changed="$(git diff --name-only origin/main...HEAD)"
           echo "$changed"
-          bad="$(printf '%s\n' "$changed" | grep -Ev '^(btc_trend_v30/|\.github/workflows/btc_trend_v30_guard\.yml$)' || true)"
+          bad="$(printf '%s\n' "$changed" | grep -Ev '^(btc_trend_v30/|\.github/workflows/btc_trend_v30_[A-Za-z0-9_.-]+\.yml$)' || true)"
           if [ -n "$bad" ]; then
             echo 'Forbidden V3.0 research changes outside isolated scope:'
             echo "$bad"
             exit 1
           fi
           echo 'V3_RESEARCH_ISOLATION=PASS'
-      - name: Validate workflow remains read-only
+      - name: Validate all V3 workflows remain read-only
         shell: bash
         run: |
           set -euo pipefail
-          f='.github/workflows/btc_trend_v30_guard.yml'
-          if ! grep -Eq '^  contents:[[:space:]]*read$' "$f"; then
+          files=$(find .github/workflows -maxdepth 1 -type f -name 'btc_trend_v30_*.yml' -print)
+          test -n "$files"
+          for f in $files; do
+            echo "AUDIT $f"
+            if grep -nE '^[[:space:]]+contents:[[:space:]]*write$|^[[:space:]]+pull-requests:[[:space:]]*write$|^[[:space:]]+(git push|gh api .*(-X|--method)[[:space:]]*(POST|PUT|PATCH|DELETE))' "$f"; then
+              echo "Write-capable command/permission found in $f"
+              exit 1
+            fi
+          done
+          if ! grep -Eq '^  contents:[[:space:]]*read$' '.github/workflows/btc_trend_v30_guard.yml'; then
             echo 'V3 guard must keep contents read-only permission'
             exit 1
           fi
-          if grep -nE '^[[:space:]]+contents:[[:space:]]*write$|^[[:space:]]+pull-requests:[[:space:]]*write$|^[[:space:]]+(git push|gh api .*(-X|--method)[[:space:]]*(POST|PUT|PATCH|DELETE))' "$f"; then
-            echo 'Write-capable command/permission found in V3 guard workflow'
-            exit 1
-          fi
-          echo 'V3_WORKFLOW_READ_ONLY=PASS'
+          echo 'V3_WORKFLOWS_READ_ONLY=PASS'
       - name: Validate frozen production directories are untouched
         shell: bash
         run: |
