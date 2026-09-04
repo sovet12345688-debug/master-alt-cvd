@@ -21,8 +21,9 @@ STATE_PATH = STATE_DIR / "collector_state.json"
 TRANSFER_TOPIC = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
 ZERO_TOPIC = "0x" + ("0" * 64)
 LOG_CHUNK_BLOCKS = 50
+RECENT_BLOCK_SEARCH_SPAN = 2000
 SESSION = requests.Session()
-SESSION.headers.update({"User-Agent": "MASTER-STABLECOIN-FLOW/1.2"})
+SESSION.headers.update({"User-Agent": "MASTER-STABLECOIN-FLOW/1.3"})
 
 
 def now_utc() -> datetime:
@@ -69,7 +70,6 @@ def rpc_call(url: str, method: str, params: list[Any]) -> Any:
 
 
 def choose_rpc(cfg: dict[str, Any]) -> tuple[str, list[str]]:
-    """Select an endpoint only after both block reads and eth_getLogs are proven usable."""
     errors: list[str] = []
     probe_contract = cfg["tokens"]["USDC"]["contract"]
     for url in cfg.get("rpc_urls") or []:
@@ -106,8 +106,14 @@ def get_block_ts(url: str, number: int) -> int:
 
 
 def find_block_at_or_before(url: str, target_ts: int, latest_block: int) -> int:
-    lo, hi = 0, latest_block
-    best = 0
+    # The collector only needs a one-hour window. Searching from genesis can hit
+    # pruned public-RPC history, so constrain the binary search to recent blocks.
+    lo = max(0, latest_block - RECENT_BLOCK_SEARCH_SPAN)
+    hi = latest_block
+    lo_ts = get_block_ts(url, lo)
+    if lo_ts > target_ts:
+        raise RuntimeError("Recent block search span is too small for requested window")
+    best = lo
     while lo <= hi:
         mid = (lo + hi) // 2
         ts = get_block_ts(url, mid)
@@ -144,14 +150,9 @@ def decode_transfer(log: dict[str, Any], decimals: int) -> dict[str, Any] | None
     block = safe_int_hex(log.get("blockNumber"))
     if raw is None or block is None:
         return None
-    return {
-        "from": topic_to_address(topics[1]),
-        "to": topic_to_address(topics[2]),
-        "amount": raw / (10 ** decimals),
-        "block_number": block,
-        "tx_hash": log.get("transactionHash"),
-        "log_index": safe_int_hex(log.get("logIndex")),
-    }
+    return {"from": topic_to_address(topics[1]), "to": topic_to_address(topics[2]),
+            "amount": raw / (10 ** decimals), "block_number": block,
+            "tx_hash": log.get("transactionHash"), "log_index": safe_int_hex(log.get("logIndex"))}
 
 
 def collect_token(rpc_url: str, token: str, cfg: dict[str, Any], start_block: int, end_block: int,
@@ -162,7 +163,6 @@ def collect_token(rpc_url: str, token: str, cfg: dict[str, Any], start_block: in
     mode = token_cfg.get("issuer_flow_mode")
     decoded: list[dict[str, Any]] = []
     errors: list[str] = []
-
     source_topics: list[tuple[str, str]] = []
     if mode == "treasury_outflow":
         for item in token_cfg.get("treasury_addresses") or []:
@@ -171,7 +171,6 @@ def collect_token(rpc_url: str, token: str, cfg: dict[str, Any], start_block: in
         source_topics.append(("ZERO_ADDRESS_MINT", ZERO_TOPIC))
     else:
         errors.append(f"unsupported_mode:{mode}")
-
     for source_label, from_topic in source_topics:
         try:
             for log in get_logs(rpc_url, contract, start_block, end_block, from_topic):
@@ -182,7 +181,6 @@ def collect_token(rpc_url: str, token: str, cfg: dict[str, Any], start_block: in
                     decoded.append(d)
         except Exception as e:
             errors.append(f"{source_label}:{type(e).__name__}:{str(e)[:240]}")
-
     total_issuer_out = sum(x["amount"] for x in decoded)
     exchange_rows = [x for x in decoded if x.get("exchange_match")]
     exchange_amount = sum(x["amount"] for x in exchange_rows)
@@ -190,22 +188,15 @@ def collect_token(rpc_url: str, token: str, cfg: dict[str, Any], start_block: in
     for x in exchange_rows:
         name = str((x.get("exchange_match") or {}).get("exchange") or "UNKNOWN")
         by_exchange[name] = by_exchange.get(name, 0.0) + float(x["amount"])
-
     return {
-        "token": token,
-        "chain": "ethereum",
-        "mode": mode,
+        "token": token, "chain": "ethereum", "mode": mode,
         "status": "OK" if not errors else ("PARTIAL" if decoded else "N/A"),
-        "issuer_transfer_count": len(decoded),
-        "issuer_transfer_amount": total_issuer_out,
-        "verified_exchange_match_count": len(exchange_rows),
-        "verified_exchange_amount": exchange_amount,
-        "verified_exchange_breakdown": by_exchange,
-        "exchange_coverage": "PARTIAL_LABEL_SET",
-        "matched_transfers": [{
-            "to": x["to"], "amount": x["amount"], "exchange": x["exchange_match"]["exchange"],
-            "label": x["exchange_match"]["label"], "tx_hash": x["tx_hash"], "block_number": x["block_number"],
-        } for x in exchange_rows],
+        "issuer_transfer_count": len(decoded), "issuer_transfer_amount": total_issuer_out,
+        "verified_exchange_match_count": len(exchange_rows), "verified_exchange_amount": exchange_amount,
+        "verified_exchange_breakdown": by_exchange, "exchange_coverage": "PARTIAL_LABEL_SET",
+        "matched_transfers": [{"to": x["to"], "amount": x["amount"],
+            "exchange": x["exchange_match"]["exchange"], "label": x["exchange_match"]["label"],
+            "tx_hash": x["tx_hash"], "block_number": x["block_number"]} for x in exchange_rows],
         "errors": errors,
     }
 
@@ -223,71 +214,51 @@ def write_history(rows: list[dict[str, Any]]) -> None:
               "verified_exchange_amount", "exchange_coverage", "errors"]
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     with HISTORY_PATH.open("w", encoding="utf-8", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=fields)
-        w.writeheader()
+        w = csv.DictWriter(f, fieldnames=fields); w.writeheader()
         for r in rows:
             item = dict(r)
-            if isinstance(item.get("errors"), list):
-                item["errors"] = " | ".join(item["errors"])
+            if isinstance(item.get("errors"), list): item["errors"] = " | ".join(item["errors"])
             w.writerow({k: item.get(k, "") for k in fields})
 
 
 def main() -> None:
     cfg = load_config()
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
-    STATE_DIR.mkdir(parents=True, exist_ok=True)
-    ended = now_utc()
-    started = ended - timedelta(minutes=int(cfg.get("window_minutes", 60)))
+    DATA_DIR.mkdir(parents=True, exist_ok=True); OUT_DIR.mkdir(parents=True, exist_ok=True); STATE_DIR.mkdir(parents=True, exist_ok=True)
+    ended = now_utc(); started = ended - timedelta(minutes=int(cfg.get("window_minutes", 60)))
     rpc_url, rpc_errors = choose_rpc(cfg)
     latest_block = int(rpc_call(rpc_url, "eth_blockNumber", []), 16)
     start_block = find_block_at_or_before(rpc_url, int(started.timestamp()), latest_block)
     exchange_map = {normalize_address(x["address"]): x for x in cfg.get("exchange_addresses") or []}
     assets = [collect_token(rpc_url, token, cfg, start_block, latest_block, exchange_map) for token in ("USDT", "USDC")]
-
     payload = {
-        "engine": "MASTER_STABLECOIN_TREASURY_EXCHANGE_V1",
-        "generated_at_utc": iso(now_utc()), "window_start_utc": iso(started), "window_end_utc": iso(ended),
-        "chain": "ethereum", "rpc_url": rpc_url, "block_range": [start_block, latest_block],
-        "log_chunk_blocks": LOG_CHUNK_BLOCKS, "rpc_fallback_log": rpc_errors,
-        "coverage_rule": cfg.get("coverage_rule"),
+        "engine": "MASTER_STABLECOIN_TREASURY_EXCHANGE_V1", "generated_at_utc": iso(now_utc()),
+        "window_start_utc": iso(started), "window_end_utc": iso(ended), "chain": "ethereum",
+        "rpc_url": rpc_url, "block_range": [start_block, latest_block], "log_chunk_blocks": LOG_CHUNK_BLOCKS,
+        "rpc_fallback_log": rpc_errors, "coverage_rule": cfg.get("coverage_rule"),
         "rules": {
             "USDT": "Confirmed transfers from verified Tether Treasury address. Only destinations matching verified exchange registry count as Treasury->Exchange.",
             "USDC": "Zero-address mints are issuer mint destination proxy; they are not labeled Circle Treasury. Only verified exchange destinations count as Mint->Exchange.",
             "no_inference": "Unmatched addresses are never classified as exchanges.",
-            "stablecoin_supply": "Stablecoin supply increase is not equivalent to actual crypto spot buying.",
-        },
-        "assets": assets,
-    }
+            "stablecoin_supply": "Stablecoin supply increase is not equivalent to actual crypto spot buying."},
+        "assets": assets}
     SUMMARY_JSON.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-
-    old = read_history()
-    key: dict[tuple[str, str], dict[str, Any]] = {(r.get("window_end_utc", ""), r.get("token", "")): r for r in old}
+    old = read_history(); key = {(r.get("window_end_utc", ""), r.get("token", "")): r for r in old}
     for a in assets:
         row = {"window_end_utc": iso(ended), "window_start_utc": iso(started), **{k: a.get(k) for k in [
             "chain", "token", "mode", "status", "issuer_transfer_count", "issuer_transfer_amount",
             "verified_exchange_match_count", "verified_exchange_amount", "exchange_coverage", "errors"]}}
         key[(row["window_end_utc"] or "", row["token"])] = row
-    cutoff = ended - timedelta(days=90)
-    rows: list[dict[str, Any]] = []
+    cutoff = ended - timedelta(days=90); rows: list[dict[str, Any]] = []
     for r in key.values():
         try:
             dt = datetime.fromisoformat(str(r.get("window_end_utc", "")).replace("Z", "+00:00"))
-            if dt >= cutoff:
-                rows.append(r)
-        except Exception:
-            rows.append(r)
-    rows.sort(key=lambda r: (str(r.get("window_end_utc", "")), str(r.get("token", ""))))
-    write_history(rows)
-
-    state = {
-        "last_run_utc": iso(now_utc()), "rpc_url": rpc_url,
-        "ok_count": sum(a["status"] == "OK" for a in assets),
-        "partial_count": sum(a["status"] == "PARTIAL" for a in assets),
-        "na_count": sum(a["status"] == "N/A" for a in assets),
-        "verified_exchange_labels": len(exchange_map), "rpc_fallback_log": rpc_errors,
-        "asset_errors": {a["token"]: a.get("errors", []) for a in assets if a.get("errors")},
-    }
+            if dt >= cutoff: rows.append(r)
+        except Exception: rows.append(r)
+    rows.sort(key=lambda r: (str(r.get("window_end_utc", "")), str(r.get("token", "")))); write_history(rows)
+    state = {"last_run_utc": iso(now_utc()), "rpc_url": rpc_url,
+        "ok_count": sum(a["status"] == "OK" for a in assets), "partial_count": sum(a["status"] == "PARTIAL" for a in assets),
+        "na_count": sum(a["status"] == "N/A" for a in assets), "verified_exchange_labels": len(exchange_map),
+        "rpc_fallback_log": rpc_errors, "asset_errors": {a["token"]: a.get("errors", []) for a in assets if a.get("errors")}}
     STATE_PATH.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(state, ensure_ascii=False))
 
