@@ -1,0 +1,99 @@
+name: MASTER MARKET Contract Guard
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'master_prompts/master_market_v1_2_current.md'
+      - 'state/master_market_v1_2_contract.json'
+      - '.github/workflows/master_market_contract_guard.yml'
+  pull_request:
+    paths:
+      - 'master_prompts/master_market_v1_2_current.md'
+      - 'state/master_market_v1_2_contract.json'
+      - '.github/workflows/master_market_contract_guard.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-cumulative-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate MASTER MARKET cumulative lock
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          prompt_path = Path('master_prompts/master_market_v1_2_current.md')
+          contract_path = Path('state/master_market_v1_2_contract.json')
+          assert prompt_path.exists(), 'canonical MASTER MARKET prompt missing'
+          assert contract_path.exists(), 'MASTER MARKET contract missing'
+
+          p = prompt_path.read_text(encoding='utf-8')
+          c = json.loads(contract_path.read_text(encoding='utf-8'))
+
+          required_prompt_tokens = [
+              'ABSOLUTE ANTI-OMISSION LOCK',
+              'Coinness',
+              'News TOP5',
+              '경제지표·이벤트 캘린더',
+              'Sean Farrell',
+              'Stanley Druckenmiller',
+              'BTC.D',
+              'ETH.D',
+              '24H 거래량',
+              'OI/Funding',
+              '1H/4H/24H',
+              'CVD',
+              'Taker Buy/Sell',
+              'Basis',
+              'Depth',
+              'SCREEN 1',
+              'SCREEN 2',
+              'SCREEN 3',
+              'SCREEN 4',
+              'SCREEN 5',
+              '55 = 상승 초입 신호',
+              '다음 정식 보고 시간',
+              'master_market_official_history.csv'
+          ]
+          missing = [x for x in required_prompt_tokens if x not in p]
+          if missing:
+              raise SystemExit('MASTER MARKET prompt regression: missing required tokens: ' + ', '.join(missing))
+
+          no = c.get('no_silent_omission') or {}
+          assert no.get('enabled') is True, 'no_silent_omission must remain enabled'
+          assert c.get('required_output', {}).get('screen_count') == 5, 'OFFICIAL must remain exactly 5 screens'
+          assert c.get('official_score_history', {}).get('no_backfill') is True, 'score-history no-backfill must remain true'
+          assert c.get('official_score_history', {}).get('append_only') is True, 'official score history must remain append-only'
+
+          required_data_groups = {
+              'macro_liquidity', 'crypto_capital_flow', 'market_breadth_rotation',
+              'whale', 'derivatives', 'news_and_calendar', 'secondary_confirmation'
+          }
+          got = set((c.get('required_data') or {}).keys())
+          miss_groups = sorted(required_data_groups - got)
+          if miss_groups:
+              raise SystemExit('MASTER MARKET contract regression: missing groups: ' + ', '.join(miss_groups))
+
+          required_news = set(c['required_data']['news_and_calendar'])
+          for x in ['Coinness fast news radar', 'News TOP5', 'Economic indicator calendar']:
+              if x not in required_news:
+                  raise SystemExit('MASTER MARKET news regression: ' + x)
+
+          breadth = set(c['required_data']['market_breadth_rotation'])
+          for x in ['CRYPTO_TOTAL_MCAP', 'CRYPTO_24H_VOLUME', 'BTC_DOMINANCE', 'ETH_DOMINANCE']:
+              if x not in breadth:
+                  raise SystemExit('MASTER MARKET breadth regression: ' + x)
+
+          deriv = set(c['required_data']['derivatives'])
+          for x in ['OI', 'Funding', 'OI 1H/4H/24H change', 'CVD', 'Taker Buy/Sell', 'Basis', 'Depth', 'Volume']:
+              if x not in deriv:
+                  raise SystemExit('MASTER MARKET derivatives regression: ' + x)
+
+          print('MASTER_MARKET_CUMULATIVE_CONTRACT=PASS')
+          print('NO_SILENT_OMISSION=PASS')
+          PY
