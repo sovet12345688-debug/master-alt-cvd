@@ -1,0 +1,63 @@
+name: BTC TREND V3.0 Restart Research Guard
+
+on:
+  push:
+    branches: [btc-trend-v30-restart-final]
+    paths:
+      - 'btc_trend_v30_restart/**'
+      - '.github/workflows/btc_trend_v30_restart_*.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: btc-trend-v30-restart-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  isolation-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Validate restart research isolation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main:refs/remotes/origin/main
+          changed="$(git diff --name-only origin/main...HEAD)"
+          echo "$changed"
+          bad="$(printf '%s\n' "$changed" | grep -Ev '^(btc_trend_v30_restart/|\.github/workflows/btc_trend_v30_restart_[A-Za-z0-9_.-]+\.yml$)' || true)"
+          if [ -n "$bad" ]; then
+            echo 'Forbidden restart research changes outside isolated scope:'
+            echo "$bad"
+            exit 1
+          fi
+          echo 'V3_RESTART_ISOLATION=PASS'
+      - name: Validate restart workflows remain read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=$(find .github/workflows -maxdepth 1 -type f -name 'btc_trend_v30_restart_*.yml' -print)
+          test -n "$files"
+          for f in $files; do
+            echo "AUDIT $f"
+            if grep -nE '^[[:space:]]+contents:[[:space:]]*write$|^[[:space:]]+pull-requests:[[:space:]]*write$|^[[:space:]]+(git push|gh api .*(-X|--method)[[:space:]]*(POST|PUT|PATCH|DELETE))' "$f"; then
+              echo "Write-capable command/permission found in $f"
+              exit 1
+            fi
+          done
+          echo 'V3_RESTART_WORKFLOWS_READ_ONLY=PASS'
+      - name: Validate frozen production paths untouched
+        shell: bash
+        run: |
+          set -euo pipefail
+          changed="$(git diff --name-only origin/main...HEAD)"
+          if printf '%s\n' "$changed" | grep -Eq '^(derivatives/|live_flow/|market_vault/|market_whales/|master_prompts/|state/master_market_|btc_fractal/)'; then
+            echo 'Production/shared/frozen BTC fractal path touched by restart research'
+            exit 1
+          fi
+          echo 'FROZEN_PATHS_UNTOUCHED=PASS'
