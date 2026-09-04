@@ -31,7 +31,10 @@ def turning_zone_labels(features: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     top_dd = float(c.get("top_max_drawdown_from_high", -0.12)); top_r90 = float(c.get("top_min_ret90", 0.25))
 
     bottom = pd.Series(False, index=features.index); top = pd.Series(False, index=features.index)
-    up30_time = pd.Series(pd.NaT, index=features.index); dn20_time = pd.Series(pd.NaT, index=features.index)
+    # Keep forward-hit timestamps timezone-safe across both tz-aware and tz-naive historical indexes.
+    # Object dtype prevents pandas from coercing UTC timestamps into a tz-naive datetime64 container.
+    up30_time = pd.Series([pd.NaT] * len(features), index=features.index, dtype="object")
+    dn20_time = pd.Series([pd.NaT] * len(features), index=features.index, dtype="object")
     for i in range(len(p)):
         p0 = p.iloc[i]
         if not np.isfinite(p0) or i + 1 >= len(p):
