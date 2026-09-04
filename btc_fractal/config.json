@@ -1,6 +1,6 @@
 {
-  "engine": "BTC_HISTORICAL_REGIME_OUTCOME_V0_3_3",
-  "schema_version": "0.3.3",
+  "engine": "BTC_HISTORICAL_REGIME_OUTCOME_V0_3_4",
+  "schema_version": "0.3.4",
   "start_date": "2011-01-01",
   "feature_windows_days": [7, 30, 90, 180, 365],
   "up_targets_pct": [30, 50, 100, 150, 200],
@@ -107,18 +107,44 @@
       "monotonic_tolerance_pp": 3.0
     }
   },
+  "v034": {
+    "top_k_per_regime": 5,
+    "min_regime_representatives": 4,
+    "global_neighbor_k": 24,
+    "full_support_representatives": 10,
+    "full_support_years": 5,
+    "score_weights": {
+      "absolute": 0.4,
+      "normalized": 0.4,
+      "enrichment": 0.2
+    },
+    "direction_min_score_gap": 4.0,
+    "direction_balance_temperature": 9.0,
+    "acceptance": {
+      "min_independent_episodes": 30,
+      "min_direction_coverage_pct": 50.0,
+      "min_balanced_accuracy": 55.0,
+      "min_each_class_recall_pct": 35.0,
+      "min_minority_prediction_pct": 20.0,
+      "min_regime_exact_accuracy": 24.0,
+      "min_regime_top2_accuracy": 45.0
+    }
+  },
   "notes": [
-    "V0.3.1 failed because raw price-core accuracy did not beat a naive always-UP benchmark and balanced accuracy was near random.",
-    "V0.3.2 reduced class-prior bias but still failed balanced-accuracy, down-recall, and confidence-calibration gates.",
-    "V0.3.3 removes class-frequency advantage at the analog-comparison stage: UP30_FIRST and DN20_FIRST compete with exactly the same number of independent episode representatives.",
-    "One historical episode may represent only one side globally, chosen by its most-similar eligible anchor, so one regime cannot populate both fractal and counter-fractal lists.",
-    "The class score is predeclared as 50% mean similarity + 30% median similarity + 20% best-match similarity across top-5 episodes per class.",
-    "Direction requires a minimum class-score gap, paired-rank majority, and mean/median/top1 metric majority; otherwise the engine ABSTAINS.",
-    "Validation remains one predeclared walk-forward anchor per independent point-in-time test episode and must report balanced accuracy plus both class recalls.",
-    "Current V0.3.3 work is price-core only. On-chain/macro confirmation is retested only after the class-balanced core passes; derivatives/ETF layers stay blocked.",
-    "No future data may be used in feature construction, episode assignment, candidate outcomes, or validation labels.",
+    "V0.3.1 exposed overconfidence and an almost-always-UP price core.",
+    "V0.3.2 improved debiasing but still failed balanced accuracy and down-recall.",
+    "V0.3.3 equalized UP/DOWN analog counts, but equal counts alone did not remove similarity-distribution bias.",
+    "V0.3.4 changes the objective from a single future-direction score to a two-stage engine aligned with the user's actual goal: historical regime similarity first, then forward outcomes of matched historical regimes.",
+    "Stage 1 scores six regimes separately: panic/capitulation, bottom, up-ignition, uptrend, top, and down-ignition.",
+    "A regime score combines absolute similarity, similarity normalized inside that regime's own historical distribution, and nearest-neighbor enrichment, then applies support/diversity quality adjustment.",
+    "Stage 2 reports forward MFE/MAE and target-hit histories for selected dominant-regime analogs. These are historical case rates, never labeled calibrated probabilities unless a later calibration test passes.",
+    "The directional summary remains a secondary output, uses bullish-regime versus bearish-regime evidence, and may ABSTAIN.",
+    "Validation keeps the hard gates: balanced accuracy and both directional recalls. It also adds exact-regime and top-2-regime classification checks.",
+    "Score maximization means improving discrimination, stability, coverage and calibration. Displayed scores must never be inflated by lowering gates or fitting to the current outcome.",
+    "No future data may be used in feature construction, episode assignment, candidate availability or analog scoring. Historical archetype forward labels are used only after their outcome horizon is fully known at query time.",
     "N/A is excluded and weights are renormalized; N/A is never zero-filled.",
     "MVRVZ_DERIVED_PIT is a point-in-time derived proxy, not a vendor-reported official MVRV Z-Score.",
-    "MASTER BTC TREND scoring, entry gates, schedule, and live plan remain untouched."
+    "On-chain/macro confirmation, derivatives Layer B and ETF Layer C remain blocked until the regime core is validated.",
+    "MASTER BTC TREND scoring, entry gates, schedule and live plan remain untouched."
   ]
 }
