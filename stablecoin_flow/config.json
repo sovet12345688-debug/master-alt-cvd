@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0",
+  "chain": "ethereum",
+  "rpc_urls": [
+    "https://ethereum-rpc.publicnode.com",
+    "https://rpc.ankr.com/eth"
+  ],
+  "window_minutes": 60,
+  "tokens": {
+    "USDT": {
+      "contract": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "decimals": 6,
+      "issuer_flow_mode": "treasury_outflow",
+      "treasury_addresses": [
+        {
+          "address": "0x5754284f345afc66a98fbb0a0afe71e0f007b949",
+          "label": "Tether Treasury",
+          "source": "https://etherscan.io/address/0x5754284f345afc66a98fbb0a0afe71e0f007b949"
+        }
+      ]
+    },
+    "USDC": {
+      "contract": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "decimals": 6,
+      "issuer_flow_mode": "mint_destination_proxy",
+      "contract_source": "https://developers.circle.com/stablecoins/usdc-contract-addresses"
+    }
+  },
+  "exchange_addresses": [
+    {
+      "address": "0x28c6c06298d514db089934071355e5743bf21d60",
+      "exchange": "Binance",
+      "label": "Binance 14",
+      "source": "https://etherscan.io/address/0x28c6c06298d514db089934071355e5743bf21d60"
+    },
+    {
+      "address": "0xaa8ba7d4611437141192e7ceced531bc0a133efb",
+      "exchange": "Kraken",
+      "label": "Kraken Hot Wallet 5",
+      "source": "https://etherscan.io/address/0xaa8ba7d4611437141192e7ceced531bc0a133efb"
+    }
+  ],
+  "coverage_rule": "Exchange matching is partial and only covers explicitly verified addresses in this registry. No unmatched destination may be inferred as an exchange."
+}
