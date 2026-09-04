@@ -1,0 +1,50 @@
+name: BTC TREND V3.0 Phase1.5 Validation
+
+on:
+  push:
+    branches: [btc-trend-v30-build]
+    paths:
+      - 'btc_trend_v30/run_phase15.py'
+      - '.github/workflows/btc_trend_v30_phase15.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: '1'
+
+jobs:
+  validate-phase15:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install research dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas requests
+      - name: Run Phase1.5
+        run: python btc_trend_v30/run_phase15.py
+      - name: Show compact verdict
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          p='btc_trend_v30/output/phase15/summary.json'
+          d=json.load(open(p,encoding='utf-8'))
+          q=d['phase_1_5']
+          print('ENGINE=',d['engine'])
+          print('ORIGIN=',q['origin_frozen_from_phase14'])
+          print('AUDIT=',q['origin_audit'])
+          print('ZONE_LONG=',q['zone_long']['pass'],q['zone_long']['comparison'])
+          print('ZONE_SHORT=',q['zone_short']['pass'],q['zone_short']['comparison'])
+          print('OVERALL=',d['overall_stage'])
+          PY
+      - name: Upload Phase1.5 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v30-phase15
+          path: btc_trend_v30/output/phase15/
+          retention-days: 14
