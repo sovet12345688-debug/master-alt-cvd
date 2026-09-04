@@ -1,0 +1,54 @@
+name: BTC TREND V3.0 Phase1.4 Validation
+
+on:
+  push:
+    branches: [btc-trend-v30-build]
+    paths:
+      - 'btc_trend_v30/run_phase14.py'
+      - 'btc_trend_v30/run_phase11_12_13.py'
+      - 'btc_trend_v30/run_phase11_12_13_fast.py'
+      - '.github/workflows/btc_trend_v30_phase14.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: '1'
+
+jobs:
+  validate-phase14:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install research dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas requests
+      - name: Run Phase1.4
+        run: python btc_trend_v30/run_phase14.py
+      - name: Show compact verdict
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          p='btc_trend_v30/output/phase14/summary.json'
+          d=json.load(open(p,encoding='utf-8'))
+          q=d['phase_1_4']
+          print('ENGINE=',d['engine'])
+          print('ORIGIN_PASS=',q['origin_gate_pass'])
+          print('LONG=',q['LONG_SOFT_FRACTAL_OOS'])
+          print('SHORT=',q['SHORT_SOFT_FRACTAL_OOS'])
+          print('FRACTAL=',q['fractal_utility'])
+          print('ZONE_LONG=',q['zone_long']['pass'],q['zone_long']['comparison'])
+          print('ZONE_SHORT=',q['zone_short']['pass'],q['zone_short']['comparison'])
+          print('OVERALL=',d['overall_stage'])
+          PY
+      - name: Upload Phase1.4 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v30-phase14
+          path: btc_trend_v30/output/phase14/
+          retention-days: 14
