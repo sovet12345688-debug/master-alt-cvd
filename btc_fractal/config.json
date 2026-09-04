@@ -1,6 +1,6 @@
 {
-  "engine": "BTC_HISTORICAL_REGIME_OUTCOME_V0_3_5",
-  "schema_version": "0.3.5",
+  "engine": "BTC_HISTORICAL_REGIME_OUTCOME_V0_3_6",
+  "schema_version": "0.3.6",
   "start_date": "2011-01-01",
   "feature_windows_days": [7, 30, 90, 180, 365],
   "up_targets_pct": [30, 50, 100, 150, 200],
@@ -37,34 +37,25 @@
     "acceptance": {"min_independent_episodes": 30, "min_direction_coverage_pct": 50.0, "min_balanced_accuracy": 55.0, "min_each_class_recall_pct": 35.0, "min_minority_prediction_pct": 20.0, "min_regime_exact_accuracy": 24.0, "min_regime_top2_accuracy": 45.0}
   },
   "v035": {
-    "top_k_per_regime": 5,
-    "min_regime_representatives": 4,
-    "full_support_representatives": 10,
-    "full_support_years": 5,
+    "top_k_per_regime": 5, "min_regime_representatives": 4, "full_support_representatives": 10, "full_support_years": 5,
     "score_weights": {"absolute": 0.45, "normalized": 0.55},
-    "direction_min_regime_margin": 3.0,
-    "direction_balance_temperature": 8.0,
-    "acceptance": {
-      "min_independent_episodes": 30,
-      "min_regime_exact_accuracy": 40.0,
-      "min_exact_gain_vs_naive_pp": 3.0,
-      "min_balanced_top1_recall": 30.0,
-      "min_balanced_top2_recall": 50.0,
-      "min_direction_coverage_pct": 45.0,
-      "min_direction_balanced_accuracy": 55.0,
-      "min_each_direction_recall_pct": 35.0,
-      "min_minority_direction_pct": 20.0
-    }
+    "direction_min_regime_margin": 3.0, "direction_balance_temperature": 8.0,
+    "acceptance": {"min_independent_episodes": 30, "min_regime_exact_accuracy": 40.0, "min_exact_gain_vs_naive_pp": 3.0, "min_balanced_top1_recall": 30.0, "min_balanced_top2_recall": 50.0, "min_direction_coverage_pct": 45.0, "min_direction_balanced_accuracy": 55.0, "min_each_direction_recall_pct": 35.0, "min_minority_direction_pct": 20.0}
+  },
+  "v036": {
+    "price_pool_k": 40,
+    "domain_per_class_k": 5,
+    "domain_min_per_class": 4,
+    "domain_min_score_gap": 1.25,
+    "domain_min_pair_wins": 3
   },
   "notes": [
-    "V0.3.1 exposed overconfidence and an almost-always-UP price core.",
-    "V0.3.2 improved debiasing but still failed balanced accuracy and down-recall.",
-    "V0.3.3 equalized UP/DOWN analog counts but did not remove similarity-distribution bias.",
-    "V0.3.4 separated historical regime similarity from historical forward outcomes and showed that regime classification can be more useful than forcing one future-direction score.",
-    "V0.3.5 gives each regime a purpose-specific price feature subspace: bottom/top emphasize location-state, ignition emphasizes short path/turn, and uptrend emphasizes medium-long path.",
-    "Regime validation is now class-balanced and explicitly compared against naive most-common-regime baselines; direction prediction remains a separate secondary layer with unchanged hard quality gates.",
-    "Score maximization means improving validated discrimination, coverage, stability and calibration, never inflating numbers or lowering gates.",
-    "No future data may be used in feature construction, candidate availability, episode assignment or query scoring. Historical outcome labels are only usable once fully known at query time.",
-    "N/A is never zero-filled. MASTER BTC TREND scoring, gates, schedule and live plan remain untouched."
+    "V0.3.5 is the first recent FULL_PASS for both six-regime core and the secondary direction layer on 52 independent PIT episodes.",
+    "V0.3.6 freezes the V0.3.5 price/regime core and retests on-chain/macro strictly as confirmation or contradiction evidence.",
+    "Each confirmation domain is evaluated only inside a price-similar independent-episode pool and compares equal counts of UP30_FIRST versus DN20_FIRST cases to avoid class-frequency bias.",
+    "The original confirmation utility hurdles remain unchanged: >=20 confirmed cases with >=+3pp accuracy gain, plus either strong both-domain confirmation or useful conflict separation.",
+    "A failed confirmation test cannot invalidate the V0.3.5 price/regime core and cannot change its direction; it only decides whether on-chain/macro deserve a validated confirmation role.",
+    "Score maximization means improving validated discrimination, coverage, stability and calibration, never inflating scores or lowering gates.",
+    "No future data leakage, no N/A zero-fill, and MASTER BTC TREND scoring/gates/schedule/live plan remain untouched."
   ]
 }
