@@ -6,7 +6,8 @@ on:
     - cron: '37 0 * * *'
   push:
     paths:
-      - 'onchain/**'
+      - 'onchain/collector.py'
+      - 'onchain/requirements.txt'
       - '.github/workflows/onchain_daily.yml'
 
 permissions:
