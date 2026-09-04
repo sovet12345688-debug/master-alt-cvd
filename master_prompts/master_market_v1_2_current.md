@@ -40,6 +40,14 @@ Rules: no conclusion-first fitting; dedup same raw event by EVENT_ID; do not syn
 
 Use CONFIRMED / INTERPRETATION / INFERENCE / N/A. No reconstruction/interpolation/guessing. N/A != 0. Renormalize confirmed weights only. Coverage <70% = partial calculation, Confidence max C, no strong threshold alert. Mini-trends require >=3 actual OFFICIAL points.
 
+## CHANGE-WINDOW LOCK — 1D / 3D / 7D
+
+For the four locked summary tables below, change windows are cumulative and fixed as `1D | 3D | 7D`, in that order. `1D` and `3D` are inserted before the existing `7D` column; `7D` is not removed.
+- Use only actual stored values, actual cumulative flow, or same-source comparable observations.
+- Never interpolate or reconstruct a missing 1D/3D value from unrelated snapshots.
+- If a valid 1D or 3D comparison cannot be produced, keep the column and print `N/A`.
+- This applies to: SCREEN1 core 5-axis table, SCREEN2 macro table, SCREEN4 institution-vs-whale-vs-retail table, SCREEN5 core-axis table.
+
 ## SCHEDULE
 
 KST hourly. OFFICIAL = 01:00/05:00/09:00/13:00/17:00/21:00 and outputs exactly 5 screens. Other hours = URGENT WATCH ONLY and only notify meaningful new change. OFFICIAL RUN_ID=`MMARKET-V12-YYYYMMDD-HH00-KST`; WATCH=`MMARKET-WATCH-YYYYMMDD-HH00-KST`. Only OFFICIAL updates official score history. WATCH/manual non-official never overwrite it.
@@ -81,7 +89,7 @@ Always make `55 = 상승 초입 신호` visible. Fixed thresholds: 55 / 65 / 75.
 
 ## OIL HARD IMPORTANCE
 
-WTI + Brent mandatory attempt every run. Separate current/prior/7D/cause/inflation pressure/rate-DXY transmission/BTC-ETH actual response. Oil rise alone does not automatically equal Risk-Off. Do not double-deduct the same oil event through Oil→Inflation→Rates.
+WTI + Brent mandatory attempt every run. Separate current/prior/1D/3D/7D/cause/inflation pressure/rate-DXY transmission/BTC-ETH actual response when comparable data exists. Oil rise alone does not automatically equal Risk-Off. Do not double-deduct the same oil event through Oil→Inflation→Rates.
 
 ## ETF / STABLECOIN
 
@@ -105,7 +113,7 @@ P↓OI↓ = deleveraging.
 
 100 very positive / 50 neutral / 0 very negative.
 80-100 very positive | 65-79 positive | 55-64 weak positive | 45-54 mixed | 30-44 negative | 0-29 very negative.
-Show current/100, prior delta, 7D delta, direction and acceleration/deceleration using actual stored/actual cumulative data only.
+Show current/100, prior delta, 1D delta, 3D delta, 7D delta, direction and acceleration/deceleration using actual stored/actual cumulative data only.
 
 ## RISK VETO
 
@@ -121,14 +129,14 @@ LEVEL2: at least two independent aligned axes. NO ALERT for unknown wallet alone
 
 ## SCREEN 1 — 지금 돈은 어디로 가고 있나
 Top: 시장상태 | 지금 행동환경 | 큰돈 선행1위 | 가장 큰 위험.
-5 axes: 글로벌유동성 / 크립토자금 / ALT자금 / 고래수급 / 개미과열, each current | prior delta | 7D | positive/100.
+5 axes: 글로벌유동성 / 크립토자금 / ALT자금 / 고래수급 / 개미과열. Locked table columns = `축 | 현재 | 직전Δ | 1D | 3D | 7D | 긍정도/100`.
 Institution/whale/retail traffic lights.
 Rotation USD→Stablecoin→BTC→ETH→ALT current/prior/7D.
 RESTORED compact market-breadth line: `전체시총 | 24H 거래량 | BTC.D | ETH.D`, with prior delta when source-compatible.
 Prior-change TOP3 and 7D improve TOP3 / worsen TOP3.
 
 ## SCREEN 2 — 세계 돈·금리·달러·유가 환경
-Required table columns: `항목 | 현재상태(신호등) | 현재값 | 직전Δ | 7D | 코인긍정도/100 | 쉬운해석`.
+Required table columns: `항목 | 현재상태(신호등) | 현재값 | 직전Δ | 1D | 3D | 7D | 코인긍정도/100 | 쉬운해석`.
 Must attempt: global liquidity, 2Y/10Y/30Y, 10Y real yield, DXY, WTI, Brent, Fed/TGA/Reserves/QRA/Buyback/M2/equities as applicable. Keep missing rows as N/A.
 Show BTC Liquidity Lead /100 with fixed 55/65/75 thresholds.
 Oil detail mandatory.
@@ -142,11 +150,11 @@ Fixed text: `Stablecoin 공급 증가 ≠ 실제 매수`.
 BTC whales max10 + ETH whales max10 as confirmed. Whale table: `# | 고래 | 방향/규모 | 진입가 | 배수 | 청산가 | 청산거리 | 직전변화* | 최근최대6회 실제시계열 | 상태`.
 <3 points = `현재값 · 데이터 축적 중`.
 Include major Hyperliquid accounts.
-Institution vs whale vs retail current/prior/7D/positive.
+Institution vs whale vs retail locked table columns = `주체 | 현재 | 직전 | 1D | 3D | 7D | 긍정도/100`.
 RESTORED derivatives subsection must read GitHub OI/Funding history every run when fresh and show BTC/ETH 1H/4H/24H OI/Funding changes. Also show CVD/Taker Buy-Sell/Long-Short/Liquidation/Basis/Depth/Volume as confirmed values or explicit N/A.
 
-## SCREEN 5 — 최근7일 변화 + 최종 시장판정
-Core-axis table: liquidity/rates/DXY/oil/ETF/stablecoin/BTC whale/ETH whale/retail current/prior delta/7D delta/positive.
+## SCREEN 5 — 최근1·3·7일 변화 + 최종 시장판정
+Core-axis locked table columns = `핵심축 | 현재 | 직전Δ | 1DΔ | 3DΔ | 7DΔ | 긍정도/100` for liquidity/rates/DXY/oil/ETF/stablecoin/BTC whale/ETH whale/retail.
 Mini-graphs only if >=3 actual OFFICIAL points: Market Positive / Crypto Money Inflow / Big Money Flow / ALT Money Inflow.
 Rotation progress, current money frontier, risk radar.
 Final: `시장상태 | LONG/SHORT/WAIT 환경판정(Entry 아님) | 추격여부 | 큰돈방향 | 가장 가까운 선행자금 | 다음확인조건`.
@@ -169,6 +177,7 @@ No historical backfill. WATCH/manual non-official must not write/overwrite this 
 
 - `market_vault/` is historical comparison cache only, not a score and not a substitute for direct current-market verification.
 - Use market_vault when fresh for official same-source history: 2Y/10Y/30Y/10Y-real, EFFR, SOFR, TGA, USDT/USDC/total stablecoin, BTC.D/ETH.D/total market cap/24H volume.
+- For all locked 1D/3D/7D table windows, use same-source history or actual cumulative flow only. Missing history stays N/A; no interpolation/backfill.
 - Use `derivatives/output/latest_summary.json` when fresh for venue-locked Price/OI/Funding and 1H/4H/24H changes.
 - Use `market_whales/output/latest_summary.json` and events/history when fresh for Hyperliquid official-API-derived position data.
 - Current direct sources remain primary for DXY/oil/equities/Fed balance sheet/ETF/news when GitHub does not have a validated adapter.
