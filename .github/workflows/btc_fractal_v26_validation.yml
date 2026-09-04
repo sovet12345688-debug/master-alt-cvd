@@ -39,20 +39,24 @@ jobs:
           python -m py_compile btc_fractal/run_v26_v042.py
           python -m py_compile btc_fractal/run_v26_v050.py
           python -m py_compile btc_fractal/run_v26_v051.py
+          python -m py_compile btc_fractal/run_v26_v060.py
       - name: Revalidate V0.4.2 Layer B same-era
         run: python btc_fractal/run_v26_v042.py
       - name: Build and validate V0.5.1 Layer C ETF fallback
         run: python btc_fractal/run_v26_v051.py
+      - name: Final pre-integration audit V0.6.0
+        run: python btc_fractal/run_v26_v060.py
       - name: Show summaries
         run: |
           cat btc_fractal/output/build_meta.json
           cat btc_fractal/output/current_v035.json
           cat btc_fractal/output/v042_validation_summary.json
           cat btc_fractal/output/v051_validation_summary.json
+          cat btc_fractal/output/v060_preintegration_audit.json
       - name: Upload validation artifact
         uses: actions/upload-artifact@v4
         with:
-          name: btc-fractal-v051-layer-c-etf-validation
+          name: btc-fractal-v060-preintegration-audit
           path: |
             btc_fractal/output/*.json
             btc_fractal/output/*.csv
