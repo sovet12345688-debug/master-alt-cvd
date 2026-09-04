@@ -37,6 +37,8 @@ jobs:
 
           required_prompt_tokens = [
               'ABSOLUTE ANTI-OMISSION LOCK',
+              'FLEXIBLE RECOMMENDATION / CHANGE-MANAGEMENT LOCK',
+              'recommend freely, explain trade-offs, preserve by default',
               'Coinness',
               'News TOP5',
               '경제지표·이벤트 캘린더',
@@ -70,6 +72,16 @@ jobs:
           assert c.get('official_score_history', {}).get('no_backfill') is True, 'score-history no-backfill must remain true'
           assert c.get('official_score_history', {}).get('append_only') is True, 'official score history must remain append-only'
 
+          cm = c.get('change_management') or {}
+          assert cm.get('recommendation_freedom') is True, 'recommendation_freedom must remain enabled'
+          rule = str(cm.get('rule') or '')
+          if 'RECOMMEND FREELY' not in rule or 'PRESERVE BY DEFAULT' not in rule:
+              raise SystemExit('MASTER MARKET flexibility regression: recommendation/preservation rule missing')
+          ep = cm.get('execution_policy') or {}
+          for key in ['destructive_or_contract_breaking','score_weight_or_threshold_change','removal_or_replacement_of_existing_required_item']:
+              if 'explicit user approval' not in str(ep.get(key) or '').lower():
+                  raise SystemExit('MASTER MARKET approval regression: ' + key)
+
           required_data_groups = {
               'macro_liquidity', 'crypto_capital_flow', 'market_breadth_rotation',
               'whale', 'derivatives', 'news_and_calendar', 'secondary_confirmation'
@@ -96,4 +108,5 @@ jobs:
 
           print('MASTER_MARKET_CUMULATIVE_CONTRACT=PASS')
           print('NO_SILENT_OMISSION=PASS')
+          print('FLEXIBLE_RECOMMENDATION_POLICY=PASS')
           PY
