@@ -1,0 +1,50 @@
+name: BTC TREND V3.0 Phase1.1-1.3 Sequential Validation
+
+on:
+  push:
+    branches: [btc-trend-v30-build]
+    paths:
+      - 'btc_trend_v30/**'
+      - '.github/workflows/btc_trend_v30_phase11_12_13.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: '1'
+
+jobs:
+  validate-phase11-12-13:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install research dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas requests
+      - name: Run Phase1.1 then 1.2 then 1.3
+        run: |
+          cd btc_trend_v30
+          python run_phase11_12_13.py
+      - name: Show compact verdict
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          p='btc_trend_v30/output/phase11_12_13/summary.json'
+          d=json.load(open(p,encoding='utf-8'))
+          print('ENGINE=',d['engine'])
+          print('PHASE11=',d['phase_1_1']['pass'],d['phase_1_1']['LONG_OOS'],d['phase_1_1']['SHORT_OOS'])
+          print('PHASE12=',d['phase_1_2']['pass'],d['phase_1_2']['LONG_OOS'],d['phase_1_2']['SHORT_OOS'])
+          print('PHASE13=',d['phase_1_3']['pass'],d['phase_1_3']['LONG_BUCKETS'],d['phase_1_3']['SHORT_BUCKETS'])
+          print('OVERALL=',d['overall_stage'])
+          PY
+      - name: Upload Phase1.1-1.3 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v30-phase11-12-13
+          path: btc_trend_v30/output/phase11_12_13/
+          retention-days: 14
