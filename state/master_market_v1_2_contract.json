@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "master": "MASTER MARKET V1.2",
   "status": "FINAL_CUMULATIVE_LOCK",
   "updated_kst": "2026-09-04T14:37:00+09:00",
@@ -11,6 +11,29 @@
     "version_upgrade_behavior": "COPY FORWARD ALL REQUIRED ITEMS FROM THE PRIOR FINAL CONTRACT, THEN ADD NEW ITEMS. DELETION REQUIRES EXPLICIT USER COMMAND.",
     "score_behavior": "Recovered auxiliary blocks do not create new score weights or change thresholds. News only affects an existing owner axis after independent confirmation; opinion blocks have score weight 0.",
     "git_behavior": "Existing data collectors and outputs must not be modified or deleted as a side effect of prompt/version upgrades. GitHub data layers remain read-only providers unless the user explicitly orders a code change."
+  },
+  "change_management": {
+    "recommendation_freedom": true,
+    "rule": "RECOMMEND FREELY, EXPLAIN TRADE-OFFS, PRESERVE BY DEFAULT, EXECUTE DESTRUCTIVE OR CONTRACT-BREAKING CHANGES ONLY WITH USER APPROVAL.",
+    "allowed_recommendations": [
+      "data-source upgrade or replacement",
+      "GitHub collector or schema improvement",
+      "new data layer or adapter",
+      "freshness/quality validation improvement",
+      "output layout or readability improvement",
+      "deprecation or replacement of a weak source",
+      "score-history or persistence improvement"
+    ],
+    "recommendation_channels": ["report body", "audit note", "follow-up questions"],
+    "execution_policy": {
+      "additive_non_destructive": "may be proposed proactively; implementation should preserve the locked information set unless the user explicitly authorizes a contract change",
+      "destructive_or_contract_breaking": "requires explicit user approval before execution",
+      "score_weight_or_threshold_change": "requires explicit user approval before execution",
+      "removal_or_replacement_of_existing_required_item": "requires explicit user approval before execution",
+      "production_github_collector_change": "if unavoidable for compatibility or source/API drift, explain why, what changes, what is preserved, expected benefit, and regression risk; obtain user approval before destructive or behavior-changing execution",
+      "output_layout_change": "recommend freely; until approved, do not hide or delete required information"
+    },
+    "flexibility_intent": "Anti-omission is a preservation default, not a ban on intelligent recommendations or future improvements."
   },
   "schedule": {
     "timezone": "Asia/Seoul",
