@@ -1,6 +1,6 @@
 {
-  "engine": "BTC_HISTORICAL_REGIME_OUTCOME_V0_3_2",
-  "schema_version": "0.3.2",
+  "engine": "BTC_HISTORICAL_REGIME_OUTCOME_V0_3_3",
+  "schema_version": "0.3.3",
   "start_date": "2011-01-01",
   "feature_windows_days": [7, 30, 90, 180, 365],
   "up_targets_pct": [30, 50, 100, 150, 200],
@@ -76,18 +76,49 @@
       "max_conflict_gap_pp": -3.0
     }
   },
+  "v033": {
+    "balanced_per_class_k": 5,
+    "min_per_class": 5,
+    "min_class_score_gap": 0.75,
+    "min_pair_wins": 3,
+    "min_metric_wins": 2,
+    "confidence_grade": {
+      "medium_min_gap": 1.5,
+      "high_min_gap": 3.0,
+      "medium_min_pair_wins": 4,
+      "high_min_pair_wins": 5,
+      "medium_min_score": 55,
+      "high_min_score": 75,
+      "high_min_distinct_years": 6
+    },
+    "core_acceptance": {
+      "min_independent_episodes": 30,
+      "min_coverage_pct": 50.0,
+      "min_balanced_accuracy": 55.0,
+      "min_balanced_gain_vs_v032_pp": 3.0,
+      "min_accuracy_gap_vs_always_up_pp": -2.0,
+      "min_each_class_recall_pct": 35.0,
+      "min_minority_prediction_pct": 25.0
+    },
+    "confidence_acceptance": {
+      "min_high_cases": 5,
+      "min_high_gain_pp": 7.0,
+      "max_high_coverage_pct": 30.0,
+      "monotonic_tolerance_pp": 3.0
+    }
+  },
   "notes": [
     "V0.3.1 failed because raw price-core accuracy did not beat a naive always-UP benchmark and balanced accuracy was near random.",
-    "V0.3.2 debiases analog voting with an inverse-square-root independent-episode class prior and similarity weighting.",
-    "V0.3.2 acceptance is based on one predeclared walk-forward anchor per point-in-time test episode, not overlapping monthly rows.",
-    "Balanced accuracy, both class recalls, prediction mix, coverage, and a naive training-majority benchmark are mandatory.",
-    "An ABSTAIN state is allowed when adjusted UP/DOWN support is too close.",
-    "On-chain and macro no longer search the full history independently for confirmation; they rerank only a price-similar independent-episode pool.",
-    "On-chain/macro remain confirmation or contradiction evidence only and cannot change the price-core direction.",
-    "No future data may be used in feature construction, episode assignment, class priors, or analog outcomes.",
+    "V0.3.2 reduced class-prior bias but still failed balanced-accuracy, down-recall, and confidence-calibration gates.",
+    "V0.3.3 removes class-frequency advantage at the analog-comparison stage: UP30_FIRST and DN20_FIRST compete with exactly the same number of independent episode representatives.",
+    "One historical episode may represent only one side globally, chosen by its most-similar eligible anchor, so one regime cannot populate both fractal and counter-fractal lists.",
+    "The class score is predeclared as 50% mean similarity + 30% median similarity + 20% best-match similarity across top-5 episodes per class.",
+    "Direction requires a minimum class-score gap, paired-rank majority, and mean/median/top1 metric majority; otherwise the engine ABSTAINS.",
+    "Validation remains one predeclared walk-forward anchor per independent point-in-time test episode and must report balanced accuracy plus both class recalls.",
+    "Current V0.3.3 work is price-core only. On-chain/macro confirmation is retested only after the class-balanced core passes; derivatives/ETF layers stay blocked.",
+    "No future data may be used in feature construction, episode assignment, candidate outcomes, or validation labels.",
     "N/A is excluded and weights are renormalized; N/A is never zero-filled.",
     "MVRVZ_DERIVED_PIT is a point-in-time derived proxy, not a vendor-reported official MVRV Z-Score.",
-    "Derivatives and ETF Layer B/C remain blocked until V0.3.2 passes its locked gates.",
     "MASTER BTC TREND scoring, entry gates, schedule, and live plan remain untouched."
   ]
 }
