@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "registry_name": "MONEY_GITHUB_DATA_READY_REGISTRY",
   "purpose": "Persistent state for A/B/C/D/E development readiness, version compatibility, final QA, integration history, and regression detection.",
-  "updated_utc": "2026-09-04T02:16:00Z",
+  "updated_utc": "2026-09-04T02:49:55Z",
   "write_policy": "STATE_CHANGE_ONLY",
   "master_auto_modify": false,
   "btc_trend_auto_modify": false,
@@ -21,78 +21,130 @@
   "goals": {
     "A": {
       "engine": "DERIVATIVES_OI_FUNDING",
-      "latest_compatible_version": "AUTO",
-      "completion_pct": null,
-      "status": "EVALUATE_ON_NEXT_RUN",
-      "final_qa": "PENDING",
+      "latest_compatible_version": "MASTER_DERIVATIVES_HISTORY_V1_1",
+      "completion_pct": 95,
+      "status": "DEV95_FINAL_QA",
+      "final_qa": "PENDING_WORKFLOW_AND_FULL_DUPLICATE_RECHECK",
       "master_targets": ["ALT_FINAL20_CURRENT", "BTC_TREND_CURRENT"],
       "master_link": "VERIFY_EXISTING_CLAUSES_ONLY_ON_EXPLICIT_USER_REQUEST",
       "expected_value": 8,
-      "next_action": "Run current contract QA and preserve existing approved integrations without automatic modification.",
+      "next_action": "Reconfirm recent production workflow health and full recent-24H duplicate/missing audit before DEV100.",
       "regression": "NONE_KNOWN",
       "last_dev100_compatible_contract": null,
-      "last_alerted_dev100_version": null
+      "last_alerted_dev100_version": null,
+      "evidence": {
+        "snapshot_utc": "2026-09-04T02:00:00Z",
+        "venue": "Bitget USDT Futures",
+        "coverage": "21/21 OK",
+        "windows": "1H/4H/24H populated",
+        "funding": "available",
+        "fallback": "none"
+      }
     },
     "B": {
       "engine": "HYPERLIQUID_WHALE_SIZE_BASED",
-      "latest_compatible_version": "AUTO",
-      "completion_pct": null,
-      "status": "EVALUATE_ON_NEXT_RUN",
-      "final_qa": "PENDING",
+      "latest_compatible_version": "1.1",
+      "completion_pct": 92,
+      "status": "DEVELOPMENT/ACCUMULATING",
+      "final_qa": "WAITING_FOR_FULL_24H_SIZE_HISTORY",
       "master_targets": ["MARKET_CURRENT"],
       "master_link": "NOT_INTEGRATED_UNLESS_ACTUAL_READ_ONLY_CLAUSE_VERIFIED",
       "expected_value": 9,
-      "next_action": "Validate real 24H signed-szi continuity, duplicate/missing guards, and production workflow health.",
+      "next_action": "Continue real signed-szi history until active previously-observed whales can populate valid 24H comparisons, then run duplicate/missing and workflow QA.",
       "regression": "NONE_KNOWN",
       "last_dev100_compatible_contract": null,
-      "last_alerted_dev100_version": null
+      "last_alerted_dev100_version": null,
+      "evidence": {
+        "snapshot_utc": "2026-09-04T02:00:00Z",
+        "engine": "MASTER_MARKET_WHALE_TIME_SERIES_V1_1",
+        "schema": "1.1",
+        "change_basis": "POSITION_SIZE_SZI",
+        "size_engine": "PASS",
+        "query_coverage": "301/301",
+        "active_market_whales": 32,
+        "24h_change_state": "not yet populated for sampled active whales"
+      }
     },
     "C": {
       "engine": "ALT_LIVE_LARGE_FLOW",
-      "latest_compatible_version": "AUTO",
-      "completion_pct": null,
-      "status": "EVALUATE_ON_NEXT_RUN",
-      "final_qa": "PENDING",
+      "latest_compatible_version": "ALT2_LIVE_LARGE_FLOW_V1/schema1.0",
+      "completion_pct": 92,
+      "status": "DEVELOPMENT/ACCUMULATING",
+      "final_qa": "WAITING_FOR_24H_COMPLETED_HOUR_CONTINUITY",
       "master_targets": ["ALT_FINAL20_CURRENT"],
       "master_link": "NOT_INTEGRATED_UNLESS_ACTUAL_READ_ONLY_CLAUSE_VERIFIED",
       "expected_value": 10,
-      "next_action": "Validate completed-hour 24H continuity, quality guard, duplicate/missing checks, and workflow health.",
+      "next_action": "Continue completed-hour collection until 24H windows reach required continuity, then run final duplicate/missing/workflow QA.",
       "regression": "NONE_KNOWN",
       "last_dev100_compatible_contract": null,
-      "last_alerted_dev100_version": null
+      "last_alerted_dev100_version": null,
+      "evidence": {
+        "target_completed_hour_utc": "2026-09-04T01:00:00Z",
+        "source": "Binance Spot public aggTrades API",
+        "supported": "18/18 OK",
+        "failures": 0,
+        "24h_hours_observed": 21,
+        "24h_coverage_pct": 87.5,
+        "24h_state": "BUILDING_HISTORY"
+      }
     },
     "D": {
       "engine": "MARKET_DATA_VAULT",
-      "latest_compatible_version": "AUTO",
-      "completion_pct": null,
-      "status": "EVALUATE_ON_NEXT_RUN",
-      "final_qa": "PENDING",
+      "latest_compatible_version": "MASTER_MARKET_DATA_VAULT_V1/schema1.1/collector1.2-official-keyless",
+      "completion_pct": 92,
+      "status": "DEVELOPMENT/ACCUMULATING",
+      "final_qa": "WAITING_FOR_ACTUAL_24H_COMPARISONS",
       "master_targets": ["MARKET_CURRENT"],
       "master_link": "NOT_INTEGRATED_UNLESS_ACTUAL_READ_ONLY_CLAUSE_VERIFIED",
       "expected_value": 9,
-      "next_action": "Validate same-source 24H comparisons, continuity, duplicates, observation-time semantics, and workflow health.",
+      "next_action": "Continue same-source history until at least five mandatory metrics have actual 24H comparisons, then run final source-lock/duplicate/workflow QA.",
       "regression": "NONE_KNOWN",
       "last_dev100_compatible_contract": null,
-      "last_alerted_dev100_version": null
+      "last_alerted_dev100_version": null,
+      "evidence": {
+        "snapshot_hour_utc": "2026-09-04T01:00:00Z",
+        "mandatory_coverage": "6/6 = 100%",
+        "failures": 0,
+        "history_rows": 280,
+        "same_source_rule": "present",
+        "mandatory_24h_comparisons": "not yet populated in latest summary"
+      }
     },
     "E": {
       "engine": "BTC_FRACTAL_LATEST_COMPATIBLE",
-      "latest_compatible_version": "AUTO_DISCOVER_FROM_ACTIVE_RESEARCH_HEAD",
-      "completion_pct": null,
+      "latest_compatible_version": "V0.3.7",
+      "completion_pct": 89,
       "status": "DEVELOPMENT_VALIDATION",
-      "final_qa": "STATISTICAL_ACCEPTANCE_REQUIRED",
+      "final_qa": "LATEST_VALIDATION_IN_PROGRESS",
       "master_targets": ["BTC_TREND_CURRENT"],
       "master_link": "AUTO_INTEGRATION_FORBIDDEN",
       "expected_value": 10,
-      "next_action": "Evaluate latest compatible candidate against predeclared independent OOS, balanced accuracy, confidence calibration, and incremental confirmation utility gates.",
+      "next_action": "Wait for latest V0.3.7 validation and PR validation to complete, then evaluate predeclared statistical acceptance and confidence/confirmation gates.",
       "regression": "NONE_KNOWN",
       "last_dev100_compatible_contract": null,
-      "last_alerted_dev100_version": null
+      "last_alerted_dev100_version": null,
+      "evidence": {
+        "research_head": "btc-fractal-v26-build",
+        "head_sha": "2c1f80dd206db27d0216be89ac5215eb1615456d",
+        "latest_commit_message": "Fix V0.3.7 timezone-aware turning-zone timestamps",
+        "latest_validation": "in_progress",
+        "prior_v037_validation_failure_observed": true
+      }
     }
   },
   "integration_history": [],
   "regression_history": [],
-  "compatibility_events": [],
+  "compatibility_events": [
+    {
+      "timestamp_utc": "2026-09-04T02:49:55Z",
+      "goal": "E",
+      "event": "COMPATIBLE_VERSION_AUTO_DISCOVERED",
+      "from": "AUTO_DISCOVER_FROM_ACTIVE_RESEARCH_HEAD",
+      "to": "V0.3.7",
+      "user_alert": false,
+      "note": "Version-only progression within active BTC fractal research line; MASTER BTC TREND remains untouched."
+    }
+  ],
   "rules": {
     "completion_100_requires_final_qa": true,
     "dev100_is_not_integration": true,
