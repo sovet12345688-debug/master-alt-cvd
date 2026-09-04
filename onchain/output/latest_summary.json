@@ -1,0 +1,173 @@
+{
+  "engine": "MASTER_MARKET_ONCHAIN_V1",
+  "source": "Coin Metrics Community API",
+  "generated_at_utc": "2026-09-04T14:04:53.420376Z",
+  "asset": "BTC",
+  "frequency": "1d",
+  "metrics": {
+    "SOPR": {
+      "metric": "SOPR",
+      "status": "N/A",
+      "observation_time": null,
+      "current": null,
+      "1D_delta": null,
+      "3D_delta": null,
+      "7D_delta": null,
+      "error": "HTTP 403: {\"error\":{\"type\":\"forbidden\",\"message\":\"Requested metric 'SOPR' with frequency '1d' for asset 'btc' is not available with supplied credentials.\"}}"
+    },
+    "SOPRSth155d": {
+      "metric": "SOPRSth155d",
+      "status": "N/A",
+      "observation_time": null,
+      "current": null,
+      "1D_delta": null,
+      "3D_delta": null,
+      "7D_delta": null,
+      "error": "HTTP 403: {\"error\":{\"type\":\"forbidden\",\"message\":\"Requested metric 'SOPRSth155d' with frequency '1d' for asset 'btc' is not available with supplied credentials.\"}}"
+    },
+    "CapMVRVCur": {
+      "metric": "CapMVRVCur",
+      "status": "OK",
+      "observation_time": "2026-09-03T00:00:00.000000000Z",
+      "current": 1.5290840959037995,
+      "1D_delta": 0.07507936946276383,
+      "3D_delta": 0.04944313941130973,
+      "7D_delta": 0.014953857087604439,
+      "error": null
+    },
+    "CapRealUSD": {
+      "metric": "CapRealUSD",
+      "status": "N/A",
+      "observation_time": null,
+      "current": null,
+      "1D_delta": null,
+      "3D_delta": null,
+      "7D_delta": null,
+      "error": "HTTP 403: {\"error\":{\"type\":\"forbidden\",\"message\":\"Requested metric 'CapRealUSD' with frequency '1d' for asset 'btc' is not available with supplied credentials.\"}}"
+    },
+    "SplyCur": {
+      "metric": "SplyCur",
+      "status": "OK",
+      "observation_time": "2026-09-03T00:00:00.000000000Z",
+      "current": 20079251.13348922,
+      "1D_delta": 499.99985878169537,
+      "3D_delta": 1371.8746140003204,
+      "7D_delta": 3224.999173913151,
+      "error": null
+    },
+    "PriceUSD": {
+      "metric": "PriceUSD",
+      "status": "OK",
+      "observation_time": "2026-09-03T00:00:00.000000000Z",
+      "current": 81243.2439279778,
+      "1D_delta": 4054.543323360602,
+      "3D_delta": 2709.3546383811045,
+      "7D_delta": 945.8477659907076,
+      "error": null
+    },
+    "NUPL": {
+      "metric": "NUPL",
+      "status": "N/A",
+      "observation_time": null,
+      "current": null,
+      "1D_delta": null,
+      "3D_delta": null,
+      "7D_delta": null,
+      "error": "HTTP 403: {\"error\":{\"type\":\"forbidden\",\"message\":\"Requested metric 'NUPL' with frequency '1d' for asset 'btc' is not available with supplied credentials.\"}}"
+    },
+    "AdrActCnt": {
+      "metric": "AdrActCnt",
+      "status": "OK",
+      "observation_time": "2026-09-03T00:00:00.000000000Z",
+      "current": 671828.0,
+      "1D_delta": 12434.0,
+      "3D_delta": 5993.0,
+      "7D_delta": 15029.0,
+      "error": null
+    },
+    "TxTfrValAdjUSD": {
+      "metric": "TxTfrValAdjUSD",
+      "status": "N/A",
+      "observation_time": null,
+      "current": null,
+      "1D_delta": null,
+      "3D_delta": null,
+      "7D_delta": null,
+      "error": "HTTP 403: {\"error\":{\"type\":\"forbidden\",\"message\":\"Requested metric 'TxTfrValAdjUSD' with frequency '1d' for asset 'btc' is not available with supplied credentials.\"}}"
+    }
+  },
+  "derived": {
+    "aggregate_realized_price_usd": null,
+    "aggregate_realized_price_rule": "CapRealUSD / SplyCur; this is aggregate realized price, NOT STH realized price."
+  },
+  "exchange_netflow": {
+    "status": "N/A",
+    "covered_exchanges": 0,
+    "configured_exchanges": 5,
+    "inflow_usd": null,
+    "outflow_usd": null,
+    "netflow_usd": null,
+    "by_exchange": {
+      "Binance": {
+        "status": "N/A",
+        "inflow_usd": null,
+        "outflow_usd": null,
+        "netflow_usd": null,
+        "in_metric": "FlowInBNBUSD",
+        "out_metric": "FlowOutBNBUSD",
+        "error": "HTTP 403: {\"error\":{\"type\":\"forbidden\",\"message\":\"Requested metric 'FlowInBNBUSD' with frequency '1d' for asset 'btc' is not available with supplied credentials.\"}} | HTTP 403: {\"error\":{\"type\":\"forbidden\",\"message\":\"Requested metric 'FlowOutBNBUSD' with frequency '1d' for asset 'btc' is not available with supplied credentials.\"}}"
+      },
+      "Coinbase": {
+        "status": "N/A",
+        "inflow_usd": null,
+        "outflow_usd": null,
+        "netflow_usd": null,
+        "in_metric": "FlowInCBSUSD",
+        "out_metric": "FlowOutCBSUSD",
+        "error": "HTTP 403: {\"error\":{\"type\":\"forbidden\",\"message\":\"Requested metric 'FlowInCBSUSD' with frequency '1d' for asset 'btc' is not available with supplied credentials.\"}} | HTTP 403: {\"error\":{\"type\":\"forbidden\",\"message\":\"Requested metric 'FlowOutCBSUSD' with frequency '1d' for asset 'btc' is not available with supplied credentials.\"}}"
+      },
+      "Kraken": {
+        "status": "N/A",
+        "inflow_usd": null,
+        "outflow_usd": null,
+        "netflow_usd": null,
+        "in_metric": "FlowInKRKUSD",
+        "out_metric": "FlowOutKRKUSD",
+        "error": "HTTP 403: {\"error\":{\"type\":\"forbidden\",\"message\":\"Requested metric 'FlowInKRKUSD' with frequency '1d' for asset 'btc' is not available with supplied credentials.\"}} | HTTP 403: {\"error\":{\"type\":\"forbidden\",\"message\":\"Requested metric 'FlowOutKRKUSD' with frequency '1d' for asset 'btc' is not available with supplied credentials.\"}}"
+      },
+      "OKX": {
+        "status": "N/A",
+        "inflow_usd": null,
+        "outflow_usd": null,
+        "netflow_usd": null,
+        "in_metric": "FlowInOKXUSD",
+        "out_metric": "FlowOutOKXUSD",
+        "error": "HTTP 403: {\"error\":{\"type\":\"forbidden\",\"message\":\"Requested metric 'FlowInOKXUSD' with frequency '1d' for asset 'btc' is not available with supplied credentials.\"}} | HTTP 403: {\"error\":{\"type\":\"forbidden\",\"message\":\"Requested metric 'FlowOutOKXUSD' with frequency '1d' for asset 'btc' is not available with supplied credentials.\"}}"
+      },
+      "Bybit": {
+        "status": "N/A",
+        "inflow_usd": null,
+        "outflow_usd": null,
+        "netflow_usd": null,
+        "in_metric": "FlowInBITUSD",
+        "out_metric": "FlowOutBITUSD",
+        "error": "HTTP 403: {\"error\":{\"type\":\"forbidden\",\"message\":\"Requested metric 'FlowInBITUSD' with frequency '1d' for asset 'btc' is not available with supplied credentials.\"}} | HTTP 403: {\"error\":{\"type\":\"forbidden\",\"message\":\"Requested metric 'FlowOutBITUSD' with frequency '1d' for asset 'btc' is not available with supplied credentials.\"}}"
+      }
+    },
+    "rule": "Only Coin Metrics exchange-attributed flows that are actually returned are summed. Missing exchanges are not treated as zero."
+  },
+  "interpretation_rules": {
+    "SOPR": "Above 1 generally means spent coins realize profit; below 1 means realized loss.",
+    "SOPRSth155d": "Short-term holder SOPR using 155-day segmentation when available from source.",
+    "CapMVRVCur": "Whole-network MVRV; this is not STH-MVRV.",
+    "secondary_only": "On-chain block is secondary confirmation only and cannot flip direction or cross a MASTER threshold by itself."
+  },
+  "availability_note": "Community API availability varies by metric. Unsupported/pro-only fields remain explicit N/A; no substitute number is invented.",
+  "errors": {
+    "SOPR": "HTTP 403: {\"error\":{\"type\":\"forbidden\",\"message\":\"Requested metric 'SOPR' with frequency '1d' for asset 'btc' is not available with supplied credentials.\"}}",
+    "SOPRSth155d": "HTTP 403: {\"error\":{\"type\":\"forbidden\",\"message\":\"Requested metric 'SOPRSth155d' with frequency '1d' for asset 'btc' is not available with supplied credentials.\"}}",
+    "CapRealUSD": "HTTP 403: {\"error\":{\"type\":\"forbidden\",\"message\":\"Requested metric 'CapRealUSD' with frequency '1d' for asset 'btc' is not available with supplied credentials.\"}}",
+    "NUPL": "HTTP 403: {\"error\":{\"type\":\"forbidden\",\"message\":\"Requested metric 'NUPL' with frequency '1d' for asset 'btc' is not available with supplied credentials.\"}}",
+    "TxTfrValAdjUSD": "HTTP 403: {\"error\":{\"type\":\"forbidden\",\"message\":\"Requested metric 'TxTfrValAdjUSD' with frequency '1d' for asset 'btc' is not available with supplied credentials.\"}}"
+  }
+}
