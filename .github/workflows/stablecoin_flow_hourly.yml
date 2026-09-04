@@ -6,7 +6,9 @@ on:
     - cron: '17 * * * *'
   push:
     paths:
-      - 'stablecoin_flow/**'
+      - 'stablecoin_flow/collector.py'
+      - 'stablecoin_flow/config.json'
+      - 'stablecoin_flow/requirements.txt'
       - '.github/workflows/stablecoin_flow_hourly.yml'
 
 permissions:
