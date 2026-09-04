@@ -59,6 +59,14 @@ jobs:
               'SCREEN 3',
               'SCREEN 4',
               'SCREEN 5',
+              'EASY EXPLAIN LOCK',
+              '쉽게 보면:',
+              '쉽게 해석:',
+              '뉴스·경제일정·전문가·온체인 보조',
+              'STH-SOPR',
+              'STH Realized Price',
+              'STH-MVRV',
+              'Exchange Netflow',
               '55 = 상승 초입 신호',
               '다음 정식 보고 시간',
               'master_market_official_history.csv'
@@ -89,18 +97,31 @@ jobs:
           required_applies = {
               'SCREEN1_CORE_5_AXES',
               'SCREEN2_MACRO_TABLE',
-              'SCREEN4_INSTITUTION_WHALE_RETAIL_TABLE',
-              'SCREEN5_CORE_AXIS_TABLE'
+              'SCREEN4_INSTITUTION_WHALE_RETAIL_TABLE'
           }
           if required_applies - applies:
               raise SystemExit('MASTER MARKET change-window regression: missing table lock')
+          if 'SCREEN5_CORE_AXIS_TABLE' in applies:
+              raise SystemExit('MASTER MARKET layout regression: SCREEN5 core-axis table must remain removed by explicit user instruction')
 
           ro = c.get('required_output', {})
-          for screen in ['screen1','screen2','screen4','screen5']:
+          for screen in ['screen1','screen2','screen4']:
               text = ' '.join(ro.get(screen) or [])
               for token in ['1D','3D','7D']:
                   if token not in text:
                       raise SystemExit(f'MASTER MARKET {screen} window regression: missing {token}')
+
+          screen4 = ' '.join(ro.get('screen4') or [])
+          for token in ['easy interpretation','easy-Korean','OI 1H','OI 4H','OI 24H','CVD','Taker','Basis','Depth']:
+              if token.lower() not in screen4.lower():
+                  raise SystemExit('MASTER MARKET SCREEN4 explainability regression: missing ' + token)
+
+          screen5 = ' '.join(ro.get('screen5') or [])
+          for token in ['Coinness/News TOP5','economic calendar','Sean Farrell','Stanley Druckenmiller','STH-SOPR','STH Realized Price','STH-MVRV','Exchange Netflow']:
+              if token.lower() not in screen5.lower():
+                  raise SystemExit('MASTER MARKET SCREEN5 context regression: missing ' + token)
+          if 'final market verdict' in screen5.lower() or 'core-axis table columns' in screen5.lower():
+              raise SystemExit('MASTER MARKET SCREEN5 duplication regression: duplicated verdict/core-axis block reintroduced')
 
           required_data_groups = {
               'macro_liquidity', 'crypto_capital_flow', 'market_breadth_rotation',
@@ -130,4 +151,6 @@ jobs:
           print('NO_SILENT_OMISSION=PASS')
           print('FLEXIBLE_RECOMMENDATION_POLICY=PASS')
           print('CHANGE_WINDOWS_1D_3D_7D=PASS')
+          print('SCREEN4_EASY_EXPLAIN=PASS')
+          print('SCREEN5_CONTEXT_ONLY=PASS')
           PY
