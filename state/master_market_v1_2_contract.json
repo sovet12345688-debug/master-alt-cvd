@@ -1,0 +1,134 @@
+{
+  "schema_version": "1.0",
+  "master": "MASTER MARKET V1.2",
+  "status": "FINAL_CUMULATIVE_LOCK",
+  "updated_kst": "2026-09-04T14:37:00+09:00",
+  "purpose": "Machine-readable cumulative contract for MASTER MARKET. Existing required data, checks, and user-visible output blocks must survive future version upgrades unless the user explicitly orders removal.",
+  "no_silent_omission": {
+    "enabled": true,
+    "rule": "NO EXISTING REQUIRED DATA OR OUTPUT MAY BE REMOVED, RENAMED INTO INVISIBILITY, OR SILENTLY SKIPPED WITHOUT EXPLICIT USER INSTRUCTION.",
+    "missing_data_behavior": "KEEP THE ITEM VISIBLE AND MARK N/A OR CONFIRMATION_FAILED; NEVER DELETE THE ROW/BLOCK BECAUSE A SOURCE FAILED.",
+    "version_upgrade_behavior": "COPY FORWARD ALL REQUIRED ITEMS FROM THE PRIOR FINAL CONTRACT, THEN ADD NEW ITEMS. DELETION REQUIRES EXPLICIT USER COMMAND.",
+    "score_behavior": "Recovered auxiliary blocks do not create new score weights or change thresholds. News only affects an existing owner axis after independent confirmation; opinion blocks have score weight 0.",
+    "git_behavior": "Existing data collectors and outputs must not be modified or deleted as a side effect of prompt/version upgrades. GitHub data layers remain read-only providers unless the user explicitly orders a code change."
+  },
+  "schedule": {
+    "timezone": "Asia/Seoul",
+    "official_hours": [1,5,9,13,17,21],
+    "other_hours": "URGENT_WATCH_ONLY",
+    "official_updates_score_history": true,
+    "watch_overwrites_official_history": false
+  },
+  "required_data": {
+    "macro_liquidity": [
+      "Fed/QE-QT",
+      "US Net Liquidity",
+      "TGA",
+      "Fed Reserves",
+      "Treasury/QRA",
+      "Treasury Buyback actual accepted/settlement when available",
+      "US2Y",
+      "US10Y",
+      "US30Y",
+      "US10Y Real Yield",
+      "EFFR",
+      "SOFR",
+      "DXY",
+      "WTI",
+      "Brent",
+      "Global M2",
+      "Nasdaq",
+      "S&P500",
+      "geopolitics/regulation"
+    ],
+    "crypto_capital_flow": [
+      "BTC ETF 1D/3D/5D/20D",
+      "ETH ETF 1D/3D/5D/20D",
+      "USDT supply",
+      "USDC supply",
+      "total stablecoin supply",
+      "Mint/Burn",
+      "Treasury balances",
+      "Treasury-to-Exchange",
+      "Exchange Balance",
+      "Mint->Treasury->Exchange->Spot Buy confirmation chain"
+    ],
+    "market_breadth_rotation": [
+      "CRYPTO_TOTAL_MCAP",
+      "CRYPTO_24H_VOLUME",
+      "BTC_DOMINANCE",
+      "ETH_DOMINANCE",
+      "USD->Stablecoin->BTC->ETH->ALT rotation"
+    ],
+    "whale": [
+      "BTC core whales",
+      "ETH core whales",
+      "Hyperliquid same-run same-population positions",
+      "Position/Side/Entry/Leverage/Liquidation/Liq Distance",
+      "1H/4H/24H actual position-size changes",
+      "recent maximum 6 actual observations",
+      "$20M WATCH candidate",
+      "$50M LEVEL1 candidate"
+    ],
+    "derivatives": [
+      "Price",
+      "OI",
+      "Funding",
+      "OI 1H/4H/24H change",
+      "Funding 1H/4H/24H change when available",
+      "CVD",
+      "Taker Buy/Sell",
+      "Long/Short",
+      "Liquidation",
+      "Basis",
+      "Depth",
+      "Volume"
+    ],
+    "news_and_calendar": [
+      "Coinness fast news radar",
+      "News TOP5",
+      "Economic indicator calendar",
+      "major unlock/supply events",
+      "hack/exploit",
+      "policy/macro/oil shock"
+    ],
+    "secondary_confirmation": [
+      "Sean Farrell latest view - score 0",
+      "Stanley Druckenmiller latest view - score 0",
+      "STH-SOPR/on-chain confirmation - no threshold crossing by itself"
+    ]
+  },
+  "source_policy": {
+    "coinness": "EARLY_DETECTION_ONLY. Coinness can trigger investigation but cannot alone change the score. Confirm important claims with official/primary source, Reuters, exchange/project source, or another independent source before score impact.",
+    "market_vault": "Historical comparison cache only; same metric + same source deltas only.",
+    "derivatives_github": "Read 1H/4H/24H OI/funding history every run when fresh. Venue-locked comparison only; no cross-venue delta.",
+    "whale_github": "Use Hyperliquid official API-derived position-size history when fresh. No inferred identity. Missing API result is not proof of closure.",
+    "stablecoin": "Supply increase is not actual buying. Treasury-to-Exchange and spot-buy path are separate confirmations.",
+    "treasury_buyback": "Maximum announced amount is not actual accepted amount and is not QE. Use actual accepted/settlement/net-liquidity effect when available.",
+    "optional_failure": "Do not loop/retry indefinitely. Mandatory sufficient => continue and expose N/A explicitly."
+  },
+  "required_scores": {
+    "BTC_Liquidity_Lead_Index": {"bands":"0-39 Risk-Off | 40-54 Neutral/Weak | 55-64 Early Ignition | 65-74 Uptrend Start | 75-84 Acceleration | 85-100 Euphoria","fixed_thresholds":[55,65,75]},
+    "Market_Positive_Score": {"bands":"0-29 very negative | 30-44 negative | 45-54 mixed | 55-64 weak positive | 65-79 positive | 80-100 very positive"},
+    "Crypto_Money_Inflow": true,
+    "ALT_Money_Inflow": true
+  },
+  "required_output": {
+    "screen_count": 5,
+    "screen1": ["market state","action environment","big-money leader #1","largest risk","5 core axes","institution/whale/retail traffic lights","rotation","market breadth mini-line: total market cap/24H volume/BTC.D/ETH.D","prior change TOP3","7D improve/worsen TOP3"],
+    "screen2": ["table columns: item|current status traffic-light|current value|prior delta|7D|crypto positive score|easy interpretation","Liquidity Lead with 55/65/75","WTI+Brent detail","final crypto-positive summary"],
+    "screen3": ["BTC/ETH ETF 1D/3D/5D/20D","stablecoin supply/mint/burn/treasury/exchange","Crypto Money Inflow","ALT Money Inflow","fixed text: Stablecoin supply increase != actual buy"],
+    "screen4": ["BTC whales max10","ETH whales max10","institution vs whale vs retail","derivatives subsection must read GitHub OI/Funding 1H/4H/24H when fresh","CVD/Taker/Basis/Depth/Volume visible as value or N/A"],
+    "screen5": ["7D core-axis table","mini-trends only with >=3 actual OFFICIAL points","rotation progress","money frontier","risk radar","final market verdict","Coinness/News TOP5 compact radar","economic calendar compact block","Sean Farrell compact view block score0","Stanley Druckenmiller compact view block score0"],
+    "footer": "🕒 MASTER MARKET V1.2 | 실행완료: YYYY-MM-DD HH:mm KST | 롱/숏 | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST",
+    "watch_footer": "🕒 MASTER MARKET WATCH | 감지완료: YYYY-MM-DD HH:mm KST | 롱/숏 | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST"
+  },
+  "official_score_history": {
+    "enabled": true,
+    "file": "state/master_market_official_history.csv",
+    "no_backfill": true,
+    "append_only": true,
+    "fields": ["run_id","executed_kst","market_positive","liquidity_lead","crypto_money_inflow","alt_money_inflow","coverage","confidence","direction","risk_veto"],
+    "rule": "Only confirmed OFFICIAL runs are appended. WATCH and manual non-official runs never overwrite official history. Missing past runs are not reconstructed."
+  }
+}
