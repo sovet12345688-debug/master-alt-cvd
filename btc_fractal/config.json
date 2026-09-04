@@ -81,14 +81,32 @@
       "max_conflict_gap_pp": -5.0
     }
   },
+  "v050": {
+    "source_url": "https://farside.co.uk/bitcoin-etf-flow-all-data/",
+    "min_trading_days_for_state": 20,
+    "up_positive_share_20d": 0.55,
+    "down_positive_share_20d": 0.45,
+    "acceptance": {
+      "min_independent_evaluable": 10,
+      "min_signal_cases": 6,
+      "min_signal_coverage_pct": 40.0,
+      "min_balanced_accuracy": 55.0,
+      "min_each_recall_pct": 30.0,
+      "min_minority_prediction_pct": 20.0,
+      "min_utility_cases": 4,
+      "min_confirm_gain_pp": 5.0,
+      "max_conflict_gap_pp": -5.0
+    }
+  },
   "notes": [
     "V0.3.5 remains the frozen FULL_PASS six-regime price core and secondary direction layer.",
     "V0.3.6 showed on-chain/macro do not add validated confirmation utility; they remain context-only and cannot alter core direction.",
     "V0.3.7 bottom/top specialists are experimental: bottom narrowly missed the locked AUC gate and top failed AUC/lift; neither is validated or integrated.",
-    "V0.4.0 starts Layer B on a separate historical venue: Binance USD-M Futures public archive. This research venue is never mixed with the live MASTER Bitget OI/Funding series.",
-    "Layer B uses real historical OI value, funding rate and taker long/short volume balance when available. Historical CVD remains N/A and is never fabricated.",
-    "All daily derivatives features use a conservative one-UTC-day lag before scoring to prevent same-day look-ahead.",
-    "Layer B is first tested as a price-conditioned confirmation/conflict layer. It cannot change V0.3.5 direction unless independent OOS validation and utility gates pass.",
+    "V0.4.2 corrected the Layer B validation denominator to the same derivatives era; Layer B still failed locked signal coverage, balanced-accuracy and utility gates and remains shadow/read-only.",
+    "V0.5.0 Layer C uses Farside US spot-BTC ETF daily net-flow history beginning in the institutional ETF era.",
+    "Layer C uses only ETF flow observations strictly before the BTC query date, so same-day unpublished/final flow cannot leak into the decision.",
+    "ETF history is intentionally treated as context/confirmation until at least 10 independent evaluable OOS episodes exist; a short ETF era cannot create a strong standalone probability.",
+    "Layer C directional state is pre-locked: UP requires both 5-trading-day and 20-trading-day total net flow positive plus >=55% positive-flow days over 20 trading days; DOWN is the symmetric negative case with <=45% positive days; otherwise ABSTAIN.",
     "Score maximization means improving validated discrimination, coverage, stability and calibration, never inflating numbers or lowering gates.",
     "No future leakage, no N/A zero-fill, no current-outcome tuning, and MASTER BTC TREND remains untouched."
   ]
