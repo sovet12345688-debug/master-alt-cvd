@@ -124,7 +124,9 @@ def main():
     lb_rows,lb=oos(x,T,'LOW',False); sb_rows,sb=oos(x,T,'HIGH',False)
     ls_rows,ls=oos(x,T,'LOW',True); ss_rows,ss=oos(x,T,'HIGH',True)
 
-    zl=p14.build_zone_registry(D,x,'LOW'); zs=p14.build_zone_registry(D,x,'HIGH')
+    # Zone learning needs the original point-in-time trend-location columns from D.
+    xz=x.join(D[['drawdown180','rally180']],how='left')
+    zl=p14.build_zone_registry(D,xz,'LOW'); zs=p14.build_zone_registry(D,xz,'HIGH')
     zlo,zlb,zlc,zly=p14.zone_oos(zl); zso,zsb,zsc,zsy=p14.zone_oos(zs)
     zl.to_csv(OUT/'zone_registry_long.csv',index=False); zs.to_csv(OUT/'zone_registry_short.csv',index=False)
     zlo.to_csv(OUT/'zone_oos_long.csv',index=False); zso.to_csv(OUT/'zone_oos_short.csv',index=False)
