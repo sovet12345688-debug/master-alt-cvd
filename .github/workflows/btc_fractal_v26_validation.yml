@@ -34,6 +34,7 @@ jobs:
           python -m py_compile btc_fractal/run_v26_v035.py
           python -m py_compile btc_fractal/run_v26_v036.py
           python -m py_compile btc_fractal/run_v26_v037.py
+      # Explicit rerun after the V0.3.7 timezone-safe timestamp fix.
       - name: Build and validate V0.3.7
         run: python btc_fractal/run_v26_v037.py
       - name: Show summaries
