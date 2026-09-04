@@ -6,7 +6,8 @@ on:
     - cron: '27 * * * *'
   push:
     paths:
-      - 'net_liquidity/**'
+      - 'net_liquidity/collector.py'
+      - 'net_liquidity/requirements.txt'
       - '.github/workflows/net_liquidity_hourly.yml'
 
 permissions:
