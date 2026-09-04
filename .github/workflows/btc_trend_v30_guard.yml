@@ -1,0 +1,64 @@
+name: BTC TREND V3.0 Research Guard
+
+on:
+  push:
+    branches: [btc-trend-v30-build]
+    paths:
+      - 'btc_trend_v30/**'
+      - '.github/workflows/btc_trend_v30_guard.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'btc_trend_v30/**'
+      - '.github/workflows/btc_trend_v30_guard.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: btc-trend-v30-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  isolation-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Validate research isolation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main:refs/remotes/origin/main
+          changed="$(git diff --name-only origin/main...HEAD)"
+          echo "$changed"
+          bad="$(printf '%s\n' "$changed" | grep -Ev '^(btc_trend_v30/|\.github/workflows/btc_trend_v30_guard\.yml$)' || true)"
+          if [ -n "$bad" ]; then
+            echo 'Forbidden V3.0 research changes outside isolated scope:'
+            echo "$bad"
+            exit 1
+          fi
+          echo 'V3_RESEARCH_ISOLATION=PASS'
+      - name: Validate no production mutation code in workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          f='.github/workflows/btc_trend_v30_guard.yml'
+          if grep -Eqi 'git push|contents:[[:space:]]*write|pull-requests:[[:space:]]*write|gh api.*(-X|--method)[[:space:]]*(POST|PUT|PATCH|DELETE)' "$f"; then
+            echo 'Write-capable command/permission found in V3 guard workflow'
+            exit 1
+          fi
+          echo 'V3_WORKFLOW_READ_ONLY=PASS'
+      - name: Validate frozen production directories are untouched
+        shell: bash
+        run: |
+          set -euo pipefail
+          changed="$(git diff --name-only origin/main...HEAD)"
+          if printf '%s\n' "$changed" | grep -Eq '^(derivatives/|live_flow/|market_vault/|market_whales/|master_prompts/|state/master_market_)'; then
+            echo 'Production/shared MASTER path touched by V3 research'
+            exit 1
+          fi
+          echo 'PRODUCTION_PATHS_UNTOUCHED=PASS'
