@@ -42,12 +42,16 @@ jobs:
             exit 1
           fi
           echo 'V3_RESEARCH_ISOLATION=PASS'
-      - name: Validate no production mutation code in workflow
+      - name: Validate workflow remains read-only
         shell: bash
         run: |
           set -euo pipefail
           f='.github/workflows/btc_trend_v30_guard.yml'
-          if grep -Eqi 'git push|contents:[[:space:]]*write|pull-requests:[[:space:]]*write|gh api.*(-X|--method)[[:space:]]*(POST|PUT|PATCH|DELETE)' "$f"; then
+          if ! grep -Eq '^  contents:[[:space:]]*read$' "$f"; then
+            echo 'V3 guard must keep contents read-only permission'
+            exit 1
+          fi
+          if grep -nE '^[[:space:]]+contents:[[:space:]]*write$|^[[:space:]]+pull-requests:[[:space:]]*write$|^[[:space:]]+(git push|gh api .*(-X|--method)[[:space:]]*(POST|PUT|PATCH|DELETE))' "$f"; then
             echo 'Write-capable command/permission found in V3 guard workflow'
             exit 1
           fi
