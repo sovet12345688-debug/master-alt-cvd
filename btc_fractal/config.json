@@ -1,6 +1,6 @@
 {
-  "engine": "BTC_HISTORICAL_REGIME_OUTCOME_V0_3_6",
-  "schema_version": "0.3.6",
+  "engine": "BTC_HISTORICAL_REGIME_OUTCOME_V0_3_7",
+  "schema_version": "0.3.7",
   "start_date": "2011-01-01",
   "feature_windows_days": [7, 30, 90, 180, 365],
   "up_targets_pct": [30, 50, 100, 150, 200],
@@ -42,20 +42,31 @@
     "direction_min_regime_margin": 3.0, "direction_balance_temperature": 8.0,
     "acceptance": {"min_independent_episodes": 30, "min_regime_exact_accuracy": 40.0, "min_exact_gain_vs_naive_pp": 3.0, "min_balanced_top1_recall": 30.0, "min_balanced_top2_recall": 50.0, "min_direction_coverage_pct": 45.0, "min_direction_balanced_accuracy": 55.0, "min_each_direction_recall_pct": 35.0, "min_minority_direction_pct": 20.0}
   },
-  "v036": {
-    "price_pool_k": 40,
-    "domain_per_class_k": 5,
-    "domain_min_per_class": 4,
-    "domain_min_score_gap": 1.25,
-    "domain_min_pair_wins": 3
+  "v036": {"price_pool_k": 40, "domain_per_class_k": 5, "domain_min_per_class": 4, "domain_min_score_gap": 1.25, "domain_min_pair_wins": 3},
+  "v037": {
+    "outcome_horizon_days": 180,
+    "bottom_up_target": 0.30,
+    "bottom_adverse_target": -0.15,
+    "bottom_min_drawdown": -0.18,
+    "top_down_target": -0.20,
+    "top_adverse_target": 0.20,
+    "top_max_drawdown_from_high": -0.12,
+    "top_min_ret90": 0.25,
+    "zone_cluster_gap_days": 14,
+    "analog_k": 6,
+    "min_positive_anchors": 5,
+    "gap_scale": 6.0,
+    "full_support_anchors": 12,
+    "high_score_quantile": 0.75,
+    "acceptance": {"min_positive_cases": 6, "min_auc": 65.0, "min_top_quartile_lift": 1.5}
   },
   "notes": [
-    "V0.3.5 is the first recent FULL_PASS for both six-regime core and the secondary direction layer on 52 independent PIT episodes.",
-    "V0.3.6 freezes the V0.3.5 price/regime core and retests on-chain/macro strictly as confirmation or contradiction evidence.",
-    "Each confirmation domain is evaluated only inside a price-similar independent-episode pool and compares equal counts of UP30_FIRST versus DN20_FIRST cases to avoid class-frequency bias.",
-    "The original confirmation utility hurdles remain unchanged: >=20 confirmed cases with >=+3pp accuracy gain, plus either strong both-domain confirmation or useful conflict separation.",
-    "A failed confirmation test cannot invalidate the V0.3.5 price/regime core and cannot change its direction; it only decides whether on-chain/macro deserve a validated confirmation role.",
-    "Score maximization means improving validated discrimination, coverage, stability and calibration, never inflating scores or lowering gates.",
-    "No future data leakage, no N/A zero-fill, and MASTER BTC TREND scoring/gates/schedule/live plan remain untouched."
+    "V0.3.5 remains the frozen FULL_PASS six-regime price core and secondary direction layer.",
+    "V0.3.6 retest showed on-chain/macro do not add validated confirmation utility; they remain context-only and cannot alter core direction.",
+    "V0.3.7 adds objective bottom-zone and top-zone specialist scores to address weak BOTTOM/TOP recall without disturbing the passed core.",
+    "Bottom zone requires meaningful drawdown and +30% before -15% within 180d; top zone requires near-high/extended location and -20% before +20% within 180d. Historical labels are usable only after the full forward window is known.",
+    "Specialist validation uses independent PIT episodes, AUC and top-quartile lift, and keeps a minimum positive-case gate. Scores are similarities, not probabilities.",
+    "Score maximization means improving validated discrimination, coverage, stability and calibration, never inflating numbers or lowering gates.",
+    "No future leakage into live features, no N/A zero-fill, and MASTER BTC TREND remains untouched."
   ]
 }
