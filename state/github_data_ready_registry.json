@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
   "registry_name": "MONEY_GITHUB_DATA_READY_REGISTRY",
-  "purpose": "Persistent state for A/B/C/D/E development readiness, version compatibility, final QA, integration history, and regression detection.",
-  "updated_utc": "2026-09-04T04:08:40Z",
+  "purpose": "Persistent state for A/B/C/D/E/F development readiness, version compatibility, final QA, integration history, and regression detection.",
+  "updated_utc": "2026-09-04T04:21:00Z",
   "write_policy": "STATE_CHANGE_ONLY",
   "master_auto_modify": false,
   "btc_trend_auto_modify": false,
@@ -121,6 +121,40 @@
         "candidate_version_detected": "V0.6.0",
         "architecture_change": "V0.4 Layer B + V0.5 Layer C + V0.6 pre-integration audit added; config engine/schema advanced to 0.4.0 family and acceptance/integration contract materially changed",
         "auto_promotion": "BLOCKED_PENDING_MANUAL_COMPATIBILITY_REVIEW"
+      }
+    },
+    "F": {
+      "engine": "SIGNAL_OUTCOME_VAULT",
+      "latest_compatible_version": "V0.1",
+      "completion_pct": 100,
+      "status": "DEV100_AWAITING_MANUAL",
+      "final_qa": "PASS",
+      "master_targets": ["BTC_TREND_CURRENT","ALT_FINAL20_CURRENT","MARKET_CURRENT","EXPLICITLY_APPROVED_OTHER_MASTERS"],
+      "master_link": "NOT_INTEGRATED_SHADOW_NOT_ACTIVE",
+      "expected_value": 10,
+      "next_action": "Manual verification, then only if explicitly approved enable SHADOW snapshot publishing. Real forward-sample accumulation remains separate from code completion.",
+      "regression": "NONE_KNOWN",
+      "last_dev100_compatible_contract": "SIGNAL_OUTCOME_VAULT/schema0.1/append-only/5m-forward-outcome",
+      "last_alerted_dev100_version": "V0.1",
+      "evidence": {
+        "pr": 8,
+        "branch": "signal-outcome-vault-v01",
+        "head_sha": "69b6e10a3a690cc21fbb8b8c9f02a6b704e41f78",
+        "validation_run": 33836455160,
+        "validation_status": "completed/success",
+        "compile": "PASS",
+        "unit_tests": "PASS",
+        "empty_state_validation": "PASS",
+        "artifact_upload": "PASS",
+        "artifact_id": 9923428704,
+        "guards": "backfill blocked; future timestamp blocked; duplicate quarantine; N/A remains null; no auto-tuning",
+        "outcome_windows": "+4H/+24H/+72H/+7D",
+        "price_evaluation": "Binance public 5m paginated klines; pre-signal partial candle excluded",
+        "isolation": "unsupported/bad symbol cannot abort unrelated valid signals",
+        "idempotency": "repeat evaluation and no-material-change runner tests PASS",
+        "shadow_workflow": "manual-only; no schedule; branch-only before approval",
+        "real_forward_sample_count": 0,
+        "statistical_usefulness": "NOT_YET_ESTABLISHED"
       }
     }
   },
