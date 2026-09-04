@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import csv
 import json
-import math
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any
@@ -23,7 +22,7 @@ TRANSFER_TOPIC = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523
 ZERO_TOPIC = "0x" + ("0" * 64)
 LOG_CHUNK_BLOCKS = 50
 SESSION = requests.Session()
-SESSION.headers.update({"User-Agent": "MASTER-STABLECOIN-FLOW/1.1"})
+SESSION.headers.update({"User-Agent": "MASTER-STABLECOIN-FLOW/1.2"})
 
 
 def now_utc() -> datetime:
@@ -70,15 +69,25 @@ def rpc_call(url: str, method: str, params: list[Any]) -> Any:
 
 
 def choose_rpc(cfg: dict[str, Any]) -> tuple[str, list[str]]:
+    """Select an endpoint only after both block reads and eth_getLogs are proven usable."""
     errors: list[str] = []
+    probe_contract = cfg["tokens"]["USDC"]["contract"]
     for url in cfg.get("rpc_urls") or []:
         try:
-            result = rpc_call(url, "eth_blockNumber", [])
-            if result:
-                return url, errors
+            latest = rpc_call(url, "eth_blockNumber", [])
+            if not latest:
+                raise RuntimeError("eth_blockNumber returned empty")
+            rpc_call(url, "eth_getBlockByNumber", [latest, False])
+            rpc_call(url, "eth_getLogs", [{
+                "address": probe_contract,
+                "fromBlock": latest,
+                "toBlock": latest,
+                "topics": [TRANSFER_TOPIC],
+            }])
+            return url, errors
         except Exception as e:
-            errors.append(f"{url}:{type(e).__name__}:{str(e)[:140]}")
-    raise RuntimeError("No Ethereum RPC available | " + " | ".join(errors))
+            errors.append(f"{url}:{type(e).__name__}:{str(e)[:180]}")
+    raise RuntimeError("No eth_getLogs-capable Ethereum RPC available | " + " | ".join(errors))
 
 
 def get_block(url: str, number: int) -> dict[str, Any]:
@@ -111,18 +120,16 @@ def find_block_at_or_before(url: str, target_ts: int, latest_block: int) -> int:
 
 
 def get_logs(url: str, contract: str, from_block: int, to_block: int, from_topic: str) -> list[dict[str, Any]]:
-    """Fetch logs in small block chunks so public RPC range/result limits fail less often."""
     out: list[dict[str, Any]] = []
     cursor = from_block
     while cursor <= to_block:
         chunk_end = min(to_block, cursor + LOG_CHUNK_BLOCKS - 1)
-        params = [{
+        result = rpc_call(url, "eth_getLogs", [{
             "address": contract,
             "fromBlock": hex(cursor),
             "toBlock": hex(chunk_end),
             "topics": [TRANSFER_TOPIC, from_topic],
-        }]
-        result = rpc_call(url, "eth_getLogs", params)
+        }])
         if result:
             out.extend(result)
         cursor = chunk_end + 1
@@ -147,14 +154,8 @@ def decode_transfer(log: dict[str, Any], decimals: int) -> dict[str, Any] | None
     }
 
 
-def collect_token(
-    rpc_url: str,
-    token: str,
-    cfg: dict[str, Any],
-    start_block: int,
-    end_block: int,
-    exchange_map: dict[str, dict[str, Any]],
-) -> dict[str, Any]:
+def collect_token(rpc_url: str, token: str, cfg: dict[str, Any], start_block: int, end_block: int,
+                  exchange_map: dict[str, dict[str, Any]]) -> dict[str, Any]:
     token_cfg = cfg["tokens"][token]
     contract = token_cfg["contract"]
     decimals = int(token_cfg["decimals"])
@@ -173,8 +174,7 @@ def collect_token(
 
     for source_label, from_topic in source_topics:
         try:
-            logs = get_logs(rpc_url, contract, start_block, end_block, from_topic)
-            for log in logs:
+            for log in get_logs(rpc_url, contract, start_block, end_block, from_topic):
                 d = decode_transfer(log, decimals)
                 if d:
                     d["source_label"] = source_label
@@ -186,7 +186,6 @@ def collect_token(
     total_issuer_out = sum(x["amount"] for x in decoded)
     exchange_rows = [x for x in decoded if x.get("exchange_match")]
     exchange_amount = sum(x["amount"] for x in exchange_rows)
-
     by_exchange: dict[str, float] = {}
     for x in exchange_rows:
         name = str((x.get("exchange_match") or {}).get("exchange") or "UNKNOWN")
@@ -203,17 +202,10 @@ def collect_token(
         "verified_exchange_amount": exchange_amount,
         "verified_exchange_breakdown": by_exchange,
         "exchange_coverage": "PARTIAL_LABEL_SET",
-        "matched_transfers": [
-            {
-                "to": x["to"],
-                "amount": x["amount"],
-                "exchange": x["exchange_match"]["exchange"],
-                "label": x["exchange_match"]["label"],
-                "tx_hash": x["tx_hash"],
-                "block_number": x["block_number"],
-            }
-            for x in exchange_rows
-        ],
+        "matched_transfers": [{
+            "to": x["to"], "amount": x["amount"], "exchange": x["exchange_match"]["exchange"],
+            "label": x["exchange_match"]["label"], "tx_hash": x["tx_hash"], "block_number": x["block_number"],
+        } for x in exchange_rows],
         "errors": errors,
     }
 
@@ -226,11 +218,9 @@ def read_history() -> list[dict[str, str]]:
 
 
 def write_history(rows: list[dict[str, Any]]) -> None:
-    fields = [
-        "window_end_utc", "window_start_utc", "chain", "token", "mode", "status",
-        "issuer_transfer_count", "issuer_transfer_amount", "verified_exchange_match_count",
-        "verified_exchange_amount", "exchange_coverage", "errors",
-    ]
+    fields = ["window_end_utc", "window_start_utc", "chain", "token", "mode", "status",
+              "issuer_transfer_count", "issuer_transfer_amount", "verified_exchange_match_count",
+              "verified_exchange_amount", "exchange_coverage", "errors"]
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     with HISTORY_PATH.open("w", encoding="utf-8", newline="") as f:
         w = csv.DictWriter(f, fieldnames=fields)
@@ -247,31 +237,23 @@ def main() -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     STATE_DIR.mkdir(parents=True, exist_ok=True)
-
     ended = now_utc()
     started = ended - timedelta(minutes=int(cfg.get("window_minutes", 60)))
     rpc_url, rpc_errors = choose_rpc(cfg)
-    latest_hex = rpc_call(rpc_url, "eth_blockNumber", [])
-    latest_block = int(latest_hex, 16)
+    latest_block = int(rpc_call(rpc_url, "eth_blockNumber", []), 16)
     start_block = find_block_at_or_before(rpc_url, int(started.timestamp()), latest_block)
-
     exchange_map = {normalize_address(x["address"]): x for x in cfg.get("exchange_addresses") or []}
     assets = [collect_token(rpc_url, token, cfg, start_block, latest_block, exchange_map) for token in ("USDT", "USDC")]
 
     payload = {
         "engine": "MASTER_STABLECOIN_TREASURY_EXCHANGE_V1",
-        "generated_at_utc": iso(now_utc()),
-        "window_start_utc": iso(started),
-        "window_end_utc": iso(ended),
-        "chain": "ethereum",
-        "rpc_url": rpc_url,
-        "block_range": [start_block, latest_block],
-        "log_chunk_blocks": LOG_CHUNK_BLOCKS,
-        "rpc_fallback_log": rpc_errors,
+        "generated_at_utc": iso(now_utc()), "window_start_utc": iso(started), "window_end_utc": iso(ended),
+        "chain": "ethereum", "rpc_url": rpc_url, "block_range": [start_block, latest_block],
+        "log_chunk_blocks": LOG_CHUNK_BLOCKS, "rpc_fallback_log": rpc_errors,
         "coverage_rule": cfg.get("coverage_rule"),
         "rules": {
             "USDT": "Confirmed transfers from verified Tether Treasury address. Only destinations matching verified exchange registry count as Treasury->Exchange.",
-            "USDC": "Circle does not use one public treasury address for all minting; zero-address mints are used as issuer mint destination proxy. Only verified exchange destinations count as Mint->Exchange.",
+            "USDC": "Zero-address mints are issuer mint destination proxy; they are not labeled Circle Treasury. Only verified exchange destinations count as Mint->Exchange.",
             "no_inference": "Unmatched addresses are never classified as exchanges.",
             "stablecoin_supply": "Stablecoin supply increase is not equivalent to actual crypto spot buying.",
         },
@@ -282,16 +264,10 @@ def main() -> None:
     old = read_history()
     key: dict[tuple[str, str], dict[str, Any]] = {(r.get("window_end_utc", ""), r.get("token", "")): r for r in old}
     for a in assets:
-        row = {
-            "window_end_utc": iso(ended),
-            "window_start_utc": iso(started),
-            **{k: a.get(k) for k in [
-                "chain", "token", "mode", "status", "issuer_transfer_count", "issuer_transfer_amount",
-                "verified_exchange_match_count", "verified_exchange_amount", "exchange_coverage", "errors"
-            ]},
-        }
+        row = {"window_end_utc": iso(ended), "window_start_utc": iso(started), **{k: a.get(k) for k in [
+            "chain", "token", "mode", "status", "issuer_transfer_count", "issuer_transfer_amount",
+            "verified_exchange_match_count", "verified_exchange_amount", "exchange_coverage", "errors"]}}
         key[(row["window_end_utc"] or "", row["token"])] = row
-
     cutoff = ended - timedelta(days=90)
     rows: list[dict[str, Any]] = []
     for r in key.values():
@@ -305,12 +281,11 @@ def main() -> None:
     write_history(rows)
 
     state = {
-        "last_run_utc": iso(now_utc()),
-        "rpc_url": rpc_url,
+        "last_run_utc": iso(now_utc()), "rpc_url": rpc_url,
         "ok_count": sum(a["status"] == "OK" for a in assets),
         "partial_count": sum(a["status"] == "PARTIAL" for a in assets),
         "na_count": sum(a["status"] == "N/A" for a in assets),
-        "verified_exchange_labels": len(exchange_map),
+        "verified_exchange_labels": len(exchange_map), "rpc_fallback_log": rpc_errors,
         "asset_errors": {a["token"]: a.get("errors", []) for a in assets if a.get("errors")},
     }
     STATE_PATH.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
