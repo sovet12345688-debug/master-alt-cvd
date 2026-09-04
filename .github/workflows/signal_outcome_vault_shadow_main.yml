@@ -1,0 +1,68 @@
+name: Signal Outcome Vault Shadow Main Scheduler
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 1,5,9,13,17,21 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: signal-outcome-vault-shadow-main
+  cancel-in-progress: false
+
+jobs:
+  shadow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout shadow branch
+        uses: actions/checkout@v4
+        with:
+          ref: signal-outcome-vault-v01
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Signal Outcome Vault shadow evaluator
+        run: PYTHONPATH=. python signal_outcome/vault.py run
+
+      - name: Validate shadow guards
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path('signal_outcome/state/vault_state.json')
+          if p.exists():
+              s=json.load(open(p))
+              assert s['duplicate_signal_ids']==0
+              assert s['guards']['historical_backfill']=='BLOCKED'
+              assert s['guards']['na_zero_fill']=='BLOCKED'
+              assert s['guards']['auto_master_tuning']=='BLOCKED'
+              print(s)
+          else:
+              print('No material signal/outcome change; nothing to commit.')
+          PY
+
+      - name: Commit material shadow changes to shadow branch only
+        run: |
+          git config user.name "signal-outcome-shadow-bot"
+          git config user.email "signal-outcome-shadow-bot@users.noreply.github.com"
+          git add signal_outcome/inbox signal_outcome/rejected signal_outcome/data signal_outcome/output signal_outcome/state 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No material signal/outcome changes"
+          else
+            git commit -m "data: signal outcome shadow update"
+            git pull --rebase origin signal-outcome-vault-v01
+            git push origin HEAD:signal-outcome-vault-v01
+          fi
+
+# SHADOW ONLY: this scheduler exists on main only so GitHub cron can run.
+# It checks out and writes only signal-outcome-vault-v01.
+# It must never modify any MASTER prompt, score, Gate, schedule, or live plan.
