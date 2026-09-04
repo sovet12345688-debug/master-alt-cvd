@@ -34,9 +34,12 @@ jobs:
         run: |
           python -m py_compile signal_outcome/vault.py
           python -m py_compile signal_outcome/tests.py
+          python -m py_compile signal_outcome/test_7d_pagination.py
 
       - name: Unit tests
-        run: PYTHONPATH=. python signal_outcome/tests.py
+        run: |
+          PYTHONPATH=. python signal_outcome/tests.py
+          PYTHONPATH=. python signal_outcome/test_7d_pagination.py
 
       - name: Validate empty state
         run: |
