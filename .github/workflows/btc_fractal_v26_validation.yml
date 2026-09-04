@@ -32,17 +32,20 @@ jobs:
           python -m py_compile btc_fractal/run_v26_v033.py
           python -m py_compile btc_fractal/run_v26_v034.py
           python -m py_compile btc_fractal/run_v26_v035.py
-      - name: Build and validate V0.3.5
-        run: python btc_fractal/run_v26_v035.py
+          python -m py_compile btc_fractal/run_v26_v036.py
+      - name: Build and validate V0.3.6
+        run: python btc_fractal/run_v26_v036.py
       - name: Show summaries
         run: |
           cat btc_fractal/output/build_meta.json
           cat btc_fractal/output/current_v035.json
+          cat btc_fractal/output/current_v036_confirmation.json
           cat btc_fractal/output/v035_validation_summary.json
+          cat btc_fractal/output/v036_validation_summary.json
       - name: Upload validation artifact
         uses: actions/upload-artifact@v4
         with:
-          name: btc-fractal-v035-validation
+          name: btc-fractal-v036-validation
           path: |
             btc_fractal/output/*.json
             btc_fractal/output/*.csv
