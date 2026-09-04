@@ -1,0 +1,62 @@
+{
+  "engine": "MASTER_DERIVATIVES_MICROSTRUCTURE_V1",
+  "venue": "Bitget USDT Futures",
+  "generated_at_utc": "2026-09-04T14:00:53.694097Z",
+  "window_minutes": 60,
+  "rules": {
+    "cvd": "Public futures fills; buy notional minus sell notional. Side is public trade/taker direction.",
+    "basis": "(markPrice/indexPrice - 1) * 10000, same Bitget futures venue.",
+    "liquidations": "Bitget public liquidation history. Raw amount is preserved because REST docs do not define a quote/base unit.",
+    "partial": "PARTIAL means pagination/API completeness was not fully verified; do not treat it as full-market total."
+  },
+  "assets": [
+    {
+      "symbol": "BTCUSDT",
+      "venue": "Bitget USDT Futures",
+      "window_start_utc": "2026-09-04T13:00:17.335380Z",
+      "window_end_utc": "2026-09-04T14:00:17.335380Z",
+      "status": "PARTIAL",
+      "trade_completeness": "PARTIAL_MAX_PAGES",
+      "trade_count": 60000,
+      "taker_buy_notional_usdt": 82796607.58577,
+      "taker_sell_notional_usdt": 56030579.11811,
+      "taker_buy_ratio": 0.5964005289711454,
+      "cvd_notional_usdt": 26766028.467659995,
+      "last_price": 79424.2,
+      "index_price": 79450.5265,
+      "mark_price": 79429.6,
+      "basis_bps": -2.6339032504718585,
+      "price_ts_utc": "2026-09-04T14:00:38.200000Z",
+      "liquidation_completeness": "FULL",
+      "liquidation_count": 2,
+      "long_liquidation_amount_raw": 0.0476,
+      "short_liquidation_amount_raw": 0,
+      "liquidation_amount_unit": "Bitget API raw amount; do not convert to USD unless unit is independently confirmed",
+      "errors": []
+    },
+    {
+      "symbol": "ETHUSDT",
+      "venue": "Bitget USDT Futures",
+      "window_start_utc": "2026-09-04T13:00:17.335380Z",
+      "window_end_utc": "2026-09-04T14:00:17.335380Z",
+      "status": "OK",
+      "trade_completeness": "FULL",
+      "trade_count": 42176,
+      "taker_buy_notional_usdt": 95232256.9849,
+      "taker_sell_notional_usdt": 76576649.7888,
+      "taker_buy_ratio": 0.5542917347721456,
+      "cvd_notional_usdt": 18655607.196099997,
+      "last_price": 2453.47,
+      "index_price": 2454.5865,
+      "mark_price": 2453.81,
+      "basis_bps": -3.163465618343242,
+      "price_ts_utc": "2026-09-04T14:00:53.385000Z",
+      "liquidation_completeness": "FULL",
+      "liquidation_count": 1,
+      "long_liquidation_amount_raw": 0.01,
+      "short_liquidation_amount_raw": 0,
+      "liquidation_amount_unit": "Bitget API raw amount; do not convert to USD unless unit is independently confirmed",
+      "errors": []
+    }
+  ]
+}
