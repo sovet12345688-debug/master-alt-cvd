@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "master": "MASTER MARKET V1.2",
   "status": "FINAL_CUMULATIVE_LOCK",
   "updated_kst": "2026-09-04T14:37:00+09:00",
@@ -35,6 +35,17 @@
     },
     "flexibility_intent": "Anti-omission is a preservation default, not a ban on intelligent recommendations or future improvements."
   },
+  "change_windows": {
+    "locked_windows": ["1D", "3D", "7D"],
+    "column_order_rule": "For the four locked summary tables, show 1D then 3D then 7D. Existing 7D is preserved.",
+    "data_rule": "Use only actual stored values, actual cumulative flow, or same-source comparable observations. No interpolation or reconstruction. Missing windows remain visible as N/A.",
+    "applies_to": [
+      "SCREEN1_CORE_5_AXES",
+      "SCREEN2_MACRO_TABLE",
+      "SCREEN4_INSTITUTION_WHALE_RETAIL_TABLE",
+      "SCREEN5_CORE_AXIS_TABLE"
+    ]
+  },
   "schedule": {
     "timezone": "Asia/Seoul",
     "official_hours": [1,5,9,13,17,21],
@@ -43,83 +54,13 @@
     "watch_overwrites_official_history": false
   },
   "required_data": {
-    "macro_liquidity": [
-      "Fed/QE-QT",
-      "US Net Liquidity",
-      "TGA",
-      "Fed Reserves",
-      "Treasury/QRA",
-      "Treasury Buyback actual accepted/settlement when available",
-      "US2Y",
-      "US10Y",
-      "US30Y",
-      "US10Y Real Yield",
-      "EFFR",
-      "SOFR",
-      "DXY",
-      "WTI",
-      "Brent",
-      "Global M2",
-      "Nasdaq",
-      "S&P500",
-      "geopolitics/regulation"
-    ],
-    "crypto_capital_flow": [
-      "BTC ETF 1D/3D/5D/20D",
-      "ETH ETF 1D/3D/5D/20D",
-      "USDT supply",
-      "USDC supply",
-      "total stablecoin supply",
-      "Mint/Burn",
-      "Treasury balances",
-      "Treasury-to-Exchange",
-      "Exchange Balance",
-      "Mint->Treasury->Exchange->Spot Buy confirmation chain"
-    ],
-    "market_breadth_rotation": [
-      "CRYPTO_TOTAL_MCAP",
-      "CRYPTO_24H_VOLUME",
-      "BTC_DOMINANCE",
-      "ETH_DOMINANCE",
-      "USD->Stablecoin->BTC->ETH->ALT rotation"
-    ],
-    "whale": [
-      "BTC core whales",
-      "ETH core whales",
-      "Hyperliquid same-run same-population positions",
-      "Position/Side/Entry/Leverage/Liquidation/Liq Distance",
-      "1H/4H/24H actual position-size changes",
-      "recent maximum 6 actual observations",
-      "$20M WATCH candidate",
-      "$50M LEVEL1 candidate"
-    ],
-    "derivatives": [
-      "Price",
-      "OI",
-      "Funding",
-      "OI 1H/4H/24H change",
-      "Funding 1H/4H/24H change when available",
-      "CVD",
-      "Taker Buy/Sell",
-      "Long/Short",
-      "Liquidation",
-      "Basis",
-      "Depth",
-      "Volume"
-    ],
-    "news_and_calendar": [
-      "Coinness fast news radar",
-      "News TOP5",
-      "Economic indicator calendar",
-      "major unlock/supply events",
-      "hack/exploit",
-      "policy/macro/oil shock"
-    ],
-    "secondary_confirmation": [
-      "Sean Farrell latest view - score 0",
-      "Stanley Druckenmiller latest view - score 0",
-      "STH-SOPR/on-chain confirmation - no threshold crossing by itself"
-    ]
+    "macro_liquidity": ["Fed/QE-QT","US Net Liquidity","TGA","Fed Reserves","Treasury/QRA","Treasury Buyback actual accepted/settlement when available","US2Y","US10Y","US30Y","US10Y Real Yield","EFFR","SOFR","DXY","WTI","Brent","Global M2","Nasdaq","S&P500","geopolitics/regulation"],
+    "crypto_capital_flow": ["BTC ETF 1D/3D/5D/20D","ETH ETF 1D/3D/5D/20D","USDT supply","USDC supply","total stablecoin supply","Mint/Burn","Treasury balances","Treasury-to-Exchange","Exchange Balance","Mint->Treasury->Exchange->Spot Buy confirmation chain"],
+    "market_breadth_rotation": ["CRYPTO_TOTAL_MCAP","CRYPTO_24H_VOLUME","BTC_DOMINANCE","ETH_DOMINANCE","USD->Stablecoin->BTC->ETH->ALT rotation"],
+    "whale": ["BTC core whales","ETH core whales","Hyperliquid same-run same-population positions","Position/Side/Entry/Leverage/Liquidation/Liq Distance","1H/4H/24H actual position-size changes","recent maximum 6 actual observations","$20M WATCH candidate","$50M LEVEL1 candidate"],
+    "derivatives": ["Price","OI","Funding","OI 1H/4H/24H change","Funding 1H/4H/24H change when available","CVD","Taker Buy/Sell","Long/Short","Liquidation","Basis","Depth","Volume"],
+    "news_and_calendar": ["Coinness fast news radar","News TOP5","Economic indicator calendar","major unlock/supply events","hack/exploit","policy/macro/oil shock"],
+    "secondary_confirmation": ["Sean Farrell latest view - score 0","Stanley Druckenmiller latest view - score 0","STH-SOPR/on-chain confirmation - no threshold crossing by itself"]
   },
   "source_policy": {
     "coinness": "EARLY_DETECTION_ONLY. Coinness can trigger investigation but cannot alone change the score. Confirm important claims with official/primary source, Reuters, exchange/project source, or another independent source before score impact.",
@@ -138,11 +79,11 @@
   },
   "required_output": {
     "screen_count": 5,
-    "screen1": ["market state","action environment","big-money leader #1","largest risk","5 core axes","institution/whale/retail traffic lights","rotation","market breadth mini-line: total market cap/24H volume/BTC.D/ETH.D","prior change TOP3","7D improve/worsen TOP3"],
-    "screen2": ["table columns: item|current status traffic-light|current value|prior delta|7D|crypto positive score|easy interpretation","Liquidity Lead with 55/65/75","WTI+Brent detail","final crypto-positive summary"],
+    "screen1": ["market state","action environment","big-money leader #1","largest risk","5 core axes table columns: axis|current|prior delta|1D|3D|7D|positive/100","institution/whale/retail traffic lights","rotation","market breadth mini-line: total market cap/24H volume/BTC.D/ETH.D","prior change TOP3","7D improve/worsen TOP3"],
+    "screen2": ["table columns: item|current status traffic-light|current value|prior delta|1D|3D|7D|crypto positive score|easy interpretation","Liquidity Lead with 55/65/75","WTI+Brent detail","final crypto-positive summary"],
     "screen3": ["BTC/ETH ETF 1D/3D/5D/20D","stablecoin supply/mint/burn/treasury/exchange","Crypto Money Inflow","ALT Money Inflow","fixed text: Stablecoin supply increase != actual buy"],
-    "screen4": ["BTC whales max10","ETH whales max10","institution vs whale vs retail","derivatives subsection must read GitHub OI/Funding 1H/4H/24H when fresh","CVD/Taker/Basis/Depth/Volume visible as value or N/A"],
-    "screen5": ["7D core-axis table","mini-trends only with >=3 actual OFFICIAL points","rotation progress","money frontier","risk radar","final market verdict","Coinness/News TOP5 compact radar","economic calendar compact block","Sean Farrell compact view block score0","Stanley Druckenmiller compact view block score0"],
+    "screen4": ["BTC whales max10","ETH whales max10","institution vs whale vs retail table columns: subject|current|prior|1D|3D|7D|positive/100","derivatives subsection must read GitHub OI/Funding 1H/4H/24H when fresh","CVD/Taker/Basis/Depth/Volume visible as value or N/A"],
+    "screen5": ["core-axis table columns: axis|current|prior delta|1D delta|3D delta|7D delta|positive/100","mini-trends only with >=3 actual OFFICIAL points","rotation progress","money frontier","risk radar","final market verdict","Coinness/News TOP5 compact radar","economic calendar compact block","Sean Farrell compact view block score0","Stanley Druckenmiller compact view block score0"],
     "footer": "🕒 MASTER MARKET V1.2 | 실행완료: YYYY-MM-DD HH:mm KST | 롱/숏 | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST",
     "watch_footer": "🕒 MASTER MARKET WATCH | 감지완료: YYYY-MM-DD HH:mm KST | 롱/숏 | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST"
   },
