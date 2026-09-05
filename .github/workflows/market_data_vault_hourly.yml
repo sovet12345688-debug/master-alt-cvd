@@ -60,6 +60,53 @@ jobs:
           print('MARKET_DATA_VAULT_COMPARISON_SAFETY=PASS')
           PY
 
+      - name: Validate MARKET vault 24H FINAL QA integrity
+        run: |
+          python - <<'PY'
+          import csv,json,sys
+          from datetime import datetime,timedelta
+          with open('market_vault/data/market_history.csv',newline='',encoding='utf-8') as fh:
+              rows=list(csv.DictReader(fh))
+          s=json.load(open('market_vault/state/vault_state.json'))
+          p=json.load(open('market_vault/output/latest_summary.json'))
+          latest_s=s.get('snapshot_hour_utc')
+          if not latest_s:
+              sys.exit('FINAL_QA failed: missing latest snapshot hour')
+          latest=datetime.fromisoformat(latest_s.replace('Z','+00:00'))
+          keys=set()
+          for r in rows:
+              k=(r.get('snapshot_hour_utc'),r.get('metric'),r.get('source'))
+              if k in keys:
+                  sys.exit(f'FINAL_QA failed: duplicate key {k}')
+              keys.add(k)
+          stamps=sorted({datetime.fromisoformat(r['snapshot_hour_utc'].replace('Z','+00:00')) for r in rows if r.get('snapshot_hour_utc')})
+          recent=[t for t in stamps if latest-timedelta(hours=25) <= t <= latest]
+          if len(recent) < 20:
+              sys.exit(f'FINAL_QA failed: production timestamps <20 in ~26H ({len(recent)})')
+          gaps=[(b-a).total_seconds()/3600 for a,b in zip(recent,recent[1:])]
+          if gaps and max(gaps) > 2.1:
+              sys.exit(f'FINAL_QA failed: abnormal hourly gap max={max(gaps):.2f}h')
+          mandatory={'US2Y','US10Y','US30Y','US10Y_REAL','EFFR','TGA_CLOSING_BALANCE'}
+          metrics={m.get('metric'):m for m in p.get('metrics',[])}
+          if len(mandatory & set(metrics)) < 5:
+              sys.exit('FINAL_QA failed: mandatory summary coverage <5/6')
+          with24=0
+          for name in mandatory:
+              m=metrics.get(name)
+              if not m:
+                  continue
+              b=m.get('vs_24h')
+              if b is not None:
+                  if b.get('previous_snapshot_hour_utc') is None:
+                      sys.exit(f'FINAL_QA failed: invalid 24h comparison {name}')
+                  with24 += 1
+          if with24 < 5:
+              sys.exit(f'FINAL_QA failed: mandatory actual 24H comparisons <5 ({with24})')
+          if s.get('mandatory_ok',0) < 5 or s.get('failures'):
+              sys.exit(f'FINAL_QA failed: current source failures {s.get("failures")}')
+          print('MARKET_DATA_VAULT_24H_FINAL_QA=PASS')
+          PY
+
       - name: Save hourly market snapshot
         run: |
           git config user.name "market-data-vault-bot"
