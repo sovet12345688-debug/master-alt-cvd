@@ -75,10 +75,10 @@ Coinness fast news radar, News TOP5, economic indicator calendar, major unlock/s
 
 Coinness policy: Coinness is EARLY DETECTION ONLY. A Coinness item may trigger investigation, but score impact requires confirmation from an official/primary source, Reuters, exchange/project source, or another independent source. Coinness alone never changes a score.
 
-### Secondary Opinion / On-chain — RESTORED
+### Secondary Opinion — RESTORED
 - Sean Farrell latest view + prior-view change: informational block, score weight 0.
 - Stanley Druckenmiller latest view + prior-view change: informational block, score weight 0.
-- STH-SOPR/on-chain: SECONDARY CONFIRMATION only; cannot by itself cross a threshold or flip direction.
+- User explicitly removed the on-chain secondary-confirmation output block on 2026-09-05. Do not output STH-SOPR, STH Realized Price, STH-MVRV, Exchange Netflow, or an on-chain synthesis block unless the user explicitly restores it.
 
 ## BTC LIQUIDITY LEAD INDEX
 
@@ -167,8 +167,8 @@ Every BTC/ETH row MUST translate the raw combination into easy Korean, e.g. `가
 CVD/Taker Buy-Sell/Long-Short/Liquidation/Basis/Depth/Volume remain visible in one compact line as confirmed values or explicit N/A.
 Immediately under that line, add `쉽게 해석:` explaining what the available/missing derivative confirmation means for confidence. If many fields are N/A, state that directional confidence cannot be raised from derivatives alone.
 
-## SCREEN 5 — 뉴스·경제일정·전문가·온체인 보조
-SCREEN5 is a research/context screen only. The previous duplicated core-axis table, mini-score graphs, rotation progress, money frontier, risk radar and final-verdict table are removed from SCREEN5 by explicit user instruction because their decision content already appears in SCREEN1-4. Do not recreate those duplicate blocks unless the user asks.
+## SCREEN 5 — 뉴스·경제일정·전문가
+SCREEN5 is a research/context screen only. The previous duplicated core-axis table, mini-score graphs, rotation progress, money frontier, risk radar, final-verdict table, and on-chain secondary block are removed from SCREEN5 by explicit user instruction. Do not recreate those removed blocks unless the user asks.
 
 ### 1) 📰 Coinness / 코인뉴스 레이더 TOP5
 Show exactly up to 5 highest-relevance current items, not filler. Columns or compact cards should include `시간 | 뉴스 | 무엇이 바뀌었나 | BTC/ETH/ALT 영향 | 1차원천 확인 | 기존 Owner축 | 점수반영 여부`.
@@ -187,11 +187,6 @@ This is opinion/context only and never changes score by itself.
 ### 4) 🧠 Stanley Druckenmiller 최신 관점 — score 0
 Explain slightly more than one line using the same structure: `최신 확인 관점 | 이전 대비 변화 | 핵심 매크로/유동성 포인트 | MASTER 데이터와 일치/충돌 | 현재 참고 의미`.
 Do not treat an old public view as current; if no fresh verified view exists, mark `최신 직접관점 N/A` and show the date of the last verified view.
-
-### 5) 🧬 온체인 보조확인
-Show available secondary on-chain signals such as `STH-SOPR | STH Realized Price | STH-MVRV | Exchange Netflow` with `현재/상태 | 직전·기간변화 if confirmed | 쉬운해석 | 확인수준`.
-End with one compact synthesis: `온체인이 현재 MASTER 방향을 강화 / 중립 / 약화하는가`.
-On-chain remains SECONDARY CONFIRMATION only; it cannot alone cross Liquidity thresholds or flip 롱/숏. Missing values remain visible as N/A.
 
 ## OFFICIAL SCORE HISTORY — NEW PERSISTENCE FOUNDATION
 
