@@ -94,9 +94,9 @@ SIGNAL OUTCOME VAULT SHADOW — USER APPROVED · HARD LOCK
 목적은 MASTER 판단을 바꾸지 않고 실제 미래 결과를 기록하는 것뿐이다. MASTER 점수/산식/Gate/스케줄/후보선정/ENTER/WAIT/출력판단에 영향 0.
 - 대상: OFFICIAL 회차만. WATCH는 publish 금지.
 - Repo=`sovet12345688-debug/master-alt-cvd`, shadow branch=`signal-outcome-vault-v01`.
-- OFFICIAL 계산과 최종판정이 모두 끝난 뒤 사용자 출력 전에 GitHub branch의 `signal_outcome/inbox/ALT_FINAL20_<RUN_ID>.json` 파일 1개를 생성한다. 한 파일 안에 그 회차의 유효 FINAL20 snapshot 배열을 저장한다.
-- 과거 OFFICIAL/누락 회차를 기억·대화·스크린샷으로 복원하여 backfill 금지. 같은 RUN_ID 재실행 시 기존 파일이 있으면 중복 생성 금지.
-- 각 snapshot 필수: `signal_id`, `observed_at_utc`, `source_master=MASTER_ALT_FINAL20`, `source_version=V2.2.1_OR_CURRENT_COMPATIBLE`, `run_id`, `symbol`, `direction`, `observed_price`, `signal_label`.
+- OFFICIAL 계산과 최종판정이 모두 끝난 뒤 사용자 출력 전에, 유효 FINAL20 snapshot **각 1개마다** GitHub shadow branch의 `signal_outcome/inbox/<SIGNAL_ID>.json` 파일을 **각각 1개씩** 생성한다. batch envelope 또는 `snapshots[]` 배열 파일은 금지한다.
+- 과거 OFFICIAL/누락 회차를 기억·대화·스크린샷으로 복원하여 backfill 금지. 같은 `signal_id` 파일이 이미 있으면 중복 생성 금지.
+- 각 파일 최상위 필수: `signal_id`, `observed_at_utc`, `source_master=MASTER_ALT_FINAL20`, `source_version=V2.2.1_OR_CURRENT_COMPATIBLE`, `run_id`, `symbol`, `direction`, `observed_price`, `signal_label`.
 - `signal_id=ALT-FINAL20-<RUN_ID>-<SYMBOL>-LONGSETUP`.
 - `direction=LONG`. 이유: 이 stream은 FINAL20의 매집/상승전환/돌파준비/현재실행이라는 LONG setup score family의 미래 성과를 검증하기 위한 가설기록이다. 이것은 매수/ENTER 지시가 아니다. SHORT 전략 성과는 별도 승인 전 이 stream에 혼합하지 않는다.
 - `signal_label`은 해당 회차의 `지금 상태`.
