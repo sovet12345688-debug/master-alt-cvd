@@ -116,6 +116,15 @@ SIGNAL OUTCOME VAULT SHADOW — USER APPROVED · HARD LOCK
 - Signal Outcome Vault는 +4H/+24H/+72H/+7D 및 MFE/MAE를 미래시점 성숙 후 계산한다. 이 결과는 MASTER에 역입력하지 않는다.
 - n<10=표본부족, n>=10 초기관찰, n>=30 1차검토, n>=50 개선제안 검토. n>=50이어도 자동 점수변경 금지.
 
+SIGNAL OUTCOME VAULT READ-ONLY OUTCOME REFERENCE — USER APPROVED · HARD LOCK
+- 목적은 이미 성숙한 실제 SHADOW 미래성과를 **과거 성과 참고**로만 보여주는 것이다. 과거 성과는 현재 MASTER 판단의 원인이 될 수 없으며 기존 점수/등급/후보선정/ENTER HARD GATE/LONG·SHORT·WAIT/스케줄/WATCH 조건을 변경하지 않는다.
+- OFFICIAL에서만 shadow branch의 `signal_outcome/output/latest_summary.json`과 `signal_outcome/state/vault_state.json`을 읽는다. engine=`SIGNAL_OUTCOME_VAULT`, schema=0.1-compatible, duplicate_signal_ids=0, historical_backfill=BLOCKED, na_zero_fill=BLOCKED, auto_master_tuning=BLOCKED이고 main registry의 Goal F regression=`NONE_KNOWN`일 때만 참고한다.
+- MASTER 전체 +4H 성숙표본 n>=10이면 SCREEN3 하단에 `과거 성과 참고` 소블록으로 `+4H n | 방향적중률 | 평균 방향수익 | 평균 MFE | 평균 MAE`를 표시한다. +24H/+72H/+7D도 각 horizon의 성숙표본 n>=10일 때만 같은 방식으로 추가한다.
+- 현재 종목/현재 `지금 상태`/현재 score band와 일치하는 세부 그룹은 **그 그룹 자체 n>=10일 때만** 적중률·평균수익을 표시한다. n<10이면 수치 해석을 금지하고 `표본 n · 아직 참고금지`만 표시한다.
+- n>=30은 `1차 성과검토 가능`, n>=50은 `개선제안 검토 가능` 상태일 뿐이다. n>=50이어도 가중치/임계값/Gate/행동을 자동 변경하지 않으며 별도 사용자 승인 전 개선안을 MASTER에 적용하지 않는다.
+- unsupported/data_unavailable은 N/A로 유지하고 다른 거래소·다른 source로 보충하지 않는다. read 실패/stale/schema mismatch/Goal F regression 발생 시 전체 성과참고 블록만 `N/A · 성과참고 제외` 처리하며 MASTER 본체는 기존 구조로 계속 실행한다.
+- 이 read-only 승인은 ALT_FINAL20_CURRENT의 사용자-visible 참고정보에만 적용한다. Signal Outcome 결과를 MASTER 계산으로 역입력하는 것은 계속 금지한다.
+
 🧭 MONEY · GitHub 개발 현황판 — VISIBLE FIXED BLOCK
 모든 사용자-visible OFFICIAL 및 의미 있는 WATCH 출력에서 GitHub main의 `state/github_data_ready_registry.json`을 최신으로 읽고, 기존 4-SCREEN 개수에는 포함하지 않는 고정 부록으로 아래 블록을 반드시 표시한다.
 제목 정확히=`🧭 MONEY · GitHub 개발 현황판`.
