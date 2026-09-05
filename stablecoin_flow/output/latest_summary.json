@@ -1,0 +1,55 @@
+{
+  "engine": "MASTER_STABLECOIN_TREASURY_EXCHANGE_V1",
+  "generated_at_utc": "2026-09-05T16:26:24.529686Z",
+  "window_start_utc": "2026-09-05T15:26:15.175200Z",
+  "window_end_utc": "2026-09-05T16:26:15.175200Z",
+  "chain": "ethereum",
+  "rpc_url": "https://rpc.mevblocker.io",
+  "block_range": [
+    25912016,
+    25912316
+  ],
+  "log_chunk_blocks": 50,
+  "rpc_fallback_log": [
+    "https://ethereum-rpc.publicnode.com:RuntimeError:{'code': -32602, 'message': 'block range extends beyond current head block'}",
+    "https://eth.llamarpc.com:HTTPError:403 Client Error: Forbidden for url: https://eth.llamarpc.com/",
+    "https://1rpc.io/eth:HTTPError:403 Client Error: Forbidden for url: https://1rpc.io/eth"
+  ],
+  "coverage_rule": "Exchange matching is partial and only covers explicitly verified addresses in this registry. No unmatched destination may be inferred as an exchange.",
+  "rules": {
+    "USDT": "Confirmed transfers from verified Tether Treasury address. Only destinations matching verified exchange registry count as Treasury->Exchange.",
+    "USDC": "Zero-address mints are issuer mint destination proxy; they are not labeled Circle Treasury. Only verified exchange destinations count as Mint->Exchange.",
+    "no_inference": "Unmatched addresses are never classified as exchanges.",
+    "stablecoin_supply": "Stablecoin supply increase is not equivalent to actual crypto spot buying."
+  },
+  "assets": [
+    {
+      "token": "USDT",
+      "chain": "ethereum",
+      "mode": "treasury_outflow",
+      "status": "OK",
+      "issuer_transfer_count": 0,
+      "issuer_transfer_amount": 0,
+      "verified_exchange_match_count": 0,
+      "verified_exchange_amount": 0,
+      "verified_exchange_breakdown": {},
+      "exchange_coverage": "PARTIAL_LABEL_SET",
+      "matched_transfers": [],
+      "errors": []
+    },
+    {
+      "token": "USDC",
+      "chain": "ethereum",
+      "mode": "mint_destination_proxy",
+      "status": "OK",
+      "issuer_transfer_count": 132,
+      "issuer_transfer_amount": 6404363.664736,
+      "verified_exchange_match_count": 0,
+      "verified_exchange_amount": 0,
+      "verified_exchange_breakdown": {},
+      "exchange_coverage": "PARTIAL_LABEL_SET",
+      "matched_transfers": [],
+      "errors": []
+    }
+  ]
+}
