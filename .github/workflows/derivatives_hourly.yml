@@ -58,6 +58,56 @@ jobs:
               sys.exit('No usable microstructure snapshots')
           PY
 
+      - name: Validate derivatives 24H FINAL QA integrity
+        run: |
+          python - <<'PY'
+          import csv,json,sys
+          from datetime import datetime,timedelta,timezone
+          with open('derivatives/data/hourly_derivatives.csv',newline='',encoding='utf-8') as fh:
+              rows=list(csv.DictReader(fh))
+          state=json.load(open('derivatives/state/collector_state.json'))
+          summary=json.load(open('derivatives/output/latest_summary.json'))
+          venue=state.get('selected_venue')
+          latest_s=state.get('snapshot_hour_utc')
+          if not venue or not latest_s:
+              sys.exit('FINAL_QA failed: missing selected venue/latest timestamp')
+          latest=datetime.fromisoformat(latest_s.replace('Z','+00:00'))
+          keys=set()
+          for r in rows:
+              k=(r.get('time_utc'),r.get('venue'),r.get('symbol'))
+              if k in keys:
+                  sys.exit(f'FINAL_QA failed: duplicate key {k}')
+              keys.add(k)
+          vr=[r for r in rows if r.get('venue')==venue]
+          stamps=sorted({datetime.fromisoformat(r['time_utc'].replace('Z','+00:00')) for r in vr if r.get('time_utc')})
+          recent=[t for t in stamps if latest-timedelta(hours=23) <= t <= latest]
+          expected={latest-timedelta(hours=i) for i in range(24)}
+          if not expected.issubset(set(recent)):
+              missing=sorted(expected-set(recent))
+              sys.exit(f'FINAL_QA failed: missing hourly timestamps in 24H window: {missing[:4]}')
+          universe=int(state.get('universe_count') or 0)
+          if universe <= 0:
+              sys.exit('FINAL_QA failed: invalid universe_count')
+          for t in expected:
+              ts=t.isoformat().replace('+00:00','Z')
+              count=sum(1 for r in vr if r.get('time_utc')==ts)
+              if count < max(1,int(universe*0.90)):
+                  sys.exit(f'FINAL_QA failed: abnormal row-count collapse {ts} rows={count} universe={universe}')
+          assets=summary.get('assets',[])
+          if len(assets) < max(1,int(universe*0.90)):
+              sys.exit('FINAL_QA failed: latest summary coverage <90%')
+          for a in assets:
+              if a.get('venue') != venue:
+                  sys.exit(f'FINAL_QA failed: cross-venue summary row {a.get("symbol")}')
+              if a.get('status')=='OK':
+                  if a.get('last_funding_rate') is None:
+                      sys.exit(f'FINAL_QA failed: funding missing {a.get("symbol")}')
+                  for h in (1,4,24):
+                      if a.get(f'oi_change_{h}h_pct') is None:
+                          sys.exit(f'FINAL_QA failed: OI {h}h missing {a.get("symbol")}')
+          print('DERIVATIVES_24H_FINAL_QA=PASS')
+          PY
+
       - name: Commit updated data
         run: |
           git config user.name "derivatives-history-bot"
