@@ -3,7 +3,10 @@ name: Signal Outcome Vault Shadow Main Scheduler
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 1,5,9,13,17,21 * * *'
+    # ALT FINAL20 OFFICIAL occurs at :45 UTC on 00/04/08/12/16/20.
+    # Run 5 minutes later so normal queue latency stays inside the Vault's
+    # strict 15-minute anti-backfill guard without weakening no-backfill semantics.
+    - cron: '50 0,4,8,12,16,20 * * *'
 
 permissions:
   contents: write
