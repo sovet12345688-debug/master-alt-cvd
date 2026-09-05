@@ -1,178 +1,33 @@
 {
-  "schema_version": "1.0",
-  "registry_name": "MONEY_GITHUB_DATA_READY_REGISTRY",
-  "purpose": "Persistent state for A/B/C/D/E/F development readiness, version compatibility, final QA, integration history, and regression detection.",
-  "updated_utc": "2026-09-05T00:36:00Z",
-  "write_policy": "STATE_CHANGE_ONLY",
-  "master_auto_modify": false,
-  "btc_trend_auto_modify": false,
-  "dashboard_columns": ["goal","engine","latest_compatible_version","completion_pct","status","final_qa","master_link","expected_value","next_action","regression"],
-  "goals": {
-    "A": {
-      "engine": "DERIVATIVES_OI_FUNDING",
-      "latest_compatible_version": "MASTER_DERIVATIVES_HISTORY_V1_1",
-      "completion_pct": 100,
-      "status": "DEV100_FINAL_QA_PASS",
-      "final_qa": "PASS",
-      "master_targets": ["ALT_FINAL20_CURRENT","BTC_TREND_CURRENT"],
-      "master_link": "NOT_INTEGRATED_MANUAL_VERIFIED",
-      "expected_value": 8,
-      "next_action": "Manual verification PASS. Any ALT FINAL20 read-only clause check requires separate explicit user approval. Do not read or modify MASTER BTC TREND and do not change any MASTER score/Gate/schedule/live plan.",
-      "regression": "NONE_KNOWN",
-      "last_dev100_compatible_contract": "MASTER_DERIVATIVES_HISTORY_V1_1/BitgetUSDTFutures/same-venue-OI-Funding/1H-4H-24H",
-      "last_alerted_dev100_version": "MASTER_DERIVATIVES_HISTORY_V1_1",
-      "evidence": {
-        "snapshot_utc": "2026-09-05T00:00:00Z",
-        "last_run_utc": "2026-09-05T00:30:22.417227Z",
-        "venue": "Bitget USDT Futures",
-        "coverage": "21/21 OK",
-        "na_count": 0,
-        "windows": "1H/4H/24H populated",
-        "funding": "available",
-        "fallback": "none",
-        "final_qa_guard": "PASS_ON_PRODUCTION_RUN_AFTER_GUARD_DEPLOY",
-        "manual_verification": "PASS"
-      }
-    },
-    "B": {
-      "engine": "HYPERLIQUID_WHALE_SIZE_BASED",
-      "latest_compatible_version": "1.1",
-      "completion_pct": 92,
-      "status": "DEVELOPMENT/ACCUMULATING",
-      "final_qa": "GUARD_ADDED_AWAITING_PRODUCTION_PASS",
-      "master_targets": ["MARKET_CURRENT"],
-      "master_link": "NOT_INTEGRATED_UNLESS_ACTUAL_READ_ONLY_CLAUSE_VERIFIED",
-      "expected_value": 9,
-      "next_action": "Run the strengthened signed-SZI 24H duplicate/missing/continuity production guard on the next real hourly cycle; promote only if it passes.",
-      "regression": "NONE_KNOWN",
-      "last_dev100_compatible_contract": null,
-      "last_alerted_dev100_version": null,
-      "evidence": {
-        "snapshot_utc": "2026-09-04T23:00:00Z",
-        "engine": "MASTER_MARKET_WHALE_TIME_SERIES_V1_1",
-        "schema": "1.1",
-        "change_basis": "POSITION_SIZE_SZI",
-        "size_engine": "PASS",
-        "query_coverage": "316/316",
-        "active_market_whales": 32,
-        "24h_change_state": "real 24H signed-SZI comparisons populated",
-        "final_qa_guard": "DEPLOYED_AWAITING_NEXT_PRODUCTION_RUN"
-      }
-    },
-    "C": {
-      "engine": "ALT_LIVE_LARGE_FLOW",
-      "latest_compatible_version": "ALT2_LIVE_LARGE_FLOW_V1/schema1.0",
-      "completion_pct": 100,
-      "status": "DEV100_FINAL_QA_PASS",
-      "final_qa": "PASS",
-      "master_targets": ["ALT_FINAL20_CURRENT"],
-      "master_link": "NOT_INTEGRATED_CLAUSE_MISSING",
-      "expected_value": 10,
-      "next_action": "Manual verification PASS. Read-only clause design reviewed; adding it still requires separate explicit user approval. Do not change score, Gate, ENTER logic, schedule, or live plan.",
-      "regression": "NONE_KNOWN",
-      "last_dev100_compatible_contract": "ALT2_LIVE_LARGE_FLOW_V1/schema1.0/BinanceSpotAggTrades/completed-hour/W+MW100K+",
-      "last_alerted_dev100_version": "ALT2_LIVE_LARGE_FLOW_V1/schema1.0",
-      "evidence": {
-        "source": "Binance Spot public aggTrades API",
-        "venue": "Binance Spot",
-        "supported": "18/18 OK",
-        "failures": 0,
-        "24h_hours_observed": 24,
-        "24h_coverage_pct": 100.0,
-        "quality_guard": "PASS",
-        "manual_verification": "PASS",
-        "alt_final20_read_only_clause": "NOT_PRESENT; DESIGN_REVIEWED_ONLY"
-      }
-    },
-    "D": {
-      "engine": "MARKET_DATA_VAULT",
-      "latest_compatible_version": "MASTER_MARKET_DATA_VAULT_V1/schema1.1/collector1.2-official-keyless",
-      "completion_pct": 92,
-      "status": "DEVELOPMENT/ACCUMULATING",
-      "final_qa": "GUARD_ADDED_AWAITING_PRODUCTION_PASS",
-      "master_targets": ["MARKET_CURRENT"],
-      "master_link": "NOT_INTEGRATED_UNLESS_ACTUAL_READ_ONLY_CLAUSE_VERIFIED",
-      "expected_value": 9,
-      "next_action": "Run the strengthened ~26H timestamp, duplicate, abnormal-gap and mandatory-24H comparison guard on the next real hourly cycle; promote only if it passes.",
-      "regression": "NONE_KNOWN",
-      "last_dev100_compatible_contract": null,
-      "last_alerted_dev100_version": null,
-      "evidence": {
-        "snapshot_hour_utc": "2026-09-04T23:00:00Z",
-        "mandatory_coverage": "6/6 = 100%",
-        "failures": 0,
-        "history_rows": 574,
-        "same_source_rule": "present",
-        "mandatory_24h_comparisons": "populated",
-        "final_qa_guard": "DEPLOYED_AWAITING_NEXT_PRODUCTION_RUN"
-      }
-    },
-    "E": {
-      "engine": "BTC_FRACTAL_LATEST_COMPATIBLE",
-      "latest_compatible_version": "V0.3.7_LAST_AUTO_COMPATIBLE",
-      "completion_pct": 89,
-      "status": "BREAKING_CHANGE_REVIEW",
-      "final_qa": "V0.6.0_COMPATIBILITY_MANUAL_REVIEW_REQUIRED",
-      "master_targets": ["BTC_TREND_CURRENT"],
-      "master_link": "AUTO_INTEGRATION_FORBIDDEN",
-      "expected_value": 10,
-      "next_action": "Manually review V0.4.x/V0.5.x/V0.6.0 architecture changes before accepting V0.6.0 as the new compatible line. Do not modify MASTER BTC TREND.",
-      "regression": "NONE_KNOWN",
-      "last_dev100_compatible_contract": null,
-      "last_alerted_dev100_version": null,
-      "evidence": {
-        "research_head": "btc-fractal-v26-build",
-        "candidate_version_detected": "V0.6.0",
-        "auto_promotion": "BLOCKED_PENDING_MANUAL_COMPATIBILITY_REVIEW"
-      }
-    },
-    "F": {
-      "engine": "SIGNAL_OUTCOME_VAULT",
-      "latest_compatible_version": "V0.1",
-      "completion_pct": 100,
-      "status": "SHADOW_PUBLISHER_FIXED_AWAITING_NEXT_RUN",
-      "final_qa": "PASS_CODE_PUBLISHER_FIXED_REVERIFY_NEXT_REAL_RUN",
-      "master_targets": ["BTC_TREND_CURRENT","ALT_FINAL20_CURRENT","MARKET_CURRENT","EXPLICITLY_APPROVED_OTHER_MASTERS"],
-      "master_link": "ALT_FINAL20_SHADOW_ACTIVE_LOGGING_ONLY",
-      "expected_value": 10,
-      "next_action": "Next real ALT FINAL20 OFFICIAL is required to verify one-JSON-per-signal acceptance. Do not backfill rejected runs.",
-      "regression": "SHADOW_OPERATIONAL_REGRESSION_ACTIVE_PENDING_RECOVERY_RUN",
-      "last_dev100_compatible_contract": "SIGNAL_OUTCOME_VAULT/schema0.1/append-only/5m-forward-outcome",
-      "last_alerted_dev100_version": "V0.1",
-      "evidence": {
-        "manual_verification": "PASS",
-        "shadow_user_approved": true,
-        "alt_final20_canonical_clause": "VERIFIED_ONE_JSON_PER_SIGNAL_AFTER_FIX",
-        "first_real_snapshot": "NEXT_REAL_RUN_REVERIFY_REQUIRED",
-        "rejected_files": 2,
-        "accepted_signal_count": 0,
-        "real_forward_sample_count": 0,
-        "statistical_usefulness": "NOT_YET_ESTABLISHED"
-      }
-    }
+  "schema_version":"1.0",
+  "registry_name":"MONEY_GITHUB_DATA_READY_REGISTRY",
+  "purpose":"Persistent state for A/B/C/D/E/F development readiness, version compatibility, final QA, integration history, and regression detection.",
+  "updated_utc":"2026-09-05T01:04:00Z",
+  "write_policy":"STATE_CHANGE_ONLY",
+  "master_auto_modify":false,
+  "btc_trend_auto_modify":false,
+  "dashboard_columns":["goal","engine","latest_compatible_version","completion_pct","status","final_qa","master_link","expected_value","next_action","regression"],
+  "goals":{
+    "A":{"engine":"DERIVATIVES_OI_FUNDING","latest_compatible_version":"MASTER_DERIVATIVES_HISTORY_V1_1","completion_pct":100,"status":"DEV100_FINAL_QA_PASS","final_qa":"PASS","master_targets":["ALT_FINAL20_CURRENT","BTC_TREND_CURRENT"],"master_link":"NOT_INTEGRATED_MANUAL_VERIFIED","expected_value":8,"next_action":"Manual verification PASS. Any ALT FINAL20 read-only clause check requires separate explicit user approval. Do not read or modify MASTER BTC TREND and do not change any MASTER score/Gate/schedule/live plan.","regression":"NONE_KNOWN","last_dev100_compatible_contract":"MASTER_DERIVATIVES_HISTORY_V1_1/BitgetUSDTFutures/same-venue-OI-Funding/1H-4H-24H","last_alerted_dev100_version":"MASTER_DERIVATIVES_HISTORY_V1_1","evidence":{"snapshot_utc":"2026-09-05T00:00:00Z","last_run_utc":"2026-09-05T00:30:22.417227Z","venue":"Bitget USDT Futures","coverage":"21/21 OK","na_count":0,"windows":"1H/4H/24H populated","funding":"available","fallback":"none","final_qa_guard":"PASS_ON_PRODUCTION_RUN_AFTER_GUARD_DEPLOY","manual_verification":"PASS"}},
+    "B":{"engine":"HYPERLIQUID_WHALE_SIZE_BASED","latest_compatible_version":"1.1","completion_pct":100,"status":"DEV100_FINAL_QA_PASS","final_qa":"PASS","master_targets":["MARKET_CURRENT"],"master_link":"NOT_INTEGRATED_MANUAL_VERIFICATION_REQUIRED","expected_value":9,"next_action":"Manual verification required before any MARKET read-only integration. No automatic MARKET score changes.","regression":"NONE_KNOWN","last_dev100_compatible_contract":"MASTER_MARKET_WHALE_TIME_SERIES_V1_1/schema1.1/POSITION_SIZE_SZI/Hyperliquid","last_alerted_dev100_version":"1.1","evidence":{"snapshot_utc":"2026-09-05T00:00:00Z","last_run_utc":"2026-09-05T00:51:17.731416Z","engine":"MASTER_MARKET_WHALE_TIME_SERIES_V1_1","schema":"1.1","change_basis":"POSITION_SIZE_SZI","size_engine":"PASS","query_coverage":"316/316","query_failures":0,"active_market_whales":32,"24h_change_state":"real 24H signed-SZI comparisons populated","final_qa_guard":"PASS_ON_PRODUCTION_RUN_AFTER_GUARD_DEPLOY"}},
+    "C":{"engine":"ALT_LIVE_LARGE_FLOW","latest_compatible_version":"ALT2_LIVE_LARGE_FLOW_V1/schema1.0","completion_pct":100,"status":"DEV100_FINAL_QA_PASS","final_qa":"PASS","master_targets":["ALT_FINAL20_CURRENT"],"master_link":"NOT_INTEGRATED_CLAUSE_MISSING","expected_value":10,"next_action":"Manual verification PASS. Read-only clause design reviewed; adding it still requires separate explicit user approval. Do not change score, Gate, ENTER logic, schedule, or live plan.","regression":"NONE_KNOWN","last_dev100_compatible_contract":"ALT2_LIVE_LARGE_FLOW_V1/schema1.0/BinanceSpotAggTrades/completed-hour/W+MW100K+","last_alerted_dev100_version":"ALT2_LIVE_LARGE_FLOW_V1/schema1.0","evidence":{"source":"Binance Spot public aggTrades API","venue":"Binance Spot","supported":"18/18 OK","failures":0,"24h_hours_observed":24,"24h_coverage_pct":100.0,"quality_guard":"PASS","manual_verification":"PASS","alt_final20_read_only_clause":"NOT_PRESENT; DESIGN_REVIEWED_ONLY"}},
+    "D":{"engine":"MARKET_DATA_VAULT","latest_compatible_version":"MASTER_MARKET_DATA_VAULT_V1/schema1.1/collector1.2-official-keyless","completion_pct":92,"status":"DEVELOPMENT/ACCUMULATING","final_qa":"GUARD_PASS_SAVE_STEP_FAILURE","master_targets":["MARKET_CURRENT"],"master_link":"NOT_INTEGRATED_UNLESS_ACTUAL_READ_ONLY_CLAUSE_VERIFIED","expected_value":9,"next_action":"Investigate the failed Save hourly market snapshot step. FINAL QA integrity itself passed; promote only after a clean full production workflow succeeds.","regression":"NONE_KNOWN","last_dev100_compatible_contract":null,"last_alerted_dev100_version":null,"evidence":{"last_successful_snapshot_hour_utc":"2026-09-04T23:00:00Z","mandatory_coverage":"6/6 = 100%","failures":0,"history_rows":574,"same_source_rule":"present","mandatory_24h_comparisons":"populated","final_qa_guard":"PASS_AT_2026-09-05T00:58Z_RUN","workflow_run":"33934716978","workflow_conclusion":"FAILURE_AT_SAVE_STEP"}},
+    "E":{"engine":"BTC_FRACTAL_LATEST_COMPATIBLE","latest_compatible_version":"V0.3.7_LAST_AUTO_COMPATIBLE","completion_pct":89,"status":"BREAKING_CHANGE_REVIEW","final_qa":"V0.6.0_COMPATIBILITY_MANUAL_REVIEW_REQUIRED","master_targets":["BTC_TREND_CURRENT"],"master_link":"AUTO_INTEGRATION_FORBIDDEN","expected_value":10,"next_action":"Manually review V0.4.x/V0.5.x/V0.6.0 architecture changes before accepting V0.6.0 as the new compatible line. Do not modify MASTER BTC TREND.","regression":"NONE_KNOWN","last_dev100_compatible_contract":null,"last_alerted_dev100_version":null,"evidence":{"research_head":"btc-fractal-v26-build","candidate_version_detected":"V0.6.0","auto_promotion":"BLOCKED_PENDING_MANUAL_COMPATIBILITY_REVIEW"}},
+    "F":{"engine":"SIGNAL_OUTCOME_VAULT","latest_compatible_version":"V0.1","completion_pct":100,"status":"SHADOW_PUBLISHER_RECOVERED_AWAITING_VAULT_INGEST","final_qa":"PASS_CODE_PUBLISHER_REAL_ONE_JSON_FILES_OBSERVED_AWAITING_ACCEPTANCE","master_targets":["BTC_TREND_CURRENT","ALT_FINAL20_CURRENT","MARKET_CURRENT","EXPLICITLY_APPROVED_OTHER_MASTERS"],"master_link":"ALT_FINAL20_SHADOW_ACTIVE_LOGGING_ONLY","expected_value":10,"next_action":"Verify the shadow evaluator accepts the new 20260905T0045Z one-JSON-per-signal files. Do not backfill rejected runs.","regression":"SHADOW_OPERATIONAL_REGRESSION_ACTIVE_PENDING_INGEST_RECOVERY","last_dev100_compatible_contract":"SIGNAL_OUTCOME_VAULT/schema0.1/append-only/5m-forward-outcome","last_alerted_dev100_version":"V0.1","evidence":{"manual_verification":"PASS","shadow_user_approved":true,"alt_final20_canonical_clause":"VERIFIED_ONE_JSON_PER_SIGNAL_AFTER_FIX","first_real_snapshot":"ONE_JSON_PER_SIGNAL_FILES_OBSERVED_FOR_RUN_20260905T0045Z","rejected_files_prior":2,"accepted_signal_count":0,"real_forward_sample_count":0,"statistical_usefulness":"NOT_YET_ESTABLISHED"}}
   },
-  "integration_history": [
+  "integration_history":[
     {"timestamp_utc":"2026-09-04T04:33:31Z","goal":"F","engine_version_or_contract":"SIGNAL_OUTCOME_VAULT/schema0.1/append-only/5m-forward-outcome","target_master_alias":"MULTI_MASTER_SHADOW_PUBLISHERS","manual_verified":true,"user_approved":false,"clause_verified":false,"state":"MANUAL_VERIFIED","note":"Manual code/data-integrity review PASS. SHADOW publishing is not approved or active. No MASTER logic was changed."},
     {"timestamp_utc":"2026-09-04T06:23:45Z","goal":"F","engine_version_or_contract":"SIGNAL_OUTCOME_VAULT/schema0.1/append-only/5m-forward-outcome","target_master_alias":"ALT_FINAL20_CURRENT","manual_verified":true,"user_approved":true,"clause_verified":true,"state":"APPROVED","note":"ALT FINAL20 SHADOW snapshot publishing approved and canonical publisher clause verified. Logging-only; MASTER logic unchanged. First real snapshot not yet observed; no backfill."},
     {"timestamp_utc":"2026-09-05T00:13:00Z","goal":"C","engine_version_or_contract":"ALT2_LIVE_LARGE_FLOW_V1/schema1.0/BinanceSpotAggTrades/completed-hour/W+MW100K+","target_master_alias":"ALT_FINAL20_CURRENT","manual_verified":true,"user_approved":false,"clause_verified":false,"state":"MANUAL_VERIFIED","note":"Manual data/code guard verification PASS. No MASTER prompt, score, Gate, ENTER logic, schedule, or live plan changed."},
     {"timestamp_utc":"2026-09-05T00:36:00Z","goal":"A","engine_version_or_contract":"MASTER_DERIVATIVES_HISTORY_V1_1/BitgetUSDTFutures/same-venue-OI-Funding/1H-4H-24H","target_master_alias":"ALT_FINAL20_CURRENT+BTC_TREND_CURRENT","manual_verified":true,"user_approved":false,"clause_verified":false,"state":"MANUAL_VERIFIED","note":"Manual verification PASS after strengthened 24H FINAL QA production guard. No MASTER integration. MASTER BTC TREND was not read or modified."}
   ],
-  "regression_history": [
-    {"timestamp_utc":"2026-09-04T23:52:34Z","goal":"F","engine_version_or_contract":"SIGNAL_OUTCOME_VAULT/V0.1 + ALT_FINAL20_SHADOW_PUBLISHER","event":"SHADOW_PUBLISH_SCHEMA_MISMATCH","user_alert":true,"note":"Two actual ALT FINAL20 SHADOW publish attempts were quarantined because the publisher emitted a batch envelope with snapshots[] instead of one JSON file per signal. Vault remained fail-closed; accepted signals=0; no backfill; no MASTER logic change."}
+  "regression_history":[
+    {"timestamp_utc":"2026-09-04T23:52:34Z","goal":"F","engine_version_or_contract":"SIGNAL_OUTCOME_VAULT/V0.1 + ALT_FINAL20_SHADOW_PUBLISHER","event":"SHADOW_PUBLISH_SCHEMA_MISMATCH","user_alert":true,"note":"Two actual ALT FINAL20 SHADOW publish attempts were quarantined because the publisher emitted a batch envelope with snapshots[] instead of one JSON file per signal. Vault remained fail-closed; accepted signals=0; no backfill; no MASTER logic change."},
+    {"timestamp_utc":"2026-09-05T01:04:00Z","goal":"F","engine_version_or_contract":"SIGNAL_OUTCOME_VAULT/V0.1 + ALT_FINAL20_SHADOW_PUBLISHER","event":"PUBLISHER_REAL_FILE_RECOVERY_OBSERVED","user_alert":true,"note":"Real 20260905T0045Z ALT FINAL20 run produced separate one-JSON-per-signal inbox files. Vault acceptance is still pending; no backfill and no MASTER logic change."}
   ],
-  "compatibility_events": [
+  "compatibility_events":[
     {"timestamp_utc":"2026-09-04T02:49:55Z","goal":"E","event":"COMPATIBLE_VERSION_AUTO_DISCOVERED","from":"AUTO_DISCOVER_FROM_ACTIVE_RESEARCH_HEAD","to":"V0.3.7","user_alert":false,"note":"Version-only progression within active BTC fractal research line; MASTER BTC TREND remains untouched."},
     {"timestamp_utc":"2026-09-04T04:08:40Z","goal":"E","event":"BREAKING_CHANGE_REVIEW_REQUIRED","from":"V0.3.7","to":"V0.6.0 candidate","user_alert":true,"note":"V0.4.x/V0.5.x/V0.6.0 introduce material architecture changes. Automatic compatibility promotion blocked. MASTER BTC TREND remains untouched."}
   ],
-  "rules": {
-    "completion_100_requires_final_qa": true,
-    "dev100_is_not_integration": true,
-    "manual_verification_first": true,
-    "no_backfill": true,
-    "na_is_not_zero": true,
-    "no_cross_venue_or_source_delta": true,
-    "no_silent_master_connection": true,
-    "only_update_registry_on_state_change": true,
-    "breaking_change_requires_manual_review": true
-  }
+  "rules":{"completion_100_requires_final_qa":true,"dev100_is_not_integration":true,"manual_verification_first":true,"no_backfill":true,"na_is_not_zero":true,"no_cross_venue_or_source_delta":true,"no_silent_master_connection":true,"only_update_registry_on_state_change":true,"breaking_change_requires_manual_review":true}
 }
