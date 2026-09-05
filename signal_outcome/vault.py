@@ -177,6 +177,15 @@ def ingest() -> dict[str, int]:
     return {"accepted": accepted, "rejected_files": rejected}
 
 
+def binance_spot_symbol(symbol: str) -> str:
+    """Map an internal asset symbol to the Binance Spot evaluation pair without changing stored signal identity."""
+    s = symbol.strip().upper()
+    quote_assets = ("USDT", "USDC", "FDUSD", "BUSD", "BTC", "ETH", "BNB")
+    if any(s.endswith(q) and len(s) > len(q) for q in quote_assets):
+        return s
+    return f"{s}USDT"
+
+
 def fetch_klines(symbol: str, start: dt.datetime, end: dt.datetime, session_factory=requests.Session) -> list[list[Any]]:
     """Fetch fully post-signal 5m candles with pagination; exclude the first partial candle."""
     interval_ms = 5 * 60 * 1000
@@ -245,7 +254,7 @@ def evaluate(now: dt.datetime | None = None, fetcher=fetch_klines) -> dict[str, 
                 mature.append((h, end))
         if mature:
             try:
-                candles = fetcher(s["symbol"], t0, max(end for _, end in mature))
+                candles = fetcher(binance_spot_symbol(s["symbol"]), t0, max(end for _, end in mature))
                 if not candles:
                     raise RuntimeError("no market-data candles returned")
                 rec.pop("data_unavailable", None)
@@ -303,17 +312,17 @@ def build_summary(now: dt.datetime | None = None) -> dict[str, Any]:
     signals, outcomes = read_jsonl(SIGNALS), read_jsonl(OUTCOMES)
     groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for r in outcomes:
-        groups[f"master::{r['source_master']}"].append(r)
-        groups[f"symbol::{r['symbol']}"].append(r)
-        groups[f"direction::{r['direction']}"].append(r)
-        groups[f"label::{r['signal_label']}"].append(r)
+        groups[f"master::{r['source_master']}"] .append(r)
+        groups[f"symbol::{r['symbol']}"] .append(r)
+        groups[f"direction::{r['direction']}"] .append(r)
+        groups[f"label::{r['signal_label']}"] .append(r)
         for tag in r.get("tags", []):
-            groups[f"tag::{tag}"].append(r)
+            groups[f"tag::{tag}"] .append(r)
         for name, value in (r.get("scores") or {}).items():
             if value is not None:
                 band = score_band(float(value), c)
                 if band:
-                    groups[f"score::{name}::{band}"].append(r)
+                    groups[f"score::{name}::{band}"] .append(r)
     horizons = [f"{int(h)}H" for h in c["horizons_hours"]]
     summary = {
         "engine": c["engine"], "schema_version": c["schema_version"], "generated_at_utc": iso_utc(now),
