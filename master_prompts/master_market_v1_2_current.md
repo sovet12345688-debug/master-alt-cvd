@@ -73,7 +73,7 @@ Price, OI, Funding, OI change 1H/4H/24H, funding change 1H/4H/24H when available
 ### News / Event Radar — RESTORED
 Coinness fast news radar, News TOP5, economic indicator calendar, major unlock/supply events, hack/exploit, policy/macro/oil shock.
 
-Coinness policy: Coinness is EARLY DETECTION ONLY. A Coinness item may trigger investigation, but score impact requires confirmation from an official/primary source, Reuters, exchange/project source, or another independent source before score impact.
+Coinness policy: Coinness is EARLY DETECTION ONLY. A Coinness item may trigger investigation, but score impact requires confirmation from an official/primary source, Reuters, exchange/project source, or another independent source. Coinness alone never changes a score.
 
 ### Secondary Opinion / On-chain — RESTORED
 - Sean Farrell latest view + prior-view change: informational block, score weight 0.
