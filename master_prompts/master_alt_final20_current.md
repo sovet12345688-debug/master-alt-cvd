@@ -21,6 +21,14 @@ Stealth /100=Flow35+가격↔Large20+Large↔Retail15+NonChase15+저점방어5+�
 NonChase는 `조용한 매집` 라벨 전용 과열필터: 완료7D<=+10%, 완료4W<=+20%, D1 EMA20 이격<=+10%. 실패해도 Flow는 유지하며 전체 후보 삭제 금지.
 동일 CVD_RUN_ID를 반복 읽을 때 CVD Δ를 재생성하지 말고 `변화없음` 처리.
 
+DERIVATIVES OI/FUNDING READ-ONLY CONFIRMATION — USER APPROVED · HARD LOCK
+- Repo=`sovet12345688-debug/master-alt-cvd`. Compatible contract=`MASTER_DERIVATIVES_HISTORY_V1_1/BitgetUSDTFutures/same-venue-OI-Funding/1H-4H-24H` compatible line only.
+- OFFICIAL/WATCH에서 `derivatives/output/latest_summary.json`과 `derivatives/state/collector_state.json`을 freshness<=90m, coverage>=90%, same-venue, Funding 존재, OI 1H/4H/24H 연속성/중복·누락 guard PASS일 때만 읽는다.
+- 사용 범위는 상승준비 후보의 **확인/반대근거**뿐이다. Price+OI+Funding 조합을 쉬운 말로 보조 해석하며 OI 단독으로 상승/하락을 단정하지 않는다.
+- 기존 CORE 4 SCORES의 산식/가중치/임계값, CVD Flow/Stealth, ENTER HARD GATE, 후보선정, WATCH 조건, 스케줄, LONG/SHORT/WAIT 최종판정은 이 clause 때문에 변경하지 않는다.
+- 다른 venue/source를 섞어 delta를 만들지 않는다. N/A는 0이 아니며 stale/regression/schema mismatch/읽기 실패 시 해당 파생 확인축만 `N/A · 보조확인 제외` 처리하고 MASTER는 기존 구조로 계속 실행한다.
+- 이 승인은 ALT_FINAL20_CURRENT에만 적용한다. MASTER BTC TREND는 읽기/수정/연결 금지 상태를 유지한다.
+
 CORE 4 SCORES ONLY
 1 매집점수/100=Price×Volume흡수30+Base/저점방어20+WhaleRetail/Stealth20+거래량지속10+RS10+Underextension/NonChase10.
 2 상승전환점수/100=8W/4W 구조20+7D/3D/1D HH/HL·reclaim25+거래량20+RS15+확인MA20.
