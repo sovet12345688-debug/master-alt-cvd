@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "registry_name": "MONEY_GITHUB_DATA_READY_REGISTRY",
   "purpose": "Persistent state for A/B/C/D/E/F development readiness, version compatibility, final QA, integration history, and regression detection.",
-  "updated_utc": "2026-09-05T00:31:00Z",
+  "updated_utc": "2026-09-05T00:36:00Z",
   "write_policy": "STATE_CHANGE_ONLY",
   "master_auto_modify": false,
   "btc_trend_auto_modify": false,
@@ -15,9 +15,9 @@
       "status": "DEV100_FINAL_QA_PASS",
       "final_qa": "PASS",
       "master_targets": ["ALT_FINAL20_CURRENT","BTC_TREND_CURRENT"],
-      "master_link": "VERIFY_EXISTING_CLAUSES_ONLY_ON_EXPLICIT_USER_REQUEST",
+      "master_link": "NOT_INTEGRATED_MANUAL_VERIFIED",
       "expected_value": 8,
-      "next_action": "Manual verification required before any integration. Do not read or modify MASTER BTC TREND; ALT FINAL20 clause verification only on explicit user request.",
+      "next_action": "Manual verification PASS. Any ALT FINAL20 read-only clause check requires separate explicit user approval. Do not read or modify MASTER BTC TREND and do not change any MASTER score/Gate/schedule/live plan.",
       "regression": "NONE_KNOWN",
       "last_dev100_compatible_contract": "MASTER_DERIVATIVES_HISTORY_V1_1/BitgetUSDTFutures/same-venue-OI-Funding/1H-4H-24H",
       "last_alerted_dev100_version": "MASTER_DERIVATIVES_HISTORY_V1_1",
@@ -30,7 +30,8 @@
         "windows": "1H/4H/24H populated",
         "funding": "available",
         "fallback": "none",
-        "final_qa_guard": "PASS_ON_PRODUCTION_RUN_AFTER_GUARD_DEPLOY"
+        "final_qa_guard": "PASS_ON_PRODUCTION_RUN_AFTER_GUARD_DEPLOY",
+        "manual_verification": "PASS"
       }
     },
     "B": {
@@ -153,7 +154,8 @@
   "integration_history": [
     {"timestamp_utc":"2026-09-04T04:33:31Z","goal":"F","engine_version_or_contract":"SIGNAL_OUTCOME_VAULT/schema0.1/append-only/5m-forward-outcome","target_master_alias":"MULTI_MASTER_SHADOW_PUBLISHERS","manual_verified":true,"user_approved":false,"clause_verified":false,"state":"MANUAL_VERIFIED","note":"Manual code/data-integrity review PASS. SHADOW publishing is not approved or active. No MASTER logic was changed."},
     {"timestamp_utc":"2026-09-04T06:23:45Z","goal":"F","engine_version_or_contract":"SIGNAL_OUTCOME_VAULT/schema0.1/append-only/5m-forward-outcome","target_master_alias":"ALT_FINAL20_CURRENT","manual_verified":true,"user_approved":true,"clause_verified":true,"state":"APPROVED","note":"ALT FINAL20 SHADOW snapshot publishing approved and canonical publisher clause verified. Logging-only; MASTER logic unchanged. First real snapshot not yet observed; no backfill."},
-    {"timestamp_utc":"2026-09-05T00:13:00Z","goal":"C","engine_version_or_contract":"ALT2_LIVE_LARGE_FLOW_V1/schema1.0/BinanceSpotAggTrades/completed-hour/W+MW100K+","target_master_alias":"ALT_FINAL20_CURRENT","manual_verified":true,"user_approved":false,"clause_verified":false,"state":"MANUAL_VERIFIED","note":"Manual data/code guard verification PASS. No MASTER prompt, score, Gate, ENTER logic, schedule, or live plan changed."}
+    {"timestamp_utc":"2026-09-05T00:13:00Z","goal":"C","engine_version_or_contract":"ALT2_LIVE_LARGE_FLOW_V1/schema1.0/BinanceSpotAggTrades/completed-hour/W+MW100K+","target_master_alias":"ALT_FINAL20_CURRENT","manual_verified":true,"user_approved":false,"clause_verified":false,"state":"MANUAL_VERIFIED","note":"Manual data/code guard verification PASS. No MASTER prompt, score, Gate, ENTER logic, schedule, or live plan changed."},
+    {"timestamp_utc":"2026-09-05T00:36:00Z","goal":"A","engine_version_or_contract":"MASTER_DERIVATIVES_HISTORY_V1_1/BitgetUSDTFutures/same-venue-OI-Funding/1H-4H-24H","target_master_alias":"ALT_FINAL20_CURRENT+BTC_TREND_CURRENT","manual_verified":true,"user_approved":false,"clause_verified":false,"state":"MANUAL_VERIFIED","note":"Manual verification PASS after strengthened 24H FINAL QA production guard. No MASTER integration. MASTER BTC TREND was not read or modified."}
   ],
   "regression_history": [
     {"timestamp_utc":"2026-09-04T23:52:34Z","goal":"F","engine_version_or_contract":"SIGNAL_OUTCOME_VAULT/V0.1 + ALT_FINAL20_SHADOW_PUBLISHER","event":"SHADOW_PUBLISH_SCHEMA_MISMATCH","user_alert":true,"note":"Two actual ALT FINAL20 SHADOW publish attempts were quarantined because the publisher emitted a batch envelope with snapshots[] instead of one JSON file per signal. Vault remained fail-closed; accepted signals=0; no backfill; no MASTER logic change."}
