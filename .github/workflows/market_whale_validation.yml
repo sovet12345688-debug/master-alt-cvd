@@ -90,6 +90,59 @@ jobs:
           print('MARKET_WHALE_V1_1_PRODUCTION_VALIDATION=PASS')
           PY
 
+      - name: Validate whale signed-SZI 24H FINAL QA integrity
+        run: |
+          python - <<'PY'
+          import csv,json,sys
+          from datetime import datetime,timedelta
+          with open('market_whales/data/positions_history.csv',newline='',encoding='utf-8') as fh:
+              rows=list(csv.DictReader(fh))
+          s=json.load(open('market_whales/state/recorder_state.json'))
+          p=json.load(open('market_whales/output/latest_summary.json'))
+          new=[r for r in rows if r.get('size_schema')=='SZI_V1_1']
+          keys=set()
+          for r in new:
+              k=(r.get('time_utc'),r.get('address'),r.get('coin'))
+              if k in keys:
+                  sys.exit(f'FINAL_QA failed: duplicate signed-SZI key {k}')
+              keys.add(k)
+          latest_s=s.get('snapshot_hour_utc')
+          if not latest_s:
+              sys.exit('FINAL_QA failed: missing snapshot_hour_utc')
+          latest=datetime.fromisoformat(latest_s.replace('Z','+00:00'))
+          stamps=sorted({datetime.fromisoformat(r['time_utc'].replace('Z','+00:00')) for r in new if r.get('time_utc')})
+          recent=[t for t in stamps if latest-timedelta(hours=25) <= t <= latest]
+          if len(recent) < 20:
+              sys.exit(f'FINAL_QA failed: signed-SZI timestamps <20 in ~26H ({len(recent)})')
+          gaps=[(b-a).total_seconds()/3600 for a,b in zip(recent,recent[1:])]
+          if gaps and max(gaps) > 2.1:
+              sys.exit(f'FINAL_QA failed: abnormal signed-SZI hourly gap max={max(gaps):.2f}h')
+          if s.get('query_failures',0) and s.get('queried_wallets',0):
+              rate=s['query_failures']/(s['queried_wallets']+s['query_failures'])
+              if rate>0.10:
+                  sys.exit(f'FINAL_QA failed: wallet query failure rate {rate:.3f}')
+          if s.get('baseline_guard')!='PASS' or s.get('size_engine')!='PASS' or s.get('change_basis')!='POSITION_SIZE_SZI':
+              sys.exit('FINAL_QA failed: baseline/size/change-basis guard')
+          populated24=0
+          checked=0
+          for coin,items in (p.get('top_positions') or {}).items():
+              for x in items:
+                  if x.get('status')!='ACTIVE' or x.get('size_schema')!='SZI_V1_1':
+                      continue
+                  checked += 1
+                  c=x.get('change_24h')
+                  if isinstance(c,dict) and c.get('event'):
+                      populated24 += 1
+                      if c.get('source_gap_minutes') not in (None,0,0.0) and abs(float(c.get('source_gap_minutes'))) > 45:
+                          sys.exit(f'FINAL_QA failed: invalid 24H source gap {coin} {x.get("address")}')
+                      if c.get('event') in {'INCREASE','REDUCE','NEW','CLOSED','FLIP'}:
+                          if c.get('size_change_units') is None or c.get('reference_mark_price') is None or c.get('action_notional_usd') is None:
+                              sys.exit(f'FINAL_QA failed: incomplete signed-SZI delta {coin} {x.get("address")}')
+          if checked and populated24 == 0:
+              sys.exit('FINAL_QA failed: no real 24H comparisons among active top positions')
+          print(f'WHALE_SIGNED_SZI_24H_FINAL_QA=PASS checked={checked} populated24={populated24}')
+          PY
+
       - name: Save hourly whale snapshot
         run: |
           git config user.name "market-whale-recorder-bot"
