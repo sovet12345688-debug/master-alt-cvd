@@ -73,7 +73,7 @@ Price, OI, Funding, OI change 1H/4H/24H, funding change 1H/4H/24H when available
 ### News / Event Radar — RESTORED
 Coinness fast news radar, News TOP5, economic indicator calendar, major unlock/supply events, hack/exploit, policy/macro/oil shock.
 
-Coinness policy: Coinness is EARLY DETECTION ONLY. A Coinness item may trigger investigation, but score impact requires confirmation from an official/primary source, Reuters, exchange/project source, or another independent source. Coinness alone never changes a score.
+Coinness policy: Coinness is EARLY DETECTION ONLY. A Coinness item may trigger investigation, but score impact requires confirmation from an official/primary source, Reuters, exchange/project source, or another independent source before score impact.
 
 ### Secondary Opinion / On-chain — RESTORED
 - Sean Farrell latest view + prior-view change: informational block, score weight 0.
@@ -198,6 +198,23 @@ On-chain remains SECONDARY CONFIRMATION only; it cannot alone cross Liquidity th
 Append confirmed OFFICIAL runs only to `state/master_market_official_history.csv` using fields:
 `run_id,executed_kst,market_positive,liquidity_lead,crypto_money_inflow,alt_money_inflow,coverage,confidence,direction,risk_veto`.
 No historical backfill. WATCH/manual non-official must not write/overwrite this file. If a write cannot be performed, the current report still proceeds and explicitly notes history-persistence failure internally; never invent prior scores.
+
+## APPROVED GITHUB READ-ONLY DATA CLAUSES — HARD LOCK
+
+### D · MARKET DATA VAULT — historical-cache read only
+- User approved read-only integration to MARKET_CURRENT. Source contract=`MASTER_MARKET_DATA_VAULT_V1/schema1.1/collector1.2-official-keyless` compatible line only.
+- Read `market_vault/output/latest_summary.json`, `market_vault/state/vault_state.json`, and validated history only when freshness/coverage/source-lock guards pass.
+- Role is **historical comparison cache only** for same-metric + same-source 1D/3D/7D context; direct current-market verification remains primary.
+- Never use vault data to replace a current direct value, never cross-fill sources, never reconstruct/backfill missing windows, never convert N/A to 0.
+- D data may fill existing historical comparison cells/evidence only. It adds no new score weight, changes no threshold, and cannot alone flip direction or Risk Veto.
+- If D is stale, regressed, schema-incompatible, or unavailable, mark the affected cache comparison N/A and continue MASTER normally.
+
+### B · HYPERLIQUID WHALE SIZE — SCREEN4 read only
+- User approved read-only integration to MARKET_CURRENT SCREEN4. Compatible contract requires schema1.1+, `size_engine=PASS`, `change_basis=POSITION_SIZE_SZI`, source=Hyperliquid.
+- Read `market_whales/output/latest_summary.json`, latest events/history/state only when freshness, query coverage, signed-SZI continuity, duplicate/missing, and baseline guards pass.
+- Use only actual signed-SZI based NEW/INCREASE/REDUCE/CLOSED/FLIP and actual 1H/4H/24H position-size changes as whale evidence. Legacy USD-value action history is forbidden for action delta.
+- B data supplies evidence to the already-required SCREEN4 whale block only. It adds no score weight and cannot by itself change MARKET score, direction, Risk Veto, schedule, or alert threshold.
+- Query failure is not CLOSED. Missing/stale/regressed values remain N/A. Never infer liquidation price or identity from the collector.
 
 ## DATA SOURCE IMPLEMENTATION NOTES
 
