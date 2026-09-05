@@ -2,7 +2,7 @@
   "schema_version": "1.3",
   "master": "MASTER MARKET V1.2",
   "status": "FINAL_CUMULATIVE_LOCK",
-  "updated_kst": "2026-09-04T15:21:00+09:00",
+  "updated_kst": "2026-09-05T13:14:00+09:00",
   "purpose": "Machine-readable cumulative contract for MASTER MARKET. Existing required data, checks, and user-visible output blocks must survive future version upgrades unless the user explicitly orders removal.",
   "no_silent_omission": {
     "enabled": true,
@@ -60,7 +60,7 @@
     "whale": ["BTC core whales","ETH core whales","Hyperliquid same-run same-population positions","Position/Side/Entry/Leverage/Liquidation/Liq Distance","1H/4H/24H actual position-size changes","recent maximum 6 actual observations","$20M WATCH candidate","$50M LEVEL1 candidate"],
     "derivatives": ["Price","OI","Funding","OI 1H/4H/24H change","Funding 1H/4H/24H change when available","CVD","Taker Buy/Sell","Long/Short","Liquidation","Basis","Depth","Volume"],
     "news_and_calendar": ["Coinness fast news radar","News TOP5","Economic indicator calendar","major unlock/supply events","hack/exploit","policy/macro/oil shock"],
-    "secondary_confirmation": ["Sean Farrell latest view - score 0","Stanley Druckenmiller latest view - score 0","STH-SOPR/on-chain confirmation - no threshold crossing by itself"]
+    "secondary_confirmation": ["Sean Farrell latest view - score 0","Stanley Druckenmiller latest view - score 0"]
   },
   "source_policy": {
     "coinness": "EARLY_DETECTION_ONLY. Coinness can trigger investigation but cannot alone change the score. Confirm important claims with official/primary source, Reuters, exchange/project source, or another independent source before score impact.",
@@ -117,7 +117,7 @@
       "economic calendar with KST time|event|prior|expected|actual after release|why important|market condition",
       "Sean Farrell detailed compact view: latest verified view|change vs prior|key rationale|agreement/conflict with MASTER|reference meaning; score0",
       "Stanley Druckenmiller detailed compact view: latest verified view|change vs prior|key macro/liquidity rationale|agreement/conflict with MASTER|reference meaning; score0",
-      "on-chain secondary block: STH-SOPR|STH Realized Price|STH-MVRV|Exchange Netflow with current/status|confirmed change|easy interpretation|confidence plus final reinforce/neutral/weaken synthesis"
+      "on-chain secondary block explicitly removed by user on 2026-09-05; do not output STH-SOPR/STH Realized Price/STH-MVRV/Exchange Netflow unless explicitly restored"
     ],
     "footer": "🕒 MASTER MARKET V1.2 | 실행완료: YYYY-MM-DD HH:mm KST | 롱/숏 | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST",
     "watch_footer": "🕒 MASTER MARKET WATCH | 감지완료: YYYY-MM-DD HH:mm KST | 롱/숏 | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST"
