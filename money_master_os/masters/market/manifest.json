@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "master_id": "MARKET_CURRENT",
+  "display_name": "MASTER MARKET",
+  "expected_version": "V1.2 FINAL",
+  "repo_version": "V1.2 FINAL",
+  "status": "READY",
+  "canonical_source": "master_prompts/master_market_v1_2_current.md",
+  "machine_contract": "state/master_market_v1_2_contract.json",
+  "state_sources": [
+    "state/master_market_official_history.csv",
+    "state/github_data_ready_registry.json"
+  ],
+  "shared_dependencies": [
+    "money_master_os/shared/COMMON_RULES.md",
+    "money_master_os/shared/DATA_POLICY.md",
+    "money_master_os/shared/RISK_GATE.md"
+  ],
+  "bootstrap": {
+    "allowed": true,
+    "require_exact_version_match": true,
+    "require_source_present": true,
+    "require_validator_pass": true
+  },
+  "ownership": {
+    "logic": "canonical_source",
+    "machine_contract": "machine_contract",
+    "time_series_state": "state_sources",
+    "chat_memory": "NON_CANONICAL"
+  }
+}
