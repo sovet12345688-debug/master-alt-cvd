@@ -1,0 +1,85 @@
+name: BTC Fractal V2.6 Validation
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'btc_fractal/**'
+      - 'btc_sr_strength/**'
+      - '.github/workflows/btc_fractal_v26_validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install
+        run: pip install pandas numpy requests lxml
+      - name: Compile
+        run: |
+          python -m py_compile btc_fractal/run_v26_fractal.py
+          python -m py_compile btc_fractal/run_v26_fast.py
+          python -m py_compile btc_fractal/run_v26_v03.py
+          python -m py_compile btc_fractal/run_v26_v031.py
+          python -m py_compile btc_fractal/run_v26_v032.py
+          python -m py_compile btc_fractal/run_v26_v033.py
+          python -m py_compile btc_fractal/run_v26_v034.py
+          python -m py_compile btc_fractal/run_v26_v035.py
+          python -m py_compile btc_fractal/run_v26_v036.py
+          python -m py_compile btc_fractal/run_v26_v037.py
+          python -m py_compile btc_fractal/run_v26_v040.py
+          python -m py_compile btc_fractal/run_v26_v041.py
+          python -m py_compile btc_fractal/run_v26_v042.py
+          python -m py_compile btc_fractal/run_v26_v050.py
+          python -m py_compile btc_fractal/run_v26_v051.py
+          python -m py_compile btc_fractal/run_v26_v060.py
+          python -m py_compile btc_fractal/run_v26_v070.py
+          python -m py_compile btc_fractal/run_v26_v071.py
+          python -m py_compile btc_fractal/run_v26_v072.py
+          python -m py_compile btc_sr_strength/run_sr_strength_v01.py
+      - name: Revalidate V0.4.2 Layer B same-era
+        run: python btc_fractal/run_v26_v042.py
+      - name: Build and validate V0.5.1 Layer C ETF fallback
+        run: python btc_fractal/run_v26_v051.py
+      - name: Final pre-integration audit V0.6.0
+        run: python btc_fractal/run_v26_v060.py
+      - name: Build and validate V0.7.0 asymmetric LONG SHORT
+        run: python btc_fractal/run_v26_v070.py
+      - name: Audit V0.7.1 side deployment and horizons
+        run: python btc_fractal/run_v26_v071.py
+      - name: Test V0.7.2 cycle-conditioned LONG filter
+        run: python btc_fractal/run_v26_v072.py
+      - name: Build and backtest BTC S/R strength V0.1
+        run: python btc_sr_strength/run_sr_strength_v01.py
+      - name: Show summaries
+        run: |
+          cat btc_fractal/output/build_meta.json
+          cat btc_fractal/output/current_v035.json
+          cat btc_fractal/output/v060_preintegration_audit.json
+          cat btc_fractal/output/v070_validation_summary.json
+          cat btc_fractal/output/current_v070_asymmetric.json
+          cat btc_fractal/output/v071_deployment_audit.json
+          cat btc_fractal/output/v072_cycle_conditioned_long.json
+          cat btc_sr_strength/output/sr_strength_v01_summary.json
+      - name: Upload validation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-fractal-v072-plus-sr-strength-v01
+          path: |
+            btc_fractal/output/*.json
+            btc_fractal/output/*.csv
+            btc_fractal/data/event_registry.csv
+            btc_fractal/data/layer_b_binance_derivatives_daily.csv
+            btc_fractal/data/layer_c_etf_daily_v051.csv
+            btc_fractal/data/layer_c_etf_features_v051.csv
+            btc_sr_strength/output/*.json
+            btc_sr_strength/output/*.csv
+          retention-days: 14
