@@ -6,6 +6,7 @@ on:
     paths:
       - 'btc_backtest/time_validity_v2/run_time_validity_v2.py'
       - 'btc_backtest/time_validity_v2/run_time_validity_v2_entry.py'
+      - 'btc_backtest/time_validity_v2/run_time_validity_v2_clean.py'
       - '.github/workflows/btc_time_validity_v2.yml'
   workflow_dispatch:
 
@@ -28,9 +29,9 @@ jobs:
       - name: Syntax check
         run: |
           python -m py_compile btc_backtest/time_validity_v2/run_time_validity_v2.py
-          python -m py_compile btc_backtest/time_validity_v2/run_time_validity_v2_entry.py
+          python -m py_compile btc_backtest/time_validity_v2/run_time_validity_v2_clean.py
       - name: Run isolated time-validity research
-        run: python btc_backtest/time_validity_v2/run_time_validity_v2_entry.py
+        run: python btc_backtest/time_validity_v2/run_time_validity_v2_clean.py
       - name: Commit auditable results
         run: |
           git config user.name "github-actions[bot]"
