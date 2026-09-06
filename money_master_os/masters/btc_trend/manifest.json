@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "master_id": "BTC_TREND_CURRENT",
+  "display_name": "MASTER BTC TREND",
+  "expected_version": "V3.0",
+  "repo_version": null,
+  "status": "SOURCE_MISSING",
+  "canonical_source": null,
+  "machine_contract": null,
+  "state_sources": [
+    "btc_backtest/",
+    "state/github_data_ready_registry.json"
+  ],
+  "shared_dependencies": [
+    "money_master_os/shared/COMMON_RULES.md",
+    "money_master_os/shared/DATA_POLICY.md",
+    "money_master_os/shared/RISK_GATE.md"
+  ],
+  "bootstrap": {
+    "allowed": false,
+    "block_reason": "No exact MASTER BTC TREND V3.0 canonical prompt source was found in the repository. Do not reconstruct from memory.",
+    "require_exact_version_match": true,
+    "require_source_present": true,
+    "require_validator_pass": true
+  },
+  "ownership": {
+    "logic": "MISSING_UNTIL_EXACT_SOURCE_COMMITTED",
+    "research_assets": "btc_backtest",
+    "chat_memory": "NON_CANONICAL"
+  }
+}
