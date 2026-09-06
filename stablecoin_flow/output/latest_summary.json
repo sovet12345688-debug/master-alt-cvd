@@ -1,19 +1,19 @@
 {
   "engine": "MASTER_STABLECOIN_TREASURY_EXCHANGE_V1",
-  "generated_at_utc": "2026-09-06T02:27:02.196405Z",
-  "window_start_utc": "2026-09-06T01:26:49.049033Z",
-  "window_end_utc": "2026-09-06T02:26:49.049033Z",
+  "generated_at_utc": "2026-09-06T04:27:22.867261Z",
+  "window_start_utc": "2026-09-06T03:27:13.994148Z",
+  "window_end_utc": "2026-09-06T04:27:13.994148Z",
   "chain": "ethereum",
   "rpc_url": "https://rpc.mevblocker.io",
   "block_range": [
-    25915005,
-    25915304
+    25915606,
+    25915906
   ],
   "log_chunk_blocks": 50,
   "rpc_fallback_log": [
     "https://ethereum-rpc.publicnode.com:RuntimeError:{'code': -32602, 'message': 'block range extends beyond current head block'}",
     "https://eth.llamarpc.com:HTTPError:403 Client Error: Forbidden for url: https://eth.llamarpc.com/",
-    "https://1rpc.io/eth:RuntimeError:{'code': -32000, 'message': 'method not available'}"
+    "https://1rpc.io/eth:HTTPError:403 Client Error: Forbidden for url: https://1rpc.io/eth"
   ],
   "coverage_rule": "Exchange matching is partial and only covers explicitly verified addresses in this registry. No unmatched destination may be inferred as an exchange.",
   "rules": {
@@ -42,8 +42,8 @@
       "chain": "ethereum",
       "mode": "mint_destination_proxy",
       "status": "OK",
-      "issuer_transfer_count": 83,
-      "issuer_transfer_amount": 1979842.464542,
+      "issuer_transfer_count": 104,
+      "issuer_transfer_amount": 1722756.365665,
       "verified_exchange_match_count": 0,
       "verified_exchange_amount": 0,
       "verified_exchange_breakdown": {},
