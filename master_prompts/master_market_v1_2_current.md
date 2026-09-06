@@ -113,6 +113,13 @@ ETF: today/3D/5D/20D where confirmed. Stablecoin supply increase != actual buy. 
 
 Do not identify unknown wallets as real persons. Exchange→verified cold/non-exchange = accumulation candidate; reverse = potential sell pressure only after entity/hedge/internal transfer checks. Position/Entry/Leverage/Liquidation actual only. Official liquidationPx first. No liquidation-price reverse engineering. Liq distance requires confirmed liquidation price and same-time price within 5m; 5-15m = warning/confidence down; >15m = N/A. Risk labels: <5 very dangerous | 5-10 close | 10-20 caution | 20+ room. Risk label is separate from directional score.
 
+### WHALE SIDE TRAFFIC-LIGHT DISPLAY LOCK — ADDED 2026-09-06
+- Every user-visible SCREEN4 whale table must display the current position side with a traffic-light prefix: `🟢 LONG` for long positions, `🔴 SHORT` for short positions, and `⚪ N/A/FLAT` when side is unknown, unavailable, or flat.
+- This applies to `지금 움직인 고래 TOP3`, `BTC 핵심고래`, and `ETH 핵심고래`, including compressed continuation rows.
+- Put the traffic light in the existing direction/size cell; do not add a redundant extra column unless layout requires it.
+- The traffic light is a visual side label only. It does not mean the whole market is bullish/bearish, does not alter whale score, Market Positive Score, direction, Risk Veto, liquidation-risk labels, or WATCH thresholds.
+- Existing status/risk markers such as 청산거리 경고 remain separate and must not be removed.
+
 ## DERIVATIVES INTERPRETATION
 
 OI up alone != bullish.
@@ -166,6 +173,7 @@ Keep the screen split visually into institution spot flow and stablecoin dry-pow
 ## SCREEN 4 — 기관·고래·개미·파생
 BTC whales max10 + ETH whales max10 as confirmed. Prioritize `지금 움직인 고래 TOP3` above the size-ranked whale tables when meaningful position-size changes exist.
 Whale table keeps actual confirmed fields only. Recommended compact columns = `# | 방향/규모 | 진입 | 배수 | 청산거리 | Δ1H | Δ4H | 상태`; ranks 6-10 may be compressed into a compact continuation table rather than deleted.
+Direction/size cells in all whale tables must render side as `🟢 LONG` or `🔴 SHORT`; unknown/flat side = `⚪ N/A/FLAT`. This is display-only and does not change scores or risk logic.
 <3 points = `현재값 · 데이터 축적 중`.
 Include major Hyperliquid accounts.
 

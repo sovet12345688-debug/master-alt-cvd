@@ -1,8 +1,8 @@
 {
-  "schema_version": "1.4",
+  "schema_version": "1.5",
   "master": "MASTER MARKET V1.2",
   "status": "FINAL_CUMULATIVE_LOCK",
-  "updated_kst": "2026-09-06T12:09:00+09:00",
+  "updated_kst": "2026-09-06T16:04:00+09:00",
   "purpose": "Machine-readable cumulative contract for MASTER MARKET. Existing required data, checks, and user-visible output blocks must survive future version upgrades unless the user explicitly orders removal.",
   "no_silent_omission": {
     "enabled": true,
@@ -214,7 +214,8 @@
       "mandatory easy-Korean explainer after institution-vs-whale-vs-retail table",
       "derivatives table columns: asset|price|OI|Funding|OI 1H|OI 4H|OI 24H|judgement|easy interpretation",
       "CVD/Taker/Long-Short/Liquidation/Basis/Depth/Volume visible in compact line as value or N/A",
-      "mandatory easy-Korean derivatives explainer, including confidence limitation when confirmations are N/A"
+      "mandatory easy-Korean derivatives explainer, including confidence limitation when confirmations are N/A",
+      "whale direction/size cells: 🟢 LONG for long, 🔴 SHORT for short, ⚪ N/A/FLAT for unknown/flat; applies to moving TOP3 + BTC/ETH core whales; display-only, score effect 0"
     ],
     "screen5": [
       "research/context only; no duplicated core-axis/final-verdict/mini-score/rotation/money-frontier/risk-radar blocks",
@@ -294,5 +295,22 @@
     ],
     "missing_behavior": "Keep SCREEN5 Polymarket block visible and mark N/A/CONFIRMATION_FAILED. Never guess probability.",
     "onchain_output_remains_removed": true
+  },
+  "whale_display_policy": {
+    "enabled": true,
+    "long_display": "🟢 LONG",
+    "short_display": "🔴 SHORT",
+    "unknown_flat_display": "⚪ N/A/FLAT",
+    "applies_to": [
+      "moving_whale_top3",
+      "btc_core_whales",
+      "eth_core_whales"
+    ],
+    "cell_rule": "Prefix the existing direction/size cell; no redundant extra column required.",
+    "score_effect": 0,
+    "direction_effect": "NONE",
+    "risk_veto_effect": "NONE",
+    "watch_threshold_effect": "NONE",
+    "preserve_liquidation_risk_markers": true
   }
 }
