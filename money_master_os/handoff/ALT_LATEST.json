@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "handoff_id": "ALT-BLOCKED-20260907-0844-KST",
+  "created_kst": "2026-09-07T08:44:00+09:00",
+  "master_id": "ALT_FINAL20_CURRENT",
+  "master_version": "V4.8 FINAL",
+  "source_path": "master_prompts/master_alt_final20_current.md",
+  "source_sha": "426912cd37bd754c4bc246252fa351871e1143f7",
+  "registry_status": "VERSION_DRIFT",
+  "repo_source_version": "V2.2.1 FINAL20 DEEP FINAL",
+  "run": {
+    "last_official_run_id": null,
+    "last_official_run_kst": null,
+    "next_official_run_kst": null,
+    "last_watch_run_id": null
+  },
+  "state": {
+    "latest_state_pointer": "state/github_data_ready_registry.json",
+    "data_engine_pointers": [
+      "output/final20_cvd_summary.json",
+      "derivatives/output/latest_summary.json",
+      "live_flow/output/live_large_flow_summary.json"
+    ]
+  },
+  "migration": {
+    "bootstrap_allowed": false,
+    "validator_status": "BLOCKED_EXPECTED",
+    "open_issues": ["Commit exact approved MASTER ALT V4.8 FINAL canonical source."],
+    "do_not_reconstruct": ["V4.8 prompt body from memory", "missing state/history", "scores or FirstSeen"]
+  }
+}
