@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'btc_backtest/time_validity_v2/run_time_validity_v2.py'
+      - 'btc_backtest/time_validity_v2/run_time_validity_v2_entry.py'
       - '.github/workflows/btc_time_validity_v2.yml'
   workflow_dispatch:
 
@@ -25,9 +26,11 @@ jobs:
       - name: Install dependencies
         run: python -m pip install --upgrade requests pandas numpy
       - name: Syntax check
-        run: python -m py_compile btc_backtest/time_validity_v2/run_time_validity_v2.py
+        run: |
+          python -m py_compile btc_backtest/time_validity_v2/run_time_validity_v2.py
+          python -m py_compile btc_backtest/time_validity_v2/run_time_validity_v2_entry.py
       - name: Run isolated time-validity research
-        run: python btc_backtest/time_validity_v2/run_time_validity_v2.py
+        run: python btc_backtest/time_validity_v2/run_time_validity_v2_entry.py
       - name: Commit auditable results
         run: |
           git config user.name "github-actions[bot]"
