@@ -1,0 +1,36 @@
+name: MONEY MASTER OS Guard
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'money_master_os/**'
+      - 'master_prompts/**'
+      - 'state/**'
+      - '.github/workflows/money_master_os_guard.yml'
+  pull_request:
+    paths:
+      - 'money_master_os/**'
+      - 'master_prompts/**'
+      - 'state/**'
+      - '.github/workflows/money_master_os_guard.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-master-os:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate source-of-truth, version drift, and handoff safety
+        run: python money_master_os/tools/validate_master_os.py
