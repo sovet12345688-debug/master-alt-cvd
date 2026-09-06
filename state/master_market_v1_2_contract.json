@@ -2,7 +2,7 @@
   "schema_version": "1.5",
   "master": "MASTER MARKET V1.2",
   "status": "FINAL_CUMULATIVE_LOCK",
-  "updated_kst": "2026-09-06T16:04:00+09:00",
+  "updated_kst": "2026-09-06T21:29:00+09:00",
   "purpose": "Machine-readable cumulative contract for MASTER MARKET. Existing required data, checks, and user-visible output blocks must survive future version upgrades unless the user explicitly orders removal.",
   "no_silent_omission": {
     "enabled": true,
@@ -154,7 +154,8 @@
       "open interest",
       "spread",
       "confidence grade",
-      "market impact and easy interpretation"
+      "market impact and easy interpretation",
+      "traffic-light judgement for current market impact"
     ]
   },
   "source_policy": {
@@ -224,7 +225,7 @@
       "Sean Farrell detailed compact view: latest verified view|change vs prior|key rationale|agreement/conflict with MASTER|reference meaning; score0",
       "Stanley Druckenmiller detailed compact view: latest verified view|change vs prior|key macro/liquidity rationale|agreement/conflict with MASTER|reference meaning; score0",
       "on-chain secondary block explicitly removed by user on 2026-09-05; do not output STH-SOPR/STH Realized Price/STH-MVRV/Exchange Netflow unless explicitly restored",
-      "Polymarket TOP10: rank|market/question|current YES probability|1H|4H|1D|7D probability-point changes|24H volume|liquidity/OI|confidence|market impact|easy interpretation; score0; single-signal alert forbidden"
+      "Polymarket TOP10: rank|market/question|judgement traffic-light as 3rd column|current YES probability|1H|4H|1D|7D probability-point changes|24H volume|liquidity/OI|confidence|market impact|easy interpretation; score0; single-signal alert forbidden"
     ],
     "footer": "🕒 MASTER MARKET V1.2 | 실행완료: YYYY-MM-DD HH:mm KST | 롱/숏 | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST",
     "watch_footer": "🕒 MASTER MARKET WATCH | 감지완료: YYYY-MM-DD HH:mm KST | 롱/숏 | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST"
@@ -294,7 +295,24 @@
       "Risk Veto"
     ],
     "missing_behavior": "Keep SCREEN5 Polymarket block visible and mark N/A/CONFIRMATION_FAILED. Never guess probability.",
-    "onchain_output_remains_removed": true
+    "onchain_output_remains_removed": true,
+    "judgement_display": {
+      "enabled": true,
+      "column_name": "판정",
+      "column_position": 3,
+      "values": {
+        "bullish": "🟢 상승우호",
+        "bearish": "🔴 하락압력",
+        "mixed_neutral": "🟡 중립·혼합",
+        "unknown": "⚪ N/A"
+      },
+      "basis": "Directional implication for BTC/ETH/ALT/risk assets from the event transmission path and current meaning; do not color solely from YES probability magnitude or confidence grade.",
+      "conditional_behavior": "Use 🟡 중립·혼합 when direction is conditional/two-sided; use ⚪ N/A when insufficient.",
+      "score_effect": 0,
+      "direction_effect": "NONE",
+      "risk_veto_effect": "NONE",
+      "watch_threshold_effect": "NONE"
+    }
   },
   "whale_display_policy": {
     "enabled": true,

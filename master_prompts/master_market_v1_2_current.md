@@ -212,7 +212,11 @@ Do not treat an old public view as current; if no fresh verified view exists, ma
 
 ### 5) 🎯 POLYMARKET — 시장이 돈 걸고 보는 미래 TOP10
 Read fresh `polymarket/output/latest_summary.json` when available. Show up to exactly 10 highest-relevance qualifying markets; do not pad with low-quality filler.
-Required compact columns = `순위 | 시장/질문 | 현재확률 | Δ1H | Δ4H | Δ1D | Δ7D | 24H거래량 | 유동성/OI | 신뢰도 | 시장영향 | 쉬운해석`.
+Required compact columns = `순위 | 시장/질문 | 판정 | 현재확률 | Δ1H | Δ4H | Δ1D | Δ7D | 24H거래량 | 유동성/OI | 신뢰도 | 시장영향 | 쉬운해석`.
+- `판정`은 반드시 3번째 열에 둔다. 표시값은 `🟢 상승우호` / `🔴 하락압력` / `🟡 중립·혼합` / `⚪ N/A` 중 하나다.
+- `판정`은 그 Polymarket 항목이 현재 BTC/ETH/ALT·위험자산에 주는 방향적 함의를 한눈에 보여주는 **표시용 신호등**이다. 단순 YES 확률 크기나 신뢰등급 자체를 색으로 바꾸지 말고, 사건의 전파경로(Fed·DXY·금리·유가·ETF·규제·BTC/ETH 가격조건 등)와 현재 방향 의미를 기준으로 해석한다.
+- 판정이 조건부·양면적이거나 방향을 확정하기 어렵다면 `🟡 중립·혼합`, 데이터가 부족하면 `⚪ N/A`를 사용한다.
+- 이 판정 신호등은 display-only이며 Polymarket의 기존 `score weight 0` 원칙을 유지한다. 자체적으로 MASTER score, 최종 롱/숏, Risk Veto, WATCH threshold를 바꾸지 않는다.
 - `현재확률` is the Polymarket YES probability. All deltas are percentage-point changes, not percent returns.
 - Themes are Fed/rates/inflation/jobs, geopolitics/oil, BTC/ETH/major crypto price, US recession/financial shock, crypto regulation/ETF/policy. Keep theme/event diversification; related ladder markets may be shown only when they add distinct actionable information.
 - Trust grade must reflect actual liquidity, 24H/total volume, spread, and OI where available. A/B are preferred. Explain thin or one-sided markets instead of treating their probability as equally reliable.
