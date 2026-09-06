@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Idempotent one-time/additive patch: lock Polymarket TOP10 into MASTER MARKET V1.2."""
+# Triggered after the lock workflow exists on main; safe to re-run idempotently.
 import json
 from pathlib import Path
-from datetime import datetime, timezone, timedelta
 
 ROOT = Path(__file__).resolve().parents[1]
 PROMPT = ROOT / "master_prompts/master_market_v1_2_current.md"
