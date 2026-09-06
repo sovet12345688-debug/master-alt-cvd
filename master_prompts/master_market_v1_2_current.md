@@ -80,6 +80,19 @@ Coinness policy: Coinness is EARLY DETECTION ONLY. A Coinness item may trigger i
 - Stanley Druckenmiller latest view + prior-view change: informational block, score weight 0.
 - User explicitly removed the on-chain secondary-confirmation output block on 2026-09-05. Do not output STH-SOPR, STH Realized Price, STH-MVRV, Exchange Netflow, or an on-chain synthesis block unless the user explicitly restores it.
 
+### Prediction Market / Polymarket — ADDED 2026-09-06
+- Read `polymarket/output/latest_summary.json` every run when fresh and schema/engine guards pass. Its hourly history is `polymarket/data/hourly_top10.csv`.
+- Source role = **forward expectation/context only**. Initial `score weight 0`; Polymarket cannot by itself change Market Positive Score, BTC Liquidity Lead, Crypto Money Inflow, ALT Money Inflow, final 롱/숏, or Risk Veto.
+- Track market-impact TOP10 across: Fed/rates/inflation/jobs, geopolitics/oil, BTC/ETH/major crypto price events, US recession/financial shock, crypto regulation/ETF/policy.
+- Exclude sports, entertainment, celebrity, and generic election-winner markets unless the specific market has a direct material transmission path to rates/DXY/oil/ETF/crypto liquidity.
+- Market quality must use actual Polymarket volume/liquidity/spread/open-interest where available. Prefer A/B confidence; C is fallback only; D/filler is excluded.
+- Current probability is an expectation, not a confirmed future fact. Always cross-check with MASTER factual axes before interpreting market impact.
+- Probability change windows are `Δ1H | Δ4H | Δ1D | Δ7D` in percentage points, using the same market + same YES outcome from official Polymarket CLOB history or exact stored snapshots only. No interpolation/reconstruction.
+- Deduplicate related markets and apply event/theme diversification so one price ladder or one event does not crowd out the TOP10.
+- WATCH rule: **Polymarket alone never alerts.** An A/B market move of `>=10pp/4H` or `>=15pp/1D` is only a WATCH candidate and requires at least one independent aligned MASTER axis. Polymarket alone never creates LEVEL1/LEVEL2.
+- If Polymarket data is stale/unavailable, keep the SCREEN5 block visible and show `N/A` / `확인 실패`; do not substitute guessed probabilities.
+
+
 ## BTC LIQUIDITY LEAD INDEX
 
 Axes when available: US Net Liquidity, TGA change, Fed Reserves, 10Y real yield, DXY, Treasury/QRA, Buyback, Global M2, ETF, Stablecoin Flow. If at least one confirmed weight exists, renormalize confirmed weights and output a partial numeric score.
@@ -125,6 +138,7 @@ Policy/macro shock, oil supply shock, DXY/real-yield spike, major ETF outflow, s
 LEVEL1: BTC/ETH large position reversal; >=$50M new/increase/decrease; liq-distance collapse; liquidation cascade; major exchange in/out; major stablecoin Treasury→Exchange; hack/exploit; policy/macro/oil shock; major unlock/supply shock.
 
 LEVEL2: at least two independent aligned axes. NO ALERT for unknown wallet alone, price-only move, OI alone, funding alone, stale/time-mismatched liq distance, unstable single source, old event reuse. Same EVENT_ID does not repeat unless direction reversal, meaningful size expansion, new independent confirmation, or Risk Veto onset/clearance.
+Polymarket single-signal alert is forbidden. A/B `>=10pp/4H` or `>=15pp/1D` is candidate-only and still requires >=1 independent aligned MASTER confirmation.
 
 # OFFICIAL OUTPUT — EXACTLY 5 SCREENS
 
@@ -167,7 +181,7 @@ Every BTC/ETH row MUST translate the raw combination into easy Korean, e.g. `가
 CVD/Taker Buy-Sell/Long-Short/Liquidation/Basis/Depth/Volume remain visible in one compact line as confirmed values or explicit N/A.
 Immediately under that line, add `쉽게 해석:` explaining what the available/missing derivative confirmation means for confidence. If many fields are N/A, state that directional confidence cannot be raised from derivatives alone.
 
-## SCREEN 5 — 뉴스·경제일정·전문가
+## SCREEN 5 — 뉴스·경제일정·전문가·Polymarket
 SCREEN5 is a research/context screen only. The previous duplicated core-axis table, mini-score graphs, rotation progress, money frontier, risk radar, final-verdict table, and on-chain secondary block are removed from SCREEN5 by explicit user instruction. Do not recreate those removed blocks unless the user asks.
 
 ### 1) 📰 Coinness / 코인뉴스 레이더 TOP5
@@ -187,6 +201,18 @@ This is opinion/context only and never changes score by itself.
 ### 4) 🧠 Stanley Druckenmiller 최신 관점 — score 0
 Explain slightly more than one line using the same structure: `최신 확인 관점 | 이전 대비 변화 | 핵심 매크로/유동성 포인트 | MASTER 데이터와 일치/충돌 | 현재 참고 의미`.
 Do not treat an old public view as current; if no fresh verified view exists, mark `최신 직접관점 N/A` and show the date of the last verified view.
+
+### 5) 🎯 POLYMARKET — 시장이 돈 걸고 보는 미래 TOP10
+Read fresh `polymarket/output/latest_summary.json` when available. Show up to exactly 10 highest-relevance qualifying markets; do not pad with low-quality filler.
+Required compact columns = `순위 | 시장/질문 | 현재확률 | Δ1H | Δ4H | Δ1D | Δ7D | 24H거래량 | 유동성/OI | 신뢰도 | 시장영향 | 쉬운해석`.
+- `현재확률` is the Polymarket YES probability. All deltas are percentage-point changes, not percent returns.
+- Themes are Fed/rates/inflation/jobs, geopolitics/oil, BTC/ETH/major crypto price, US recession/financial shock, crypto regulation/ETF/policy. Keep theme/event diversification; related ladder markets may be shown only when they add distinct actionable information.
+- Trust grade must reflect actual liquidity, 24H/total volume, spread, and OI where available. A/B are preferred. Explain thin or one-sided markets instead of treating their probability as equally reliable.
+- Add one compact `쉽게 보면:` synthesis that states what prediction-market money is increasingly pricing in, what is easing, and where it agrees/conflicts with MASTER factual data.
+- This block is `score weight 0`. It is context/early expectation only and never directly changes MASTER score/direction/Risk Veto.
+- WATCH: Polymarket alone never alerts. A/B `>=10pp/4H` or `>=15pp/1D` move becomes a candidate only with >=1 independent aligned MASTER confirmation.
+- If fresh validated output is unavailable, retain this block and print `N/A / 확인 실패`.
+
 
 ## OFFICIAL SCORE HISTORY — NEW PERSISTENCE FOUNDATION
 
@@ -218,6 +244,7 @@ No historical backfill. WATCH/manual non-official must not write/overwrite this 
 - For all locked 1D/3D/7D table windows, use same-source history or actual cumulative flow only. Missing history stays N/A; no interpolation/backfill.
 - Use `derivatives/output/latest_summary.json` when fresh for venue-locked Price/OI/Funding and 1H/4H/24H changes.
 - Use `market_whales/output/latest_summary.json` and events/history when fresh for Hyperliquid official-API-derived position data.
+- Use `polymarket/output/latest_summary.json` when fresh for score-0 forward-expectation TOP10; its probability deltas must remain same-market/same-outcome and cannot substitute factual macro/crypto data.
 - Current direct sources remain primary for DXY/oil/equities/Fed balance sheet/ETF/news when GitHub does not have a validated adapter.
 - Treasury Buyback: maximum announced amount is not actual accepted and is not QE; use actual accepted/settlement/net-liquidity effect when available.
 
