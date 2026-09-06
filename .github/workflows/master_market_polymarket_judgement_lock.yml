@@ -1,0 +1,68 @@
+name: MASTER MARKET Polymarket Judgement Lock
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'tools/patch_master_market_polymarket_judgement.py'
+      - '.github/workflows/master_market_polymarket_judgement_lock.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: master-market-polymarket-judgement-lock
+  cancel-in-progress: false
+
+jobs:
+  patch-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Apply Polymarket judgement display lock
+        run: python tools/patch_master_market_polymarket_judgement.py
+
+      - name: Validate lock
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('master_prompts/master_market_v1_2_current.md').read_text(encoding='utf-8')
+          c=json.load(open('state/master_market_v1_2_contract.json',encoding='utf-8'))
+          assert '순위 | 시장/질문 | 판정 | 현재확률' in p
+          assert '`판정`은 반드시 3번째 열에 둔다.' in p
+          jd=c['polymarket_policy']['judgement_display']
+          assert jd['enabled'] is True
+          assert jd['column_position']==3
+          assert jd['values']['bullish']=='🟢 상승우호'
+          assert jd['values']['bearish']=='🔴 하락압력'
+          assert jd['values']['mixed_neutral']=='🟡 중립·혼합'
+          assert jd['values']['unknown']=='⚪ N/A'
+          assert jd['score_effect']==0
+          assert c['required_output']['screen_count']==5
+          print('POLYMARKET_JUDGEMENT_LOCK=PASS')
+          PY
+
+      - name: Commit canonical + contract lock
+        run: |
+          git config user.name "master-market-contract-bot"
+          git config user.email "master-market-contract-bot@users.noreply.github.com"
+          git add master_prompts/master_market_v1_2_current.md state/master_market_v1_2_contract.json
+          if git diff --cached --quiet; then
+            echo "No lock changes"
+          else
+            git commit -m "feat: add 3rd-column Polymarket judgement traffic light"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
