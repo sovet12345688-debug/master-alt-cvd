@@ -62,7 +62,15 @@ jobs:
               'EASY EXPLAIN LOCK',
               '쉽게 보면:',
               '쉽게 해석:',
-              '뉴스·경제일정·전문가·온체인 보조',
+              '뉴스·경제일정·전문가·Polymarket',
+              'POLYMARKET — 시장이 돈 걸고 보는 미래 TOP10',
+              'Δ1H',
+              'Δ4H',
+              'Δ1D',
+              'Δ7D',
+              'score weight 0',
+              'Polymarket alone never alerts.',
+              'User explicitly removed the on-chain secondary-confirmation output block',
               'STH-SOPR',
               'STH Realized Price',
               'STH-MVRV',
@@ -117,7 +125,7 @@ jobs:
                   raise SystemExit('MASTER MARKET SCREEN4 explainability regression: missing ' + token)
 
           screen5 = ' '.join(ro.get('screen5') or [])
-          for token in ['Coinness/News TOP5','economic calendar','Sean Farrell','Stanley Druckenmiller','STH-SOPR','STH Realized Price','STH-MVRV','Exchange Netflow']:
+          for token in ['Coinness/News TOP5','economic calendar','Sean Farrell','Stanley Druckenmiller','Polymarket TOP10','1H','4H','1D','7D','score0','on-chain secondary block explicitly removed']:
               if token.lower() not in screen5.lower():
                   raise SystemExit('MASTER MARKET SCREEN5 context regression: missing ' + token)
           if 'final market verdict' in screen5.lower() or 'core-axis table columns' in screen5.lower():
@@ -125,7 +133,8 @@ jobs:
 
           required_data_groups = {
               'macro_liquidity', 'crypto_capital_flow', 'market_breadth_rotation',
-              'whale', 'derivatives', 'news_and_calendar', 'secondary_confirmation'
+              'whale', 'derivatives', 'news_and_calendar', 'secondary_confirmation',
+              'prediction_markets'
           }
           got = set((c.get('required_data') or {}).keys())
           miss_groups = sorted(required_data_groups - got)
@@ -147,10 +156,30 @@ jobs:
               if x not in deriv:
                   raise SystemExit('MASTER MARKET derivatives regression: ' + x)
 
+          pm = c.get('polymarket_policy') or {}
+          assert pm.get('enabled') is True, 'Polymarket policy must remain enabled'
+          assert pm.get('top_n') == 10, 'Polymarket TOP10 lock regressed'
+          assert pm.get('score_weight') == 0, 'Polymarket score weight must remain 0'
+          assert pm.get('single_signal_alert_forbidden') is True, 'Polymarket single-signal alert ban regressed'
+          assert pm.get('watch_requires_independent_aligned_confirmation') is True, 'Polymarket independent-confirmation guard regressed'
+          assert pm.get('onchain_output_remains_removed') is True, 'removed on-chain block must stay removed'
+          if pm.get('change_windows') != ['1H','4H','1D','7D']:
+              raise SystemExit('Polymarket change-window regression')
+          thresholds = pm.get('watch_candidate_thresholds_pp') or {}
+          if thresholds.get('4H') != 10 or thresholds.get('1D') != 15:
+              raise SystemExit('Polymarket WATCH threshold regression')
+          pmd = set(c.get('required_data', {}).get('prediction_markets') or [])
+          for token in ['Polymarket market-impact TOP10','YES probability current','probability-point change 1H/4H/1D/7D']:
+              if token not in pmd:
+                  raise SystemExit('Polymarket required-data regression: ' + token)
+          if 'polymarket' not in (c.get('source_policy') or {}):
+              raise SystemExit('Polymarket source policy missing')
+
           print('MASTER_MARKET_CUMULATIVE_CONTRACT=PASS')
           print('NO_SILENT_OMISSION=PASS')
           print('FLEXIBLE_RECOMMENDATION_POLICY=PASS')
           print('CHANGE_WINDOWS_1D_3D_7D=PASS')
           print('SCREEN4_EASY_EXPLAIN=PASS')
           print('SCREEN5_CONTEXT_ONLY=PASS')
+          print('POLYMARKET_TOP10_POLICY=PASS')
           PY
