@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "master_id": "ALT_FINAL20_CURRENT",
+  "display_name": "MASTER ALT",
+  "expected_version": "V4.8 FINAL",
+  "repo_version": "V2.2.1 FINAL20 DEEP FINAL",
+  "status": "VERSION_DRIFT",
+  "canonical_source": "master_prompts/master_alt_final20_current.md",
+  "machine_contract": null,
+  "state_sources": [
+    "state/github_data_ready_registry.json",
+    "output/final20_cvd_summary.json",
+    "derivatives/output/latest_summary.json",
+    "live_flow/output/live_large_flow_summary.json"
+  ],
+  "shared_dependencies": [
+    "money_master_os/shared/COMMON_RULES.md",
+    "money_master_os/shared/DATA_POLICY.md",
+    "money_master_os/shared/RISK_GATE.md"
+  ],
+  "bootstrap": {
+    "allowed": false,
+    "block_reason": "Repository canonical prompt is older than the project-current V4.8 FINAL target. Exact V4.8 source must be committed before migration bootstrap.",
+    "require_exact_version_match": true,
+    "require_source_present": true,
+    "require_validator_pass": true
+  },
+  "ownership": {
+    "logic": "canonical_source_when_version_matches",
+    "data_engines": "existing repository outputs",
+    "chat_memory": "NON_CANONICAL"
+  }
+}
