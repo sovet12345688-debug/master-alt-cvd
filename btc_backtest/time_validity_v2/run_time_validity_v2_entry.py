@@ -11,4 +11,8 @@ src = src.replace("x=x[x.rolling&x.triggered&(x.delay<=lim)&(x.R>0)]", "x=x[x['r
 src = src.replace("b_1=oo[oo.rolling]", "b_1=oo[oo['rolling']]")
 src = src.replace("t2=tr[tr.rolling&tr.triggered&(tr.delay<=lim)].copy()", "t2=tr[tr['rolling']&tr.triggered&(tr.delay<=lim)].copy()")
 
+# A one-line semicolon in the research draft scoped best=None inside the empty
+# branch. Move initialization before the branch so non-empty samples work.
+src = src.replace("if x.empty:return 50.; best=None", "best=None\n    if x.empty:return 50.")
+
 exec(compile(src, str(src_path), 'exec'), {'__name__': '__main__', '__file__': str(src_path)})
