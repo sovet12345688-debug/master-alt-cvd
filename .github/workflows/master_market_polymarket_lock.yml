@@ -53,11 +53,13 @@ jobs:
           print('MASTER_MARKET_POLYMARKET_FINAL_LOCK=PASS')
           PY
 
-      - name: Commit FINAL lock
+      - name: Commit canonical + contract FINAL lock
         run: |
           git config user.name "master-market-contract-bot"
           git config user.email "master-market-contract-bot@users.noreply.github.com"
-          git add master_prompts/master_market_v1_2_current.md state/master_market_v1_2_contract.json .github/workflows/master_market_contract_guard.yml
+          # Workflow files cannot be pushed by the Actions token; guard is updated separately through the GitHub connector.
+          git checkout -- .github/workflows/master_market_contract_guard.yml
+          git add master_prompts/master_market_v1_2_current.md state/master_market_v1_2_contract.json
           if git diff --cached --quiet; then
             echo "No lock changes"
           else
