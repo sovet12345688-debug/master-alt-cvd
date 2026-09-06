@@ -1,0 +1,67 @@
+name: MASTER MARKET Polymarket FINAL Lock
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'tools/patch_master_market_polymarket.py'
+      - '.github/workflows/master_market_polymarket_lock.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: master-market-polymarket-final-lock
+  cancel-in-progress: false
+
+jobs:
+  patch-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Apply additive Polymarket canonical/contract lock
+        run: python tools/patch_master_market_polymarket.py
+
+      - name: Validate canonical and contract
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('master_prompts/master_market_v1_2_current.md').read_text(encoding='utf-8')
+          c=json.load(open('state/master_market_v1_2_contract.json',encoding='utf-8'))
+          assert 'SCREEN 5 — 뉴스·경제일정·전문가·Polymarket' in p
+          assert 'POLYMARKET — 시장이 돈 걸고 보는 미래 TOP10' in p
+          assert 'Polymarket alone never alerts.' in p
+          assert 'User explicitly removed the on-chain secondary-confirmation output block' in p
+          pm=c.get('polymarket_policy') or {}
+          assert pm.get('enabled') is True and pm.get('top_n')==10 and pm.get('score_weight')==0
+          assert pm.get('single_signal_alert_forbidden') is True
+          assert pm.get('watch_requires_independent_aligned_confirmation') is True
+          assert pm.get('onchain_output_remains_removed') is True
+          assert c.get('required_output',{}).get('screen_count')==5
+          print('MASTER_MARKET_POLYMARKET_FINAL_LOCK=PASS')
+          PY
+
+      - name: Commit FINAL lock
+        run: |
+          git config user.name "master-market-contract-bot"
+          git config user.email "master-market-contract-bot@users.noreply.github.com"
+          git add master_prompts/master_market_v1_2_current.md state/master_market_v1_2_contract.json .github/workflows/master_market_contract_guard.yml
+          if git diff --cached --quiet; then
+            echo "No lock changes"
+          else
+            git commit -m "feat: FINAL lock Polymarket TOP10 into MASTER MARKET V1.2"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
