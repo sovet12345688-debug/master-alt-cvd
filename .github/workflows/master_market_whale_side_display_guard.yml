@@ -1,0 +1,43 @@
+name: MASTER MARKET Whale Side Display Guard
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'master_prompts/master_market_v1_2_current.md'
+      - 'state/master_market_v1_2_contract.json'
+      - '.github/workflows/master_market_whale_side_display_guard.yml'
+  pull_request:
+    paths:
+      - 'master_prompts/master_market_v1_2_current.md'
+      - 'state/master_market_v1_2_contract.json'
+      - '.github/workflows/master_market_whale_side_display_guard.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate whale side traffic-light display
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('master_prompts/master_market_v1_2_current.md').read_text(encoding='utf-8')
+          c=json.load(open('state/master_market_v1_2_contract.json',encoding='utf-8'))
+          required=['WHALE SIDE TRAFFIC-LIGHT DISPLAY LOCK','🟢 LONG','🔴 SHORT','⚪ N/A/FLAT']
+          missing=[x for x in required if x not in p]
+          if missing:
+              raise SystemExit('whale side display regression: '+', '.join(missing))
+          wp=c.get('whale_display_policy') or {}
+          assert wp.get('enabled') is True
+          assert wp.get('long_display') == '🟢 LONG'
+          assert wp.get('short_display') == '🔴 SHORT'
+          assert wp.get('unknown_flat_display') == '⚪ N/A/FLAT'
+          assert wp.get('score_effect') == 0
+          assert wp.get('applies_to') == ['moving_whale_top3','btc_core_whales','eth_core_whales']
+          print('WHALE_SIDE_TRAFFIC_LIGHT_DISPLAY=PASS')
+          PY
