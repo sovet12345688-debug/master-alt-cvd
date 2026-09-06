@@ -29,6 +29,17 @@ DERIVATIVES OI/FUNDING READ-ONLY CONFIRMATION — USER APPROVED · HARD LOCK
 - 다른 venue/source를 섞어 delta를 만들지 않는다. N/A는 0이 아니며 stale/regression/schema mismatch/읽기 실패 시 해당 파생 확인축만 `N/A · 보조확인 제외` 처리하고 MASTER는 기존 구조로 계속 실행한다.
 - 이 승인은 ALT_FINAL20_CURRENT에만 적용한다. MASTER BTC TREND는 읽기/수정/연결 금지 상태를 유지한다.
 
+LIVE LARGE FLOW READ-ONLY CONFIRMATION — USER APPROVED · FINAL LOCK
+- Repo=`sovet12345688-debug/master-alt-cvd`. Compatible contract=`ALT2_LIVE_LARGE_FLOW_V1/schema1.0/BinanceSpotAggTrades/completed-hour/W+MW100K+` compatible line only.
+- OFFICIAL/WATCH에서 `live_flow/output/live_large_flow_summary.json`과 `live_flow/state/collector_state.json`을 freshness<=90m, supported18/18, failures=0, 24H completed-hour continuity=24/24, duplicate/missing guard PASS, source=`Binance Spot public aggTrades API`, venue=`Binance Spot`일 때만 읽는다.
+- 사용 범위는 `24H | 4H | 1H | 가속 | 활동품질`의 **실시간 큰체결 확인/반대근거**뿐이다. 기존 26W/13W/7W/4W CVD를 대체하지 않으며, 장기 CVD와 최근 큰체결 가속을 서로 다른 시간축으로 함께 본다.
+- Large는 W+MW(100K+), Retail은 R1+R2 정의를 그대로 사용한다. CCUSDT/HYPEUSDT는 unsupported=N/A로 유지하고 다른 venue/source로 보충하지 않는다.
+- 해당 window의 large_trade_count<3이면 `directional_eligible=false`, `large_cvd_signal=null`을 그대로 존중하고 방향성 근거로 사용하지 않는다. N/A/UNKNOWN을 0으로 바꾸지 않는다.
+- 1H→4H→24H 변화는 같은 Binance Spot source의 실제 completed-hour 데이터끼리만 비교한다. current in-progress hour, backfill, interpolation, cross-source/venue delta를 금지한다.
+- C는 상승준비 후보의 우선 확인과 반대근거 설명에 사용할 수 있으나 기존 CORE 4 SCORES의 산식/가중치/임계값, 장기 CVD Flow/Stealth 산식, ENTER HARD GATE, 후보선정 기준, WATCH 조건, 스케줄, LONG/SHORT/WAIT 최종판정을 자동 변경하지 않는다.
+- stale/regression/schema mismatch/24H continuity<24/24/read 실패 시 C축만 `N/A · LIVE LARGE FLOW 보조확인 제외` 처리하고 MASTER는 기존 구조로 계속 실행한다.
+- 이 승인은 ALT_FINAL20_CURRENT 실전운영에만 적용한다. MASTER BTC TREND는 읽기/수정/연결 금지 상태를 유지한다.
+
 CORE 4 SCORES ONLY
 1 매집점수/100=Price×Volume흡수30+Base/저점방어20+WhaleRetail/Stealth20+거래량지속10+RS10+Underextension/NonChase10.
 2 상승전환점수/100=8W/4W 구조20+7D/3D/1D HH/HL·reclaim25+거래량20+RS15+확인MA20.
