@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "handoff_id": "MARKET-BOOTSTRAP-20260907-0844-KST",
+  "created_kst": "2026-09-07T08:44:00+09:00",
+  "master_id": "MARKET_CURRENT",
+  "master_version": "V1.2 FINAL",
+  "source_path": "master_prompts/master_market_v1_2_current.md",
+  "source_sha": "bcb795a1c953c101e2806144e17317b406276333",
+  "registry_status": "READY",
+  "run": {
+    "last_official_run_id": null,
+    "last_official_run_kst": null,
+    "next_official_run_kst": null,
+    "last_watch_run_id": null
+  },
+  "state": {
+    "score_history_pointer": "state/master_market_official_history.csv",
+    "latest_state_pointer": "state/master_market_v1_2_contract.json"
+  },
+  "migration": {
+    "bootstrap_allowed": true,
+    "validator_status": "PENDING_FIRST_GUARD_RUN",
+    "open_issues": [],
+    "do_not_reconstruct": ["missing historical values", "unverified current market values"]
+  }
+}
