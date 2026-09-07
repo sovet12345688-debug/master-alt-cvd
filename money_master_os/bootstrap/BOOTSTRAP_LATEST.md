@@ -28,18 +28,22 @@ Legacy ambiguous ID `alt` is forbidden for V2 bootstrap.
 
 Chat context may add current user instructions but must not silently replace the canonical identity or invent missing persisted history.
 
-## Phase 1 safe bootstrap state — 2026-09-07 10:00 KST
+## Current safe bootstrap state — 2026-09-07 11:00 KST
 - `market` — MASTER MARKET V1.2 FINAL: READY.
 - `btc_trend` — production V2.6: BLOCKED by SOURCE_MISSING. V3.0 is research-only.
-- `alt_top100` — MASTER ALT 1 V4.8 FINAL: BLOCKED by SOURCE_MISSING.
+- `alt_top100` — MASTER ALT 1 V4.8 FINAL: READY. Load `master_prompts/master_alt_top100_v4_8_current.md` exactly.
 - `alt_final20` — MASTER ALT 2 V2.2.1 FINAL20 DEEP FINAL: READY.
 - `trading` — MASTER TRADING current + TIME VALIDITY V2.1 overlay: BLOCKED by SOURCE_MISSING.
 
 ## Cross-MASTER rule
 Shared facts may be read from common GitHub data layers, but no MASTER may bootstrap from another MASTER's score, direction, permission, READY state, or final conclusion.
 
+## UI refinement rule
+A READY MASTER may later receive user-approved output/UI refinement. Such a UI change must be versioned explicitly and must not silently rebuild or alter analytical logic, score formulas, data policy, risk gates, or historical state.
+
 ## Migration command examples
 - `새 방이야. MASTER MARKET 복원.`
+- `새 방이야. MASTER ALT 1 TOP100 복원.`
 - `새 방이야. MASTER ALT 2 FINAL20 복원.`
 
 If the selected MASTER is blocked, the assistant must explain which exact canonical source/contract is missing instead of recreating it from memory.
