@@ -51,6 +51,22 @@ jobs:
       - name: R1.2 Step7 Metrics Baseline
         run: python btc_trend_v30/validation_protocol_v1_step7_metrics.py
 
+      - name: Normalize intraday timestamp serialization only
+        run: |
+          python - <<'PY'
+          import pandas as pd
+          paths=[
+            'btc_trend_v30/output/validation_v1/step6_state_machine_replay/btc_usdt_1h_matrix.csv',
+            'btc_trend_v30/output/validation_v1/step6_state_machine_replay/btc_usdt_complete_4h_matrix.csv',
+          ]
+          for p in paths:
+            d=pd.read_csv(p)
+            t=pd.to_datetime(d['time'], utc=True, format='mixed')
+            d['time']=t.dt.strftime('%Y-%m-%dT%H:%M:%S.%f%z')
+            d.to_csv(p,index=False)
+          print('Timestamp serialization normalized; no price/volume/time values changed.')
+          PY
+
       - name: R1.3 Historical Diagnostic Replay
         run: python btc_trend_v30/r13/r13_historical_diagnostic_replay.py
 
