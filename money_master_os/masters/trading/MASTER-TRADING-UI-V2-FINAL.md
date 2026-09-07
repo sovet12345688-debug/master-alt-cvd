@@ -4,6 +4,7 @@
 **Scope:** USER-VISIBLE OUTPUT UI ONLY + ASSET ROUTING CONTRACT  
 **Locked at:** 2026-09-07 14:56 KST  
 **Asset-routing lock updated:** 2026-09-07 KST  
+**Latest user-approved UI update:** 2026-09-07 16:48 KST  
 **Applies to:** MASTER TRADING manual/on-demand reports for **any supported crypto asset identifiable from supplied charts**  
 **Canonical parent:** `master_prompts/master_trading_current.md`  
 **Engine version:** `CURRENT + TIME VALIDITY V2.1 OVERLAY`
@@ -138,7 +139,7 @@ If this UI spec conflicts with the analytical/execution canonical, the analytica
 | 항목 | 단기 | ⭐ BEST | 최대 마지노선 |
 |---|---|---|---|
 | 타임프레임 | 1H/4H/1D/1W | 1H/4H/1D/1W | 1H/4H/1D/1W |
-| 진입 구간 | x~x | x~x | x~x |
+| 진입 구간 | 작은값~큰값 | 작은값~큰값 | 작은값~큰값 |
 | 1차 | x | x | x |
 | 2차 | x | x | x |
 | 평균가 | x | x | x |
@@ -150,6 +151,11 @@ If this UI spec conflicts with the analytical/execution canonical, the analytica
 | 도달확률 | 약 xx% | 약 xx% | 약 xx% |
 | 시간 유효성 | `MM/DD HH:mm KST까지` | `MM/DD HH:mm KST까지` | `MM/DD HH:mm KST까지` |
 | 핵심 근거 | 한 줄 | 한 줄 | 한 줄 |
+
+### LONG 진입구간 표기 HARD RULE
+- SCREEN 3의 `진입 구간`은 반드시 **작은 숫자 → 큰 숫자** 순서로 표기한다.
+- 표시 예: `78,700~78,950`.
+- 이 규칙은 **표시 순서만 변경**하며 Entry Zone 산출값, 1차/2차, 평균가, SL, TP, R:R 엔진은 변경하지 않는다.
 
 ### 반드시 표 아래 한 줄
 `이 LONG 타점이 노리는 파동: ______`
@@ -169,7 +175,7 @@ If this UI spec conflicts with the analytical/execution canonical, the analytica
 | 항목 | 단기 | ⭐ BEST | 최대 마지노선 |
 |---|---|---|---|
 | 타임프레임 | 1H/4H/1D/1W | 1H/4H/1D/1W | 1H/4H/1D/1W |
-| 진입 구간 | x~x | x~x | x~x |
+| 진입 구간 | 큰값~작은값 | 큰값~작은값 | 큰값~작은값 |
 | 1차 | x | x | x |
 | 2차 | x | x | x |
 | 평균가 | x | x | x |
@@ -181,6 +187,11 @@ If this UI spec conflicts with the analytical/execution canonical, the analytica
 | 도달확률 | 약 xx% | 약 xx% | 약 xx% |
 | 시간 유효성 | `MM/DD HH:mm KST까지` | `MM/DD HH:mm KST까지` | `MM/DD HH:mm KST까지` |
 | 핵심 근거 | 한 줄 | 한 줄 | 한 줄 |
+
+### SHORT 진입구간 표기 HARD RULE
+- SCREEN 4의 `진입 구간`은 반드시 **큰 숫자 → 작은 숫자** 순서로 표기한다.
+- 표시 예: `80,350~80,050`.
+- 이 규칙은 **표시 순서만 변경**하며 Entry Zone 산출값, 1차/2차, 평균가, SL, TP, R:R 엔진은 변경하지 않는다.
 
 ### 반드시 표 아래 한 줄
 `이 SHORT 타점이 노리는 파동: ______`
@@ -227,16 +238,23 @@ TIME VALIDITY V2.1과의 관계:
 
 ## 5-1. 결합 판단 테이블
 
-| 축 | 현재 판정 | LONG 영향 | SHORT 영향 |
-|---|---|---:|---:|
-| 파동 시나리오 | 한 줄 | +/0/- | +/0/- |
-| 가격구조 | 한 줄 | +/0/- | +/0/- |
-| 거래량·참여 | 한 줄 | +/0/- | +/0/- |
-| OI/Funding | 한 줄 | +/0/- | +/0/- |
-| CVD/Taker | 한 줄 | +/0/- | +/0/- |
-| Non-Chasing | PASS/FAIL | +/0/- | +/0/- |
-| Risk Veto | 없음/있음 | +/0/- | +/0/- |
-| TIME Validity | 체결 가능/재검증 | +/0/- | +/0/- |
+| 축 | 판정신호등 | 현재 판정 |
+|---|:---:|---|
+| 파동 시나리오 | 🟢/🟡/🔴 | 한 줄 |
+| 가격구조 | 🟢/🟡/🔴 | 한 줄 |
+| 거래량·참여 | 🟢/🟡/🔴 | 한 줄 |
+| OI/Funding | 🟢/🟡/🔴 | 한 줄 |
+| CVD/Taker | 🟢/🟡/🔴 | 한 줄 |
+| Non-Chasing | 🟢/🟡/🔴 | PASS/FAIL 또는 한 줄 |
+| Risk Veto | 🟢/🟡/🔴 | 없음/있음 |
+| TIME Validity | 🟢/🟡/🔴 | 체결 가능/재검증 또는 절대시각 요약 |
+
+### SCREEN 5 판정신호등 HARD RULE
+- `판정신호등`은 반드시 **2번째 열**에 배치한다.
+- 기존 `LONG 영향`, `SHORT 영향` 열은 사용자-visible SCREEN 5 테이블에서 **완전히 제거**한다.
+- 신호등은 기존 엔진의 현재 판정을 시각적으로 번역하는 UI 표현일 뿐이며, 별도 점수·가중치·방향 산식을 만들지 않는다.
+- 기본 의미: `🟢 양호/우호`, `🟡 혼조/확인 필요`, `🔴 위험/불리`.
+- Direction Score, Entry Quality, Entry/SL/TP/R:R, Risk Gate 판단은 기존 엔진을 그대로 따른다.
 
 ## 5-2. 현재 시점 BEST 시나리오
 `________________________________`
@@ -339,6 +357,9 @@ HARD RULE:
 Any future UI revision must record:
 `UI_VERSION | APPROVED_KST | CHANGED_SCREENS | ENGINE_CHANGE=false`
 
+Latest approved revision:
+`MASTER-TRADING-UI-V2-FINAL | 2026-09-07 16:48 KST | SCREEN 3 entry-zone ordering + SCREEN 4 entry-zone ordering + SCREEN 5 signal-light columns | ENGINE_CHANGE=false`
+
 ---
 
 # FINAL ACCEPTANCE CHECK
@@ -348,11 +369,15 @@ Any future UI revision must record:
 - [x] Screen 1 장기/중기/단기 파동 + 확률 + 개별 무효화
 - [x] Screen 2 기존 V3.2 100점 분석축 표시
 - [x] Screen 3 LONG 세로형 3타점
+- [x] Screen 3 `진입 구간` = 작은 숫자~큰 숫자 표기
 - [x] Screen 4 SHORT 세로형 3타점
+- [x] Screen 4 `진입 구간` = 큰 숫자~작은 숫자 표기
 - [x] 도달확률 고정
 - [x] 시간 유효성 = 최대 신규 체결 허용시각
 - [x] 타점별 노리는 파동 한 줄
 - [x] Screen 5 파생 + 파동 조합 결론 + 행동
+- [x] Screen 5 `판정신호등` 2열 고정
+- [x] Screen 5 LONG/SHORT 영향 열 제거
 - [x] **모든 지원 CRYPTO 동일 분석엔진 적용**
 - [x] **모든 지원 CRYPTO 동일 UI 적용**
 - [x] **`고` 입력 시 첨부 차트 자산 자동식별**
