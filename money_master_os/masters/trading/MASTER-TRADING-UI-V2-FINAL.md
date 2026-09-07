@@ -1,9 +1,10 @@
 # MASTER-TRADING-UI-V2-FINAL
 
 **Status:** FINAL LOCK  
-**Scope:** USER-VISIBLE OUTPUT UI ONLY  
+**Scope:** USER-VISIBLE OUTPUT UI ONLY + ASSET ROUTING CONTRACT  
 **Locked at:** 2026-09-07 14:56 KST  
-**Applies to:** MASTER TRADING manual/on-demand reports for BTC, ETH, and any other supported crypto asset  
+**Asset-routing lock updated:** 2026-09-07 KST  
+**Applies to:** MASTER TRADING manual/on-demand reports for **any supported crypto asset identifiable from supplied charts**  
 **Canonical parent:** `master_prompts/master_trading_current.md`  
 **Engine version:** `CURRENT + TIME VALIDITY V2.1 OVERLAY`
 
@@ -11,7 +12,7 @@
 
 ## 0. NON-DESTRUCTIVE UI-ONLY HARD RULE
 
-This file changes **presentation only**.
+This file changes **presentation and command routing only**.
 
 The following are immutable and MUST NOT be changed by this UI patch:
 
@@ -34,9 +35,9 @@ The following are immutable and MUST NOT be changed by this UI patch:
 - Fibonacci Time = OFF
 - all historical/Legacy records and attached source history
 
-**UI must never create, move, overwrite, or reinterpret Entry / SL / TP / S&R / Trigger / Trade Frame / historical records.**
+**UI/asset routing must never create, move, overwrite, or reinterpret Entry / SL / TP / S&R / Trigger / Trade Frame / historical records.**
 
-If this UI spec conflicts with the analytical/execution canonical, the analytical/execution canonical controls calculations and this file controls presentation only.
+If this UI spec conflicts with the analytical/execution canonical, the analytical/execution canonical controls calculations and this file controls presentation/routing only.
 
 ---
 
@@ -47,11 +48,16 @@ If this UI spec conflicts with the analytical/execution canonical, the analytica
 3. Each screen uses a compact table first, followed by **one concise 핵심 요약** line.
 4. Long trigger explanations, conditional prose, and repetitive reasons are minimized.
 5. Output is result-first. Supporting detail is shown only when execution-relevant.
-6. BTC and ETH MUST use the same screen order, same table structure, same labels, and same UI logic.
+6. **BTC, ETH, SOL, XRP and every other supported crypto asset MUST use the same analytical engine, same screen order, same table structure, same labels, and same UI logic.**
 7. Do not change the screen order, field order, labels, or layout without explicit user approval.
 8. Missing/unverified values are shown as `N/A`; never fabricate.
 9. Live/in-progress candles remain PROVISIONAL internally and cannot be displayed as confirmed Trigger facts.
 10. The existing analytical engine remains the only source of calculated trading values.
+11. When charts are supplied, **detect the asset/ticker from the chart itself** (symbol/header/pair/exchange label) and use that detected asset throughout the report.
+12. The user does **not** need to type the asset name when the supplied chart identifies it clearly.
+13. **Never default to BTC** merely because MASTER TRADING historically analyzed BTC often.
+14. If external derivatives/context are queried, they must use the **detected asset**, not BTC by default.
+15. If multiple assets are attached together, first group coherent screenshots by asset/timeframe. Use the latest coherent chart set relevant to the user's command; do not mix prices/indicators across assets.
 
 ---
 
@@ -84,9 +90,9 @@ If this UI spec conflicts with the analytical/execution canonical, the analytica
 6. 하단 `한눈에 결론`
 7. 장기/중기/단기 각각 확률과 무효화 가격 표시
 
-사용자가 제공한 BTC 파동 시나리오 이미지의 **레이아웃 구조, 정보 위계, 카드 구성, 방향 화살표, 장기/중기/단기 3단 구성**을 고정 레퍼런스로 사용한다.
+사용자가 제공한 파동 시나리오 레퍼런스 이미지의 **레이아웃 구조, 정보 위계, 카드 구성, 방향 화살표, 장기/중기/단기 3단 구성**을 고정 레퍼런스로 사용한다.
 
-단, 새 실행에서는 자산명·현재가·파동 번호·핵심 가격·확률·무효화 가격을 최신 분석값으로 교체한다. 과거 가격을 복사하지 않는다.
+단, 새 실행에서는 **감지된 자산명**·현재가·파동 번호·핵심 가격·확률·무효화 가격을 최신 분석값으로 교체한다. 과거 자산/가격을 복사하지 않는다.
 
 ---
 
@@ -270,48 +276,65 @@ MASTER TRADING recurring automation은 현재 OFF이므로 실제 예약시간�
 5. `스크린2 파동분석을 첨부한 차트 기반으로 엘리엇파동을 숫자(1~5, A-B-C) 직접 표시한 버전으로 더 직관적으로 그려줄까?`
 
 사용자가 `5`라고 답하면:
-- 첨부된 차트 자체를 기반으로 파동 숫자 `1~5`, 조정 `A-B-C`를 직접 표시한 이미지를 생성한다.
+- 첨부된 **현재 감지 자산 차트 자체**를 기반으로 파동 숫자 `1~5`, 조정 `A-B-C`를 직접 표시한 이미지를 생성한다.
 - 사용자 레퍼런스 이미지의 고정된 인포그래픽 구성/레이아웃을 지속 사용한다.
 - 장기/중기/단기 각각 확률과 무효화 가격을 표시한다.
-- 최신 차트값을 사용하며 오래된 가격/파동 숫자를 그대로 재사용하지 않는다.
+- 최신 차트값을 사용하며 오래된 자산/가격/파동 숫자를 그대로 재사용하지 않는다.
 - 이미지 생성은 분석 엔진을 변경하지 않는다.
 
 ---
 
-# ASSET UI PARITY HARD LOCK
+# ASSET-AGNOSTIC ANALYSIS + UI PARITY HARD LOCK
 
-BTC / ETH / 기타 지원 자산 모두 동일 UI를 적용한다.
+MASTER TRADING은 **BTC 전용이 아니다.**
+
+동일 엔진/동일 출력 적용 대상 예시:
+`BTC | ETH | SOL | XRP | DOGE | BNB | ADA | AVAX | LINK | SUI | HYPE | 기타 지원 가능한 모든 CRYPTO`
+
+HARD RULE:
+- 첨부 차트에서 자산명을 자동 식별한다.
+- 자산 식별이 가능하면 사용자가 종목명을 별도로 입력할 필요가 없다.
+- 감지된 자산에 **동일한 Main Scenario Engine V3.2 / Entry Engine / SL / TP / R:R / Trade Frame / 2-STAGE / Trigger / TIME V2.1 / Wave Context**를 적용한다.
+- 감지된 자산에 동일한 **SCREEN 1→5 UI**를 적용한다.
+- BTC 전용 가격대/파생정보/상대강도/시나리오를 다른 자산에 재사용하지 않는다.
+- 외부 데이터 보강이 필요할 경우 감지된 ticker/pair를 조회한다.
+- 일부 파생/외부 데이터가 해당 자산에 없으면 `N/A` 또는 PARTIAL로 처리하며, BTC 데이터를 대체값으로 넣지 않는다.
 
 금지:
-- BTC는 5 SCREEN인데 ETH는 축약형으로 출력
+- BTC는 5 SCREEN인데 ETH/SOL/XRP 등은 축약형으로 출력
+- 자산별로 분석엔진/가중치/타점 산식 변경
 - 자산별로 타점표 열/행 순서 변경
 - 도달확률 누락
 - 시간 유효성 누락
 - 파동 시나리오 누락
+- BTC를 암묵적 기본자산으로 간주
 - 사용자 승인 없이 화면을 4 SCREEN 또는 다른 구조로 되돌림
 
 ---
 
-# QUICK COMMAND `고`
+# QUICK COMMAND `고` — ASSET AUTO-DETECT FINAL LOCK
 
-차트가 첨부된 상태에서 사용자가 `고`를 입력하면:
-- 기존 MASTER TRADING 분석 엔진을 그대로 실행한다.
-- 출력은 반드시 이 `MASTER-TRADING-UI-V2-FINAL`의 SCREEN 1 → 5 순서를 따른다.
-- BTC/ETH 동일하다.
-- 화면을 줄인다는 이유로 필수 Screen/타점 필드를 생략하지 않는다.
-- 데이터 부족은 `N/A`; 임의 추정값 생성 금지.
+차트가 첨부된 상태에서 사용자가 별다른 설명 없이 **`고`**를 입력하면:
+1. 첨부된 최신 coherent chart set에서 **자산/티커/거래쌍을 자동 식별**한다.
+2. 식별된 자산에 기존 MASTER TRADING 분석 엔진을 **그대로** 실행한다.
+3. 출력은 반드시 `MASTER-TRADING-UI-V2-FINAL`의 **SCREEN 1 → 5** 순서를 따른다.
+4. BTC/ETH/SOL/XRP/기타 자산 모두 동일하다.
+5. 사용자가 자산명을 다시 말하도록 요구하지 않는다 — 차트에서 명확히 식별 가능하면 바로 실행한다.
+6. 화면을 줄인다는 이유로 필수 Screen/타점 필드를 생략하지 않는다.
+7. 데이터 부족은 `N/A`; 임의 추정값 생성 금지.
+8. 자산 식별이 정말 불가능한 경우에만 자산명 확인을 요청하며, 추정으로 다른 자산을 선택하지 않는다.
 
 ---
 
 # CHANGE CONTROL
 
-이 UI는 **FINAL LOCK**이다.
+이 UI/asset-routing contract는 **FINAL LOCK**이다.
 
 향후 변경 조건:
-- 사용자의 명시적 화면/UI 수정 요청이 있을 때만 변경한다.
+- 사용자의 명시적 화면/UI/자산 라우팅 수정 요청이 있을 때만 변경한다.
 - 모델이 보기 좋다는 이유로 임의 변경 금지.
 - 엔진 개선/연구 결과가 나와도 UI를 자동 변경하지 않는다.
-- UI 변경이 분석 엔진/가격 엔진을 수정하는 것으로 해석되어서는 안 된다.
+- UI/asset-routing 변경이 분석 엔진/가격 엔진을 수정하는 것으로 해석되어서는 안 된다.
 
 Any future UI revision must record:
 `UI_VERSION | APPROVED_KST | CHANGED_SCREENS | ENGINE_CHANGE=false`
@@ -330,9 +353,12 @@ Any future UI revision must record:
 - [x] 시간 유효성 = 최대 신규 체결 허용시각
 - [x] 타점별 노리는 파동 한 줄
 - [x] Screen 5 파생 + 파동 조합 결론 + 행동
-- [x] BTC/ETH UI 동일
+- [x] **모든 지원 CRYPTO 동일 분석엔진 적용**
+- [x] **모든 지원 CRYPTO 동일 UI 적용**
+- [x] **`고` 입력 시 첨부 차트 자산 자동식별**
+- [x] **BTC 암묵적 기본값 사용 금지**
 - [x] 후속 질문 정확히 5개
 - [x] 후속 5번 Elliott 숫자/A-B-C 이미지 문구 고정
 - [x] 기존 Entry/SL/TP/R:R/Trigger/Trade Frame/2-STAGE/TIME V2.1 엔진 무변경
 
-**FINAL LOCK: `MASTER-TRADING-UI-V2-FINAL`**
+**FINAL LOCK: `MASTER-TRADING-UI-V2-FINAL · ASSET AUTO-DETECT`**
