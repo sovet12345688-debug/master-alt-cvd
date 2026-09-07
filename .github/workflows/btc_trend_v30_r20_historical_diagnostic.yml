@@ -1,0 +1,104 @@
+name: BTC TREND V3 R2.0 Historical Diagnostic REV2
+
+on:
+  push:
+    branches: [btc-trend-v30-r20-design]
+    paths:
+      - 'btc_trend_v30/r20/r20_historical_diagnostic_replay.py'
+      - '.github/workflows/btc_trend_v30_r20_historical_diagnostic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: '1'
+
+jobs:
+  r20-historical-diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install research dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas requests
+      - name: REV2 freeze and PIT preflight
+        run: |
+          set -euo pipefail
+          python btc_trend_v30/r20/r20_freeze_guard_rev2.py
+          (cd btc_trend_v30/r20 && python test_r20_contract.py)
+          (cd btc_trend_v30/r20 && python test_r20_engine_pit.py)
+          python -m py_compile btc_trend_v30/r20/r20_historical_diagnostic_replay.py
+      - name: Step1 Data Integrity
+        run: python btc_trend_v30/validation_protocol_v1_data_integrity.py
+      - name: Step1 gate
+        run: |
+          python - <<'PY'
+          import json,sys
+          d=json.load(open('btc_trend_v30/output/validation_v1/data_integrity/audit.json'))
+          print('STEP1=',d['data_integrity'],d['final_rows'])
+          if d['data_integrity']!='PASS': sys.exit(1)
+          PY
+      - name: Step2 R1.2 Daily Scoring PIT
+        run: python btc_trend_v30/validation_protocol_v1_step2_r12_daily_scoring.py
+      - name: Step2 gate
+        run: |
+          python - <<'PY'
+          import json,sys
+          d=json.load(open('btc_trend_v30/output/validation_v1/step2_full_daily_scoring/audit.json'))
+          print('STEP2=',d['step2'])
+          if d['step2']!='PASS': sys.exit(1)
+          PY
+      - name: Step3 Episode Dedupe
+        run: python btc_trend_v30/validation_protocol_v1_step3_episode_dedupe.py
+      - name: Step4 Truth Labels
+        run: python btc_trend_v30/validation_protocol_v1_step4_outcome_labels.py
+      - name: Step5 Walk Forward Identity
+        run: python btc_trend_v30/validation_protocol_v1_step5_walk_forward_oos.py
+      - name: Step6 Baseline Intraday Inputs
+        run: python btc_trend_v30/validation_protocol_v1_step6_runner.py
+      - name: Step7 Baseline Metrics Identity
+        run: python btc_trend_v30/validation_protocol_v1_step7_metrics.py
+      - name: R1.2 baseline identity gate
+        run: |
+          python - <<'PY'
+          import json,math,sys
+          d=json.load(open('btc_trend_v30/output/validation_v1/step7_metrics/audit.json'))
+          checks=[
+            d['step7']=='PASS',
+            d['raw_all_leg']['legs']==119,
+            math.isclose(d['raw_all_leg']['mean_R'],0.07563025210084033,abs_tol=1e-12),
+          ]
+          print('R12_BASELINE_IDENTITY=',checks)
+          if not all(checks): sys.exit(1)
+          PY
+      - name: R2.0 REV2 frozen historical diagnostic
+        run: python btc_trend_v30/r20/r20_historical_diagnostic_replay.py
+      - name: R2.0 audit gate
+        run: |
+          python - <<'PY'
+          import json,sys
+          p='btc_trend_v30/r20/output/historical_replay/audit.json'
+          d=json.load(open(p))
+          print('R20_STATUS=',d['status'])
+          print('R20_PROMOTION=',d['promotion_decision'])
+          print('R20_HARD_FAILURES=',d['hard_failures'])
+          print('R20_UNRESOLVED=',d['unresolved_blockers'])
+          print('R20_SUMMARY=',d['summary'])
+          if d['status']!='HISTORICAL_DIAGNOSTIC_ONLY_NOT_UNTOUCHED_OOS': sys.exit(1)
+          if d['production_promotion_evidence'] is not False: sys.exit(1)
+          if d['promotion_decision']!='HOLD': sys.exit(1)
+          PY
+      - name: Upload R2.0 historical evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v30-r20-historical-diagnostic-rev2
+          path: |
+            btc_trend_v30/r20/output/historical_replay/
+            btc_trend_v30/output/validation_v1/data_integrity/audit.json
+            btc_trend_v30/output/validation_v1/step7_metrics/audit.json
+          retention-days: 14
