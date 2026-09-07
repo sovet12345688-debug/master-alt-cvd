@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0",
+  "acceptance_id": "MONEY_MASTER_OS_V2_P2_ACCEPTANCE_V1",
+  "scope": "CONTROL_PLANE_AND_OPERATING_SAFETY",
+  "baseline_gate": {
+    "result_when_all_required_pass": "BASELINE_PASS",
+    "p2_final_status_after_baseline": "LONG_RUN_PENDING",
+    "required_gates": {
+      "A1_MASTER_IDENTITY_CANONICAL": "Exactly five MASTERs, all READY, exact Registry↔Manifest↔Canonical/Contract identity.",
+      "A2_NEW_ROOM_RESTORE": "All five MASTERs restore without chat-memory reconstruction.",
+      "A3_CORE_DATA_HEALTH": "No source with any CORE impact may be FAILED, STALE, MISSING or UNKNOWN.",
+      "A4_SHARED_FACT_BOUNDARY": "Shared Fact Vault HEALTHY, facts-only, no decision reconciliation, active-source coverage 100%, non-empty facts.",
+      "A5_OFFICIAL_STATE_SAFETY": "OFFICIAL latest/index valid, actual-run-only, no reconstruction, WATCH/provisional cannot become OFFICIAL.",
+      "A6_WATCH_EVENT_SAFETY": "MARKET/ALT1/ALT2 WATCH allowed, BTC/TRADING blocked, no execution fields, WATCH cannot mutate OFFICIAL.",
+      "A7_FIVE_MASTER_E2E": "All five pass isolated Fact→Bootstrap→OFFICIAL publish/history→WATCH allow/block→restore chain.",
+      "A8_PRIVACY_AND_RESEARCH_SEPARATION": "Public repo private trading state forbidden; BTC V2.6 production separated from V3.0 research."
+    },
+    "warning_only_conditions": {
+      "OPTIONAL_OR_CONTEXT_SOURCE_FAILURE": "Warn but do not fail if no CORE impact is affected.",
+      "SOURCE_HEALTH_OVERALL_DEGRADED": "Allowed only when degradation comes exclusively from OPTIONAL/CONTEXT sources.",
+      "NO_STORED_OFFICIAL_RUN": "Valid state; must not be reconstructed."
+    },
+    "hard_fail_conditions": [
+      "MASTER_VERSION_OR_SOURCE_DRIFT",
+      "CORE_SOURCE_FAILED_STALE_MISSING_UNKNOWN",
+      "SHARED_FACT_CONTAINS_MASTER_DECISION",
+      "LAST_GOOD_USED_AS_CURRENT",
+      "OFFICIAL_SYNTHETIC_BACKFILL_OR_WATCH_PROMOTION",
+      "WATCH_MUTATES_OFFICIAL",
+      "BTC_V26_HOURLY_WATCH_ENABLED",
+      "TRADING_RECURRING_WATCH_ENABLED",
+      "PUBLIC_REPO_PRIVATE_TRADING_STATE",
+      "NEW_ROOM_RESTORE_REQUIRES_CHAT_MEMORY",
+      "FIVE_MASTER_E2E_FAILURE"
+    ]
+  },
+  "long_run_gate": {
+    "required_for_p2_final_pass": true,
+    "minimum_observation_hours": 24,
+    "minimum_source_health_cycles": 12,
+    "minimum_shared_fact_cycles": 12,
+    "minimum_acceptance_checkpoints": 3,
+    "required": [
+      "NO_CANONICAL_OR_REGISTRY_DRIFT",
+      "NO_CORE_SOURCE_OUTAGE_LEFT_UNRESOLVED_ACROSS_TWO_CONSECUTIVE_CHECKPOINTS",
+      "NO_SHARED_FACT_AUTHORITY_VIOLATION",
+      "NO_OFFICIAL_WATCH_CROSS_CONTAMINATION",
+      "NO_NEW_ROOM_RESTORE_REGRESSION",
+      "NO_PRIVACY_REGRESSION"
+    ],
+    "status_before_completion": "LONG_RUN_PENDING"
+  }
+}
