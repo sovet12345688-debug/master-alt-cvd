@@ -14,6 +14,10 @@
     "weekly_resample_from_daily": true,
     "closed_candles_only": true,
     "pit_shift_required": true,
+    "daily_source_timestamp_semantics": "OPEN_TIME_UTC",
+    "daily_context_available_offset_hours": 24,
+    "weekly_context_available_rule": "AFTER_FINAL_SUNDAY_DAILY_CLOSE_AT_MONDAY_00_UTC",
+    "asof_context_must_use_availability_timestamp": true,
     "core_external_data_required": false
   },
   "features": {
