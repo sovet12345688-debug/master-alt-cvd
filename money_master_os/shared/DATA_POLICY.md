@@ -18,6 +18,19 @@ Use `CONFIRMED / INTERPRETATION / INFERENCE / N/A` where applicable.
 - `last_good` is a diagnostic pointer only. A stale source cannot be silently replaced with a `last_good` value and called current.
 - Another MASTER's health or conclusion is never a substitute for direct execution-critical revalidation.
 
+## OFFICIAL State authority boundary
+- The latest persisted MASTER decision state lives under `official_state/latest/`.
+- Only an ACTUAL OFFICIAL MASTER run may be stored with `state_status=STORED`.
+- WATCH, provisional/current-candle, draft, dry-run, research-only, inferred, reconstructed or manually guessed values cannot be promoted to OFFICIAL State.
+- `NO_STORED_OFFICIAL_RUN` is a valid state and must remain empty until an actual OFFICIAL run is persisted.
+- Missing OFFICIAL history must not be reconstructed from chat memory, canonical prompt examples, raw collector outputs, another MASTER, Source Health, or legacy handoff files.
+- Source Health may be referenced as availability metadata inside an OFFICIAL State, but it can never generate the MASTER's direction, score, Permission, Action, Entry, SL, TP, R:R, Coverage or confidence.
+- MASTER Coverage and confidence must come from that actual MASTER OFFICIAL run. `registered_source_health_pct` is never MASTER Coverage.
+- `valid_until_kst`, next-run validity and freshness must be stored only when actually produced or explicitly defined by the MASTER. Unknown validity remains `UNKNOWN`; schedule cadence alone must not be used to manufacture an expiry.
+- A stored OFFICIAL State with freshness `UNKNOWN` or `EXPIRED` remains a historical official snapshot, not proof that its old decision is current.
+- Each MASTER owns its own OFFICIAL decision. Cross-MASTER facts may be shared, but another MASTER's score/direction/permission/action cannot be copied as this MASTER's owned conclusion.
+- Public-repository OFFICIAL State must contain no personal balance, private position size, account identifiers, credentials or private execution details.
+
 ## Missing-data rules
 - Missing != 0.
 - Stale != current.
@@ -27,6 +40,8 @@ Use `CONFIRMED / INTERPRETATION / INFERENCE / N/A` where applicable.
 
 ## Persistence
 - System logic belongs in canonical prompt/contract files.
-- Current operational state belongs in state/handoff files.
-- Raw high-volume market data stays in existing data engines; MONEY MASTER OS stores only the continuity-critical pointers/state contracts.
+- Latest actual MASTER decision continuity belongs in `official_state/latest/<master_id>.json`.
+- Actual OFFICIAL history belongs in append-only `official_state/history/<master_id>/YYYY-MM.jsonl`.
+- Legacy `money_master_os/handoff/*_LATEST.json` files are migration artifacts once OFFICIAL State V1 exists and must not override it.
+- Raw high-volume market data stays in existing data engines; MONEY MASTER OS stores only continuity-critical pointers/state contracts.
 - Source Health stores only compact latest status, last-good pointers and status-change events; it does not duplicate raw market data.
