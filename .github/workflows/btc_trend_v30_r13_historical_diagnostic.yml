@@ -1,0 +1,92 @@
+name: BTC TREND V3 R1.3 Historical Diagnostic Replay
+
+on:
+  push:
+    branches:
+      - btc-trend-v30-r13-freeze
+    paths:
+      - 'btc_trend_v30/r13/r13_historical_diagnostic_replay.py'
+      - '.github/workflows/btc_trend_v30_r13_historical_diagnostic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: '1'
+
+jobs:
+  historical-diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas requests
+
+      - name: Freeze guard must remain exact
+        run: python btc_trend_v30/r13/r13_freeze_guard.py
+      - name: Implementation contract must remain exact
+        run: |
+          python btc_trend_v30/r13/r13_implementation_audit.py
+          python btc_trend_v30/r13/test_r13_contract.py
+
+      - name: R1.2 Step1 Data Integrity
+        run: python btc_trend_v30/validation_protocol_v1_data_integrity.py
+      - name: R1.2 Step2 Full Rolling
+        run: python btc_trend_v30/validation_protocol_v1_step2_r12_daily_scoring.py
+      - name: R1.2 Step3 Episode Dedupe
+        run: python btc_trend_v30/validation_protocol_v1_step3_episode_dedupe.py
+      - name: R1.2 Step4 Truth Labels
+        run: python btc_trend_v30/validation_protocol_v1_step4_outcome_labels.py
+      - name: R1.2 Step5 Walk Forward OOS
+        run: python btc_trend_v30/validation_protocol_v1_step5_walk_forward_oos.py
+      - name: R1.2 Step6 Intraday State Replay
+        run: python btc_trend_v30/validation_protocol_v1_step6_runner.py
+      - name: R1.2 Step7 Metrics Baseline
+        run: python btc_trend_v30/validation_protocol_v1_step7_metrics.py
+
+      - name: R1.3 Historical Diagnostic Replay
+        run: python btc_trend_v30/r13/r13_historical_diagnostic_replay.py
+
+      - name: Diagnostic integrity gate
+        run: |
+          python - <<'PY'
+          import json,sys
+          p='btc_trend_v30/r13/output/historical_diagnostic/audit.json'
+          d=json.load(open(p,encoding='utf-8'))
+          print('STATUS=',d['status'])
+          print('BASELINE_IDENTITY_PASS=',d['baseline_identity_pass'])
+          print('COMPARISON=',json.dumps(d['comparison'],ensure_ascii=False,indent=2))
+          print('R13_ROUTE=',json.dumps(d['r13']['route'],ensure_ascii=False,indent=2))
+          print('R13_FALSE_START=',json.dumps(d['r13']['false_start'],ensure_ascii=False,indent=2))
+          if d['status']!='HISTORICAL_DIAGNOSTIC_ONLY_NOT_UNTOUCHED_OOS': sys.exit('Wrong governance status')
+          if not d['baseline_identity_pass']: sys.exit('R1.2 identity mismatch')
+          if d['interpretation_guardrails']['this_replay_can_promote_to_production'] is not False: sys.exit('Promotion firewall broken')
+          PY
+
+      - name: Assert R1.2 and V2.6 source untouched
+        shell: bash
+        run: |
+          BASE=6b3158d7c289b36153b2d9dc87f810c3562d1515
+          git diff --name-only "$BASE" HEAD | tee /tmp/changed_files.txt
+          if git diff --name-only "$BASE" HEAD | grep -Ev '^(btc_trend_v30/r13/|\.github/workflows/btc_trend_v30_r13_)' | grep -q .; then
+            echo 'Disallowed non-R1.3 source change detected'
+            exit 1
+          fi
+          echo 'R1.2/V2.6 source untouched = TRUE'
+
+      - name: Upload diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v30-r13-historical-diagnostic
+          path: |
+            btc_trend_v30/r13/output/historical_diagnostic/
+            btc_trend_v30/output/validation_v1/step7_metrics/audit.json
+          retention-days: 14
