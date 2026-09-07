@@ -41,5 +41,6 @@ jobs:
           test ! -f btc_trend_v30/r24/r24_historical_diagnostic_replay.py
           echo R24_FINAL_FREEZE_IDENTITY=PASS
           echo R24_HISTORICAL_REPLAY_BEFORE_FREEZE=0
+          echo R24_FINAL_FREEZE_REV=2
       - name: Compile
         run: python -m compileall -q btc_trend_v30/r24
