@@ -1,0 +1,29 @@
+{
+  "engine": "MASTER_MARKET_FREE_MACRO_LIQUIDITY_V1",
+  "schema_version": "1.0",
+  "generated_at_utc": "2026-09-07T02:15:39.420104Z",
+  "snapshot_hour_utc": "2026-09-07T02:00:00Z",
+  "score_weight": 0,
+  "role": "free official-source evidence for existing MASTER MARKET macro/liquidity axes; not a standalone direction engine",
+  "net_liquidity_formula": "FED_TOTAL_ASSETS - TGA_CLOSING_BALANCE - ON_RRP, all converted to USD millions",
+  "metrics": [
+    {
+      "metric": "TGA_CLOSING_BALANCE",
+      "value": 944364.0,
+      "unit": "USD millions",
+      "source": "US Treasury FiscalData DTS",
+      "source_url": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/dts/operating_cash_balance",
+      "source_observation_time": "2026-09-03T00:00:00Z",
+      "source_frequency": "business_daily",
+      "note": "Treasury General Account closing balance.",
+      "vs_1d": null,
+      "vs_3d": null,
+      "vs_7d": null
+    }
+  ],
+  "failures": {
+    "FED_FRED": "HTTPSConnectionPool(host='fred.stlouisfed.org', port=443): Read timed out. (read timeout=25)",
+    "QRA": "Treasury press release not found: Treasury Announces Marketable Borrowing Estimates",
+    "BUYBACK_ACTUAL": "TreasuryDirect buyback result XML not discoverable/parseable this run"
+  }
+}
