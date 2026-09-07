@@ -1,20 +1,35 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "registry_name": "MONEY_MASTER_OS_REGISTRY",
-  "updated_kst": "2026-09-07T08:44:00+09:00",
+  "updated_kst": "2026-09-07T10:00:00+09:00",
   "repository": "sovet12345688-debug/master-alt-cvd",
-  "baseline_observed_commit": "117f23c520ad31f4d25fb37c797947e4ef7b3b39",
+  "architecture": {
+    "master_count": 5,
+    "master_ids": [
+      "market",
+      "btc_trend",
+      "alt_top100",
+      "alt_final20",
+      "trading"
+    ],
+    "fact_sharing_policy": "SHARED_FACTS_ALLOWED_DECISIONS_INDEPENDENT",
+    "cross_master_blocking_dependency": false,
+    "production_research_separation_required": true
+  },
   "global_policy": {
     "github_is_source_of_truth": true,
     "chat_is_execution_surface": true,
     "silent_reconstruction_forbidden": true,
     "version_drift_blocks_bootstrap": true,
     "missing_source_blocks_bootstrap": true,
-    "destructive_migration_forbidden": true
+    "destructive_migration_forbidden": true,
+    "five_master_identity_locked": true,
+    "shared_facts_do_not_imply_shared_conclusions": true
   },
   "masters": {
     "market": {
       "display_name": "MASTER MARKET",
+      "role": "market_liquidity_macro_flow_context",
       "expected_version": "V1.2 FINAL",
       "repo_version": "V1.2 FINAL",
       "source_path": "master_prompts/master_market_v1_2_current.md",
@@ -24,27 +39,62 @@
       "bootstrap_allowed": true,
       "execution_policy": "LOAD_EXACT_SOURCE_AND_VALIDATE"
     },
-    "alt": {
-      "display_name": "MASTER ALT",
-      "expected_version": "V4.8 FINAL",
-      "repo_version": "V2.2.1 FINAL20 DEEP FINAL",
-      "source_path": "master_prompts/master_alt_final20_current.md",
-      "contract_path": null,
-      "manifest_path": "money_master_os/masters/alt/manifest.json",
-      "status": "VERSION_DRIFT",
-      "bootstrap_allowed": false,
-      "execution_policy": "BLOCK_BOOTSTRAP_UNTIL_EXACT_V4_8_SOURCE_COMMITTED"
-    },
     "btc_trend": {
       "display_name": "MASTER BTC TREND",
-      "expected_version": "V3.0",
+      "role": "btc_trend_direction_and_regime",
+      "production_version": "V2.6",
+      "research_version": "V3.0",
+      "expected_version": "V2.6 PRODUCTION",
       "repo_version": null,
       "source_path": null,
       "contract_path": null,
       "manifest_path": "money_master_os/masters/btc_trend/manifest.json",
       "status": "SOURCE_MISSING",
       "bootstrap_allowed": false,
-      "execution_policy": "BLOCK_BOOTSTRAP_UNTIL_EXACT_V3_0_SOURCE_COMMITTED"
+      "execution_policy": "KEEP_V2_6_AS_PRODUCTION_CONTEXT_BUT_BLOCK_BOOTSTRAP_UNTIL_EXACT_CANONICAL_SOURCE_IS_COMMITTED",
+      "research_policy": "V3.0_RESEARCH_ONLY_UNTIL_ACCEPTANCE_AND_CANONICAL_PROMOTION"
+    },
+    "alt_top100": {
+      "display_name": "MASTER ALT 1 · TOP100",
+      "role": "top100_discovery_and_early_accumulation_scan",
+      "expected_version": "V4.8 FINAL",
+      "repo_version": null,
+      "source_path": null,
+      "contract_path": null,
+      "manifest_path": "money_master_os/masters/alt_top100/manifest.json",
+      "status": "SOURCE_MISSING",
+      "bootstrap_allowed": false,
+      "execution_policy": "BLOCK_BOOTSTRAP_UNTIL_EXACT_V4_8_CANONICAL_SOURCE_IS_COMMITTED"
+    },
+    "alt_final20": {
+      "display_name": "MASTER ALT 2 · FINAL20",
+      "role": "final20_deep_tracking_cvd_and_execution_verification",
+      "expected_version": "V2.2.1 FINAL20 DEEP FINAL",
+      "repo_version": "V2.2.1 FINAL20 DEEP FINAL",
+      "source_path": "master_prompts/master_alt_final20_current.md",
+      "contract_path": null,
+      "manifest_path": "money_master_os/masters/alt_final20/manifest.json",
+      "status": "READY",
+      "bootstrap_allowed": true,
+      "execution_policy": "LOAD_EXACT_SOURCE_AND_VALIDATE"
+    },
+    "trading": {
+      "display_name": "MASTER TRADING",
+      "role": "execution_entry_stop_target_rr_and_time_validity",
+      "expected_version": "CURRENT + TIME VALIDITY V2.1 OVERLAY",
+      "repo_version": null,
+      "source_path": null,
+      "contract_path": null,
+      "manifest_path": "money_master_os/masters/trading/manifest.json",
+      "status": "SOURCE_MISSING",
+      "bootstrap_allowed": false,
+      "execution_policy": "BLOCK_BOOTSTRAP_UNTIL_EXACT_CURRENT_CANONICAL_SOURCE_IS_COMMITTED",
+      "privacy_policy": "PERSONAL_POSITION_BALANCE_AND_ACCOUNT_DATA_MUST_NOT_BE_STORED_IN_PUBLIC_REPOSITORY"
     }
+  },
+  "legacy": {
+    "previous_registry_backup": "money_master_os/registry/MASTER_REGISTRY_V1_LEGACY.json",
+    "legacy_alt_manifest": "money_master_os/masters/alt/manifest.json",
+    "legacy_alt_usage": "DO_NOT_BOOTSTRAP_FROM_LEGACY_ALT_ID"
   }
 }
