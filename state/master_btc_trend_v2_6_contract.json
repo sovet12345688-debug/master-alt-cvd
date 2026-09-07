@@ -157,10 +157,11 @@
     "nothing_after_footer": true
   },
   "presentation_override": {
-    "version": "UI_ONLY_2026-09-07",
+    "version": "FINAL_UI_2026-09-07B",
     "scope": "DISPLAY_ONLY",
     "supersedes_legacy_output_layout": true,
     "engine_logic_change_allowed": false,
+    "basic_official_and_precision_same_layout": true,
     "mobile_first": true,
     "table_first": true,
     "traffic_light": {
@@ -177,11 +178,13 @@
     },
     "screen1": {
       "title": "BTC 현황 요약",
+      "mobile_compression": "3_COLUMN_FIRST",
+      "vertical_growth_allowed": true,
       "tables": [
-        {"title":"중장기 방향","columns":["항목","신호","현재값","판정"],"required_rows":["LONG vs SHORT","현재 우세방향","모아가기 적합도","현재 추세","추세 강도","최근 추이"]},
-        {"title":"매수·매도·매집 근거","columns":["구분","신호","핵심 근거","판정"],"required_rows":["매수","매도","매집"],"reason_max":"1 short phrase"},
-        {"title":"역사 프렉탈 · 바닥/고점","columns":["항목","신호","현재 위치/점수","판정"],"required_rows":["역사 프렉탈 현재 위치","MASTER 동조/충돌","BOTTOM/100","TOP/100","LONG A+ 미래검증 추적 요약"]},
-        {"title":"단·중·장기 S/R","columns":["구분","신호","핵심 지지","핵심 저항","강도"],"required_rows":["단기","중기","장기"]}
+        {"title":"중장기 방향","columns":["항목","신호","현재"],"required_rows":["LONG vs SHORT","우세방향","모아가기 적합도","현재 추세","추세 강도","최근 추이"],"merge_value_and_judgement":true},
+        {"title":"매수·매도·매집 근거","columns":["구분","신호","핵심 판단"],"required_rows":["매수","매도","매집"],"reason_and_judgement_merged":true},
+        {"title":"역사 프렉탈 · 바닥/고점","columns":["항목","신호","현재"],"required_rows":["역사 프렉탈","MASTER 관계","BOTTOM","TOP","LONG A+ 추적"],"merge_value_and_judgement":true},
+        {"title":"단·중·장기 S/R","columns":["구분","신호","핵심 S/R"],"required_rows":["단기","중기","장기"],"stack_support_resistance_strength_vertically":true}
       ],
       "summary_lines": 1
     },
@@ -208,9 +211,21 @@
       "master_time_line": "MASTER BTC TREND ㅣ 실행 완료 시간 : YYYY-MM-DD HH:mm KST ㅣ 다음 정식 보고 시간 : YYYY-MM-DD HH:mm KST",
       "follow_up_count": 5,
       "follow_up_position": "AFTER_MASTER_TIME_LINE",
+      "follow_up_4_mode": "CONDITIONAL_GITHUB_PATCH_NECESSITY",
+      "required_follow_up_4_if_github_change_needed": "변경 사항 발생. github 변경 패치 작업 진행 도와줄까?",
+      "forbid_follow_up_4_phrase_if_no_github_change_needed": true,
       "required_follow_up_5": "스크린2 파동분석을 첨부한 차트 기반으로 엘리엇파동을 숫자(1~5, A-B-C) 직접 표시한 버전으로 더 직관적으로 그려줄까?",
       "auto_image_generation": false,
       "elliott_image_on_explicit_follow_up_5_only": true
     }
+  },
+  "change_management": {
+    "github_patch_necessity_check_required_on_every_change_request": true,
+    "question": "이 변경이 GitHub canonical/contract/collector/schema/authoritative prompt에 남아야 하는가?",
+    "github_patch_needed_examples": ["출력 UI", "규칙", "필수 항목", "점수/엔진", "데이터 구조", "MASTER 동작", "authoritative prompt"],
+    "github_patch_not_needed_examples": ["단순 분석", "수동 실행", "데이터 확인"],
+    "write_requires_explicit_user_request": true,
+    "follow_up_4_exact_if_needed": "변경 사항 발생. github 변경 패치 작업 진행 도와줄까?",
+    "follow_up_4_phrase_forbidden_if_not_needed": true
   }
 }
