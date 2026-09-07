@@ -1,4 +1,4 @@
-name: BTC TREND V3.0 Validation Protocol V1 Step1-4
+name: BTC TREND V3.0 Validation Protocol V1 Step1-5
 # Research branch only. V2.6 is not read or modified.
 
 on:
@@ -9,6 +9,7 @@ on:
       - 'btc_trend_v30/validation_protocol_v1_step2_r12_daily_scoring.py'
       - 'btc_trend_v30/validation_protocol_v1_step3_episode_dedupe.py'
       - 'btc_trend_v30/validation_protocol_v1_step4_outcome_labels.py'
+      - 'btc_trend_v30/validation_protocol_v1_step5_walk_forward_oos.py'
       - '.github/workflows/btc_trend_v30_validation_protocol_v1_data_integrity.yml'
   workflow_dispatch:
 
@@ -19,7 +20,7 @@ env:
   PYTHONUNBUFFERED: '1'
 
 jobs:
-  validation-step1-4:
+  validation-step1-5:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -74,10 +75,23 @@ jobs:
           if d['step4']!='PASS': sys.exit('STOP: Step4 HOLD')
           PY
 
-      - name: Upload Step1-4 audit artifact
+      - name: Step5 - Walk-Forward OOS WF1-WF6
+        run: python btc_trend_v30/validation_protocol_v1_step5_walk_forward_oos.py
+      - name: Step5 gate
+        run: |
+          python - <<'PY'
+          import json,sys
+          d=json.load(open('btc_trend_v30/output/validation_v1/step5_walk_forward_oos/audit.json',encoding='utf-8'))
+          print('STEP5=',d['step5'],'OOS_EPISODES=',d['oos_episodes'],'MED20=',d['oos_medium20_hit_rate'],'LONG_PRIMARY=',d['oos_long_primary_hit_rate'])
+          print('FOLDS=',d['folds'])
+          print('MONOTONICITY=',d['global_stage_monotonicity_preliminary'])
+          if d['step5']!='PASS': sys.exit('STOP: Step5 HOLD')
+          PY
+
+      - name: Upload Step1-5 audit artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: btc-trend-v30-validation-v1-step1-4
+          name: btc-trend-v30-validation-v1-step1-5
           path: btc_trend_v30/output/validation_v1/
           retention-days: 14
