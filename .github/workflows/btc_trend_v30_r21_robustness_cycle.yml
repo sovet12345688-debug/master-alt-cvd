@@ -1,0 +1,89 @@
+name: BTC TREND V3 R2.1 Robustness + Cycle Diagnostic
+
+on:
+  push:
+    branches:
+      - btc-trend-v30-r21-robustness-cycle
+    paths:
+      - 'btc_trend_v30/r21/robustness/**'
+      - '.github/workflows/btc_trend_v30_r21_robustness_cycle.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  robustness-cycle:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/btc_trend_v30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+
+      - name: Frozen R2.1 and PIT guards
+        run: |
+          python btc_trend_v30/r21/r21_freeze_guard.py
+          python btc_trend_v30/r21/test_r21_contract.py
+          (cd btc_trend_v30/r20 && python test_r20_engine_pit.py)
+
+      - name: Download canonical historical matrices
+        uses: actions/download-artifact@v4
+        with:
+          name: btc-trend-v30-validation-v1-step1-10
+          repository: sovet12345688-debug/master-alt-cvd
+          run-id: 34084074525
+          github-token: ${{ github.token }}
+          path: btc_trend_v30/output/validation_v1
+
+      - name: Canonical source identity
+        run: |
+          test -f btc_trend_v30/output/validation_v1/data_integrity/btc_usdt_1d_matrix.csv
+          test -f btc_trend_v30/output/validation_v1/step3_episode_dedupe/independent_episodes.csv
+          test -f btc_trend_v30/output/validation_v1/step4_outcome_labels/episode_medium_long_truth_labels.csv
+          test -f btc_trend_v30/output/validation_v1/step6_state_machine_replay/btc_usdt_1h_matrix.csv
+          test -f btc_trend_v30/output/validation_v1/step6_state_machine_replay/btc_usdt_complete_4h_matrix.csv
+          echo CANONICAL_ARTIFACT_RUN=34084074525
+          echo CANONICAL_ARTIFACT_ID=10004727447
+          echo CANONICAL_ARTIFACT_SHA256=11362981be0938ec9c5f4d2aea00d1db5be5fc86ec41db7964f6fb83dc7bc8a3
+
+      - name: Run frozen R2.1 robustness and cycle diagnostic
+        run: |
+          rm -rf btc_trend_v30/r21/robustness/output
+          python btc_trend_v30/r21/robustness/r21_robustness_cycle_diagnostic.py
+
+      - name: Diagnostic integrity audit
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path('btc_trend_v30/r21/robustness/output/r21_robustness_cycle_audit.json')
+          d=json.load(open(p))
+          checks=[
+            d['status']=='R21_ROBUSTNESS_CYCLE_HISTORICAL_DIAGNOSTIC_ONLY',
+            d['model']=='MASTER_BTC_TREND_V3_R2_1',
+            d['execution_engine']=='FROZEN_R2_1_UNCHANGED',
+            all(d['baseline_identity']['checks'].values()),
+            d['robustness']['variants_total']==10,
+          ]
+          print('INTEGRITY_CHECKS=',checks)
+          print('ROBUSTNESS=',json.dumps(d['robustness'],indent=2))
+          print('CYCLE=',json.dumps(d['cycle'],indent=2))
+          if not all(checks): raise SystemExit(1)
+          PY
+
+      - name: Upload diagnostic evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v30-r21-robustness-cycle-diagnostic
+          path: btc_trend_v30/r21/robustness/output/
+          retention-days: 14
+          if-no-files-found: error
