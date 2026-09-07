@@ -1,0 +1,103 @@
+name: BTC TREND V3 R1.3 FAST Diagnostic
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Diagnostic slice'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - add
+          - sc
+          - route
+          - false_start
+  push:
+    branches:
+      - btc-trend-v30-r13-freeze
+    paths:
+      - 'btc_trend_v30/r13/fast/**'
+      - '.github/workflows/btc_trend_v30_r13_fast_diagnostic.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONUNBUFFERED: '1'
+
+jobs:
+  fast-diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install lightweight dependencies
+        run: python -m pip install --disable-pip-version-check pandas
+
+      - name: Download and verify canonical FULL snapshot
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          START=$(date +%s)
+          MANIFEST=btc_trend_v30/r13/fast/fast_snapshot_manifest.json
+          ARTIFACT_ID=$(python -c "import json; print(json.load(open('$MANIFEST'))['source_full_run']['artifact_id'])")
+          EXPECTED_SHA=$(python -c "import json; print(json.load(open('$MANIFEST'))['source_full_run']['artifact_sha256'])")
+          EXPECTED_SIZE=$(python -c "import json; print(json.load(open('$MANIFEST'))['source_full_run']['artifact_size_bytes'])")
+
+          curl --fail --silent --show-error --location \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" \
+            --output /tmp/r13-fast-snapshot.zip
+
+          ACTUAL_SHA=$(sha256sum /tmp/r13-fast-snapshot.zip | awk '{print $1}')
+          ACTUAL_SIZE=$(stat -c%s /tmp/r13-fast-snapshot.zip)
+          test "$ACTUAL_SHA" = "$EXPECTED_SHA"
+          test "$ACTUAL_SIZE" = "$EXPECTED_SIZE"
+          rm -rf .fast_snapshot
+          mkdir -p .fast_snapshot
+          unzip -q /tmp/r13-fast-snapshot.zip -d .fast_snapshot
+          echo "SNAPSHOT_ZIP_SHA256=$ACTUAL_SHA"
+          echo "SNAPSHOT_SIZE=$ACTUAL_SIZE"
+          echo "FAST_START_EPOCH=$START" >> "$GITHUB_ENV"
+
+      - name: FAST snapshot contract guard
+        run: |
+          python btc_trend_v30/r13/fast/fast_snapshot_guard.py \
+            --manifest btc_trend_v30/r13/fast/fast_snapshot_manifest.json \
+            --snapshot-root .fast_snapshot \
+            --repo-root .
+
+      - name: Run FAST diagnostic only
+        shell: bash
+        run: |
+          set -euo pipefail
+          MODE='${{ github.event.inputs.mode }}'
+          if [ -z "$MODE" ]; then MODE=all; fi
+          mkdir -p btc_trend_v30/r13/fast/output
+          python btc_trend_v30/r13/fast/fast_diagnostic.py \
+            --snapshot-root .fast_snapshot \
+            --mode "$MODE" \
+            --output btc_trend_v30/r13/fast/output/fast_diagnostic.json
+          END=$(date +%s)
+          echo "FAST_RUNTIME_SECONDS=$((END-FAST_START_EPOCH))"
+          echo "FULL_REPLAY_PERFORMED=false"
+          echo "PRODUCTION_PROMOTION_EVIDENCE=false"
+
+      - name: Upload FAST diagnostic evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v30-r13-fast-diagnostic
+          path: btc_trend_v30/r13/fast/output/
+          retention-days: 14
