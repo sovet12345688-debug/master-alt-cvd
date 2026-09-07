@@ -1,0 +1,84 @@
+name: MASTER BTC TREND OFFICIAL State Bridge
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'official_state/inbox/btc_trend/*.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: btc-trend-official-state-bridge
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate current OFFICIAL State index before processing
+        run: python official_state/publish_official_state.py --mode validate-latest
+
+      - name: Process BTC TREND OFFICIAL inbox
+        id: process
+        shell: bash
+        run: |
+          set +e
+          python official_state/process_btc_trend_inbox.py
+          rc=$?
+          echo "bridge_rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Validate OFFICIAL State index after processing
+        if: always()
+        shell: bash
+        run: |
+          if [ "${{ steps.process.outputs.bridge_rc }}" = "0" ]; then
+            python official_state/publish_official_state.py --mode validate-latest
+          else
+            echo "Bridge rejected one or more payloads; commit rejected evidence before failing."
+          fi
+
+      - name: Commit material bridge changes
+        if: always()
+        shell: bash
+        run: |
+          git config user.name "btc-trend-official-state-bot"
+          git config user.email "btc-trend-official-state-bot@users.noreply.github.com"
+          git add \
+            official_state/inbox/btc_trend \
+            official_state/rejected/btc_trend \
+            official_state/latest \
+            official_state/history/btc_trend 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No material BTC TREND OFFICIAL state changes"
+          else
+            git commit -m "state: publish BTC TREND OFFICIAL run"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+      - name: Fail workflow if any payload was rejected
+        if: always()
+        shell: bash
+        run: |
+          if [ "${{ steps.process.outputs.bridge_rc }}" != "0" ]; then
+            echo "BTC_TREND_OFFICIAL_STATE_BRIDGE=REJECTED"
+            exit 1
+          fi
+          echo "BTC_TREND_OFFICIAL_STATE_BRIDGE=PASS"
