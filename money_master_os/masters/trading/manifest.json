@@ -1,0 +1,40 @@
+{
+  "schema_version": "2.0",
+  "master_id": "TRADING_CURRENT",
+  "display_name": "MASTER TRADING",
+  "expected_version": "CURRENT + TIME VALIDITY V2.1 OVERLAY",
+  "repo_version": null,
+  "status": "SOURCE_MISSING",
+  "canonical_source": null,
+  "machine_contract": null,
+  "state_sources": [
+    "state/github_data_ready_registry.json"
+  ],
+  "shared_dependencies": [
+    "money_master_os/shared/COMMON_RULES.md",
+    "money_master_os/shared/DATA_POLICY.md",
+    "money_master_os/shared/RISK_GATE.md"
+  ],
+  "bootstrap": {
+    "allowed": false,
+    "block_reason": "Exact current MASTER TRADING canonical source and output contract are not yet committed.",
+    "require_exact_version_match": true,
+    "require_source_present": true,
+    "require_validator_pass": true
+  },
+  "privacy": {
+    "public_repository_allowed": false,
+    "sensitive_fields": [
+      "account_balance",
+      "actual_position_size",
+      "account_identifier",
+      "private_execution_details"
+    ],
+    "rule": "Do not store personal trading/account state in this public repository."
+  },
+  "ownership": {
+    "logic": "MISSING_UNTIL_EXACT_SOURCE_COMMITTED",
+    "purpose": "Entry, stop, target, R:R, trigger and time-validity execution",
+    "chat_memory": "NON_CANONICAL"
+  }
+}
