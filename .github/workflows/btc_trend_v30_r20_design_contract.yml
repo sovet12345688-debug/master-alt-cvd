@@ -1,0 +1,37 @@
+name: BTC TREND V3 R2.0 Design Contract
+
+on:
+  push:
+    branches:
+      - btc-trend-v30-r20-design
+    paths:
+      - 'btc_trend_v30/r20/**'
+      - '.github/workflows/btc_trend_v30_r20_design_contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  design-contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Candidate config identity
+        run: |
+          set -euo pipefail
+          sha256sum btc_trend_v30/r20/r20_candidate_config.json
+          test ! -e btc_trend_v30/r20/output/historical_replay/audit.json
+      - name: Contract load
+        working-directory: btc_trend_v30/r20
+        run: python r20_contract.py
+      - name: Synthetic state-machine contract tests
+        working-directory: btc_trend_v30/r20
+        run: python test_r20_contract.py
+      - name: Compile
+        run: |
+          python -m py_compile btc_trend_v30/r20/r20_contract.py
+          python -m py_compile btc_trend_v30/r20/test_r20_contract.py
