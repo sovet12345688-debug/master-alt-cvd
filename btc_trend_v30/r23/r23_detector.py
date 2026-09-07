@@ -10,7 +10,7 @@ from btc_trend_v30.r21.r21_engine import R21Engine
 from btc_trend_v30.r20.r20_engine import build_feature_bundle, _finite, long_watch, short_watch
 
 HERE = Path(__file__).resolve().parent
-CFG_PATH = HERE / "r23_candidate_config.json"
+CFG_PATH = HERE / "r23_frozen_config.json"
 
 
 def _early_long(row: pd.Series) -> bool:
@@ -62,8 +62,8 @@ class R23Engine(R21Engine):
         self.r23_cfg = json.loads((cfg_path or CFG_PATH).read_text(encoding="utf-8"))
         if self.r23_cfg.get("model") != "MASTER_BTC_TREND_V3_R2_3":
             raise RuntimeError("R23_MODEL_IDENTITY_MISMATCH")
-        if self.r23_cfg.get("status") not in {"PRE_FREEZE_NO_REPLAY", "FINAL_FROZEN_NO_REPLAY"}:
-            raise RuntimeError("R23_STATUS_INVALID")
+        if self.r23_cfg.get("status") != "FINAL_FROZEN_NO_REPLAY":
+            raise RuntimeError("R23_NOT_FROZEN")
         sc = self.r23_cfg["single_change"]
         if sc.get("early_detection_can_execute") is not False:
             raise RuntimeError("R23_EXECUTION_FIREWALL_BROKEN")
