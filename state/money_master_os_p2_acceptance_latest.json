@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0",
+  "milestone": "MONEY_MASTER_OS_V2_P2_ACCEPTANCE_V1",
+  "baseline_status": "PASS",
+  "p2_final_status": "LONG_RUN_PENDING",
+  "recorded_kst": "2026-09-07T13:54:00+09:00",
+  "pull_request": 19,
+  "merge_commit": "2bd3eb24a4fe754b58173769c70d8bf76bd38fe4",
+  "main_guard_run_id": 34084732234,
+  "main_guard_conclusion": "success",
+  "criteria_path": "money_master_os/acceptance/ACCEPTANCE_CRITERIA_V1.json",
+  "runner_path": "money_master_os/tools/run_p2_acceptance.py",
+  "required_gates": {
+    "A1_MASTER_IDENTITY_CANONICAL": "PASS",
+    "A2_NEW_ROOM_RESTORE": "PASS",
+    "A3_CORE_DATA_HEALTH": "PASS",
+    "A4_SHARED_FACT_BOUNDARY": "PASS",
+    "A5_OFFICIAL_STATE_SAFETY": "PASS",
+    "A6_WATCH_EVENT_SAFETY": "PASS",
+    "A7_FIVE_MASTER_E2E": "PASS",
+    "A8_PRIVACY_AND_RESEARCH_SEPARATION": "PASS"
+  },
+  "data_health_at_acceptance": {
+    "source_health_overall": "DEGRADED",
+    "core_source_failures": 0,
+    "warning_only_sources": [
+      {"source_id": "stablecoin_exchange_flow", "status": "FAILED", "impact": "OPTIONAL_CONTEXT_ONLY"},
+      {"source_id": "us_net_liquidity", "status": "FAILED", "impact": "OPTIONAL_CONTEXT_ONLY"}
+    ],
+    "shared_fact_vault": "HEALTHY",
+    "active_fact_source_coverage_pct": 100.0
+  },
+  "hard_locks_verified": {
+    "five_master_exact_identity": true,
+    "canonical_version_drift_blocked": true,
+    "no_chat_memory_reconstruction": true,
+    "core_source_failure_blocks_acceptance": true,
+    "optional_source_failure_warning_only": true,
+    "shared_facts_not_master_decisions": true,
+    "last_good_not_current": true,
+    "official_actual_run_only": true,
+    "watch_never_official": true,
+    "watch_does_not_mutate_official": true,
+    "btc_v26_production_v3_research_separated": true,
+    "btc_hourly_watch_disabled": true,
+    "trading_manual_only": true,
+    "public_repo_private_trading_state_forbidden": true
+  },
+  "long_run_gate": {
+    "required_for_p2_final_pass": true,
+    "status": "PENDING",
+    "minimum_observation_hours": 24,
+    "minimum_source_health_cycles": 12,
+    "minimum_shared_fact_cycles": 12,
+    "minimum_acceptance_checkpoints": 3
+  },
+  "next_phase": "P2_LONG_RUN_STABILITY"
+}
