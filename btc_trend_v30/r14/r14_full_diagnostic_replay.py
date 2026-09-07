@@ -89,7 +89,7 @@ def replay_episode(engine,e,g,scored,h1,h4):
         found=base.scan_window(engine.initial,h1,engine_name=engine_name,stage=stage,direction=direction,daily=d,start=start,end=end,zone_lo=zone_lo,zone_hi=zone_hi,daily_atr=float(scored.iloc[int(s.idx)].atr14),tf_hours=1)
         if found: one=found; one_stage=stage; break
     if one is None:
-        return {'episode_id':str(e.independent_episode_id),'family_id':str(e.family_id),'engine':engine_name,'direction':direction,'entry_1h':False,'add_4h':False,'scout_known':scout,'expiry':expiry},[]
+        return {'episode_id':str(e.independent_episode_id),'family_id':str(e.family_id),'engine':engine_name,'direction':direction,'entry_1h':False,'add_4h':False,'scout_known':scout,'expiry':expiry,'first_stage':None},[]
     dec,rtime,ctime=one
     fout,fR,frt,fprice=resolve_fixed_end(h1,ctime,direction,float(dec.stop),float(dec.target))
     rout,rR,rrt,rprice=runner_resolve(h1,scored,ctime,direction,float(dec.entry),float(dec.stop))
@@ -106,7 +106,7 @@ def replay_episode(engine,e,g,scored,h1,h4):
     if add:
         d4,r4,c4,prog,why=add; aout,aR,art,aprice=resolve_fixed_end(h1,c4,direction,float(d4.stop),float(d4.target))
         legs.append({'episode_id':str(e.independent_episode_id),'family_id':str(e.family_id),'engine':engine_name,'direction':direction,'leg':'4H_ADD','route':d4.route,'risk_state':d4.risk_state,'confirm_time':c4,'entry':d4.entry,'stop':d4.stop,'target':d4.target,'risk':d4.risk,'outcome':aout,'unit_R':aR,'resolved_time':art,'exit_price':aprice,'risk_weight_R':engine.add_risk_R,'favorable_progress_R_before_add':prog,'add_reason':why})
-    st={'episode_id':str(e.independent_episode_id),'family_id':str(e.family_id),'engine':engine_name,'direction':direction,'entry_1h':True,'add_4h':bool(add),'scout_known':scout,'expiry':expiry,'first_route':dec.route,'first_risk_state':dec.risk_state,'first_confirm_time':ctime,'first_stage':one_stage,'fixed_outcome':fout,'fixed_resolved_time':frt,'runner_outcome':rout,'runner_resolved_time':rrt}
+    st={'episode_id':str(e.independent_episode_id),'family_id':str(e.family_id),'engine':engine_name,'direction':direction,'entry_1h':True,'add_4h':bool(add),'scout_known':scout,'expiry':expiry,'first_stage':one_stage}
     return st,legs
 
 def horizon_mark(h1,horizon):
@@ -125,7 +125,7 @@ def mcr_capture(row,h1,horizon_days,fixed_frac,runner_frac):
     def px(exit_time,exit_px):
         if pd.notna(exit_time) and pd.Timestamp(exit_time)<=horizon and pd.notna(exit_px): return float(exit_px)
         return mark
-    pfix=px(row.fixed_resolved_time,row.fixed_exit_price); prun=px(row.runner_resolved_time,row.runner_exit_price)
+    pfix=px(row.first_resolved_time,row.first_exit_price); prun=px(row.runner_resolved_time,row.runner_exit_price)
     cap=fixed_frac*directional_ret(row.direction,float(row.first_entry),pfix,float(row.start_close))+runner_frac*directional_ret(row.direction,float(row.first_entry),prun,float(row.start_close))
     return max(0.0,cap)
 
@@ -156,11 +156,8 @@ def main():
     m=oos.merge(st,on=['episode_id','family_id','engine','direction'],how='left',validate='one_to_one').merge(t[['episode_id','available_90d','available_365d','medium_truth_status','long_truth_status','MFE_90d','MFE_365d']],on='episode_id',how='left',validate='one_to_one').merge(fk,on='episode_id',how='left',validate='one_to_one').merge(rk,on='episode_id',how='left',validate='one_to_one')
     m['entry_1h']=m.entry_1h.fillna(False).astype(bool); m['add_4h']=m.add_4h.fillna(False).astype(bool)
     for c in ['first_confirm_time','first_resolved_time','runner_resolved_time']: m[c]=pd.to_datetime(m[c],utc=True,errors='coerce')
-    # episode weighted R
     lr=lg.copy(); lr['weighted_R']=pd.to_numeric(lr.unit_R,errors='coerce')*pd.to_numeric(lr.risk_weight_R,errors='coerce')
     episode_R=lr.groupby('episode_id').weighted_R.sum(min_count=1).rename('portfolio_net_R'); m=m.merge(episode_R,on='episode_id',how='left'); m.loc[~m.entry_1h,'portfolio_net_R']=0.0
-    m['fixed_exit_price']=m.first_exit_price; m['fixed_resolved_time']=m.first_resolved_time
-    m['runner_exit_price']=m.runner_exit_price
     med=m.medium_truth_status.isin(['MEDIUM_SUCCESS_20','MEDIUM_SUCCESS_30']); lng=m.long_truth_status.isin(['LONG_SUCCESS_PRIMARY','LONG_SUCCESS_EXTENSION'])
     m['confirmed_false_start_90d']=m.first_outcome.eq('SL_1R')&m.available_90d&~med
     m['missed_medium']=(~m.entry_1h)&m.available_90d&med; m['missed_long']=(~m.entry_1h)&m.available_365d&lng
