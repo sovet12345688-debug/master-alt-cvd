@@ -1,0 +1,118 @@
+name: BTC TREND V3 R2.3 Detection Lead Historical Diagnostic
+
+on:
+  push:
+    branches:
+      - btc-trend-v30-r23-detection-execution-separation
+    paths:
+      - 'btc_trend_v30/r23/r23_detection_lead_diagnostic.py'
+      - '.github/workflows/btc_trend_v30_r23_detection_lead_diagnostic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  detection-lead-diagnostic:
+    runs-on: ubuntu-24.04
+    env:
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/btc_trend_v30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+
+      - name: Frozen R2.3 and parent R2.1 guards
+        run: |
+          python btc_trend_v30/r21/r21_freeze_guard.py
+          (cd btc_trend_v30/r20 && python test_r20_engine_pit.py)
+          python btc_trend_v30/r23/test_r23_contract.py
+          python btc_trend_v30/r23/r23_freeze_guard.py
+
+      - name: Download canonical historical matrices
+        uses: actions/download-artifact@v4
+        with:
+          name: btc-trend-v30-validation-v1-step1-10
+          repository: sovet12345688-debug/master-alt-cvd
+          run-id: 34084074525
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: diagnostic_inputs/canonical
+
+      - name: Download frozen R2.1 historical evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: btc-trend-v30-r21-historical-diagnostic
+          repository: sovet12345688-debug/master-alt-cvd
+          run-id: 34116514316
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: diagnostic_inputs/r21
+
+      - name: Source identity guards
+        run: |
+          python - <<'PY'
+          import json, pathlib, sys
+          c=pathlib.Path('diagnostic_inputs/canonical')
+          r=pathlib.Path('diagnostic_inputs/r21')
+          d=list(c.rglob('btc_usdt_1d_matrix.csv'))
+          h=list(c.rglob('btc_usdt_complete_4h_matrix.csv'))
+          p=list(r.rglob('r21_positions.csv'))
+          s=list(r.rglob('r21_seed_candidates.csv'))
+          a=[x for x in r.rglob('audit.json') if '/r21/output/historical_replay/' in x.as_posix()]
+          checks=[len(d)==1,len(h)==1,len(p)==1,len(s)==1,len(a)==1]
+          if all(checks):
+              audit=json.load(open(a[0]))
+              import pandas as pd
+              pos=pd.read_csv(p[0]); seeds=pd.read_csv(s[0])
+              checks += [
+                  audit.get('model')=='MASTER_BTC_TREND_V3_R2_1',
+                  int(audit['counts']['executed_r21_episodes'])==69,
+                  len(pos)==69,
+                  len(seeds)==997,
+              ]
+          print('SOURCE_IDENTITY_CHECKS=',checks)
+          if not all(checks): sys.exit(1)
+          PY
+
+      - name: R2.3 detection lead diagnostic
+        run: |
+          rm -rf btc_trend_v30/r23/output/detection_lead_diagnostic
+          python btc_trend_v30/r23/r23_detection_lead_diagnostic.py diagnostic_inputs/canonical diagnostic_inputs/r21
+
+      - name: Diagnostic audit gate
+        run: |
+          python - <<'PY'
+          import json, pandas as pd, sys
+          p='btc_trend_v30/r23/output/detection_lead_diagnostic/r23_detection_lead_audit.json'
+          d=json.load(open(p)); o=d['overall']; src=d['source_identity']
+          leads=pd.read_csv('btc_trend_v30/r23/output/detection_lead_diagnostic/r23_executed_entry_leads.csv')
+          checks=[
+              d['status']=='R23_DETECTION_LEAD_HISTORICAL_DIAGNOSTIC_ONLY',
+              d['model']=='MASTER_BTC_TREND_V3_R2_3',
+              src['r21_seed_identity_count']==997,
+              src['r21_seed_regeneration_exact'] is True,
+              src['r21_executed_positions']==69,
+              o['executed_entries']==69,
+              len(leads)==69,
+              (pd.to_numeric(leads['awareness_lead_days']) >= 0).all(),
+              d['performance_identity_note']['r23_execution_engine']=='FROZEN_R2_1_UNCHANGED',
+          ]
+          print('DIAGNOSTIC_GATE=',checks)
+          print('OVERALL=',json.dumps(o,indent=2))
+          print('BY_DIRECTION=',json.dumps(d['by_direction'],indent=2))
+          if not all(checks): sys.exit(1)
+          PY
+
+      - name: Upload diagnostic evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v30-r23-detection-lead-diagnostic
+          path: btc_trend_v30/r23/output/detection_lead_diagnostic/
+          retention-days: 14
+          if-no-files-found: error
