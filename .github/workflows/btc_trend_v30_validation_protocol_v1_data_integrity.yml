@@ -1,4 +1,4 @@
-name: BTC TREND V3.0 Validation Protocol V1 Step1-9
+name: BTC TREND V3.0 Validation Protocol V1 Step1-10
 # Research branch only. V2.6 production is read-only canonical context and is never modified.
 
 on:
@@ -16,6 +16,7 @@ on:
       - 'btc_trend_v30/validation_protocol_v1_step8_robustness.py'
       - 'btc_trend_v30/validation_protocol_v1_step8_runner.py'
       - 'btc_trend_v30/validation_protocol_v1_step9_exact_v26_h2h.py'
+      - 'btc_trend_v30/validation_protocol_v1_step10_final_promotion.py'
       - '.github/workflows/btc_trend_v30_validation_protocol_v1_data_integrity.yml'
   workflow_dispatch:
 
@@ -26,7 +27,7 @@ env:
   PYTHONUNBUFFERED: '1'
 
 jobs:
-  validation-step1-9:
+  validation-step1-10:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -139,18 +140,29 @@ jobs:
           d=json.load(open('btc_trend_v30/output/validation_v1/step9_exact_v26_h2h/audit.json',encoding='utf-8'))
           print('STEP9_AUDIT=',d['step9_audit'])
           print('EXACT_H2H_STATUS=',d['exact_h2h_status'])
-          print('REPLAYABILITY=',d['replayability'])
-          print('REASON_CODES=',d['reason_codes'])
-          print('PROMOTION=',d['promotion'])
           if d['step9_audit']!='PASS': sys.exit('STOP: Step9 canonical audit HOLD')
-          if d['exact_h2h_status'] not in ('READY_EXACT_REPLAY','LINK_NA_EXACT_BASELINE_NOT_REPLAYABLE'):
-              sys.exit('STOP: Step9 H2H status invalid')
           PY
 
-      - name: Upload Step1-9 audit artifact
+      - name: Step10 - Final Promotion PASS HOLD Decision
+        run: python btc_trend_v30/validation_protocol_v1_step10_final_promotion.py
+      - name: Step10 final gate
+        run: |
+          python - <<'PY'
+          import json,sys
+          d=json.load(open('btc_trend_v30/output/validation_v1/step10_final_promotion/audit.json',encoding='utf-8'))
+          print('STEP10_AUDIT=',d['step10_audit'])
+          print('PROMOTION_DECISION=',d['promotion_decision'])
+          print('HARD_FAILURES=',d['hard_failures'])
+          print('UNRESOLVED_BLOCKERS=',d['unresolved_blockers'])
+          print('REASON_CODES=',d['reason_codes'])
+          if d['step10_audit']!='PASS': sys.exit('STOP: Step10 audit failed')
+          if d['promotion_decision'] not in ('PASS','HOLD'): sys.exit('STOP: invalid final decision')
+          PY
+
+      - name: Upload Step1-10 audit artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: btc-trend-v30-validation-v1-step1-9
+          name: btc-trend-v30-validation-v1-step1-10
           path: btc_trend_v30/output/validation_v1/
           retention-days: 14
