@@ -8,6 +8,7 @@ on:
     paths:
       - 'derivatives/collector.py'
       - 'derivatives/microstructure_collector.py'
+      - 'derivatives/microstructure_collector_v2.py'
       - 'derivatives/config.json'
       - '.github/workflows/derivatives_hourly.yml'
 
@@ -41,8 +42,8 @@ jobs:
       - name: Collect live derivatives OI and funding
         run: python derivatives/collector.py
 
-      - name: Collect Bitget CVD taker liquidation and basis
-        run: python derivatives/microstructure_collector.py
+      - name: Collect Bitget free microstructure 7-field pack
+        run: python derivatives/microstructure_collector_v2.py
 
       - name: Validate collection
         run: |
@@ -50,12 +51,21 @@ jobs:
           import json, sys
           d=json.load(open('derivatives/state/collector_state.json'))
           m=json.load(open('derivatives/state/microstructure_state.json'))
+          p=json.load(open('derivatives/output/latest_microstructure.json'))
           print('derivatives', d)
           print('microstructure', m)
           if d.get('ok_count', 0) < 1:
               sys.exit('No successful derivatives snapshots')
           if (m.get('ok_count', 0) + m.get('partial_count', 0)) < 1:
               sys.exit('No usable microstructure snapshots')
+          if p.get('engine') != 'MASTER_DERIVATIVES_MICROSTRUCTURE_V2':
+              sys.exit('Microstructure V2 output missing')
+          required={'CVD','Taker Buy/Sell','Long/Short','Liquidation','Basis','Depth','Volume'}
+          if set(p.get('free_public_fields') or []) != required:
+              sys.exit('Microstructure 7-field contract mismatch')
+          for a in p.get('assets',[]):
+              if a.get('field_coverage',0) < 5:
+                  sys.exit(f"Microstructure field coverage <5/7 for {a.get('symbol')}: {a.get('field_coverage')}")
           PY
 
       - name: Validate derivatives 24H FINAL QA integrity
