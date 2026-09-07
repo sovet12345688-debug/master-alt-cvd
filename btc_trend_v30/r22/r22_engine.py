@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 from typing import Optional
 
-import numpy as np
 import pandas as pd
 
 from btc_trend_v30.r21.r21_engine import R21Engine
@@ -16,7 +15,7 @@ from btc_trend_v30.r20.r20_engine import (
 )
 
 HERE = Path(__file__).resolve().parent
-CFG_PATH = HERE / "r22_candidate_config.json"
+CFG_PATH = HERE / "r22_frozen_config.json"
 
 
 def _priority_distance(row: pd.Series, direction: str, threshold_atr: float) -> bool:
@@ -59,8 +58,8 @@ class R22Engine(R21Engine):
         self.r22_cfg = json.loads((cfg_path or CFG_PATH).read_text(encoding="utf-8"))
         if self.r22_cfg.get("model") != "MASTER_BTC_TREND_V3_R2_2":
             raise RuntimeError("R22_MODEL_IDENTITY_MISMATCH")
-        if self.r22_cfg.get("status") not in {"PRE_FREEZE_NO_REPLAY", "FINAL_FROZEN_NO_REPLAY"}:
-            raise RuntimeError("R22_BAD_STATUS")
+        if self.r22_cfg.get("status") != "FINAL_FROZEN_NO_REPLAY":
+            raise RuntimeError("R22_NOT_FROZEN")
 
     def scan_seed_candidates(self, daily: pd.DataFrame, h4: pd.DataFrame, h1: Optional[pd.DataFrame] = None) -> pd.DataFrame:
         bundle = build_feature_bundle(daily, h4, h1, self.cfg)
