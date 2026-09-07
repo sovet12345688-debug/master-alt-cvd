@@ -1,0 +1,93 @@
+name: BTC TREND V3 R1.4 FAST-TRACK C Accelerated Full Diagnostic
+on:
+  push:
+    branches: [btc-trend-v30-r14-fasttrack]
+    paths:
+      - '.github/workflows/btc_trend_v30_r14_fasttrack_c_accelerated.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  accelerated-r14:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check numpy pandas requests
+      - name: Freeze and contract guard
+        run: |
+          python btc_trend_v30/r14/r14_freeze_guard.py
+          python btc_trend_v30/r14/r14_engine.py
+          python btc_trend_v30/r14/test_r14_contract.py
+          python -m py_compile btc_trend_v30/r14/r14_full_diagnostic_replay.py
+      - name: Download canonical Step1-10 FULL validation artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARTIFACT_ID=10004727447
+          EXPECTED_SHA=11362981be0938ec9c5f4d2aea00d1db5be5fc86ec41db7964f6fb83dc7bc8a3
+          EXPECTED_SIZE=5924804
+          curl --fail --silent --show-error --location \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" \
+            --output /tmp/baseline.zip
+          ACTUAL_SHA=$(sha256sum /tmp/baseline.zip | awk '{print $1}')
+          ACTUAL_SIZE=$(stat -c%s /tmp/baseline.zip)
+          test "$ACTUAL_SHA" = "$EXPECTED_SHA"
+          test "$ACTUAL_SIZE" = "$EXPECTED_SIZE"
+          rm -rf /tmp/base && mkdir -p /tmp/base
+          unzip -q /tmp/baseline.zip -d /tmp/base
+          rm -rf btc_trend_v30/output/validation_v1
+          mkdir -p btc_trend_v30/output/validation_v1
+          if [ -d /tmp/base/data_integrity ]; then
+            cp -a /tmp/base/. btc_trend_v30/output/validation_v1/
+          elif [ -d /tmp/base/btc_trend_v30/output/validation_v1 ]; then
+            cp -a /tmp/base/btc_trend_v30/output/validation_v1/. btc_trend_v30/output/validation_v1/
+          else
+            echo 'Cannot locate validation root in artifact'; find /tmp/base -maxdepth 3 -type d | head -80; exit 1
+          fi
+          echo "CANONICAL_BASELINE_SHA256=$ACTUAL_SHA"
+      - name: Canonical baseline identity
+        run: |
+          python - <<'PY'
+          import json,math,sys,os
+          s1=json.load(open('btc_trend_v30/output/validation_v1/data_integrity/audit.json'))
+          s7=json.load(open('btc_trend_v30/output/validation_v1/step7_metrics/audit.json'))
+          checks={
+            'step1_pass':s1['data_integrity']=='PASS',
+            'rows_3306':s1['final_rows']==3306,
+            'step7_pass':s7['step7']=='PASS',
+            'legs_119':s7['raw_all_leg']['legs']==119,
+            'mean_R_identity':math.isclose(s7['raw_all_leg']['mean_R'],0.07563025210084033,abs_tol=1e-12)
+          }
+          print('CANONICAL_BASELINE_IDENTITY',checks)
+          if not all(checks.values()): sys.exit(1)
+          PY
+      - name: R1.4 full diagnostic replay on canonical full baseline
+        run: python btc_trend_v30/r14/r14_full_diagnostic_replay.py
+      - name: R1.4 final historical diagnostic gate
+        run: |
+          python - <<'PY'
+          import json,sys
+          d=json.load(open('btc_trend_v30/r14/output/full_replay/audit.json'))
+          print(json.dumps(d,indent=2))
+          if d['promotion_decision'] not in ('PASS','HOLD'): sys.exit(1)
+          if d['production_promotion_evidence'] is not False: sys.exit(1)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: btc-trend-v30-r14-fasttrack-c-accelerated
+          path: |
+            btc_trend_v30/r14/output/full_replay/
+            btc_trend_v30/output/validation_v1/data_integrity/audit.json
+            btc_trend_v30/output/validation_v1/step7_metrics/audit.json
+          retention-days: 14
