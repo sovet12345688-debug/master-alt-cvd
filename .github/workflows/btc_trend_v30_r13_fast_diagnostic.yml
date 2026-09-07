@@ -14,6 +14,7 @@ on:
           - sc
           - route
           - false_start
+          - first_loss_add
   push:
     branches:
       - btc-trend-v30-r13-freeze
@@ -117,6 +118,14 @@ jobs:
             --snapshot-root .fast_snapshot \
             --output btc_trend_v30/r13/fast/output/false_start_forensic.json \
             --csv-output btc_trend_v30/r13/fast/output/false_start_cases.csv
+
+      - name: Run first-loss then 4H ADD forensic drilldown
+        run: |
+          mkdir -p btc_trend_v30/r13/fast/output
+          python btc_trend_v30/r13/fast/first_loss_add_forensic.py \
+            --snapshot-root .fast_snapshot \
+            --output btc_trend_v30/r13/fast/output/first_loss_add_forensic.json \
+            --csv-output btc_trend_v30/r13/fast/output/first_loss_add_cases.csv
 
       - name: Upload FAST diagnostic evidence
         uses: actions/upload-artifact@v4
