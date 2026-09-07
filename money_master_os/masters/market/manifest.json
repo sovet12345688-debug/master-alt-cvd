@@ -7,7 +7,9 @@
   "status": "READY",
   "canonical_source": "master_prompts/master_market_v1_2_current.md",
   "machine_contract": "state/master_market_v1_2_contract.json",
+  "official_state": "official_state/latest/market.json",
   "state_sources": [
+    "official_state/latest/market.json",
     "state/master_market_official_history.csv",
     "state/github_data_ready_registry.json"
   ],
@@ -20,11 +22,13 @@
     "allowed": true,
     "require_exact_version_match": true,
     "require_source_present": true,
-    "require_validator_pass": true
+    "require_validator_pass": true,
+    "official_state_missing_behavior": "DO_NOT_RECONSTRUCT"
   },
   "ownership": {
     "logic": "canonical_source",
     "machine_contract": "machine_contract",
+    "official_decision_state": "official_state",
     "time_series_state": "state_sources",
     "chat_memory": "NON_CANONICAL"
   }

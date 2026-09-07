@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0",
+  "state_status": "NO_STORED_OFFICIAL_RUN",
+  "master_id": "REPLACE_WITH_ONE_OF_FIVE_IDS",
+  "display_name": "REPLACE_WITH_DISPLAY_NAME",
+  "master_version": "EXACT_CANONICAL_VERSION",
+  "source_path": "EXACT_CANONICAL_SOURCE_PATH",
+  "current_canonical_source_sha": null,
+  "contract_path": null,
+  "run": {
+    "run_type": "OFFICIAL",
+    "run_id": null,
+    "executed_kst": null,
+    "updated_kst": null,
+    "prior_official_run_id": null
+  },
+  "validity": {
+    "valid_until_kst": null,
+    "next_official_run_kst": null,
+    "freshness_status": "UNKNOWN"
+  },
+  "data_quality": {
+    "coverage_pct": null,
+    "confidence": null,
+    "known_na": [],
+    "stale_sources": [],
+    "time_mismatch_warnings": [],
+    "source_health_snapshot_pointer": "source_health/output/latest.json"
+  },
+  "decision": {
+    "direction": null,
+    "permission_or_environment": null,
+    "action": null,
+    "risk_veto": [],
+    "invalidations": []
+  },
+  "core_state": {},
+  "lineage": {
+    "state_origin": "NO_STORED_RUN",
+    "run_record_source": null,
+    "history_pointer": null,
+    "canonical_identity_verified": true,
+    "cross_master_decision_dependency": false
+  },
+  "privacy": {
+    "contains_personal_account_data": false,
+    "public_repository_safe": true
+  },
+  "do_not_reconstruct": [
+    "missing OFFICIAL run values",
+    "historical state from chat memory",
+    "WATCH/provisional values as OFFICIAL"
+  ]
+}

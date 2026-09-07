@@ -9,7 +9,9 @@
   "status": "READY",
   "canonical_source": "master_prompts/master_btc_trend_v2_6_current.md",
   "machine_contract": "state/master_btc_trend_v2_6_contract.json",
+  "official_state": "official_state/latest/btc_trend.json",
   "state_sources": [
+    "official_state/latest/btc_trend.json",
     "btc_backtest/",
     "state/github_data_ready_registry.json",
     "btc_fractal/state/long_a_plus_prospective_registry.json"
@@ -24,7 +26,8 @@
     "require_exact_version_match": true,
     "require_source_present": true,
     "require_machine_contract_present": true,
-    "require_validator_pass": true
+    "require_validator_pass": true,
+    "official_state_missing_behavior": "DO_NOT_RECONSTRUCT"
   },
   "source_provenance": {
     "origin": "ACTIVE_AUTOMATION_PROMPT",
@@ -36,7 +39,8 @@
     "version": "V3.0",
     "status": "RESEARCH_ONLY",
     "promotion_rule": "Promote only after acceptance criteria pass and exact V3.0 canonical source/contract are committed with explicit registry promotion.",
-    "silent_promotion_forbidden": true
+    "silent_promotion_forbidden": true,
+    "official_state_promotion_forbidden": true
   },
   "ui_policy": {
     "current_semantic_screens": 3,
@@ -45,6 +49,7 @@
   },
   "ownership": {
     "logic": "canonical_source",
+    "official_decision_state": "official_state",
     "research_assets": "btc_backtest + btc-fractal-v26-build",
     "chat_memory": "NON_CANONICAL"
   }

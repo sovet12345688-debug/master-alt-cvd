@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0",
+  "state_status": "NO_STORED_OFFICIAL_RUN",
+  "master_id": "trading",
+  "display_name": "MASTER TRADING",
+  "master_version": "CURRENT + TIME VALIDITY V2.1 OVERLAY",
+  "source_path": "master_prompts/master_trading_current.md",
+  "current_canonical_source_sha": "38506532184284f76c1356ed0c8f70a015887340",
+  "contract_path": "state/master_trading_current_contract.json",
+  "run": {
+    "run_type": "OFFICIAL",
+    "run_id": null,
+    "executed_kst": null,
+    "updated_kst": null,
+    "prior_official_run_id": null
+  },
+  "validity": {
+    "valid_until_kst": null,
+    "next_official_run_kst": null,
+    "freshness_status": "NOT_APPLICABLE"
+  },
+  "data_quality": {
+    "coverage_pct": null,
+    "confidence": null,
+    "known_na": ["NO_PERSISTED_TRADING_OFFICIAL_RUN_FOUND_AT_P1_INITIALIZATION"],
+    "stale_sources": [],
+    "time_mismatch_warnings": [],
+    "source_health_snapshot_pointer": "source_health/output/latest.json"
+  },
+  "decision": {
+    "direction": null,
+    "permission_or_environment": null,
+    "action": null,
+    "risk_veto": [],
+    "invalidations": []
+  },
+  "core_state": {},
+  "lineage": {
+    "state_origin": "NO_STORED_RUN",
+    "run_record_source": null,
+    "history_pointer": "official_state/history/trading/",
+    "canonical_identity_verified": true,
+    "cross_master_decision_dependency": false
+  },
+  "privacy": {
+    "contains_personal_account_data": false,
+    "public_repository_safe": true
+  },
+  "do_not_reconstruct": [
+    "personal balance or position size",
+    "private account or execution details",
+    "Entry/SL/TP/R:R from chat memory",
+    "WATCH or provisional setup as OFFICIAL"
+  ]
+}

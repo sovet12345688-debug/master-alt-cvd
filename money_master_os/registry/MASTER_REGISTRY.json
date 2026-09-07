@@ -1,7 +1,7 @@
 {
   "schema_version": "2.0",
   "registry_name": "MONEY_MASTER_OS_REGISTRY",
-  "updated_kst": "2026-09-07T12:14:00+09:00",
+  "updated_kst": "2026-09-07T12:49:46+09:00",
   "repository": "sovet12345688-debug/master-alt-cvd",
   "architecture": {
     "master_count": 5,
@@ -18,7 +18,11 @@
     "source_health_registry": "source_health/registry.json",
     "source_health_latest": "source_health/output/latest.json",
     "source_health_last_good": "source_health/state/last_good.json",
-    "source_health_policy": "DATA_AVAILABILITY_ONLY_NOT_MASTER_DECISION"
+    "source_health_policy": "DATA_AVAILABILITY_ONLY_NOT_MASTER_DECISION",
+    "official_state_root": "official_state/",
+    "official_state_schema": "official_state/schema.json",
+    "official_state_index": "official_state/latest/index.json",
+    "official_state_policy": "ACTUAL_OFFICIAL_RUNS_ONLY_NO_RECONSTRUCTION"
   },
   "global_policy": {
     "github_is_source_of_truth": true,
@@ -30,7 +34,12 @@
     "five_master_identity_locked": true,
     "shared_facts_do_not_imply_shared_conclusions": true,
     "source_health_does_not_imply_trade_permission": true,
-    "last_good_does_not_become_current_fact": true
+    "last_good_does_not_become_current_fact": true,
+    "official_state_requires_actual_official_run": true,
+    "watch_and_provisional_cannot_be_official_state": true,
+    "missing_official_state_is_not_reconstructed": true,
+    "official_state_validity_is_not_inferred": true,
+    "public_repo_private_trading_state_forbidden": true
   },
   "masters": {
     "market": {
@@ -41,6 +50,7 @@
       "source_path": "master_prompts/master_market_v1_2_current.md",
       "contract_path": "state/master_market_v1_2_contract.json",
       "manifest_path": "money_master_os/masters/market/manifest.json",
+      "official_state_path": "official_state/latest/market.json",
       "status": "READY",
       "bootstrap_allowed": true,
       "execution_policy": "LOAD_EXACT_SOURCE_AND_VALIDATE"
@@ -55,6 +65,7 @@
       "source_path": "master_prompts/master_btc_trend_v2_6_current.md",
       "contract_path": "state/master_btc_trend_v2_6_contract.json",
       "manifest_path": "money_master_os/masters/btc_trend/manifest.json",
+      "official_state_path": "official_state/latest/btc_trend.json",
       "status": "READY",
       "bootstrap_allowed": true,
       "execution_policy": "LOAD_EXACT_SOURCE_AND_VALIDATE",
@@ -69,6 +80,7 @@
       "source_path": "master_prompts/master_alt_top100_v4_8_current.md",
       "contract_path": null,
       "manifest_path": "money_master_os/masters/alt_top100/manifest.json",
+      "official_state_path": "official_state/latest/alt_top100.json",
       "status": "READY",
       "bootstrap_allowed": true,
       "execution_policy": "LOAD_EXACT_SOURCE_AND_VALIDATE",
@@ -82,6 +94,7 @@
       "source_path": "master_prompts/master_alt_final20_current.md",
       "contract_path": null,
       "manifest_path": "money_master_os/masters/alt_final20/manifest.json",
+      "official_state_path": "official_state/latest/alt_final20.json",
       "status": "READY",
       "bootstrap_allowed": true,
       "execution_policy": "LOAD_EXACT_SOURCE_AND_VALIDATE"
@@ -94,6 +107,7 @@
       "source_path": "master_prompts/master_trading_current.md",
       "contract_path": "state/master_trading_current_contract.json",
       "manifest_path": "money_master_os/masters/trading/manifest.json",
+      "official_state_path": "official_state/latest/trading.json",
       "status": "READY",
       "bootstrap_allowed": true,
       "execution_policy": "LOAD_EXACT_SOURCE_AND_VALIDATE",
@@ -105,6 +119,7 @@
   "legacy": {
     "previous_registry_backup": "money_master_os/registry/MASTER_REGISTRY_V1_LEGACY.json",
     "legacy_alt_manifest": "money_master_os/masters/alt/manifest.json",
-    "legacy_alt_usage": "DO_NOT_BOOTSTRAP_FROM_LEGACY_ALT_ID"
+    "legacy_alt_usage": "DO_NOT_BOOTSTRAP_FROM_LEGACY_ALT_ID",
+    "legacy_handoff_policy": "DO_NOT_USE_AS_OFFICIAL_STATE_WHEN_OFFICIAL_STATE_V1_EXISTS"
   }
 }

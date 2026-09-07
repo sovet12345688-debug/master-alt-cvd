@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "system": "MONEY_MASTER_OS_OFFICIAL_STATE_INDEX",
+  "generated_kst": "2026-09-07T12:49:46+09:00",
+  "master_count": 5,
+  "masters": {
+    "market": {
+      "state_path": "official_state/latest/market.json",
+      "state_status": "STORED",
+      "latest_official_run_id": "MMARKET-V12-20260907-0900-KST",
+      "executed_kst": "2026-09-07T09:00:00+09:00",
+      "freshness_status": "UNKNOWN"
+    },
+    "btc_trend": {
+      "state_path": "official_state/latest/btc_trend.json",
+      "state_status": "NO_STORED_OFFICIAL_RUN",
+      "latest_official_run_id": null,
+      "executed_kst": null,
+      "freshness_status": "NOT_APPLICABLE"
+    },
+    "alt_top100": {
+      "state_path": "official_state/latest/alt_top100.json",
+      "state_status": "NO_STORED_OFFICIAL_RUN",
+      "latest_official_run_id": null,
+      "executed_kst": null,
+      "freshness_status": "NOT_APPLICABLE"
+    },
+    "alt_final20": {
+      "state_path": "official_state/latest/alt_final20.json",
+      "state_status": "NO_STORED_OFFICIAL_RUN",
+      "latest_official_run_id": null,
+      "executed_kst": null,
+      "freshness_status": "NOT_APPLICABLE"
+    },
+    "trading": {
+      "state_path": "official_state/latest/trading.json",
+      "state_status": "NO_STORED_OFFICIAL_RUN",
+      "latest_official_run_id": null,
+      "executed_kst": null,
+      "freshness_status": "NOT_APPLICABLE"
+    }
+  },
+  "policy": {
+    "missing_official_run_is_not_reconstructed": true,
+    "source_health_is_not_official_decision": true,
+    "watch_is_not_official": true,
+    "provisional_is_not_official": true,
+    "cross_master_decisions_remain_independent": true,
+    "public_repo_private_trading_state_forbidden": true
+  }
+}

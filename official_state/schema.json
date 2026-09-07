@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "money-master-os-official-state-v1",
+  "title": "MONEY MASTER OS V2 OFFICIAL State",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "state_status",
+    "master_id",
+    "display_name",
+    "master_version",
+    "source_path",
+    "run",
+    "validity",
+    "data_quality",
+    "decision",
+    "core_state",
+    "lineage",
+    "privacy",
+    "do_not_reconstruct"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "state_status": {"enum": ["STORED", "NO_STORED_OFFICIAL_RUN", "INVALID"]},
+    "master_id": {"enum": ["market", "btc_trend", "alt_top100", "alt_final20", "trading"]},
+    "display_name": {"type": "string"},
+    "master_version": {"type": "string"},
+    "source_path": {"type": "string"},
+    "current_canonical_source_sha": {"type": ["string", "null"]},
+    "contract_path": {"type": ["string", "null"]},
+    "run": {
+      "type": "object",
+      "required": ["run_type", "run_id", "executed_kst", "updated_kst", "prior_official_run_id"],
+      "properties": {
+        "run_type": {"const": "OFFICIAL"},
+        "run_id": {"type": ["string", "null"]},
+        "executed_kst": {"type": ["string", "null"]},
+        "updated_kst": {"type": ["string", "null"]},
+        "prior_official_run_id": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "validity": {
+      "type": "object",
+      "required": ["valid_until_kst", "next_official_run_kst", "freshness_status"],
+      "properties": {
+        "valid_until_kst": {"type": ["string", "null"]},
+        "next_official_run_kst": {"type": ["string", "null"]},
+        "freshness_status": {"enum": ["CURRENT", "EXPIRED", "UNKNOWN", "NOT_APPLICABLE"]}
+      },
+      "additionalProperties": false
+    },
+    "data_quality": {
+      "type": "object",
+      "required": ["coverage_pct", "confidence", "known_na", "stale_sources", "time_mismatch_warnings", "source_health_snapshot_pointer"],
+      "properties": {
+        "coverage_pct": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
+        "confidence": {"type": ["string", "number", "null"]},
+        "known_na": {"type": "array"},
+        "stale_sources": {"type": "array"},
+        "time_mismatch_warnings": {"type": "array"},
+        "source_health_snapshot_pointer": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "decision": {
+      "type": "object",
+      "required": ["direction", "permission_or_environment", "action", "risk_veto", "invalidations"],
+      "properties": {
+        "direction": {"type": ["string", "null"]},
+        "permission_or_environment": {"type": ["string", "null"]},
+        "action": {"type": ["string", "null"]},
+        "risk_veto": {"type": "array"},
+        "invalidations": {"type": "array"}
+      },
+      "additionalProperties": false
+    },
+    "core_state": {"type": "object"},
+    "lineage": {
+      "type": "object",
+      "required": ["state_origin", "run_record_source", "history_pointer", "canonical_identity_verified", "cross_master_decision_dependency"],
+      "properties": {
+        "state_origin": {"enum": ["ACTUAL_STORED_RUN", "NO_STORED_RUN"]},
+        "run_record_source": {"type": ["string", "null"]},
+        "history_pointer": {"type": ["string", "null"]},
+        "canonical_identity_verified": {"type": "boolean"},
+        "cross_master_decision_dependency": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "privacy": {
+      "type": "object",
+      "required": ["contains_personal_account_data", "public_repository_safe"],
+      "properties": {
+        "contains_personal_account_data": {"const": false},
+        "public_repository_safe": {"const": true}
+      },
+      "additionalProperties": false
+    },
+    "do_not_reconstruct": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

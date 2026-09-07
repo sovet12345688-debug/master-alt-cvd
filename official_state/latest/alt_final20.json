@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0",
+  "state_status": "NO_STORED_OFFICIAL_RUN",
+  "master_id": "alt_final20",
+  "display_name": "MASTER ALT 2 · FINAL20",
+  "master_version": "V2.2.1 FINAL20 DEEP FINAL",
+  "source_path": "master_prompts/master_alt_final20_current.md",
+  "current_canonical_source_sha": "426912cd37bd754c4bc246252fa351871e1143f7",
+  "contract_path": null,
+  "run": {
+    "run_type": "OFFICIAL",
+    "run_id": null,
+    "executed_kst": null,
+    "updated_kst": null,
+    "prior_official_run_id": null
+  },
+  "validity": {
+    "valid_until_kst": null,
+    "next_official_run_kst": null,
+    "freshness_status": "NOT_APPLICABLE"
+  },
+  "data_quality": {
+    "coverage_pct": null,
+    "confidence": null,
+    "known_na": ["NO_PERSISTED_V2_2_1_MASTER_OFFICIAL_RUN_FOUND_AT_P1_INITIALIZATION"],
+    "stale_sources": [],
+    "time_mismatch_warnings": [],
+    "source_health_snapshot_pointer": "source_health/output/latest.json"
+  },
+  "decision": {
+    "direction": null,
+    "permission_or_environment": null,
+    "action": null,
+    "risk_veto": [],
+    "invalidations": []
+  },
+  "core_state": {},
+  "lineage": {
+    "state_origin": "NO_STORED_RUN",
+    "run_record_source": null,
+    "history_pointer": "official_state/history/alt_final20/",
+    "canonical_identity_verified": true,
+    "cross_master_decision_dependency": false
+  },
+  "privacy": {
+    "contains_personal_account_data": false,
+    "public_repository_safe": true
+  },
+  "do_not_reconstruct": [
+    "latest FINAL20 MASTER score/rank/gate from collector outputs alone",
+    "raw CVD/derivatives/live-flow output as a MASTER OFFICIAL conclusion",
+    "legacy ALT_LATEST.json as current OFFICIAL state"
+  ]
+}
