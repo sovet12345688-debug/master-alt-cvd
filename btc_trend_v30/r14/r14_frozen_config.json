@@ -1,0 +1,93 @@
+{
+  "model": "MASTER_BTC_TREND_V3_R1_4",
+  "status": "RESEARCH_BASELINE_FROZEN_PRE_R14_REPLAY",
+  "freeze_timestamp_kst": "2026-09-07T17:36:00+09:00",
+  "parent_r13_branch": "btc-trend-v30-r13-freeze",
+  "parent_r13_config_sha256": "b417282c66bec49c1c5de672f8317635508eba1dd05f538074a1508f14217fa9",
+  "design_basis": "R1.3 historical diagnostics identify structural bottlenecks; no R1.4 replay result was viewed before this freeze.",
+  "evidence_policy": {
+    "r13_historical_diagnostics": "DESIGN_DIAGNOSIS_ONLY",
+    "r14_same_historical_period": "DIAGNOSTIC_ONLY_NOT_UNTOUCHED_PROMOTION_EVIDENCE",
+    "untouched_forward_oos_start_utc": "2026-09-05T00:00:00Z",
+    "no_post_replay_threshold_tuning": true,
+    "probability": "확률 산출보류"
+  },
+  "signal_layer": {
+    "inherit_r13_1h_entry_contract_exactly": true,
+    "routes": ["RETEST", "IGNITION"],
+    "stage_policy": "INHERIT_R1_3",
+    "risk_state_for_initial_entry": "INHERIT_R1_3",
+    "entry_nonchase": "INHERIT_R1_3",
+    "entry_structural_stop": "INHERIT_R1_3",
+    "initial_fixed_rr": 3.0
+  },
+  "episode_risk_budget": {
+    "total_risk_R": 1.0,
+    "initial_1h_risk_R": 0.7,
+    "max_4h_add_risk_R": 0.3,
+    "max_add_count": 1,
+    "no_add_can_raise_episode_risk_above_R": 1.0
+  },
+  "initial_position_management": {
+    "fixed_target_fraction": 0.5,
+    "runner_fraction": 0.5,
+    "fixed_target_rr": 3.0,
+    "runner_initial_stop": "SAME_STRUCTURAL_STOP_AS_INITIAL_ENTRY",
+    "runner_stop_migration": "NONE",
+    "runner_exit_signal": "FIRST_COMPLETED_DAILY_CLOSE_AGAINST_EMA20_AFTER_ENTRY",
+    "runner_exit_execution": "NEXT_AVAILABLE_1H_OPEN_AFTER_DAILY_SIGNAL",
+    "runner_hard_stop_has_priority_if_hit_before_exit_execution": true,
+    "same_bar_fixed_tp_and_sl": "AMBIGUOUS",
+    "purpose": "Allow large-trend capture without loosening initial entry quality or inventing a discretionary trailing rule."
+  },
+  "four_hour_add": {
+    "role": "THESIS_CONTINUITY_ADD_NOT_NEW_TRADE",
+    "same_family_required": true,
+    "same_engine_required": true,
+    "same_direction_required": true,
+    "same_route_as_initial_required": true,
+    "route_change_action": "NO_ADD",
+    "initial_leg_must_be_unresolved_at_add_confirmation": true,
+    "favorable_progress_before_add_min_R": 1.0,
+    "favorable_progress_measure": "CLOSED_1H_HIGH_LOW_FROM_INITIAL_ENTRY_TO_BEFORE_ADD_CONFIRMATION_RELATIVE_TO_INITIAL_STRUCTURAL_RISK",
+    "risk_state_required": "OPEN",
+    "daily_transition_alignment_required": true,
+    "candidate_execution_contract": "R1_3_EVALUATE_PAIR",
+    "fixed_rr": 3.0,
+    "add_runner": false,
+    "after_initial_tp_or_sl": "NO_ADD_WITHIN_SAME_EPISODE"
+  },
+  "portfolio_and_risk_governor": {
+    "episode_risk_cap_R": 1.0,
+    "initial_plus_add_weighting_required": true,
+    "portfolio_metrics_required": ["net_R", "mean_R_per_episode", "directional_expectancy", "max_drawdown_R"],
+    "historical_external_severe_risk": "N/A_NOT_RECONSTRUCTED",
+    "production_requires_external_severe_risk_replay": true,
+    "no_position_size_increase_after_episode_risk_cap": true
+  },
+  "mcr_definition": {
+    "capture_numerator": "MAX_0_OF_WEIGHTED_REALIZED_INITIAL_POSITION_PRICE_RETURN_USING_FIXED_HALF_PLUS_RUNNER_HALF",
+    "denominator": "EPISODE_FAVORABLE_TRUTH_MFE",
+    "mcr_90d_mean_min": 0.2,
+    "mcr_365d_mean_min": 0.2,
+    "note": "4H ADD PnL is portfolio performance, not part of initial-position MCR numerator."
+  },
+  "predeclared_gates": {
+    "long_portfolio_expectancy_gt_R": 0.0,
+    "short_portfolio_expectancy_gt_R": 0.0,
+    "confirmed_false_start_rate_max": 0.5,
+    "mcr_90d_mean_min": 0.2,
+    "mcr_365d_mean_min": 0.2,
+    "capture_to_loss_ratio_gt": 1.0,
+    "robustness_required": true,
+    "cycle_independence_required": true,
+    "score_monotonicity_min_bin_n": 10,
+    "full_risk_governor_required_for_production": true,
+    "exact_v2_6_h2h_required_by_current_governance": true
+  },
+  "immutability": {
+    "r13_untouched": true,
+    "v2_6_untouched": true,
+    "any_rule_or_threshold_change_after_freeze_creates_new_baseline": true
+  }
+}
