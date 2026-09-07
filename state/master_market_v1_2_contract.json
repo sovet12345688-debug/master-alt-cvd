@@ -1,8 +1,8 @@
 {
-  "schema_version": "1.5",
+  "schema_version": "1.6",
   "master": "MASTER MARKET V1.2",
   "status": "FINAL_CUMULATIVE_LOCK",
-  "updated_kst": "2026-09-07T10:05:00+09:00",
+  "updated_kst": "2026-09-07T11:32:46+09:00",
   "purpose": "Machine-readable cumulative contract for MASTER MARKET. Existing required data, checks, and user-visible output blocks must survive future version upgrades unless the user explicitly orders removal.",
   "no_silent_omission": {
     "enabled": true,
@@ -85,7 +85,6 @@
       "DXY",
       "WTI",
       "Brent",
-      "Global M2",
       "Nasdaq",
       "S&P500",
       "geopolitics/regulation"
@@ -95,12 +94,7 @@
       "ETH ETF 1D/3D/5D/20D",
       "USDT supply",
       "USDC supply",
-      "total stablecoin supply",
-      "Mint/Burn",
-      "Treasury balances",
-      "Treasury-to-Exchange",
-      "Exchange Balance",
-      "Mint->Treasury->Exchange->Spot Buy confirmation chain"
+      "total stablecoin supply"
     ],
     "market_breadth_rotation": [
       "CRYPTO_TOTAL_MCAP",
@@ -163,7 +157,7 @@
     "market_vault": "Historical comparison cache only; same metric + same source deltas only.",
     "derivatives_github": "Read 1H/4H/24H OI/funding history every run when fresh. Venue-locked comparison only; no cross-venue delta.",
     "whale_github": "Use Hyperliquid official API-derived position-size history when fresh. No inferred identity. Missing API result is not proof of closure.",
-    "stablecoin": "Supply increase is not actual buying. Treasury-to-Exchange and spot-buy path are separate confirmations.",
+    "stablecoin": "USDT/USDC/total stablecoin supply are potential dry-powder context only. Supply increase/decrease alone is not confirmed spot buying/selling. Removed wallet-tracking fields are not required and must not be shown as recurring N/A.",
     "treasury_buyback": "Maximum announced amount is not actual accepted amount and is not QE. Use actual accepted/settlement/net-liquidity effect when available.",
     "optional_failure": "Do not loop/retry indefinitely. Mandatory sufficient => continue and expose N/A explicitly.",
     "polymarket": "Public Gamma/CLOB/Data APIs; forward-expectation context only; score weight 0. Same-market/same-YES-outcome deltas only. Polymarket alone never alerts or flips score/direction/Risk Veto."
@@ -204,12 +198,13 @@
     ],
     "screen3": [
       "BTC/ETH ETF 1D/3D/5D/20D",
-      "stablecoin supply/mint/burn/treasury/exchange",
+      "USDT/USDC/total stablecoin supply; same-source history when available",
       "Crypto Money Inflow",
       "ALT Money Inflow",
       "fixed text: Stablecoin supply increase != actual buy",
       "visually separate actual institution spot flow from potential stablecoin dry powder",
-      "if any N/A/unavailable value appears, append per-screen N/A 안내 with item|reason|automatic recovery yes/no|expected exposure time or required structural action"
+      "if any N/A/unavailable value appears, append per-screen N/A 안내 with item|reason|automatic recovery yes/no|expected exposure time or required structural action",
+      "removed wallet-tracking fields and Global M2 must not appear as recurring N/A"
     ],
     "screen4": [
       "moving whale TOP3 when meaningful position-size changes exist",
@@ -373,7 +368,8 @@
     "grouping_rule": "Same-cause grouping allowed only when every affected unavailable item is explicitly named.",
     "anti_fabrication": true,
     "no_na_to_zero": true,
-    "no_interpolation_backfill_cross_source_fill": true
+    "no_interpolation_backfill_cross_source_fill": true,
+    "removed_field_behavior": "Explicitly removed fields are outside required output and must not be displayed as N/A or included in N/A 안내."
   },
   "expert_badge_policy": {
     "enabled": true,
@@ -394,5 +390,107 @@
     "direction_effect": "NONE",
     "risk_veto_effect": "NONE",
     "watch_threshold_effect": "NONE"
+  },
+  "free_recovery_policy": {
+    "enabled": true,
+    "score_weight_change": 0,
+    "derivatives_microstructure": {
+      "output": "derivatives/output/latest_microstructure.json",
+      "required_engine": "MASTER_DERIVATIVES_MICROSTRUCTURE_V2",
+      "venue": "Bitget USDT Futures",
+      "fields": [
+        "CVD",
+        "Taker Buy/Sell",
+        "Long/Short",
+        "Liquidation",
+        "Basis",
+        "Depth",
+        "Volume"
+      ],
+      "source_type": "free public Bitget market APIs; no trading auth",
+      "failure_behavior": "Keep only actually affected required fields as N/A and explain under SCREEN4 N/A 안내; never cross-fill venue or guess."
+    },
+    "macro_liquidity": {
+      "output": "market_vault/output/latest_macro_liquidity.json",
+      "required_engine": "MASTER_MARKET_FREE_MACRO_LIQUIDITY_V2",
+      "fields": [
+        "US_NET_LIQUIDITY_PROXY",
+        "FED_TOTAL_ASSETS",
+        "FED_RESERVE_BALANCES",
+        "FED_RRP_TOTAL",
+        "TGA_CLOSING_BALANCE",
+        "QRA_NET_MARKETABLE_BORROWING_CURRENT_Q",
+        "QRA_END_CASH_BALANCE_CURRENT_Q",
+        "QRA_NET_MARKETABLE_BORROWING_NEXT_Q",
+        "QRA_END_CASH_BALANCE_NEXT_Q",
+        "TREASURY_BUYBACK_ACTUAL_ACCEPTED"
+      ],
+      "source_type": "free official Federal Reserve + U.S. Treasury sources",
+      "net_liquidity_label_rule": "Must identify US Net Liquidity as a proxy formula, not an official Fed-published index.",
+      "history_windows": [
+        "1D",
+        "3D",
+        "7D"
+      ],
+      "history_rule": "Actual same-source observations only; no backfill/interpolation."
+    },
+    "etf_flows": {
+      "output": "market_vault/output/latest_etf_flows.json",
+      "required_engine": "MASTER_MARKET_FREE_ETF_FLOW_V1",
+      "assets": [
+        "BTC",
+        "ETH"
+      ],
+      "windows": [
+        "1D",
+        "3D",
+        "5D",
+        "20D"
+      ],
+      "source_policy": "Farside-derived public history may use a public GitHub mirror as transport/cache only; latest material date/value should be cross-checked in OFFICIAL."
+    },
+    "stablecoin_supply": {
+      "output": "market_vault/output/latest_summary.json",
+      "metrics": [
+        "USDT_SUPPLY",
+        "USDC_SUPPLY",
+        "STABLECOIN_TOTAL_SUPPLY"
+      ],
+      "role": "potential dry powder only; not confirmed actual spot buying"
+    }
+  },
+  "explicitly_removed_fields": {
+    "enabled": true,
+    "authorized_by_user": true,
+    "removed_from_required_data": [
+      "Global M2",
+      "stablecoin Mint/Burn",
+      "stablecoin issuer Treasury balance",
+      "stablecoin Treasury-to-Exchange",
+      "stablecoin Exchange Balance",
+      "stablecoin Mint->Treasury->Exchange->Spot Buy confirmation chain"
+    ],
+    "removed_from_user_visible_output": [
+      "Global M2",
+      "stablecoin Mint/Burn",
+      "stablecoin issuer Treasury balance",
+      "stablecoin Treasury-to-Exchange",
+      "stablecoin Exchange Balance",
+      "stablecoin Mint->Treasury->Exchange->Spot Buy confirmation chain"
+    ],
+    "must_not_show_as_na": true,
+    "must_not_trigger_na_explanation": true,
+    "tga_preservation_rule": "U.S. Treasury TGA is NOT removed. Only stablecoin issuer Treasury-balance/wallet-tracking fields are removed.",
+    "restore_rule": "Restore only on explicit user command."
+  },
+  "stablecoin_watch_policy": {
+    "wallet_tracking_removed": true,
+    "allowed_watch_basis": "major confirmed stablecoin supply shock/exit or other independently confirmed remaining MASTER evidence",
+    "forbidden_basis": [
+      "Mint/Burn alone",
+      "Treasury-to-Exchange field",
+      "Exchange Balance field",
+      "Mint->Treasury->Exchange->Spot Buy chain"
+    ]
   }
 }

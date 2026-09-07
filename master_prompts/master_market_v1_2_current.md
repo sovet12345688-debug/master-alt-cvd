@@ -77,10 +77,10 @@ KST hourly. OFFICIAL = 01:00/05:00/09:00/13:00/17:00/21:00 and outputs exactly 5
 ## REQUIRED SOURCE/DATA MAP — NEVER SILENTLY DROP
 
 ### Macro / Liquidity
-Fed/QE-QT, US Net Liquidity, TGA, Fed Reserves, Treasury/QRA, Treasury Buyback actual accepted/settlement when available, 2Y/10Y/30Y, 10Y real yield, EFFR, SOFR, DXY, WTI, Brent, Global M2, Nasdaq, S&P500, geopolitics, regulation.
+Fed/QE-QT, US Net Liquidity, TGA, Fed Reserves, Treasury/QRA, Treasury Buyback actual accepted/settlement when available, 2Y/10Y/30Y, 10Y real yield, EFFR, SOFR, DXY, WTI, Brent, Nasdaq, S&P500, geopolitics, regulation.
 
 ### Crypto Capital Flow
-BTC ETF and ETH ETF 1D/3D/5D/20D; institutional flow; USDT/USDC/total stablecoin supply; Mint/Burn; Treasury balance; Treasury→Exchange; Exchange Balance; `Mint→Treasury→Exchange→Spot Buy` chain.
+BTC ETF and ETH ETF 1D/3D/5D/20D; institutional flow; USDT/USDC/total stablecoin supply. Stablecoin supply is potential dry powder only and must not be presented as confirmed spot buying.
 
 ### Market Breadth / Rotation
 Total crypto market cap, 24H market volume, BTC.D, ETH.D, and `USD→Stablecoin→BTC→ETH→ALT` rotation.
@@ -116,7 +116,7 @@ Coinness policy: Coinness is EARLY DETECTION ONLY. A Coinness item may trigger i
 
 ## BTC LIQUIDITY LEAD INDEX
 
-Axes when available: US Net Liquidity, TGA change, Fed Reserves, 10Y real yield, DXY, Treasury/QRA, Buyback, Global M2, ETF, Stablecoin Flow. If at least one confirmed weight exists, renormalize confirmed weights and output a partial numeric score.
+Axes when available: US Net Liquidity, TGA change, Fed Reserves, 10Y real yield, DXY, Treasury/QRA, Buyback, ETF, Stablecoin Flow. If at least one confirmed weight exists, renormalize confirmed weights and output a partial numeric score.
 
 Bands: 0-39 Risk-Off | 40-54 Neutral/Weak | 55-64 상승 초입 신호 | 65-74 상승 시작 | 75-84 가속화 | 85-100 과열.
 
@@ -128,7 +128,34 @@ WTI + Brent mandatory attempt every run. Separate current/prior/1D/3D/7D/cause/i
 
 ## ETF / STABLECOIN
 
-ETF: today/3D/5D/20D where confirmed. Stablecoin supply increase != actual buy. Without Treasury→Exchange/spot-buy confirmation, classify as potential dry powder only.
+ETF: today/3D/5D/20D where confirmed. Stablecoin supply increase != actual buy. USDT/USDC/total stablecoin supply changes are potential dry powder only; do not infer actual spot buying from supply changes alone.
+
+## FREE RECOVERY + EXPLICIT REMOVAL LOCK — ADDED 2026-09-07
+
+User explicitly approved the following recovery/removal sequence; it is now part of the canonical data contract.
+
+1) SCREEN4 free Bitget derivatives recovery
+- Read `derivatives/output/latest_microstructure.json` when fresh and engine/schema guard passes.
+- Expected free public fields = `CVD | Taker Buy/Sell | Long/Short | Liquidation | Basis | Depth | Volume` for BTC/ETH on the same Bitget futures venue.
+- These fields remain required. If a current collector/API call fails, keep the affected field N/A and explain it under the screen-level N/A 안내; do not silently delete it.
+
+2) Free macro/liquidity recovery
+- Read `market_vault/output/latest_macro_liquidity.json` when fresh and engine/schema guard passes.
+- Use its official-source evidence for `US Net Liquidity proxy | Fed total assets/reserve balances/reverse repo | TGA | Treasury/QRA | actual Treasury Buyback accepted/offered`.
+- US Net Liquidity is explicitly a formula proxy, not an official Fed-published index. Preserve the formula/source label.
+- Its same-source history may fill 1D/3D/7D only after actual comparable observations exist; no backfill/interpolation.
+
+3) ETF20D + stablecoin supply recovery
+- Read `market_vault/output/latest_etf_flows.json` when fresh and engine/schema guard passes for BTC/ETH ETF `1D/3D/5D/20D`. A public GitHub mirror may be used only as transport/cache for Farside-derived history; when material, current OFFICIAL should cross-check the latest trading-date/value against a public independent/primary/secondary confirmation.
+- Read `market_vault/output/latest_summary.json` when fresh for `USDT_SUPPLY | USDC_SUPPLY | STABLECOIN_TOTAL_SUPPLY` and same-source historical comparisons.
+- Stablecoin supply is dry-powder context only. Supply change alone never proves actual spot buying.
+
+4) Explicitly removed required/output fields
+By explicit user command, the following are REMOVED from MASTER MARKET required data and user-visible output: `Global M2`, stablecoin `Mint/Burn`, stablecoin issuer `Treasury balance`, `Treasury→Exchange`, `Exchange Balance`, and `Mint→Treasury→Exchange→Spot Buy` confirmation chain.
+- Removed fields must NOT be printed as recurring N/A rows and must NOT trigger N/A 안내.
+- `stablecoin issuer Treasury balance` removal is NOT the same as U.S. Treasury `TGA`; TGA remains mandatory macro/liquidity data.
+- Existing collectors/files may remain in the repository for compatibility/history, but MASTER MARKET must not require or display the removed fields unless the user explicitly restores them.
+- Do not silently replace a removed field with a different metric under the same name.
 
 ## WHALE RULES
 
@@ -163,7 +190,7 @@ Policy/macro shock, oil supply shock, DXY/real-yield spike, major ETF outflow, s
 
 ## URGENT WATCH
 
-LEVEL1: BTC/ETH large position reversal; >=$50M new/increase/decrease; liq-distance collapse; liquidation cascade; major exchange in/out; major stablecoin Treasury→Exchange; hack/exploit; policy/macro/oil shock; major unlock/supply shock.
+LEVEL1: BTC/ETH large position reversal; >=$50M new/increase/decrease; liq-distance collapse; liquidation cascade; major exchange in/out; major confirmed stablecoin supply shock/exit; hack/exploit; policy/macro/oil shock; major unlock/supply shock.
 
 LEVEL2: at least two independent aligned axes. NO ALERT for unknown wallet alone, price-only move, OI alone, funding alone, stale/time-mismatched liq distance, unstable single source, old event reuse. Same EVENT_ID does not repeat unless direction reversal, meaningful size expansion, new independent confirmation, or Risk Veto onset/clearance.
 Polymarket single-signal alert is forbidden. A/B `>=10pp/4H` or `>=15pp/1D` is candidate-only and still requires >=1 independent aligned MASTER confirmation.
@@ -181,13 +208,13 @@ SCREEN1 is the primary current-market judgement screen. Final environment judgem
 
 ## SCREEN 2 — 세계 돈·금리·달러·유가 환경
 Required table columns: `항목 | 현재상태(신호등) | 현재값 | 직전Δ | 1D | 3D | 7D | 코인긍정도/100 | 쉬운해석`.
-Must attempt: global liquidity, 2Y/10Y/30Y, 10Y real yield, DXY, WTI, Brent, Fed/TGA/Reserves/QRA/Buyback/M2/equities as applicable. Keep missing rows as N/A.
+Must attempt: global liquidity, 2Y/10Y/30Y, 10Y real yield, DXY, WTI, Brent, Fed/TGA/Reserves/QRA/Buyback/equities as applicable. Keep missing required rows as N/A.
 Show BTC Liquidity Lead /100 with fixed 55/65/75 thresholds.
 Oil detail mandatory.
 End with `📌 코인 긍정도: XX/100 | 핵심 해석: ...`.
 
 ## SCREEN 3 — 실제 크립토로 돈이 들어오나
-BTC ETF/ETH ETF today/3D/5D/20D; USDT/USDC/total supply/Mint/Burn/Treasury/Exchange; Crypto Money Inflow/100; ALT Money Inflow/100. Mini-trend only when >=3 actual OFFICIAL points.
+BTC ETF/ETH ETF today/3D/5D/20D; USDT/USDC/total stablecoin supply; Crypto Money Inflow/100; ALT Money Inflow/100. Mini-trend only when >=3 actual OFFICIAL points.
 Fixed text: `Stablecoin 공급 증가 ≠ 실제 매수`.
 Keep the screen split visually into institution spot flow and stablecoin dry-powder confirmation so the user can distinguish actual buying from potential liquidity.
 
@@ -286,6 +313,9 @@ No historical backfill. WATCH/manual non-official must not write/overwrite this 
 - Use market_vault when fresh for official same-source history: 2Y/10Y/30Y/10Y-real, EFFR, SOFR, TGA, USDT/USDC/total stablecoin, BTC.D/ETH.D/total market cap/24H volume.
 - For all locked 1D/3D/7D table windows, use same-source history or actual cumulative flow only. Missing history stays N/A; no interpolation/backfill.
 - Use `derivatives/output/latest_summary.json` when fresh for venue-locked Price/OI/Funding and 1H/4H/24H changes.
+- Use `derivatives/output/latest_microstructure.json` when fresh for same-venue Bitget CVD/Taker Buy-Sell/Long-Short/Liquidation/Basis/Depth/Volume.
+- Use `market_vault/output/latest_macro_liquidity.json` when fresh for the free official-source US Net Liquidity proxy/Fed/QRA/actual Buyback evidence.
+- Use `market_vault/output/latest_etf_flows.json` when fresh for BTC/ETH ETF 1D/3D/5D/20D; its mirror is transport/cache only, not a new score/source owner.
 - Use `market_whales/output/latest_summary.json` and events/history when fresh for Hyperliquid official-API-derived position data.
 - Use `polymarket/output/latest_summary.json` when fresh for score-0 forward-expectation TOP10; its probability deltas must remain same-market/same-outcome and cannot substitute factual macro/crypto data.
 - Current direct sources remain primary for DXY/oil/equities/Fed balance sheet/ETF/news when GitHub does not have a validated adapter.
@@ -294,6 +324,7 @@ No historical backfill. WATCH/manual non-official must not write/overwrite this 
 ## FINAL USER-VISIBLE LOCKS
 
 Easy Korean, minimal English. No actual Entry. Price rise alone cannot raise positive score. Required items never silently disappear. Missing required data = N/A row/block.
+Explicitly removed fields are not required items: do not show `Global M2` or the five removed stablecoin wallet-tracking rows as N/A.
 
 OFFICIAL may include five follow-up checks/questions before footer. Follow-up questions may proactively recommend data upgrades, GitHub integration work, source migration, or output-layout improvements; recommendation alone does not change the locked production contract.
 
