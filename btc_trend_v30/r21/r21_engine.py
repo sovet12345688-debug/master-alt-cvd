@@ -8,7 +8,7 @@ import pandas as pd
 from btc_trend_v30.r20.r20_engine import R20Engine
 
 HERE = Path(__file__).resolve().parent
-CFG_PATH = HERE / "r21_candidate_config.json"
+CFG_PATH = HERE / "r21_frozen_config.json"
 
 
 class R21Engine(R20Engine):
@@ -24,6 +24,8 @@ class R21Engine(R20Engine):
         self.r21_cfg = json.loads((cfg_path or CFG_PATH).read_text(encoding="utf-8"))
         if self.r21_cfg.get("model") != "MASTER_BTC_TREND_V3_R2_1":
             raise RuntimeError("R21_MODEL_IDENTITY_MISMATCH")
+        if self.r21_cfg.get("status") != "FINAL_FROZEN_NO_REPLAY":
+            raise RuntimeError("R21_NOT_FROZEN")
 
     def short_core_timing_allowed(
         self,
