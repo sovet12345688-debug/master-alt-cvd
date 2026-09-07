@@ -3,12 +3,13 @@
   "master_id": "TRADING_CURRENT",
   "display_name": "MASTER TRADING",
   "expected_version": "CURRENT + TIME VALIDITY V2.1 OVERLAY",
-  "repo_version": null,
-  "status": "SOURCE_MISSING",
-  "canonical_source": null,
-  "machine_contract": null,
+  "repo_version": "CURRENT + TIME VALIDITY V2.1 OVERLAY",
+  "status": "READY",
+  "canonical_source": "master_prompts/master_trading_current.md",
+  "machine_contract": "state/master_trading_current_contract.json",
   "state_sources": [
-    "state/github_data_ready_registry.json"
+    "state/github_data_ready_registry.json",
+    "btc_backtest/output/time_validity_v2/summary.json"
   ],
   "shared_dependencies": [
     "money_master_os/shared/COMMON_RULES.md",
@@ -16,24 +17,42 @@
     "money_master_os/shared/RISK_GATE.md"
   ],
   "bootstrap": {
-    "allowed": false,
-    "block_reason": "Exact current MASTER TRADING canonical source and output contract are not yet committed.",
+    "allowed": true,
     "require_exact_version_match": true,
     "require_source_present": true,
+    "require_machine_contract_present": true,
     "require_validator_pass": true
   },
+  "source_provenance": {
+    "canonicalization_mode": "USER_APPROVED_RULESET_PLUS_VALIDATED_GITHUB_OVERLAY",
+    "historical_identical_prompt_claim": false,
+    "canonicalized_kst": "2026-09-07T11:33:00+09:00",
+    "time_validity_research": "btc_backtest/output/time_validity_v2/summary.json"
+  },
+  "automation": {
+    "mode": "MANUAL_ONLY",
+    "recurring_automation_enabled": false,
+    "rule": "Do not create recurring MASTER TRADING automation without explicit user approval."
+  },
+  "ui_policy": {
+    "semantic_sections_preserved": 4,
+    "later_user_refinement_allowed": true,
+    "ui_only_change_must_not_rebuild_logic": true
+  },
   "privacy": {
-    "public_repository_allowed": false,
+    "public_repository_allowed_for_market_system_state": true,
+    "public_repository_allowed_for_personal_execution_state": false,
     "sensitive_fields": [
       "account_balance",
-      "actual_position_size",
+      "actual_private_position_size",
       "account_identifier",
-      "private_execution_details"
+      "private_execution_details",
+      "api_credentials"
     ],
     "rule": "Do not store personal trading/account state in this public repository."
   },
   "ownership": {
-    "logic": "MISSING_UNTIL_EXACT_SOURCE_COMMITTED",
+    "logic": "canonical_source",
     "purpose": "Entry, stop, target, R:R, trigger and time-validity execution",
     "chat_memory": "NON_CANONICAL"
   }

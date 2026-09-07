@@ -34,7 +34,9 @@ required_files = [
     "money_master_os/masters/alt_final20/manifest.json",
     "money_master_os/masters/trading/manifest.json",
     "money_master_os/bootstrap/BOOTSTRAP_LATEST.md",
-    "money_master_os/handoff/HANDOFF_TEMPLATE.json"
+    "money_master_os/handoff/HANDOFF_TEMPLATE.json",
+    "master_prompts/master_trading_current.md",
+    "state/master_trading_current_contract.json"
 ]
 for rel in required_files:
     if not (ROOT / rel).exists():
@@ -101,6 +103,13 @@ for key, entry in masters.items():
             fail(f"{key}: READY but expected/repo versions differ")
         if manifest.get("canonical_source") != source_rel:
             fail(f"{key}: registry source_path / manifest canonical_source mismatch")
+        contract_rel = entry.get("contract_path")
+        manifest_contract = manifest.get("machine_contract")
+        if contract_rel or manifest_contract:
+            if contract_rel != manifest_contract:
+                fail(f"{key}: registry contract_path / manifest machine_contract mismatch")
+            elif not (ROOT / contract_rel).exists():
+                fail(f"{key}: READY but machine contract missing")
         notes.append(f"{key}: READY with exact canonical source")
     elif status == "VERSION_DRIFT":
         if allowed:
@@ -133,7 +142,7 @@ if btc.get("research_version") != "V3.0":
 if btc.get("research_policy") != "V3.0_RESEARCH_ONLY_UNTIL_ACCEPTANCE_AND_CANONICAL_PROMOTION":
     fail("btc_trend research policy must block silent V3.0 promotion")
 
-# Canonical-source signature guards for sources that currently exist.
+# Canonical-source signature guards.
 market_source = ROOT / "master_prompts/master_market_v1_2_current.md"
 if market_source.exists():
     text = market_source.read_text(encoding="utf-8")
@@ -162,6 +171,56 @@ if alt_final20_source.exists():
     if "MASTER ALT V2.2.1" not in text:
         fail("ALT FINAL20 stored-source signature changed")
 
+trading_source = ROOT / "master_prompts/master_trading_current.md"
+if trading_source.exists():
+    text = trading_source.read_text(encoding="utf-8")
+    trading_signatures = [
+        "MASTER TRADING — CURRENT + TIME VALIDITY V2.1 OVERLAY",
+        "2-STAGE ENTRY",
+        "Trigger PASS != market-price ADD",
+        "TIME VALIDITY V2.1 — NON-DESTRUCTIVE OVERLAY",
+        "No universal fixed `4H / 8H / 12H` setup TTL",
+        "Wave Energy is context-only",
+        "Fibonacci Time = OFF",
+        "MASTER TRADING recurring automation is OFF",
+        "PRIVACY — PUBLIC REPOSITORY HARD LOCK",
+        "FINAL EXECUTION GATE"
+    ]
+    for signature in trading_signatures:
+        if signature not in text:
+            fail(f"MASTER TRADING canonical signature missing: {signature}")
+
+trading_contract_path = ROOT / "state/master_trading_current_contract.json"
+trading_contract = load_json(trading_contract_path) if trading_contract_path.exists() else {}
+if trading_contract:
+    if trading_contract.get("version") != "CURRENT + TIME VALIDITY V2.1 OVERLAY":
+        fail("MASTER TRADING contract version mismatch")
+    if trading_contract.get("execution_mode") != "MANUAL_ONLY":
+        fail("MASTER TRADING must remain manual-only until explicit user approval")
+    if trading_contract.get("automation_enabled") is not False:
+        fail("MASTER TRADING recurring automation must remain off")
+    entry = trading_contract.get("entry_model", {})
+    if entry.get("minimum_rr") != 3.0:
+        fail("MASTER TRADING minimum R:R must remain 3.0")
+    if entry.get("trigger_pass_is_market_add") is not False:
+        fail("MASTER TRADING Trigger PASS must not equal immediate market ADD")
+    if entry.get("add_requires_retest") is not True:
+        fail("MASTER TRADING ADD must require retest")
+    tv = trading_contract.get("time_validity_v2_1", {})
+    if tv.get("non_destructive_overlay") is not True:
+        fail("TIME VALIDITY V2.1 must remain non-destructive")
+    if tv.get("fixed_universal_ttl") is not False:
+        fail("TIME VALIDITY V2.1 must not impose a universal fixed TTL")
+    if tv.get("price_invalidation_separate_from_time_weakness") is not True:
+        fail("price invalidation must remain separate from time weakness")
+    if tv.get("wave_energy") != "CONTEXT_ONLY":
+        fail("Wave Energy must remain context-only")
+    if tv.get("fibonacci_time") != "OFF":
+        fail("Fibonacci Time must remain OFF")
+    privacy = trading_contract.get("privacy", {})
+    if privacy.get("public_repo_sensitive_state_forbidden") is not True:
+        fail("MASTER TRADING public-repo privacy guard missing")
+
 # Privacy safety: public repository must not claim to store personal trading state.
 trading = masters.get("trading", {})
 if trading.get("privacy_policy") != "PERSONAL_POSITION_BALANCE_AND_ACCOUNT_DATA_MUST_NOT_BE_STORED_IN_PUBLIC_REPOSITORY":
@@ -177,7 +236,8 @@ print("MONEY MASTER OS V2 VALIDATION: PASS")
 print("- Exactly five independent MASTER identities are registered.")
 print("- ALT TOP100 and ALT FINAL20 are separated.")
 print("- BTC TREND V2.6 production and V3.0 research are separated.")
-print("- READY masters require exact canonical sources.")
+print("- READY masters require exact canonical sources and declared contracts.")
+print("- MASTER TRADING execution, TIME VALIDITY V2.1, manual-only and privacy invariants are locked.")
 print("- SOURCE_MISSING masters remain blocked from unsafe bootstrap.")
 for n in notes:
     print(f"- {n}")
