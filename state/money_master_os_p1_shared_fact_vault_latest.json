@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0",
+  "milestone": "MONEY_MASTER_OS_V2_P1_SHARED_FACT_VAULT",
+  "status": "PASS",
+  "completed_kst": "2026-09-07T13:14:17+09:00",
+  "pull_request": 16,
+  "merge_commit": "f598d692ab9bc70b6b85c1d4bab465f58f179dad",
+  "vault_registry": "shared_fact_vault/registry.json",
+  "vault_schema": "shared_fact_vault/schema.json",
+  "vault_latest": "shared_fact_vault/output/latest.json",
+  "vault_builder": "shared_fact_vault/build_shared_facts.py",
+  "vault_workflow": ".github/workflows/shared_fact_vault_hourly.yml",
+  "first_main_build": {
+    "workflow_run_id": 34082193943,
+    "conclusion": "success",
+    "generated_at_utc": "2026-09-07T04:11:57.498745Z",
+    "vault_status": "HEALTHY",
+    "active_sources": 6,
+    "fact_count": 875,
+    "registered_fact_source_coverage_pct": 100.0,
+    "state_commit": "330919aa777de09d6e649e04b28ead08ba2324d7"
+  },
+  "main_guard": {
+    "workflow_run_id": 34082193958,
+    "conclusion": "success",
+    "five_master_bootstrap": "PASS",
+    "source_health_boundary": "PASS",
+    "shared_fact_vault_contract": "PASS",
+    "shared_fact_vault_fact_only_boundary": "PASS",
+    "official_state_latest_index": "PASS",
+    "official_state_anti_reconstruction": "PASS"
+  },
+  "source_health_main_run": {
+    "workflow_run_id": 34082194057,
+    "conclusion": "success",
+    "latest_evaluated_at_utc": "2026-09-07T04:11:59.114606Z",
+    "overall": "DEGRADED",
+    "active_vault_sources_latest_health": "ALL_6_HEALTHY",
+    "note": "Overall Source Health is DEGRADED because two non-active/deferred collectors are FAILED; none of the six active Vault sources changed health status after the first Vault build."
+  },
+  "active_adapters": [
+    "market_data_vault",
+    "market_macro_liquidity",
+    "market_etf_flows",
+    "derivatives",
+    "alt2_live_large_flow",
+    "final20_long_cvd"
+  ],
+  "deferred_sources": [
+    "market_whales",
+    "stablecoin_exchange_flow",
+    "us_net_liquidity",
+    "polymarket_context"
+  ],
+  "hard_locks": {
+    "facts_only": true,
+    "master_decisions_independent": true,
+    "same_metric_different_source_kept_separate": true,
+    "cross_source_reconciliation_forbidden": true,
+    "stale_failed_missing_not_current": true,
+    "last_good_not_current_substitute": true,
+    "missing_not_zero": true,
+    "chat_memory_backfill_forbidden": true,
+    "vault_coverage_not_master_coverage": true,
+    "raw_high_volume_history_not_duplicated": true,
+    "execution_critical_revalidation_still_required": true,
+    "long_short_permission_action_entry_sl_tp_rr_ranking_enter_forbidden_in_vault": true
+  },
+  "next_phase": "P1_WATCH_EVENT_ONLY_STANDARD"
+}
