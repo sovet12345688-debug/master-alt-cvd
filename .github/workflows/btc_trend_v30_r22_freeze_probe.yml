@@ -1,0 +1,39 @@
+name: BTC TREND V3 R2.2 FREEZE PROBE
+
+on:
+  push:
+    branches: [btc-trend-v30-r22-early-watch]
+    paths:
+      - 'btc_trend_v30/r22/**'
+      - '.github/workflows/btc_trend_v30_r22_freeze_probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/btc_trend_v30
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Verify contracts and print final identities
+        run: |
+          python btc_trend_v30/r21/r21_freeze_guard.py
+          (cd btc_trend_v30/r20 && python test_r20_engine_pit.py)
+          python btc_trend_v30/r22/test_r22_contract.py
+          python - <<'PY'
+          import hashlib,subprocess
+          from pathlib import Path
+          for rel in ['r22_frozen_config.json','r22_engine.py','test_r22_contract.py']:
+              p=Path('btc_trend_v30/r22')/rel
+              print(rel,'SHA256',hashlib.sha256(p.read_bytes()).hexdigest())
+              print(rel,'BLOB',subprocess.check_output(['git','hash-object',str(p)],text=True).strip())
+          print('R22_HISTORICAL_REPLAY_PERFORMED_BEFORE_FREEZE=false')
+          PY
