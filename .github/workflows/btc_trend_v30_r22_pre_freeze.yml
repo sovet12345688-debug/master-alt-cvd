@@ -1,0 +1,60 @@
+name: BTC TREND V3 R2.2 PRE-FREEZE
+
+on:
+  push:
+    branches: [btc-trend-v30-r22-early-watch]
+    paths:
+      - 'btc_trend_v30/r22/**'
+      - '.github/workflows/btc_trend_v30_r22_pre_freeze.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: '1'
+  PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/btc_trend_v30
+
+jobs:
+  r22-pre-freeze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Parent R2.1 freeze and contract
+        run: |
+          python btc_trend_v30/r21/r21_freeze_guard.py
+          (cd btc_trend_v30/r21 && python test_r21_contract.py)
+      - name: PIT availability contract
+        run: (cd btc_trend_v30/r20 && python test_r20_engine_pit.py)
+      - name: R2.2 single-change contract
+        run: |
+          python btc_trend_v30/r22/test_r22_contract.py
+          python -m py_compile btc_trend_v30/r22/r22_engine.py
+      - name: Replay firewall and identities
+        run: |
+          python - <<'PY'
+          import hashlib,json,subprocess,sys
+          from pathlib import Path
+          root=Path('btc_trend_v30/r22')
+          cfg=json.load(open(root/'r22_candidate_config.json'))
+          checks=[
+              cfg['model']=='MASTER_BTC_TREND_V3_R2_2',
+              cfg['status']=='PRE_FREEZE_NO_REPLAY',
+              cfg['single_change']['id']=='DAILY_20D_EXTREME_DISTANCE_HARD_GATE_TO_PRIORITY_ONLY',
+              cfg['single_change']['unchanged_distance_threshold_atr']==1.0,
+              cfg['single_change']['hard_gate_removed'] is True,
+              cfg['single_change']['priority_flag_retained'] is True,
+              not (root/'output/historical_replay').exists(),
+          ]
+          for rel in ['r22_candidate_config.json','r22_engine.py','test_r22_contract.py']:
+              p=root/rel
+              print(rel,'SHA256',hashlib.sha256(p.read_bytes()).hexdigest())
+              print(rel,'BLOB',subprocess.check_output(['git','hash-object',str(p)],text=True).strip())
+          print('R22_PRE_FREEZE_CHECKS=',checks)
+          if not all(checks): sys.exit(1)
+          PY
