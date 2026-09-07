@@ -1,0 +1,30 @@
+{
+  "schema_version": "2.0",
+  "master_id": "ALT_TOP100",
+  "display_name": "MASTER ALT 1 · TOP100",
+  "expected_version": "V4.8 FINAL",
+  "repo_version": null,
+  "status": "SOURCE_MISSING",
+  "canonical_source": null,
+  "machine_contract": null,
+  "state_sources": [
+    "state/github_data_ready_registry.json"
+  ],
+  "shared_dependencies": [
+    "money_master_os/shared/COMMON_RULES.md",
+    "money_master_os/shared/DATA_POLICY.md",
+    "money_master_os/shared/RISK_GATE.md"
+  ],
+  "bootstrap": {
+    "allowed": false,
+    "block_reason": "Exact MASTER ALT V4.8 TOP100 canonical source is not yet committed. Do not substitute the FINAL20 V2.2.1 source.",
+    "require_exact_version_match": true,
+    "require_source_present": true,
+    "require_validator_pass": true
+  },
+  "ownership": {
+    "logic": "MISSING_UNTIL_EXACT_V4_8_SOURCE_COMMITTED",
+    "purpose": "TOP100 discovery and early accumulation scan",
+    "chat_memory": "NON_CANONICAL"
+  }
+}
