@@ -6,6 +6,7 @@ on:
       - btc-trend-v30-r13-freeze
     paths:
       - 'btc_trend_v30/r13/r13_historical_diagnostic_replay.py'
+      - 'btc_trend_v30/r13/r13_historical_diagnostic_replay_runner.py'
       - '.github/workflows/btc_trend_v30_r13_historical_diagnostic.yml'
   workflow_dispatch:
 
@@ -68,7 +69,7 @@ jobs:
           PY
 
       - name: R1.3 Historical Diagnostic Replay
-        run: python btc_trend_v30/r13/r13_historical_diagnostic_replay.py
+        run: python btc_trend_v30/r13/r13_historical_diagnostic_replay_runner.py
 
       - name: Diagnostic integrity gate
         run: |
