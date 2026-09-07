@@ -1,0 +1,48 @@
+name: BTC TREND V3 R1.4 FAST-TRACK A Integrated Diagnosis
+on:
+  push:
+    branches: [btc-trend-v30-r14-fasttrack]
+    paths:
+      - 'btc_trend_v30/r14/fasttrack_a_integrated_diagnosis.py'
+      - '.github/workflows/btc_trend_v30_r14_fasttrack_a.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  integrated-diagnosis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check pandas
+      - name: Download canonical R1.3 FULL snapshot
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          MANIFEST=btc_trend_v30/r13/fast/fast_snapshot_manifest.json
+          ARTIFACT_ID=$(python -c "import json; print(json.load(open('$MANIFEST'))['source_full_run']['artifact_id'])")
+          EXPECTED_SHA=$(python -c "import json; print(json.load(open('$MANIFEST'))['source_full_run']['artifact_sha256'])")
+          curl --fail --silent --show-error --location \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" \
+            --output /tmp/r13.zip
+          test "$(sha256sum /tmp/r13.zip | awk '{print $1}')" = "$EXPECTED_SHA"
+          rm -rf .fast_snapshot && mkdir .fast_snapshot
+          unzip -q /tmp/r13.zip -d .fast_snapshot
+      - name: Snapshot guard
+        run: python btc_trend_v30/r13/fast/fast_snapshot_guard.py --manifest btc_trend_v30/r13/fast/fast_snapshot_manifest.json --snapshot-root .fast_snapshot --repo-root .
+      - name: A integrated diagnosis
+        run: python btc_trend_v30/r14/fasttrack_a_integrated_diagnosis.py --snapshot-root .fast_snapshot --output btc_trend_v30/r14/output/A_integrated_diagnosis.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v30-r14-fasttrack-a
+          path: btc_trend_v30/r14/output/A_integrated_diagnosis.json
+          retention-days: 14
