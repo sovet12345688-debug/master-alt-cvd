@@ -1,0 +1,111 @@
+{
+  "engine": "MASTER_MARKET_STABLECOIN_WINDOWS_V1",
+  "schema_version": "1.0",
+  "generated_at_utc": "2026-09-07T06:30:14.638100Z",
+  "source": "market_vault/data/market_history.csv",
+  "comparison_rule": "same metric + same source only; no interpolation/backfill",
+  "windows": [
+    "prior",
+    "1D",
+    "3D",
+    "5D",
+    "7D",
+    "20D"
+  ],
+  "metrics": [
+    {
+      "metric": "USDT_SUPPLY",
+      "status": "OK",
+      "current_value": 183356640806.85367,
+      "unit": "USD",
+      "source": "DefiLlama Stablecoins",
+      "source_observation_time": "2026-09-07T06:30:14.470186Z",
+      "vs_prior": {
+        "previous_value": 183352881141.25513,
+        "delta": 3759665.5985412598,
+        "delta_pct": 0.00205050805590822,
+        "previous_snapshot_hour_utc": "2026-09-07T05:00:00Z",
+        "source_observation_time": "2026-09-07T05:58:21.928784Z",
+        "target_gap_minutes": null
+      },
+      "vs_1d": {
+        "previous_value": 183390024525.32718,
+        "delta": -33383718.473510742,
+        "delta_pct": -0.01820367196084881,
+        "previous_snapshot_hour_utc": "2026-09-06T05:00:00Z"
+      },
+      "vs_3d": {
+        "previous_value": 183344658361.14648,
+        "delta": 11982445.707183838,
+        "delta_pct": 0.006535475761492432,
+        "previous_snapshot_hour_utc": "2026-09-04T05:00:00Z"
+      },
+      "vs_5d": null,
+      "vs_7d": null,
+      "vs_20d": null
+    },
+    {
+      "metric": "USDC_SUPPLY",
+      "status": "OK",
+      "current_value": 74685396674.53903,
+      "unit": "USD",
+      "source": "DefiLlama Stablecoins",
+      "source_observation_time": "2026-09-07T06:30:14.470186Z",
+      "vs_prior": {
+        "previous_value": 74662557769.76137,
+        "delta": 22838904.777664185,
+        "delta_pct": 0.030589502234966332,
+        "previous_snapshot_hour_utc": "2026-09-07T05:00:00Z",
+        "source_observation_time": "2026-09-07T05:58:21.928784Z",
+        "target_gap_minutes": null
+      },
+      "vs_1d": {
+        "previous_value": 74767097292.73593,
+        "delta": -81700618.19689941,
+        "delta_pct": -0.109273492157943,
+        "previous_snapshot_hour_utc": "2026-09-06T05:00:00Z"
+      },
+      "vs_3d": {
+        "previous_value": 74461968141.84398,
+        "delta": 223428532.6950531,
+        "delta_pct": 0.3000572483787159,
+        "previous_snapshot_hour_utc": "2026-09-04T05:00:00Z"
+      },
+      "vs_5d": null,
+      "vs_7d": null,
+      "vs_20d": null
+    },
+    {
+      "metric": "STABLECOIN_TOTAL_SUPPLY",
+      "status": "OK",
+      "current_value": 311569776127.6699,
+      "unit": "USD",
+      "source": "DefiLlama Stablecoins",
+      "source_observation_time": "2026-09-07T06:30:14.470186Z",
+      "vs_prior": {
+        "previous_value": 311541062297.99744,
+        "delta": 28713829.67248535,
+        "delta_pct": 0.009216707890987353,
+        "previous_snapshot_hour_utc": "2026-09-07T05:00:00Z",
+        "source_observation_time": "2026-09-07T05:58:21.928784Z",
+        "target_gap_minutes": null
+      },
+      "vs_1d": {
+        "previous_value": 311217428015.14276,
+        "delta": 352348112.52716064,
+        "delta_pct": 0.11321606080171598,
+        "previous_snapshot_hour_utc": "2026-09-06T05:00:00Z"
+      },
+      "vs_3d": {
+        "previous_value": 311213267059.796,
+        "delta": 356509067.87390137,
+        "delta_pct": 0.11455458542691313,
+        "previous_snapshot_hour_utc": "2026-09-04T05:00:00Z"
+      },
+      "vs_5d": null,
+      "vs_7d": null,
+      "vs_20d": null
+    }
+  ],
+  "failures": []
+}

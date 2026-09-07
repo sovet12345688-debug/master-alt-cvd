@@ -1,8 +1,8 @@
 {
-  "schema_version": "1.6",
+  "schema_version": "1.7",
   "master": "MASTER MARKET V1.2",
   "status": "FINAL_CUMULATIVE_LOCK",
-  "updated_kst": "2026-09-07T14:28:00+09:00",
+  "updated_kst": "2026-09-07T15:30:15+09:00",
   "purpose": "Machine-readable cumulative contract for MASTER MARKET. Existing required data, checks, and user-visible output blocks must survive future version upgrades unless the user explicitly orders removal.",
   "no_silent_omission": {
     "enabled": true,
@@ -37,7 +37,14 @@
       "production_github_collector_change": "if unavoidable for compatibility or source/API drift, explain why, what changes, what is preserved, expected benefit, and regression risk; obtain user approval before destructive or behavior-changing execution",
       "output_layout_change": "recommend freely; until approved, do not hide or delete required information"
     },
-    "flexibility_intent": "Anti-omission is a preservation default, not a ban on intelligent recommendations or future improvements."
+    "flexibility_intent": "Anti-omission is a preservation default, not a ban on intelligent recommendations or future improvements.",
+    "github_patch_followup": {
+      "decision_required_on_every_change_request": true,
+      "only_when_patch_required": true,
+      "follow_up_slot": 4,
+      "exact_text": "변경 사항 발생. github 변경 패치 작업 진행 도와줄까?",
+      "when_not_required": "Do not show the fixed GitHub patch sentence; use a normal relevant follow-up question #4."
+    }
   },
   "change_windows": {
     "locked_windows": [
@@ -91,8 +98,8 @@
       "geopolitics/regulation"
     ],
     "crypto_capital_flow": [
-      "BTC ETF 1D/3D/5D/20D",
-      "ETH ETF 1D/3D/5D/20D",
+      "BTC ETF 1D/3D/5D/7D/20D",
+      "ETH ETF 1D/3D/5D/7D/20D",
       "USDT supply",
       "USDC supply",
       "total stablecoin supply"
@@ -161,7 +168,9 @@
     "stablecoin": "USDT/USDC/total stablecoin supply are potential dry-powder context only. Supply increase/decrease alone is not confirmed spot buying/selling. Removed wallet-tracking fields are not required and must not be shown as recurring N/A.",
     "treasury_buyback": "Maximum announced amount is not actual accepted amount and is not QE. Use actual accepted/settlement/net-liquidity effect when available.",
     "optional_failure": "Do not loop/retry indefinitely. Mandatory sufficient => continue and expose N/A explicitly.",
-    "polymarket": "Public Gamma/CLOB/Data APIs; forward-expectation context only; score weight 0. Same-market/same-YES-outcome deltas only. Polymarket alone never alerts or flips score/direction/Risk Veto."
+    "polymarket": "Public Gamma/CLOB/Data APIs; forward-expectation context only; score weight 0. Same-market/same-YES-outcome deltas only. Polymarket alone never alerts or flips score/direction/Risk Veto.",
+    "stablecoin_window_adapter": "Read market_vault/output/latest_stablecoin_windows.json when fresh for same-source prior/1D/3D/5D/7D/20D Stablecoin comparisons. No interpolation or backfill.",
+    "actor_flow_adapter": "Read market_vault/output/latest_actor_flows.json when fresh for SCREEN4 actual-value institution/whale/retail-proxy comparisons. Adapter score weight is 0 and does not alter underlying score engine, Risk Veto, WATCH, or official history."
   },
   "required_scores": {
     "BTC_Liquidity_Lead_Index": {
@@ -213,13 +222,14 @@
     "screen3": [
       "title: 실제 크립토로 돈이 들어오나",
       "actual money-flow table prioritizes signal|capital source/path|prior|1D|3D|5D|7D|20D|current status; populate only valid windows and keep unsupported cells N/A",
-      "BTC/ETH ETF preserve confirmed 1D/3D/5D/20D",
+      "BTC/ETH ETF preserve confirmed 1D/3D/5D/7D/20D",
       "include institutional flow, USDT/USDC/total stablecoin supply, and other already-required directly observable crypto capital flows when available",
       "Crypto Money Inflow and ALT Money Inflow remain visible where available",
       "fixed text: Stablecoin supply increase != actual buy",
       "actual buying and potential dry powder remain clearly distinguished",
       "removed wallet-tracking fields and Global M2 must not appear as recurring N/A",
-      "end with compact 💡 핵심 summary"
+      "end with compact 💡 핵심 summary",
+      "stablecoin same-source comparison adapter: prior|1D|3D|5D|7D|20D; missing actual history remains N/A; no interpolation/backfill"
     ],
     "screen4": [
       "title: 기관·고래·개미·파생",
@@ -228,11 +238,15 @@
       "change column is shown only when same-whale continuity is reliable; otherwise omit entire change column",
       "liquidation distance is not required in the user-visible core whale tables; underlying Liquidation/Liq Distance data and risk/WATCH logic remain preserved",
       "whale side display: 🟢 LONG / 🔴 SHORT / ⚪ N/A/FLAT",
-      "institution vs whale vs retail table columns: signal|subject|score|prior|1D|3D|7D|current status",
+      "institution vs whale vs retail table columns: signal|subject|current actual value|1D|3D|7D|current status; no synthetic actor score in SCREEN4",
       "derivatives mobile table columns: signal|asset|OI|Funding|CVD|current interpretation",
       "all existing derivative engine fields remain preserved for validation/calculation even when compressed in user-visible table",
       "mandatory easy-Korean derivative interpretation",
-      "end with compact 💡 핵심 summary"
+      "end with compact 💡 핵심 summary",
+      "institution BTC/ETH actual value = spot ETF net-flow USD; use actual 1D/3D/7D cumulative flow",
+      "BTC/ETH whale actual value = Hyperliquid >=$20M position LONG USD|SHORT USD|NET USD using stored signed-position history; compare actual 1D/3D/7D snapshots",
+      "retail actual value = Bitget futures active LONG%|SHORT% ratio proxy plus current funding context; not verified retail wallet identity; compare same-venue 1D/3D/7D observations",
+      "missing actor comparison history remains N/A; never manufacture actor scores or backfill values"
     ],
     "screen5": [
       "title: 뉴스·경제일정·전문가·Polymarket",

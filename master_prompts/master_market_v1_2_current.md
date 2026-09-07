@@ -81,7 +81,7 @@ KST hourly. OFFICIAL = 01:00/05:00/09:00/13:00/17:00/21:00 and outputs exactly 5
 Fed/QE-QT, US Net Liquidity, TGA, Fed Reserves, Treasury/QRA, Treasury Buyback actual accepted/settlement when available, 2Y/10Y/30Y, 10Y real yield, EFFR, SOFR, DXY, WTI, Brent, Nasdaq, S&P500, geopolitics, regulation.
 
 ### Crypto Capital Flow
-BTC ETF and ETH ETF 1D/3D/5D/20D; institutional flow; USDT/USDC/total stablecoin supply. Stablecoin supply is potential dry powder only and must not be presented as confirmed spot buying.
+BTC ETF and ETH ETF 1D/3D/5D/7D/20D; institutional flow; USDT/USDC/total stablecoin supply. Stablecoin supply is potential dry powder only and must not be presented as confirmed spot buying.
 
 ### Market Breadth / Rotation
 Total crypto market cap, 24H market volume, BTC.D, ETH.D, and `USD→Stablecoin→BTC→ETH→ALT` rotation.
@@ -128,7 +128,7 @@ WTI + Brent mandatory attempt every run. Separate current/prior/1D/3D/7D/cause/i
 
 ## ETF / STABLECOIN
 
-ETF: today/3D/5D/20D where confirmed. Stablecoin supply increase != actual buy. USDT/USDC/total stablecoin supply changes are potential dry powder only; do not infer actual spot buying from supply changes alone.
+ETF: 1D/3D/5D/7D/20D where confirmed. Stablecoin supply increase != actual buy. USDT/USDC/total stablecoin supply changes are potential dry powder only; do not infer actual spot buying from supply changes alone.
 
 ## FREE RECOVERY + EXPLICIT REMOVAL LOCK — ADDED 2026-09-07
 
@@ -146,7 +146,7 @@ User explicitly approved the following recovery/removal sequence; it is now part
 - Its same-source history may fill 1D/3D/7D only after actual comparable observations exist; no backfill/interpolation.
 
 3) ETF20D + stablecoin supply recovery
-- Read `market_vault/output/latest_etf_flows.json` when fresh and engine/schema guard passes for BTC/ETH ETF `1D/3D/5D/20D`. A public GitHub mirror may be used only as transport/cache for Farside-derived history; when material, current OFFICIAL should cross-check the latest trading-date/value against a public independent/primary/secondary confirmation.
+- Read `market_vault/output/latest_etf_flows.json` when fresh and engine/schema guard passes for BTC/ETH ETF `1D/3D/5D/7D/20D`. A public GitHub mirror may be used only as transport/cache for Farside-derived history; when material, current OFFICIAL should cross-check the latest trading-date/value against a public independent/primary/secondary confirmation.
 - Read `market_vault/output/latest_summary.json` when fresh for `USDT_SUPPLY | USDC_SUPPLY | STABLECOIN_TOTAL_SUPPLY` and same-source historical comparisons.
 - Stablecoin supply is dry-powder context only. Supply change alone never proves actual spot buying.
 
@@ -237,7 +237,7 @@ Purpose: actual/directly observable crypto-related money flow.
 
 Primary table should prioritize `신호 | 자금주체/경로 | 직전 | 1D | 3D | 5D | 7D | 20D | 현재상태`, but only actual valid windows are populated; unsupported cells remain N/A.
 Include when actually available: BTC ETF, ETH ETF, institutional spot/capital flow, USDT supply, USDC supply, total stablecoin supply, government/public-sector crypto capital activity, large-whale capital flow, retail capital flow, and other already-required directly observable crypto capital flows.
-BTC/ETH ETF preserves confirmed applicable `1D / 3D / 5D / 20D`.
+BTC/ETH ETF preserves confirmed applicable `1D / 3D / 5D / 7D / 20D`.
 Stablecoin rule remains fixed: `Stablecoin 공급 증가 ≠ 실제 매수`.
 Clearly distinguish actual buying from potential dry powder.
 Preserve Crypto Money Inflow /100 and ALT Money Inflow /100 where available.
@@ -257,9 +257,14 @@ Direction display = `🟢 LONG` / `🔴 SHORT` / `⚪ N/A/FLAT`.
 Include major Hyperliquid accounts when confirmed.
 
 ### 기관 vs 고래 vs 개미
-Required table columns = `신호 | 주체 | 점수 | 직전 | 1D | 3D | 7D | 현재상태`.
-Required subjects where available = 기관 / BTC 고래 / ETH 고래 / 개미·리테일.
-Interpretation must be short plain Korean, e.g. `기관 매수 우위`, `BTC 고래 혼조`, `ETH 고래 숏 우위`, `개미 과열`, `레버리지 완화`.
+Required table columns = `신호 | 주체 | 현재 실제수치 | 1D | 3D | 7D | 현재상태`.
+Do NOT show a synthetic institution/whale/retail score in this SCREEN4 table.
+Use directly observable stored values only:
+- 기관 BTC/ETH = actual spot ETF net-flow USD from the ETF collector. Use actual 1D/3D/7D cumulative trading-row flow where available.
+- BTC/ETH 고래 = actual Hyperliquid large-position exposure aggregated from stored signed position history. Show `LONG 총액 / SHORT 총액 / NET USD`; large-position aggregate baseline = positions with absolute position value >= $20M. Compare current with actual same-source 1D/3D/7D snapshots only.
+- 개미/리테일 = Bitget futures active long/short position-ratio proxy, not verified wallet identity. Show actual LONG% / SHORT% and current funding context; compare actual same-venue 1D/3D/7D observations when available.
+Interpretation must be short plain Korean, e.g. `기관 순유입`, `BTC 고래 NET 숏`, `ETH 고래 NET 롱`, `개미 롱 과열`, `중립`.
+If a comparison window has insufficient actual history, keep N/A; never manufacture a score or infer missing values.
 
 ### 파생시장
 Primary mobile table columns = `신호 | 자산 | OI | Funding | CVD | 현재해석` for BTC and ETH at minimum.
@@ -310,6 +315,9 @@ Immediately below add `핵심 메시지:` with the most important money/macro/wh
 ## 후속 질문 및 제안 5가지
 OFFICIAL output includes exactly 5 compact follow-up questions or recommendations before footer. Keep them brief and directly related to current market/data validation/useful next analysis/output improvement. Recommendations never modify the MASTER contract automatically.
 
+### GITHUB CHANGE FOLLOW-UP LOCK
+Whenever the user requests any output/data/engine/schema/rule change, first determine whether a GitHub canonical/contract/collector/schema patch is actually required. Only when a GitHub patch is required, follow-up question #4 must be exactly `변경 사항 발생. github 변경 패치 작업 진행 도와줄까?`. If no GitHub patch is required, do not show that sentence and use a normal relevant #4 follow-up instead.
+
 ## OFFICIAL SCORE HISTORY — NEW PERSISTENCE FOUNDATION
 
 Append confirmed OFFICIAL runs only to `state/master_market_official_history.csv` using fields:
@@ -341,7 +349,9 @@ No historical backfill. WATCH/manual non-official must not write/overwrite this 
 - Use `derivatives/output/latest_summary.json` when fresh for venue-locked Price/OI/Funding and 1H/4H/24H changes.
 - Use `derivatives/output/latest_microstructure.json` when fresh for same-venue Bitget CVD/Taker Buy-Sell/Long-Short/Liquidation/Basis/Depth/Volume.
 - Use `market_vault/output/latest_macro_liquidity.json` when fresh for the free official-source US Net Liquidity proxy/Fed/QRA/actual Buyback evidence.
-- Use `market_vault/output/latest_etf_flows.json` when fresh for BTC/ETH ETF 1D/3D/5D/20D; its mirror is transport/cache only, not a new score/source owner.
+- Use `market_vault/output/latest_etf_flows.json` when fresh for BTC/ETH ETF 1D/3D/5D/7D/20D; its mirror is transport/cache only, not a new score/source owner.
+- Use `market_vault/output/latest_stablecoin_windows.json` when fresh for same-source Stablecoin prior/1D/3D/5D/7D/20D comparisons; missing history stays N/A and is never interpolated/backfilled.
+- Use `market_vault/output/latest_actor_flows.json` when fresh for SCREEN4 actual-value institution/whale/retail-proxy comparisons; this adapter adds no score weight and does not alter Market Positive Score, Risk Veto, WATCH, or official score history.
 - Use `market_whales/output/latest_summary.json` and events/history when fresh for Hyperliquid official-API-derived position data.
 - Use `polymarket/output/latest_summary.json` when fresh for score-0 forward-expectation TOP10; its probability deltas must remain same-market/same-outcome and cannot substitute factual macro/crypto data.
 - Current direct sources remain primary for DXY/oil/equities/Fed balance sheet/ETF/news when GitHub does not have a validated adapter.
