@@ -10,11 +10,10 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import sys
 import urllib.error
 import urllib.parse
 import urllib.request
-from collections import Counter, defaultdict
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -216,7 +215,6 @@ def evaluate_source(source_id: str, cfg: dict[str, Any], now: datetime, repo: st
             if ts is None:
                 status = "DEGRADED"
                 reasons.append("STATE_TIMESTAMP_MISSING")
-                age_minutes = None
             else:
                 age_minutes = max(0.0, (now - ts).total_seconds() / 60.0)
                 if age_minutes > float(cfg.get("stale_after_minutes", 180)):
@@ -316,12 +314,13 @@ def aggregate_masters(master_ids: list[str], sources: dict[str, dict[str, Any]])
         else:
             availability = "GOOD"
         out[mid] = {
-            "data_availability": availability,
-            "health_pct": pct,
-            "tracked_sources": len(rows),
+            "registered_source_availability": availability,
+            "registered_source_health_pct": pct,
+            "registered_source_count": len(rows),
             "core_bad": core_bad,
             "non_context_bad": non_context_bad,
             "sources": rows,
+            "scope_note": "REGISTERED SHARED/REPOSITORY SOURCES ONLY. This is not MASTER Coverage and is not an analytical score.",
             "policy": "DATA HEALTH ONLY; not direction, score, permission or execution gate",
         }
     return out
@@ -340,9 +339,7 @@ def build(repo: str, token: str | None) -> dict[str, Any]:
     master_ids = list((mreg.get("masters") or {}).keys()) or ["market", "btc_trend", "alt_top100", "alt_final20", "trading"]
     counts = Counter(src["status"] for src in sources.values())
     overall = "HEALTHY"
-    if counts.get("FAILED", 0) or counts.get("MISSING", 0):
-        overall = "DEGRADED"
-    if counts.get("STALE", 0):
+    if counts.get("FAILED", 0) or counts.get("MISSING", 0) or counts.get("STALE", 0):
         overall = "DEGRADED"
     return {
         "schema_version": "1.0",
@@ -376,8 +373,7 @@ def update_last_good(payload: dict[str, Any]) -> dict[str, Any]:
 
 def attach_last_good(payload: dict[str, Any], last_good: dict[str, Any]) -> None:
     for sid, src in payload.get("sources", {}).items():
-        lg = (last_good.get("sources") or {}).get(sid)
-        src["last_good"] = lg
+        src["last_good"] = (last_good.get("sources") or {}).get(sid)
 
 
 def status_fingerprint(src: dict[str, Any]) -> tuple[Any, ...]:
@@ -432,14 +428,18 @@ def validate_payload(payload: dict[str, Any]) -> list[str]:
     required = {"market", "btc_trend", "alt_top100", "alt_final20", "trading"}
     if not isinstance(masters, dict) or not required.issubset(set(masters)):
         errors.append("five MASTER health summaries missing")
+    for mid, row in (masters or {}).items():
+        if "health_pct" in row or "data_availability" in row:
+            errors.append(f"{mid}: ambiguous legacy MASTER health field present")
+        if "registered_source_health_pct" not in row:
+            errors.append(f"{mid}: registered_source_health_pct missing")
+        if "scope_note" not in row:
+            errors.append(f"{mid}: source-health scope note missing")
     for sid, src in (sources or {}).items():
         if src.get("status") not in STATUS_SCORE:
             errors.append(f"{sid}: invalid status {src.get('status')}")
         if not src.get("reason_codes"):
             errors.append(f"{sid}: reason_codes empty")
-        if src.get("status") == "HEALTHY" and src.get("reason_codes") != ["OK"] and "WORKFLOW_RUNNING" not in src.get("reason_codes", []):
-            # API unavailability can coexist with healthy state, so do not fail on that here.
-            pass
     return errors
 
 
