@@ -1,7 +1,7 @@
 {
   "schema_version": "2.0",
   "registry_name": "MONEY_MASTER_OS_REGISTRY",
-  "updated_kst": "2026-09-07T12:49:46+09:00",
+  "updated_kst": "2026-09-07T13:08:00+09:00",
   "repository": "sovet12345688-debug/master-alt-cvd",
   "architecture": {
     "master_count": 5,
@@ -22,7 +22,11 @@
     "official_state_root": "official_state/",
     "official_state_schema": "official_state/schema.json",
     "official_state_index": "official_state/latest/index.json",
-    "official_state_policy": "ACTUAL_OFFICIAL_RUNS_ONLY_NO_RECONSTRUCTION"
+    "official_state_policy": "ACTUAL_OFFICIAL_RUNS_ONLY_NO_RECONSTRUCTION",
+    "shared_fact_vault_root": "shared_fact_vault/",
+    "shared_fact_vault_registry": "shared_fact_vault/registry.json",
+    "shared_fact_vault_latest": "shared_fact_vault/output/latest.json",
+    "shared_fact_vault_policy": "FACTS_ONLY_SOURCE_QUALIFIED_NO_CROSS_SOURCE_RECONCILIATION"
   },
   "global_policy": {
     "github_is_source_of_truth": true,
@@ -39,7 +43,12 @@
     "watch_and_provisional_cannot_be_official_state": true,
     "missing_official_state_is_not_reconstructed": true,
     "official_state_validity_is_not_inferred": true,
-    "public_repo_private_trading_state_forbidden": true
+    "public_repo_private_trading_state_forbidden": true,
+    "shared_fact_vault_is_facts_only": true,
+    "shared_fact_vault_cross_source_reconciliation_forbidden": true,
+    "shared_fact_vault_stale_failed_not_current": true,
+    "shared_fact_vault_does_not_replace_master_revalidation": true,
+    "shared_fact_vault_coverage_is_not_master_coverage": true
   },
   "masters": {
     "market": {
