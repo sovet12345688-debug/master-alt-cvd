@@ -5,13 +5,14 @@
   "production_version": "V2.6",
   "research_version": "V3.0",
   "expected_version": "V2.6 PRODUCTION",
-  "repo_version": null,
-  "status": "SOURCE_MISSING",
-  "canonical_source": null,
-  "machine_contract": null,
+  "repo_version": "V2.6 PRODUCTION",
+  "status": "READY",
+  "canonical_source": "master_prompts/master_btc_trend_v2_6_current.md",
+  "machine_contract": "state/master_btc_trend_v2_6_contract.json",
   "state_sources": [
     "btc_backtest/",
-    "state/github_data_ready_registry.json"
+    "state/github_data_ready_registry.json",
+    "btc_fractal/state/long_a_plus_prospective_registry.json"
   ],
   "shared_dependencies": [
     "money_master_os/shared/COMMON_RULES.md",
@@ -19,20 +20,32 @@
     "money_master_os/shared/RISK_GATE.md"
   ],
   "bootstrap": {
-    "allowed": false,
-    "block_reason": "Production identity is V2.6, but no exact V2.6 canonical source is committed. V3.0 remains research-only and must not be silently promoted or reconstructed.",
+    "allowed": true,
     "require_exact_version_match": true,
     "require_source_present": true,
+    "require_machine_contract_present": true,
     "require_validator_pass": true
+  },
+  "source_provenance": {
+    "origin": "ACTIVE_AUTOMATION_PROMPT",
+    "automation_title": "MASTER BTC TREND V2.6 [3-SCREEN · FRACTAL+S/R STRENGTH · FINAL]",
+    "captured_kst": "2026-09-07T11:50:00+09:00",
+    "rule": "Production V2.6 must load this exact canonical source; do not reconstruct from chat memory."
   },
   "research": {
     "version": "V3.0",
     "status": "RESEARCH_ONLY",
-    "promotion_rule": "Promote only after acceptance criteria pass and exact canonical source/contract are committed."
+    "promotion_rule": "Promote only after acceptance criteria pass and exact V3.0 canonical source/contract are committed with explicit registry promotion.",
+    "silent_promotion_forbidden": true
+  },
+  "ui_policy": {
+    "current_semantic_screens": 3,
+    "later_user_refinement_allowed": true,
+    "ui_only_change_must_not_rebuild_logic": true
   },
   "ownership": {
-    "logic": "MISSING_UNTIL_EXACT_V2_6_SOURCE_COMMITTED",
-    "research_assets": "btc_backtest",
+    "logic": "canonical_source",
+    "research_assets": "btc_backtest + btc-fractal-v26-build",
     "chat_memory": "NON_CANONICAL"
   }
 }

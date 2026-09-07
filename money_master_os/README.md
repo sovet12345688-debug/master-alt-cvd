@@ -23,16 +23,24 @@ The legacy ambiguous registry key `alt` is no longer valid for V2 bootstrap.
 - Existing collectors, market data, histories, and current prompt files remain untouched unless explicitly changed.
 - A MASTER with `VERSION_DRIFT` or `SOURCE_MISSING` is blocked from automatic bootstrap until its exact approved canonical source is committed.
 
-## Current status — 2026-09-07 11:34 KST
-- MASTER MARKET: `READY` — repository canonical source matches V1.2 FINAL.
-- MASTER BTC TREND: `SOURCE_MISSING` — production identity is V2.6; V3.0 remains research-only. Exact V2.6 production canonical source is not yet committed.
+## Current status — 2026-09-07 11:52 KST — 5/5 READY
+- MASTER MARKET: `READY` — canonical source `master_prompts/master_market_v1_2_current.md`.
+- MASTER BTC TREND: `READY` — production V2.6 canonical source `master_prompts/master_btc_trend_v2_6_current.md` with machine contract `state/master_btc_trend_v2_6_contract.json`. V3.0 remains research-only.
 - MASTER ALT 1 · TOP100: `READY` — canonical source `master_prompts/master_alt_top100_v4_8_current.md`.
-- MASTER ALT 2 · FINAL20: `READY` — repository canonical source matches V2.2.1 FINAL20 DEEP FINAL.
+- MASTER ALT 2 · FINAL20: `READY` — canonical source `master_prompts/master_alt_final20_current.md`.
 - MASTER TRADING: `READY` — canonical source `master_prompts/master_trading_current.md` with machine contract `state/master_trading_current_contract.json` and non-destructive TIME VALIDITY V2.1 overlay.
+
+## MASTER BTC TREND V2.6 source provenance
+- Source origin: active automation `MASTER BTC TREND V2.6 [3-SCREEN · FRACTAL+S/R STRENGTH · FINAL]`.
+- Canonical path: `master_prompts/master_btc_trend_v2_6_current.md`.
+- Production contract: `state/master_btc_trend_v2_6_contract.json`.
+- Production remains V2.6; V3.0 remains research-only and cannot be silently promoted.
+- Existing 3 semantic screens are preserved for continuity, but later user-approved UI refinement is allowed without rebuilding analytical logic.
+- Bootstrap/history values inside the canonical are historical state only and must never be treated as fresh current-market facts without revalidation.
 
 ## MASTER TRADING canonicalization
 - The prior operating rules were distributed across user-approved MASTER TRADING decisions rather than one active automation prompt.
-- The new canonical explicitly consolidates only those approved operating rules plus the validated GitHub TIME VALIDITY research layer; it does not claim that one identical historical prompt previously existed.
+- The canonical explicitly consolidates only those approved operating rules plus the validated GitHub TIME VALIDITY research layer; it does not claim that one identical historical prompt previously existed.
 - MASTER TRADING remains manual-only. No recurring automation is created.
 - Current 4 semantic sections are preserved, but later user-approved UI refinement is allowed without rebuilding analytical logic.
 - Personal balance, private position size, account identifiers and private execution details must not be stored in this public repository.
@@ -47,7 +55,7 @@ The legacy ambiguous registry key `alt` is no longer valid for V2 bootstrap.
 - Production: MASTER BTC TREND V2.6.
 - Research: MASTER BTC TREND V3.0.
 - V3.0 must never be silently promoted to production.
-- Promotion requires explicit acceptance completion plus exact canonical source/contract commit and registry update.
+- Promotion requires explicit acceptance completion plus exact V3.0 canonical source/contract commit and registry update.
 
 ## Public repository privacy invariant
 This repository is public. Market data and public research artifacts may be stored here, but personal trading/account state must not be committed, including account balances, account identifiers, private position sizes, private execution details, or API credentials.
@@ -63,4 +71,4 @@ This repository is public. Market data and public research artifacts may be stor
 - `.github/workflows/money_master_os_guard.yml`: automatic validation workflow.
 
 ## Safety invariant
-Never silently reconstruct a missing MASTER from chat memory and call it canonical. When a historical single-file canonical does not exist, canonicalization must explicitly identify the approved component sources and must not claim an identical historical prompt existed.
+Never silently reconstruct a missing MASTER from chat memory and call it canonical. An active exact source should be captured as-is. When a historical single-file canonical does not exist, canonicalization must explicitly identify the approved component sources and must not claim an identical historical prompt existed.
