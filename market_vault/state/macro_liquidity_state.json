@@ -1,15 +1,22 @@
 {
-  "engine": "MASTER_MARKET_FREE_MACRO_LIQUIDITY_V1",
-  "schema_version": "1.0",
-  "last_run_utc": "2026-09-07T02:14:20.007594Z",
+  "engine": "MASTER_MARKET_FREE_MACRO_LIQUIDITY_V2",
+  "schema_version": "2.0",
+  "last_run_utc": "2026-09-07T02:21:05.592449Z",
   "snapshot_hour_utc": "2026-09-07T02:00:00Z",
   "collected_metrics": [
-    "TGA_CLOSING_BALANCE"
+    "FED_RESERVE_BALANCES",
+    "FED_RRP_TOTAL",
+    "FED_TGA_H41",
+    "FED_TOTAL_ASSETS",
+    "QRA_END_CASH_BALANCE_CURRENT_Q",
+    "QRA_END_CASH_BALANCE_NEXT_Q",
+    "QRA_NET_MARKETABLE_BORROWING_CURRENT_Q",
+    "QRA_NET_MARKETABLE_BORROWING_NEXT_Q",
+    "TGA_CLOSING_BALANCE",
+    "TREASURY_BUYBACK_ACTUAL_ACCEPTED",
+    "TREASURY_BUYBACK_ACTUAL_OFFERED",
+    "US_NET_LIQUIDITY_PROXY"
   ],
-  "failures": {
-    "FED_FRED": "HTTPSConnectionPool(host='fred.stlouisfed.org', port=443): Read timed out. (read timeout=25)",
-    "QRA": "Treasury press release not found: Treasury Announces Marketable Borrowing Estimates",
-    "BUYBACK_ACTUAL": "TreasuryDirect buyback result XML not discoverable/parseable this run"
-  },
-  "history_rows": 1
+  "failures": {},
+  "history_rows": 12
 }
