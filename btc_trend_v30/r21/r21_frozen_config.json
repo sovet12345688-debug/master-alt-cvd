@@ -1,0 +1,55 @@
+{
+  "model": "MASTER_BTC_TREND_V3_R2_1",
+  "status": "FINAL_FROZEN_NO_REPLAY",
+  "parent": {
+    "model": "MASTER_BTC_TREND_V3_R2_0",
+    "revision": "REV2_PIT_AVAILABILITY_HOTFIX",
+    "commit": "6e0c14f0b483dec1d15650e226ae65f9adc93800",
+    "candidate_config_sha256": "2acb4c8b1cd24bc03ff1c14947361caa281b44680aa60d2323e1572284bfd048",
+    "frozen_config_git_blob_sha1": "9f1a54edb0312bd86f230f025f539bd4255a016f",
+    "engine_git_blob_sha1": "cf5c5bf7a10ba699fe695964b7e7f435dead016b"
+  },
+  "single_change": {
+    "id": "SHORT_CORE_REQUIRES_SEPARATE_COMPLETED_DAILY_CONFIRMATION",
+    "applies_to": "SHORT_CORE_ONLY",
+    "same_availability_timestamp_as_confirm_forbidden": true,
+    "candidate_time_must_be_strictly_after_confirm_time": true,
+    "minimum_completed_daily_sessions_after_confirm": 1,
+    "interpretation": "SHORT CONFIRM and CORE may not be added on the same decision event. CORE requires at least one later completed 1D session and must still pass the unchanged R2.0 REV2 short-core conditions."
+  },
+  "inherited_unchanged": {
+    "long_machine_all_rules": true,
+    "short_watch_seed_confirm_rules": true,
+    "short_core_market_conditions": true,
+    "short_risk_budget": true,
+    "holding_and_exit_rules": true,
+    "reset_rules": true,
+    "pit_availability_semantics": true,
+    "predeclared_gates": true
+  },
+  "risk_identity": {
+    "long_max_episode_R": 1.0,
+    "short_max_episode_R": 0.85,
+    "short_seed_R": 0.3,
+    "short_confirm_add_R": 0.3,
+    "short_core_add_R": 0.25
+  },
+  "evidence_firewall": {
+    "r20_historical_diagnostic_used_only_to_generate_hypothesis": true,
+    "r21_historical_replay_performed_before_freeze": false,
+    "r21_results_may_not_modify_this_candidate": true,
+    "production_promotion_from_same_historical_window": false
+  },
+  "forbidden_changes": [
+    "LONG_RULE_CHANGE",
+    "SHORT_SEED_THRESHOLD_CHANGE",
+    "SHORT_CONFIRM_THRESHOLD_CHANGE",
+    "SHORT_CORE_MARKET_THRESHOLD_CHANGE",
+    "RISK_BUDGET_CHANGE",
+    "STOP_CHANGE",
+    "EXIT_CHANGE",
+    "RESET_CHANGE",
+    "PIT_CHANGE",
+    "MULTI_PARAMETER_TUNING"
+  ]
+}
