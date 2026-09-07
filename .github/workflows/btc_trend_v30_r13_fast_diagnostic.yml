@@ -110,6 +110,14 @@ jobs:
             --snapshot-root .fast_snapshot \
             --output btc_trend_v30/r13/fast/output/route_change_forensic.json
 
+      - name: Run false-start forensic drilldown
+        run: |
+          mkdir -p btc_trend_v30/r13/fast/output
+          python btc_trend_v30/r13/fast/false_start_forensic.py \
+            --snapshot-root .fast_snapshot \
+            --output btc_trend_v30/r13/fast/output/false_start_forensic.json \
+            --csv-output btc_trend_v30/r13/fast/output/false_start_cases.csv
+
       - name: Upload FAST diagnostic evidence
         uses: actions/upload-artifact@v4
         with:
