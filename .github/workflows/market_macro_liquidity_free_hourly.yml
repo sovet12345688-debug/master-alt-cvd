@@ -1,0 +1,85 @@
+name: MASTER MARKET Free Macro Liquidity Hourly
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '49 * * * *'
+  push:
+    paths:
+      - 'market_vault/macro_liquidity_free_collector.py'
+      - '.github/workflows/market_macro_liquidity_free_hourly.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: master-market-free-macro-liquidity-hourly
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install
+        run: pip install -r market_vault/requirements.txt
+
+      - name: Syntax check
+        run: python -m py_compile market_vault/macro_liquidity_free_collector.py
+
+      - name: Collect free official macro liquidity data
+        run: python market_vault/macro_liquidity_free_collector.py
+
+      - name: Validate core free metrics
+        run: |
+          python - <<'PY'
+          import json,sys
+          s=json.load(open('market_vault/state/macro_liquidity_state.json'))
+          p=json.load(open('market_vault/output/latest_macro_liquidity.json'))
+          if p.get('engine')!='MASTER_MARKET_FREE_MACRO_LIQUIDITY_V1':
+              sys.exit('wrong macro liquidity engine')
+          names={m.get('metric') for m in p.get('metrics',[])}
+          core={'FED_TOTAL_ASSETS','FED_RESERVE_BALANCES','ON_RRP','TGA_CLOSING_BALANCE','US_NET_LIQUIDITY_PROXY'}
+          missing=core-names
+          if missing:
+              sys.exit(f'missing core free macro metrics: {sorted(missing)}')
+          print('FREE_MACRO_CORE=PASS')
+          print('optional_failures=',s.get('failures',{}))
+          PY
+
+      - name: Validate same-source history windows
+        run: |
+          python - <<'PY'
+          import json,sys
+          p=json.load(open('market_vault/output/latest_macro_liquidity.json'))
+          for m in p.get('metrics',[]):
+              for k in ('vs_1d','vs_3d','vs_7d'):
+                  b=m.get(k)
+                  if b is not None and b.get('previous_snapshot_hour_utc') is None:
+                      sys.exit(f'invalid {k} comparison for {m.get("metric")}')
+          print('FREE_MACRO_HISTORY_GUARD=PASS')
+          PY
+
+      - name: Commit generated data
+        run: |
+          git config user.name "market-macro-free-bot"
+          git config user.email "market-macro-free-bot@users.noreply.github.com"
+          git add market_vault/data/macro_liquidity_free_history.csv market_vault/output/latest_macro_liquidity.json market_vault/state/macro_liquidity_state.json
+          if git diff --cached --quiet; then
+            echo "No generated data changes"
+          else
+            git commit -m "data: hourly free macro liquidity snapshot"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
