@@ -11,7 +11,8 @@
   "source_provenance": {
     "canonicalization_mode": "USER_APPROVED_RULESET_PLUS_VALIDATED_GITHUB_OVERLAY",
     "historical_identical_prompt_claim": false,
-    "canonicalized_kst": "2026-09-07T11:33:00+09:00"
+    "canonicalized_kst": "2026-09-07T11:33:00+09:00",
+    "ui_canonicalized_kst": "2026-09-07T14:56:35+09:00"
   },
   "independence": {
     "cross_master_blocking_dependency": false,
@@ -20,14 +21,25 @@
     "execution_revalidation_required": true
   },
   "trade_frame": {
-    "allowed": ["1H", "4H", "1D", "1W"],
+    "allowed": [
+      "1H",
+      "4H",
+      "1D",
+      "1W"
+    ],
     "lock_before_execution": true,
     "structural_invalidation_defines_sl": true,
     "loss_avoidance_frame_extension_forbidden": true
   },
   "entry_model": {
-    "stages": ["E1_SMALL_ENTER", "E2_ADD"],
-    "default_risk_budget_split": {"E1": 0.4, "E2": 0.6},
+    "stages": [
+      "E1_SMALL_ENTER",
+      "E2_ADD"
+    ],
+    "default_risk_budget_split": {
+      "E1": 0.4,
+      "E2": 0.6
+    },
     "user_latest_explicit_override_wins": true,
     "trigger_pass_is_market_add": false,
     "add_requires_retest": true,
@@ -36,7 +48,10 @@
     "severe_risk_veto_blocks": true
   },
   "trigger": {
-    "frames": ["15m", "30m"],
+    "frames": [
+      "15m",
+      "30m"
+    ],
     "completed_candle_required": true,
     "provisional_candle_is_confirmation": false,
     "explanation_format": "어느 가격 / 어떤 15m·30m 완성 캔들 / 어디에 마감"
@@ -79,14 +94,41 @@
     "NoSevereRiskVeto",
     "TimeValidityRevalidatedIfDegraded"
   ],
-  "allowed_actions": ["ENTER", "SMALL ENTER", "WATCH", "WAIT", "AVOID"],
+  "allowed_actions": [
+    "ENTER",
+    "SMALL ENTER",
+    "WATCH",
+    "WAIT",
+    "AVOID"
+  ],
   "ui": {
+    "ui_version": "MASTER-TRADING-UI-V2-FINAL",
+    "presentation_contract": "money_master_os/masters/trading/MASTER-TRADING-UI-V2-FINAL.md",
     "semantic_sections": [
       "메인 관점 및 시나리오",
       "현황 데이터 주요 항목별 스코어 및 시황 점검",
       "차트 분석",
       "타점"
     ],
+    "visual_screens": [
+      "SCREEN 1 - 파동 시나리오",
+      "SCREEN 2 - 차트분석 SCORE",
+      "SCREEN 3 - LONG 타점 3개",
+      "SCREEN 4 - SHORT 타점 3개",
+      "SCREEN 5 - 파생 데이터 + 파동 시나리오 최종 조합 결론"
+    ],
+    "visual_screen_count": 5,
+    "screen_order_locked": true,
+    "asset_ui_parity_required": true,
+    "mobile_first": true,
+    "time_validity_display_mode": "MAX_NEW_FILL_ALLOWED_UNTIL_KST",
+    "time_validity_internal_labels_hidden_by_default": [
+      "신선 유효",
+      "유효",
+      "다음 재검증"
+    ],
+    "follow_up_fifth_question": "스크린2 파동분석을 첨부한 차트 기반으로 엘리엇파동을 숫자(1~5, A-B-C) 직접 표시한 버전으로 더 직관적으로 그려줄까?",
+    "user_approval_required_for_change": true,
     "later_user_refinement_allowed": true,
     "ui_only_change_must_not_rebuild_logic": true
   },
@@ -102,7 +144,12 @@
   },
   "footer": {
     "follow_up_count": 5,
-    "format": "🕒 MASTER TRADING | 실행완료: YYYY-MM-DD HH:mm KST | 다음 정식보고: 수동 실행",
+    "required_follow_ups": [
+      "누적 트레이딩 복기해줄까?",
+      "인포그래픽을 생성해줄까?"
+    ],
+    "fixed_fifth_question": "스크린2 파동분석을 첨부한 차트 기반으로 엘리엇파동을 숫자(1~5, A-B-C) 직접 표시한 버전으로 더 직관적으로 그려줄까?",
+    "format": "MASTER TRADING | 실행 완료 시간 : YYYY-MM-DD HH:mm KST | 다음 정식 보고 시간 : 수동 실행",
     "nothing_after_footer": true
   }
 }
