@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "milestone": "MONEY_MASTER_OS_V2_P1_SOURCE_HEALTH",
+  "status": "PASS",
+  "completed_kst": "2026-09-07T12:31:30+09:00",
+  "source_health_latest": "source_health/output/latest.json",
+  "source_health_registry": "source_health/registry.json",
+  "source_health_last_good": "source_health/state/last_good.json",
+  "source_health_events": "source_health/events/2026-09.jsonl",
+  "workflow": {
+    "name": "MONEY MASTER OS Source Health",
+    "main_run_id": 34079925352,
+    "conclusion": "success",
+    "schedule": "hourly at minute 05"
+  },
+  "guard": {
+    "name": "MONEY MASTER OS Guard",
+    "main_run_id": 34079925327,
+    "conclusion": "success",
+    "source_health_contract_validation": "PASS"
+  },
+  "initial_operational_snapshot": {
+    "overall": "DEGRADED",
+    "registered_sources": 10,
+    "healthy": 8,
+    "degraded": 0,
+    "stale": 0,
+    "failed": 2,
+    "missing": 0,
+    "unknown": 0
+  },
+  "failed_sources": {
+    "stablecoin_exchange_flow": {
+      "status": "FAILED",
+      "reason_codes": ["STATE_STALE", "LATEST_WORKFLOW_FAILED"],
+      "impact": ["market:OPTIONAL", "alt_top100:OPTIONAL", "alt_final20:OPTIONAL"],
+      "auto_master_veto": false
+    },
+    "us_net_liquidity": {
+      "status": "FAILED",
+      "reason_codes": ["STATE_FILE_MISSING", "LATEST_WORKFLOW_FAILED"],
+      "impact": ["market:OPTIONAL", "btc_trend:CONTEXT"],
+      "auto_master_veto": false,
+      "note": "Separate MARKET macro-liquidity collector remains independently monitored and healthy in the initial snapshot."
+    }
+  },
+  "fixed_during_validation": [
+    "Polymarket timestamp lineage changed from nonexistent last_run_utc to actual generated_at_utc; status normalized to HEALTHY.",
+    "Ambiguous MASTER-level health_pct/data_availability fields replaced by registered_source_health_pct/registered_source_availability.",
+    "Bootstrap explicitly treats Source Health as non-blocking diagnostics and not MASTER Coverage or trade permission."
+  ],
+  "authority_boundary": {
+    "data_availability_only": true,
+    "registered_source_health_is_not_master_coverage": true,
+    "optional_failure_does_not_auto_block_master": true,
+    "last_good_is_not_current_fact": true,
+    "master_decisions_remain_independent": true
+  },
+  "next_phase": "P1_OFFICIAL_STATE_STANDARD"
+}
