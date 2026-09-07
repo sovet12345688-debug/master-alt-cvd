@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "registry_name": "MONEY_MASTER_OS_REGISTRY",
+  "updated_kst": "2026-09-07T08:44:00+09:00",
+  "repository": "sovet12345688-debug/master-alt-cvd",
+  "baseline_observed_commit": "117f23c520ad31f4d25fb37c797947e4ef7b3b39",
+  "global_policy": {
+    "github_is_source_of_truth": true,
+    "chat_is_execution_surface": true,
+    "silent_reconstruction_forbidden": true,
+    "version_drift_blocks_bootstrap": true,
+    "missing_source_blocks_bootstrap": true,
+    "destructive_migration_forbidden": true
+  },
+  "masters": {
+    "market": {
+      "display_name": "MASTER MARKET",
+      "expected_version": "V1.2 FINAL",
+      "repo_version": "V1.2 FINAL",
+      "source_path": "master_prompts/master_market_v1_2_current.md",
+      "contract_path": "state/master_market_v1_2_contract.json",
+      "manifest_path": "money_master_os/masters/market/manifest.json",
+      "status": "READY",
+      "bootstrap_allowed": true,
+      "execution_policy": "LOAD_EXACT_SOURCE_AND_VALIDATE"
+    },
+    "alt": {
+      "display_name": "MASTER ALT",
+      "expected_version": "V4.8 FINAL",
+      "repo_version": "V2.2.1 FINAL20 DEEP FINAL",
+      "source_path": "master_prompts/master_alt_final20_current.md",
+      "contract_path": null,
+      "manifest_path": "money_master_os/masters/alt/manifest.json",
+      "status": "VERSION_DRIFT",
+      "bootstrap_allowed": false,
+      "execution_policy": "BLOCK_BOOTSTRAP_UNTIL_EXACT_V4_8_SOURCE_COMMITTED"
+    },
+    "btc_trend": {
+      "display_name": "MASTER BTC TREND",
+      "expected_version": "V3.0",
+      "repo_version": null,
+      "source_path": null,
+      "contract_path": null,
+      "manifest_path": "money_master_os/masters/btc_trend/manifest.json",
+      "status": "SOURCE_MISSING",
+      "bootstrap_allowed": false,
+      "execution_policy": "BLOCK_BOOTSTRAP_UNTIL_EXACT_V3_0_SOURCE_COMMITTED"
+    }
+  }
+}
