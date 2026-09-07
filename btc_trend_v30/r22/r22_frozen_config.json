@@ -1,0 +1,67 @@
+{
+  "model": "MASTER_BTC_TREND_V3_R2_2",
+  "status": "FINAL_FROZEN_NO_REPLAY",
+  "freeze_metadata": {
+    "pre_freeze_run_id": 34122527347,
+    "pre_freeze_commit": "57a8ffa6a91756dafaa15fa1b3d214aa34b10fc5",
+    "candidate_config_sha256": "6d6584219cc352e7cc1b7db902b78e1fe553fa30b07d59d9b918a74e5137abc2",
+    "candidate_config_blob_sha1": "14030331af7d4b70306e43c043a0941e753deaad",
+    "pre_freeze_engine_sha256": "90f3e341d8198c58d76e07ba3cb44eab2bcd711010ade727e1a319633f7515da",
+    "pre_freeze_engine_blob_sha1": "a331836f54f9fc9ec5aee4a20d81698a002c76f9",
+    "pre_freeze_contract_sha256": "24d8347c8386ab061c816e85846ce764e3caa672afd866e2e842496b575b70c9",
+    "pre_freeze_contract_blob_sha1": "3ad8f3ec397aecb79609ecea4e62cf80b543623c"
+  },
+  "parent": {
+    "model": "MASTER_BTC_TREND_V3_R2_1",
+    "branch": "btc-trend-v30-r21-short-core-delay",
+    "frozen_config_sha256": "80cff38e4aa9eebb98d052d644981a58e4576a99684d74fb4abf1f66482b9980",
+    "engine_git_blob_sha1": "b8a0d741ad59a98496d13b6b66a6a74763a27545",
+    "contract_git_blob_sha1": "ba6744311b0d4fb1c510eae2482360297616d3fd"
+  },
+  "single_change": {
+    "id": "DAILY_20D_EXTREME_DISTANCE_HARD_GATE_TO_PRIORITY_ONLY",
+    "applies_to": ["LONG_WATCH", "SHORT_WATCH"],
+    "unchanged_distance_threshold_atr": 1.0,
+    "hard_gate_removed": true,
+    "priority_flag_retained": true,
+    "interpretation": "Daily distance to the prior completed 20D high/low within 1 ATR no longer blocks WATCH. The same 1 ATR threshold remains a non-execution priority flag only. All actual SEED route triggers and risk controls remain unchanged."
+  },
+  "inherited_unchanged": {
+    "long_daily_ema20_side": true,
+    "long_daily_ema20_slope": true,
+    "long_h4_ema20_side": true,
+    "long_h4_ema20_slope": true,
+    "short_daily_ema20_side": true,
+    "short_daily_ema20_slope": true,
+    "short_h4_ema20_side": true,
+    "short_h4_ema20_slope": true,
+    "short_weekly_daily_regime": true,
+    "seed_breakout_reclaim_failed_retest_triggers": true,
+    "seed_volume_and_close_location": true,
+    "stop_geometry": true,
+    "risk_budget": true,
+    "confirm_core_holding_exit_reset": true,
+    "r21_short_core_separate_daily_confirmation": true,
+    "pit_availability_semantics": true,
+    "predeclared_gates": true
+  },
+  "evidence_firewall": {
+    "seed_lag_forensic_used_only_to_generate_hypothesis": true,
+    "r22_historical_replay_performed_before_freeze": false,
+    "r22_results_may_not_modify_this_candidate": true,
+    "production_promotion_from_same_historical_window": false
+  },
+  "forbidden_changes": [
+    "DISTANCE_THRESHOLD_TUNING",
+    "ROUTE_TRIGGER_CHANGE",
+    "VOLUME_THRESHOLD_CHANGE",
+    "STOP_CHANGE",
+    "RISK_CHANGE",
+    "CONFIRM_CHANGE",
+    "CORE_CHANGE_EXCEPT_INHERITED_R21_TIMING",
+    "EXIT_CHANGE",
+    "RESET_CHANGE",
+    "PIT_CHANGE",
+    "MULTI_PARAMETER_TUNING"
+  ]
+}
