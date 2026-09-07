@@ -1,8 +1,10 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "master_id": "BTC_TREND_CURRENT",
   "display_name": "MASTER BTC TREND",
-  "expected_version": "V3.0",
+  "production_version": "V2.6",
+  "research_version": "V3.0",
+  "expected_version": "V2.6 PRODUCTION",
   "repo_version": null,
   "status": "SOURCE_MISSING",
   "canonical_source": null,
@@ -18,13 +20,18 @@
   ],
   "bootstrap": {
     "allowed": false,
-    "block_reason": "No exact MASTER BTC TREND V3.0 canonical prompt source was found in the repository. Do not reconstruct from memory.",
+    "block_reason": "Production identity is V2.6, but no exact V2.6 canonical source is committed. V3.0 remains research-only and must not be silently promoted or reconstructed.",
     "require_exact_version_match": true,
     "require_source_present": true,
     "require_validator_pass": true
   },
+  "research": {
+    "version": "V3.0",
+    "status": "RESEARCH_ONLY",
+    "promotion_rule": "Promote only after acceptance criteria pass and exact canonical source/contract are committed."
+  },
   "ownership": {
-    "logic": "MISSING_UNTIL_EXACT_SOURCE_COMMITTED",
+    "logic": "MISSING_UNTIL_EXACT_V2_6_SOURCE_COMMITTED",
     "research_assets": "btc_backtest",
     "chat_memory": "NON_CANONICAL"
   }
