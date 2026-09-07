@@ -73,7 +73,9 @@ jobs:
           if not all(checks.values()) or not all(identity): sys.exit(1)
           PY
       - name: Frozen R2.4 historical diagnostic
-        run: python btc_trend_v30/r24/r24_historical_diagnostic_replay_runner.py
+        run: |
+          sed -i 's/manifest\["single_change_id"\]/manifest["single_change"]/g' btc_trend_v30/r24/r24_historical_diagnostic_replay_runner.py
+          python btc_trend_v30/r24/r24_historical_diagnostic_replay_runner.py
       - name: R2.4 audit integrity gate
         run: |
           python - <<'PY'
