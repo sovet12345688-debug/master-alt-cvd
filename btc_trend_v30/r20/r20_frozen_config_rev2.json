@@ -1,0 +1,197 @@
+{
+  "model": "MASTER_BTC_TREND_V3_R2_0",
+  "status": "FINAL_FROZEN_NO_REPLAY_REV2",
+  "freeze_metadata": {
+    "revision": "REV2_PIT_AVAILABILITY_HOTFIX",
+    "historical_replay_performed_before_freeze": false,
+    "candidate_config_sha256": "2acb4c8b1cd24bc03ff1c14947361caa281b44680aa60d2323e1572284bfd048",
+    "pit_contract_run_id": 34107216615,
+    "pit_contract_status": "PASS",
+    "pit_tests": 7,
+    "supersedes_rev1_due_to": "CANDLE_OPEN_TIMESTAMP_AVAILABILITY_SEMANTICS_NOT_EXPLICITLY_TESTED"
+  },
+  "evidence_firewall": {
+    "historical_diagnostic_start": "2021-01-01T00:00:00Z",
+    "historical_diagnostic_end": "2026-09-04T23:59:59Z",
+    "untouched_forward_start": "2026-09-05T00:00:00Z",
+    "historical_replay_can_promote": false
+  },
+  "data": {
+    "symbol": "BTCUSDT",
+    "market": "spot",
+    "required_timeframes": ["1D", "4H", "1H"],
+    "weekly_resample_from_daily": true,
+    "closed_candles_only": true,
+    "pit_shift_required": true,
+    "source_timestamp_semantics": "CANDLE_OPEN_TIME_UTC",
+    "timeframe_available_offset_hours": {"1H": 1, "4H": 4, "1D": 24},
+    "weekly_context_available_rule": "AFTER_FINAL_SUNDAY_DAILY_CLOSE_AT_MONDAY_00_UTC",
+    "asof_context_must_use_availability_timestamp": true,
+    "core_external_data_required": false
+  },
+  "features": {
+    "ema_fast": 20,
+    "ema_slow": 50,
+    "atr_period": 14,
+    "breakout_lookback": 20,
+    "volume_lookback": 20,
+    "ema20_slope_days": 5,
+    "ema50_slope_days": 10,
+    "chandelier_atr_multiple": 3.0,
+    "causal_h4_swing_lookback": 3,
+    "h4_reversal_sequence": "PRIOR_BAR_LH_THEN_CURRENT_LL_FOR_LONG_DERISK__MIRROR_FOR_SHORT"
+  },
+  "long": {
+    "watch": {
+      "daily_close_above_ema20": true,
+      "ema20_slope_positive": true,
+      "distance_to_20d_high_atr_max": 1.0,
+      "h4_close_above_ema20": true,
+      "h4_ema20_slope_positive": true
+    },
+    "seed": {
+      "risk_R": 0.35,
+      "breakout": {
+        "h4_close_above_prior_20bar_high": true,
+        "volume_ratio_min": 1.2,
+        "close_location_upper_fraction": 0.4,
+        "daily_close_not_below_ema20": true
+      },
+      "reclaim": {
+        "prior_daily_ema20_breach_lookback_days": 5,
+        "daily_close_reclaim_ema20": true,
+        "daily_close_above_prior_day_high": true,
+        "daily_volume_ratio_min": 1.1
+      },
+      "stop": {
+        "atr_multiple": 1.5,
+        "max_stop_distance_pct": 0.12,
+        "causal_h4_swing_required": true,
+        "causal_h4_swing_lookback": 3
+      }
+    },
+    "confirm": {
+      "window_days": 5,
+      "risk_add_R": 0.35,
+      "daily_close_above_ema20": true,
+      "requires_close_above_seed_day_high": true,
+      "ema20_rising": true,
+      "reference_failure_atr": 0.5
+    },
+    "core": {
+      "risk_add_R": 0.3,
+      "weekly_close_above_ema20_or_weekly_slope_nonnegative": true,
+      "daily_close_above_ema50": true,
+      "ema20_above_ema50_or_ema20_rising_10d_with_price_above_ema50": true,
+      "max_total_episode_risk_R": 1.0
+    }
+  },
+  "short": {
+    "watch": {
+      "daily_close_below_ema20": true,
+      "ema20_slope_negative": true,
+      "distance_to_20d_low_atr_max": 1.0,
+      "h4_close_below_ema20": true,
+      "h4_ema20_slope_negative": true
+    },
+    "seed": {
+      "risk_R": 0.3,
+      "regime": {
+        "weekly_close_below_ema20_or_weekly_slope_negative": true,
+        "daily_close_below_ema50": true
+      },
+      "breakdown": {
+        "h4_close_below_prior_20bar_low": true,
+        "volume_ratio_min": 1.25,
+        "close_location_lower_fraction": 0.4
+      },
+      "failed_retest": {
+        "prior_breakdown_lookback_days": 5,
+        "reference_rule": "MIN_OF_LATEST_COMPLETED_DAILY_EMA20_AND_PRIOR_COMPLETED_20D_LOW",
+        "prior_breakdown_requires_h4_close_below_reference": true,
+        "retest_requires_h4_high_at_or_above_reference": true,
+        "h4_reclose_below_reference": true,
+        "h4_close_below_ema20": true,
+        "volume_ratio_min": 1.1
+      },
+      "stop": {
+        "atr_multiple": 1.5,
+        "max_stop_distance_pct": 0.1,
+        "causal_h4_swing_required": true,
+        "causal_h4_swing_lookback": 3
+      }
+    },
+    "confirm": {
+      "window_days": 4,
+      "risk_add_R": 0.3,
+      "daily_close_below_ema20": true,
+      "requires_close_below_seed_day_low": true,
+      "ema20_falling": true,
+      "reference_failure_atr": 0.5
+    },
+    "core": {
+      "risk_add_R": 0.25,
+      "ema20_below_ema50": true,
+      "ema50_slope_nonpositive": true,
+      "weekly_close_below_ema20": true,
+      "max_total_episode_risk_R": 0.85
+    }
+  },
+  "holding": {
+    "fixed_profit_target": null,
+    "break_even_move_mandatory": false,
+    "stop_may_widen": false,
+    "derisk_fraction": 0.5,
+    "h4_reversal_definition": {
+      "long_derisk": "PRIOR_COMPLETED_H4_HIGH_LT_HIGH_2_BARS_AGO_AND_CURRENT_COMPLETED_H4_LOW_LT_PRIOR_LOW",
+      "short_derisk": "PRIOR_COMPLETED_H4_LOW_GT_LOW_2_BARS_AGO_AND_CURRENT_COMPLETED_H4_HIGH_GT_PRIOR_HIGH"
+    },
+    "long": {
+      "derisk_requires_daily_below_ema20_and_h4_lh_ll": true,
+      "full_exit_two_daily_below_ema20_with_nonpositive_slope": true,
+      "full_exit_daily_below_ema50": true,
+      "chandelier_atr_multiple": 3.0
+    },
+    "short": {
+      "derisk_requires_daily_above_ema20_and_h4_hl_hh": true,
+      "full_exit_two_daily_above_ema20_with_nonnegative_slope": true,
+      "full_exit_daily_above_ema50": true,
+      "chandelier_atr_multiple": 3.0
+    }
+  },
+  "reset": {
+    "minimum_completed_daily_sessions": 3,
+    "requires_new_causal_20d_family": true,
+    "prior_route_inheritance_forbidden": true,
+    "prior_stop_inheritance_forbidden": true,
+    "prior_confirmation_inheritance_forbidden": true
+  },
+  "predeclared_candidate_gates": {
+    "mcr_90d_mean_min": 0.2,
+    "mcr_365d_mean_min": 0.2,
+    "trend_recall_90d_min": 0.55,
+    "trend_recall_365d_min": 0.55,
+    "long_expectancy_gt_R": 0.0,
+    "short_expectancy_gt_R": 0.0,
+    "confirmed_false_start_rate_max": 0.45,
+    "capture_to_loss_ratio_gt": 1.1,
+    "median_seed_lag_days_max": 7.0,
+    "cycle_bucket_expectancy_floor_R": -0.15,
+    "cycle_bucket_min_n": 10,
+    "pit_invariance_required": true,
+    "robustness_required": true,
+    "cycle_independence_required": true,
+    "state_monotonicity_required": true,
+    "full_risk_governor_required_for_production": true,
+    "exact_v26_h2h_required_under_current_governance": true,
+    "forward_untouched_oos_required_for_production": true
+  },
+  "forbidden": {
+    "r1x_4h_add_layer": true,
+    "fixed_3R_full_exit": true,
+    "shared_long_short_score": true,
+    "automatic_same_episode_reentry_after_failure": true,
+    "threshold_grid_before_freeze": true,
+    "best_variant_adoption_from_historical_replay": true
+  }
+}
