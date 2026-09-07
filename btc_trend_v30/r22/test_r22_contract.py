@@ -10,7 +10,7 @@ from btc_trend_v30.r21.r21_engine import R21Engine
 from btc_trend_v30.r22.r22_engine import R22Engine, _early_long_watch, _early_short_watch, _priority_distance
 
 HERE = Path(__file__).resolve().parent
-CFG = json.loads((HERE / "r22_candidate_config.json").read_text(encoding="utf-8"))
+CFG = json.loads((HERE / "r22_frozen_config.json").read_text(encoding="utf-8"))
 
 
 def row(**kwargs):
@@ -18,10 +18,7 @@ def row(**kwargs):
 
 
 def test_long_distance_only_removed_from_hard_gate():
-    r = row(
-        d_close=100.0,d_ema20=95.0,d_ema20_slope_5=1.0,d_atr14=5.0,d_prior20_high=120.0,
-        close=102.0,ema20=100.0,ema20_slope_5=1.0,
-    )
+    r = row(d_close=100.0,d_ema20=95.0,d_ema20_slope_5=1.0,d_atr14=5.0,d_prior20_high=120.0,close=102.0,ema20=100.0,ema20_slope_5=1.0)
     e = R22Engine()
     assert _early_long_watch(r) is True
     assert long_watch(r, e.cfg) is False
@@ -29,10 +26,7 @@ def test_long_distance_only_removed_from_hard_gate():
 
 
 def test_short_distance_only_removed_from_hard_gate():
-    r = row(
-        d_close=100.0,d_ema20=105.0,d_ema20_slope_5=-1.0,d_atr14=5.0,d_prior20_low=80.0,
-        close=98.0,ema20=100.0,ema20_slope_5=-1.0,
-    )
+    r = row(d_close=100.0,d_ema20=105.0,d_ema20_slope_5=-1.0,d_atr14=5.0,d_prior20_low=80.0,close=98.0,ema20=100.0,ema20_slope_5=-1.0)
     e = R22Engine()
     assert _early_short_watch(r) is True
     assert short_watch(r, e.cfg) is False
@@ -47,6 +41,7 @@ def test_other_watch_atoms_remain_hard_gates():
 
 
 def test_threshold_is_not_tuned():
+    assert CFG["status"] == "FINAL_FROZEN_NO_REPLAY"
     assert CFG["single_change"]["unchanged_distance_threshold_atr"] == 1.0
     assert CFG["single_change"]["hard_gate_removed"] is True
     assert CFG["single_change"]["priority_flag_retained"] is True
