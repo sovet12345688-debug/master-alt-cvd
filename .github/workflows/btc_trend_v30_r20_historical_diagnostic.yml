@@ -70,7 +70,7 @@ jobs:
           checks=[
             d['step7']=='PASS',
             d['raw_all_leg']['legs']==119,
-            math.isclose(d['raw_all_leg']['mean_R'],0.07563025210084033,abs_tol=1e-12),
+            math.isclose(d['raw_all_leg']['mean_unit_R'],0.07563025210084033,abs_tol=1e-12),
           ]
           print('R12_BASELINE_IDENTITY=',checks)
           if not all(checks): sys.exit(1)
