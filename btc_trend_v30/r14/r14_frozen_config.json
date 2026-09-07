@@ -1,7 +1,7 @@
 {
   "model": "MASTER_BTC_TREND_V3_R1_4",
   "status": "RESEARCH_BASELINE_FROZEN_PRE_R14_REPLAY",
-  "freeze_timestamp_kst": "2026-09-07T17:36:00+09:00",
+  "freeze_timestamp_kst": "2026-09-07T17:38:00+09:00",
   "parent_r13_branch": "btc-trend-v30-r13-freeze",
   "parent_r13_config_sha256": "b417282c66bec49c1c5de672f8317635508eba1dd05f538074a1508f14217fa9",
   "design_basis": "R1.3 historical diagnostics identify structural bottlenecks; no R1.4 replay result was viewed before this freeze.",
@@ -66,11 +66,22 @@
     "no_position_size_increase_after_episode_risk_cap": true
   },
   "mcr_definition": {
-    "capture_numerator": "MAX_0_OF_WEIGHTED_REALIZED_INITIAL_POSITION_PRICE_RETURN_USING_FIXED_HALF_PLUS_RUNNER_HALF",
+    "capture_numerator": "MAX_0_OF_WEIGHTED_INITIAL_POSITION_PRICE_RETURN_FIXED_HALF_PLUS_RUNNER_HALF_WITH_HORIZON_CAP",
+    "horizon_handling": "FOR_90D_OR_365D_USE_ACTUAL_EXIT_IF_EXIT_TIME_IS_ON_OR_BEFORE_HORIZON_OTHERWISE_MARK_OPEN_FRACTION_AT_LAST_AVAILABLE_CLOSE_ON_OR_BEFORE_HORIZON_NEVER_USE_POST_HORIZON_PRICE",
     "denominator": "EPISODE_FAVORABLE_TRUTH_MFE",
     "mcr_90d_mean_min": 0.2,
     "mcr_365d_mean_min": 0.2,
     "note": "4H ADD PnL is portfolio performance, not part of initial-position MCR numerator."
+  },
+  "robustness_battery": {
+    "baseline_is_never_replaced_by_best_variant": true,
+    "diagnostic_only_same_period": true,
+    "predeclared_variants": [
+      "ADD_PROGRESS_MIN_R_0_75",
+      "ADD_PROGRESS_MIN_R_1_25",
+      "RUNNER_FRACTION_0_40_FIXED_0_60",
+      "RUNNER_FRACTION_0_60_FIXED_0_40"
+    ]
   },
   "predeclared_gates": {
     "long_portfolio_expectancy_gt_R": 0.0,
