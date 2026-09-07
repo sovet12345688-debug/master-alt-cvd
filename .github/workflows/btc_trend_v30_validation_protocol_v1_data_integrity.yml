@@ -1,4 +1,4 @@
-name: BTC TREND V3.0 Validation Protocol V1 Step1-7
+name: BTC TREND V3.0 Validation Protocol V1 Step1-8
 # Research branch only. V2.6 is not read or modified.
 
 on:
@@ -13,6 +13,7 @@ on:
       - 'btc_trend_v30/validation_protocol_v1_step6_state_machine_replay.py'
       - 'btc_trend_v30/validation_protocol_v1_step6_runner.py'
       - 'btc_trend_v30/validation_protocol_v1_step7_metrics.py'
+      - 'btc_trend_v30/validation_protocol_v1_step8_robustness.py'
       - '.github/workflows/btc_trend_v30_validation_protocol_v1_data_integrity.yml'
   workflow_dispatch:
 
@@ -23,9 +24,9 @@ env:
   PYTHONUNBUFFERED: '1'
 
 jobs:
-  validation-step1-7:
+  validation-step1-8:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -41,7 +42,7 @@ jobs:
           python - <<'PY'
           import json,sys
           d=json.load(open('btc_trend_v30/output/validation_v1/data_integrity/audit.json',encoding='utf-8'))
-          print('STEP1=',d['data_integrity'],'ROWS=',d['final_rows'],'/',d['expected_rows'],'API=',d['api_crosscheck']['status'])
+          print('STEP1=',d['data_integrity'],'ROWS=',d['final_rows'],'/',d['expected_rows'])
           if d['data_integrity']!='PASS': sys.exit('STOP: Step1 HOLD')
           PY
 
@@ -52,7 +53,7 @@ jobs:
           python - <<'PY'
           import json,sys
           d=json.load(open('btc_trend_v30/output/validation_v1/step2_full_daily_scoring/audit.json',encoding='utf-8'))
-          print('STEP2=',d['step2'],'PIT=',d['point_in_time_prefix_invariance']['pass'],'COUNTS=',d['daily_counts'])
+          print('STEP2=',d['step2'],'PIT=',d['point_in_time_prefix_invariance']['pass'])
           if d['step2']!='PASS': sys.exit('STOP: Step2 HOLD')
           PY
 
@@ -63,7 +64,7 @@ jobs:
           python - <<'PY'
           import json,sys
           d=json.load(open('btc_trend_v30/output/validation_v1/step3_episode_dedupe/audit.json',encoding='utf-8'))
-          print('STEP3=',d['step3'],'DAILY_SIGNAL_N=',d['daily_signal_n'],'EPISODE_N=',d['independent_episode_n'],'PIT=',d['point_in_time_prefix_invariance']['pass'])
+          print('STEP3=',d['step3'],'EPISODE_N=',d['independent_episode_n'])
           if d['step3']!='PASS': sys.exit('STOP: Step3 HOLD')
           PY
 
@@ -74,7 +75,7 @@ jobs:
           python - <<'PY'
           import json,sys
           d=json.load(open('btc_trend_v30/output/validation_v1/step4_outcome_labels/audit.json',encoding='utf-8'))
-          print('STEP4=',d['step4'],'EPISODES=',d['episodes'],'CENSORED=',d['censored'],'ENGINE=',d['engine_counts'])
+          print('STEP4=',d['step4'],'EPISODES=',d['episodes'])
           if d['step4']!='PASS': sys.exit('STOP: Step4 HOLD')
           PY
 
@@ -85,7 +86,7 @@ jobs:
           python - <<'PY'
           import json,sys
           d=json.load(open('btc_trend_v30/output/validation_v1/step5_walk_forward_oos/audit.json',encoding='utf-8'))
-          print('STEP5=',d['step5'],'OOS_EPISODES=',d['oos_episodes'],'MED20=',d['oos_medium20_hit_rate'],'LONG_PRIMARY=',d['oos_long_primary_hit_rate'])
+          print('STEP5=',d['step5'],'OOS_EPISODES=',d['oos_episodes'])
           if d['step5']!='PASS': sys.exit('STOP: Step5 HOLD')
           PY
 
@@ -107,23 +108,30 @@ jobs:
           python - <<'PY'
           import json,sys
           d=json.load(open('btc_trend_v30/output/validation_v1/step7_metrics/audit.json',encoding='utf-8'))
-          print('STEP7=',d['step7'])
-          print('RAW_ALL_LEG=',d['raw_all_leg'])
-          print('DIRECTION=',d['direction'])
-          print('ENGINE=',d['engine'])
-          print('FALSE_START=',d['false_start'])
-          print('MISSED=',d['missed_trend'])
-          print('MCR=',d['mcr'])
-          print('LOCALIZATION=',d['localization_and_lag'])
-          print('MDD=',d['raw_equal_1r_mdd'])
-          print('PERF_GATES=',d['preliminary_performance_gates'])
+          print('STEP7=',d['step7'],'RAW=',d['raw_all_leg'],'MCR=',d['mcr'])
           if d['step7']!='PASS': sys.exit('STOP: Step7 HOLD')
           PY
 
-      - name: Upload Step1-7 audit artifact
+      - name: Step8 - LOCO Robustness Weight Threshold Zone ATR Cycle
+        run: python btc_trend_v30/validation_protocol_v1_step8_robustness.py
+      - name: Step8 gate
+        run: |
+          python - <<'PY'
+          import json,sys
+          d=json.load(open('btc_trend_v30/output/validation_v1/step8_robustness/audit.json',encoding='utf-8'))
+          print('STEP8=',d['step8'])
+          print('ROBUSTNESS=',d['robustness_performance_gate'])
+          print('NEIGHBORHOOD=',d['neighborhood'])
+          print('LOCO=',d['loco'])
+          print('CYCLE=',d['cycle'])
+          print('MCR_GATE=',d['mcr_promotion_gate'])
+          if d['step8']!='PASS': sys.exit('STOP: Step8 HOLD')
+          PY
+
+      - name: Upload Step1-8 audit artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: btc-trend-v30-validation-v1-step1-7
+          name: btc-trend-v30-validation-v1-step1-8
           path: btc_trend_v30/output/validation_v1/
           retention-days: 14
