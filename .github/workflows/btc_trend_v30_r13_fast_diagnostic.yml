@@ -95,6 +95,14 @@ jobs:
           echo "FULL_REPLAY_PERFORMED=false"
           echo "PRODUCTION_PROMOTION_EVIDENCE=false"
 
+      - name: Run SC 4H ADD forensic drilldown
+        run: |
+          mkdir -p btc_trend_v30/r13/fast/output
+          python btc_trend_v30/r13/fast/fast_sc_add_forensics.py \
+            --snapshot-root .fast_snapshot \
+            --json-output btc_trend_v30/r13/fast/output/sc_4h_add_forensics.json \
+            --csv-output btc_trend_v30/r13/fast/output/sc_4h_add_cases.csv
+
       - name: Upload FAST diagnostic evidence
         uses: actions/upload-artifact@v4
         with:
