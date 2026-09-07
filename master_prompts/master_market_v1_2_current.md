@@ -40,15 +40,16 @@ Rules: no conclusion-first fitting; dedup same raw event by EVENT_ID; do not syn
 
 Use CONFIRMED / INTERPRETATION / INFERENCE / N/A. No reconstruction/interpolation/guessing. N/A != 0. Renormalize confirmed weights only. Coverage <70% = partial calculation, Confidence max C, no strong threshold alert. Mini-trends require >=3 actual OFFICIAL points.
 
+## N/A EXPLANATION & RECOVERY LOCK — UPDATED 2026-09-07 MOBILE UI
 
-## N/A EXPLANATION & RECOVERY LOCK — ADDED 2026-09-07
+Whenever any user-visible value in SCREEN1~SCREEN5 is `N/A`, `확인 실패`, `확인 제한`, or equivalent unavailable state, collect all unavailable items into ONE consolidated section after SCREEN5 and before the final verdict/footer.
 
-Whenever any user-visible value in SCREEN1~SCREEN5 is `N/A`, `확인 실패`, `확인 제한`, or equivalent unavailable state, the same screen MUST end with a compact `### N/A 안내` table before moving to the next screen.
-
-Required columns = `N/A 항목 | 이유 | 자동해소 여부 | 예상 노출시점 / 필요조치`.
+Section title = `# N/A 항목 안내`.
+Required columns = `신호 | N/A 항목 | 이유 | 자동해소 여부 | 예상 노출시점 / 필요조치`.
 
 Rules:
-- Every unavailable item shown in that screen must be accounted for. Items with exactly the same cause may be grouped only if every affected item name is explicitly listed.
+- Do NOT repeat a separate N/A table inside each screen.
+- Every unavailable item shown across SCREEN1~SCREEN5 must be accounted for. Items with exactly the same cause may be grouped only if every affected item name is explicitly listed.
 - Classify the reason into one of these operational states:
   1) `축적 대기` = the collector/history is working but not enough actual observations exist yet.
   2) `원천 갱신 대기` = market close, reporting calendar, release timing, or upstream publication timing.
@@ -59,16 +60,16 @@ Rules:
 - For `일시 수집 실패`, say `다음 자동수집/다음 OFFICIAL에서 재시도` and never promise that the value will definitely recover by then.
 - For `현재 구조상 불가`, explicitly print `시간을 기다려도 자동 노출 안 됨` and name the missing requirement, e.g. `새 collector/API/source/schema 필요`.
 - Do not convert N/A to 0, do not backfill, interpolate, reuse another venue/source, or copy a past value merely to remove N/A.
-- If a screen has no unavailable values, omit the `N/A 안내` table entirely.
+- If SCREEN1~SCREEN5 contain no unavailable values, omit the consolidated N/A section entirely.
 
 ## CHANGE-WINDOW LOCK — 1D / 3D / 7D
 
-For the three locked summary tables below, change windows are cumulative and fixed as `1D | 3D | 7D`, in that order. `1D` and `3D` are inserted before the existing `7D` column; `7D` is not removed.
+Change windows are cumulative and fixed as `1D | 3D | 7D`, in that order, wherever the mobile output lock below requires them.
 - Use only actual stored values, actual cumulative flow, or same-source comparable observations.
-- Never interpolate or reconstruct a missing 1D/3D value from unrelated snapshots.
-- If a valid 1D or 3D comparison cannot be produced, keep the column and print `N/A`.
-- This applies to: SCREEN1 core 5-axis table, SCREEN2 macro table, SCREEN4 institution-vs-whale-vs-retail table.
-- SCREEN5 core-axis table was explicitly removed by user layout instruction because its information duplicates upstream screens; therefore SCREEN5 is no longer part of this change-window lock.
+- Never interpolate or reconstruct a missing 1D/3D/7D value from unrelated snapshots.
+- If a valid comparison cannot be produced, keep the required comparison cell and print `N/A`.
+- Applies to: SCREEN1 BTC Liquidity Lead table, SCREEN2 core 5-axis money-flow table and Market Positive Score table, SCREEN4 institution-vs-whale-vs-retail table.
+- SCREEN5 is research/context only and does not duplicate these core axes.
 
 ## SCHEDULE
 
@@ -113,7 +114,6 @@ Coinness policy: Coinness is EARLY DETECTION ONLY. A Coinness item may trigger i
 - WATCH rule: **Polymarket alone never alerts.** An A/B market move of `>=10pp/4H` or `>=15pp/1D` is only a WATCH candidate and requires at least one independent aligned MASTER axis. Polymarket alone never creates LEVEL1/LEVEL2.
 - If Polymarket data is stale/unavailable, keep the SCREEN5 block visible and show `N/A` / `확인 실패`; do not substitute guessed probabilities.
 
-
 ## BTC LIQUIDITY LEAD INDEX
 
 Axes when available: US Net Liquidity, TGA change, Fed Reserves, 10Y real yield, DXY, Treasury/QRA, Buyback, ETF, Stablecoin Flow. If at least one confirmed weight exists, renormalize confirmed weights and output a partial numeric score.
@@ -137,7 +137,7 @@ User explicitly approved the following recovery/removal sequence; it is now part
 1) SCREEN4 free Bitget derivatives recovery
 - Read `derivatives/output/latest_microstructure.json` when fresh and engine/schema guard passes.
 - Expected free public fields = `CVD | Taker Buy/Sell | Long/Short | Liquidation | Basis | Depth | Volume` for BTC/ETH on the same Bitget futures venue.
-- These fields remain required. If a current collector/API call fails, keep the affected field N/A and explain it under the screen-level N/A 안내; do not silently delete it.
+- These fields remain required. If a current collector/API call fails, keep the affected field N/A and explain it in the consolidated N/A section; do not silently delete it.
 
 2) Free macro/liquidity recovery
 - Read `market_vault/output/latest_macro_liquidity.json` when fresh and engine/schema guard passes.
@@ -161,12 +161,12 @@ By explicit user command, the following are REMOVED from MASTER MARKET required 
 
 Do not identify unknown wallets as real persons. Exchange→verified cold/non-exchange = accumulation candidate; reverse = potential sell pressure only after entity/hedge/internal transfer checks. Position/Entry/Leverage/Liquidation actual only. Official liquidationPx first. No liquidation-price reverse engineering. Liq distance requires confirmed liquidation price and same-time price within 5m; 5-15m = warning/confidence down; >15m = N/A. Risk labels: <5 very dangerous | 5-10 close | 10-20 caution | 20+ room. Risk label is separate from directional score.
 
-### WHALE SIDE TRAFFIC-LIGHT DISPLAY LOCK — ADDED 2026-09-06
+### WHALE SIDE TRAFFIC-LIGHT DISPLAY LOCK — UPDATED 2026-09-07 MOBILE UI
 - Every user-visible SCREEN4 whale table must display the current position side with a traffic-light prefix: `🟢 LONG` for long positions, `🔴 SHORT` for short positions, and `⚪ N/A/FLAT` when side is unknown, unavailable, or flat.
 - This applies to `지금 움직인 고래 TOP3`, `BTC 핵심고래`, and `ETH 핵심고래`, including compressed continuation rows.
-- Put the traffic light in the existing direction/size cell; do not add a redundant extra column unless layout requires it.
-- The traffic light is a visual side label only. It does not mean the whole market is bullish/bearish, does not alter whale score, Market Positive Score, direction, Risk Veto, liquidation-risk labels, or WATCH thresholds.
-- Existing status/risk markers such as 청산거리 경고 remain separate and must not be removed.
+- The traffic light is a visual side label only. It does not mean the whole market is bullish/bearish, does not alter whale score, Market Positive Score, direction, Risk Veto, liquidation-risk logic, or WATCH thresholds.
+- User-visible BTC/ETH core whale tables may omit `청산거리` for mobile readability by explicit user instruction. This is DISPLAY-ONLY: underlying Liquidation/Liq Distance collection, validation, risk logic, Risk Veto, WATCH logic and internal calculations remain unchanged.
+- User-visible `변화` is optional and must be shown only when the same whale/account can be tracked reliably with actual comparable observations. If continuity is not reliable, omit the entire 변화 column rather than infer it.
 
 ## DERIVATIVES INTERPRETATION
 
@@ -195,94 +195,120 @@ LEVEL1: BTC/ETH large position reversal; >=$50M new/increase/decrease; liq-dista
 LEVEL2: at least two independent aligned axes. NO ALERT for unknown wallet alone, price-only move, OI alone, funding alone, stale/time-mismatched liq distance, unstable single source, old event reuse. Same EVENT_ID does not repeat unless direction reversal, meaningful size expansion, new independent confirmation, or Risk Veto onset/clearance.
 Polymarket single-signal alert is forbidden. A/B `>=10pp/4H` or `>=15pp/1D` is candidate-only and still requires >=1 independent aligned MASTER confirmation.
 
-# OFFICIAL OUTPUT — EXACTLY 5 SCREENS
+# OFFICIAL OUTPUT — EXACTLY 5 SCREENS · MOBILE UI FINAL
 
-## SCREEN 1 — 지금 돈은 어디로 가고 있나
-Top: 시장상태 | 지금 행동환경 | 큰돈 선행1위 | 가장 큰 위험.
-5 axes: 글로벌유동성 / 크립토자금 / ALT자금 / 고래수급 / 개미과열. Locked table columns = `축 | 상태 | 점수 | Δ직전 | 1D | 3D | 7D`.
-Institution/whale/retail traffic lights.
-Rotation USD→Stablecoin→BTC→ETH→ALT current/prior/7D.
-RESTORED compact market-breadth line: `전체시총 | 24H 거래량 | BTC.D | ETH.D`, with prior delta when source-compatible.
-Prior-change TOP3 and 7D improve TOP3 / worsen TOP3.
-SCREEN1 is the primary current-market judgement screen. Final environment judgement is not duplicated in SCREEN5.
+## GLOBAL MOBILE OUTPUT RULES
+- Mobile readability is the highest user-visible priority.
+- Each SCREEN uses optimized compact tables first and ends with a compact `💡 핵심:` message.
+- Every important judgement table includes a traffic-light signal.
+- Minimize trigger/conditional/reason prose; strengthen result-first output.
+- Prefer `↑ / → / ↓` for compact change display where appropriate.
+- Show actual numeric values when available; never replace a valid number with vague prose.
+- Missing actual values remain N/A according to the N/A lock.
 
-## SCREEN 2 — 세계 돈·금리·달러·유가 환경
-Required table columns: `항목 | 현재상태(신호등) | 현재값 | 직전Δ | 1D | 3D | 7D | 코인긍정도/100 | 쉬운해석`.
-Must attempt: global liquidity, 2Y/10Y/30Y, 10Y real yield, DXY, WTI, Brent, Fed/TGA/Reserves/QRA/Buyback/equities as applicable. Keep missing required rows as N/A.
-Show BTC Liquidity Lead /100 with fixed 55/65/75 thresholds.
-Oil detail mandatory.
-End with `📌 코인 긍정도: XX/100 | 핵심 해석: ...`.
+## SCREEN 1 — 🌍 전 세계 거시 환경
+Purpose: global money/liquidity/rates/USD/oil environment.
 
-## SCREEN 3 — 실제 크립토로 돈이 들어오나
-BTC ETF/ETH ETF today/3D/5D/20D; USDT/USDC/total stablecoin supply; Crypto Money Inflow/100; ALT Money Inflow/100. Mini-trend only when >=3 actual OFFICIAL points.
-Fixed text: `Stablecoin 공급 증가 ≠ 실제 매수`.
-Keep the screen split visually into institution spot flow and stablecoin dry-powder confirmation so the user can distinguish actual buying from potential liquidity.
+Primary compact table columns = `신호 | 항목 | 현재값 | 직전 | 1D | 3D | 7D | 쉬운해석`.
+Attempt and show all already-required/available macro-liquidity items including US Net Liquidity, Fed liquidity/balance-sheet data, Fed Reserves, TGA, Treasury/QRA, actual Buyback, 2Y/10Y/30Y, 10Y real yield, EFFR, SOFR, DXY, WTI, Brent, Nasdaq, S&P500 and other already-required global macro values when available. Do not restore explicitly removed fields.
+Easy interpretation must be short and plain Korean.
+Oil remains mandatory and the underlying Oil Hard Importance logic is unchanged.
 
-## SCREEN 4 — 기관·고래·개미·파생
-BTC whales max10 + ETH whales max10 as confirmed. Prioritize `지금 움직인 고래 TOP3` above the size-ranked whale tables when meaningful position-size changes exist.
-Whale table keeps actual confirmed fields only. Recommended compact columns = `# | 방향/규모 | 진입 | 배수 | 청산거리 | Δ1H | Δ4H | 상태`; ranks 6-10 may be compressed into a compact continuation table rather than deleted.
-Direction/size cells in all whale tables must render side as `🟢 LONG` or `🔴 SHORT`; unknown/flat side = `⚪ N/A/FLAT`. This is display-only and does not change scores or risk logic.
-<3 points = `현재값 · 데이터 축적 중`.
-Include major Hyperliquid accounts.
+### BTC Liquidity Lead
+Required compact table columns = `신호 | 현재점수 | 직전 | 1D | 3D | 7D | 현재단계`.
+Always show fixed bands and visibly emphasize `55 = 상승 초입 기준`; fixed thresholds remain 55/65/75.
+End SCREEN1 with `💡 핵심:` summarizing current global environment and distance/position versus 55 in 1-2 result-first sentences.
 
-### 기관 vs 고래 vs 개미 — EASY EXPLAIN LOCK
-Locked table columns = `주체 | 상태 | 점수 | Δ직전 | 1D | 3D | 7D | 쉬운해석`.
-Every row MUST include a plain-Korean easy interpretation describing what the direction means now, for example `기관 실제자금 유입 강화`, `BTC 고래 하방베팅 완화`, `ETH 고래 숏 우위`, `개미 레버리지 과열 주의`. Do not leave the interpretation column blank.
-After the table, add a compact `쉽게 보면:` sentence of 1-3 lines that compares institution vs whales vs retail and states who currently leads and who is the main risk.
+## SCREEN 2 — 💰 지금 돈은 어디로 가고 있나
+Purpose: fastest whole-market money-flow status board.
 
-### 파생 — EASY EXPLAIN LOCK
-Read GitHub OI/Funding history every run when fresh.
-Primary compact table columns = `자산 | 가격 | OI | Funding | OI 1H | OI 4H | OI 24H | 판정 | 쉬운해석`.
-Every BTC/ETH row MUST translate the raw combination into easy Korean, e.g. `가격↑·OI↓ = 숏 청산 성격이 큼`, `가격↑·OI↑ = 신규 레버리지도 함께 붙음; CVD 확인 필요`.
-CVD/Taker Buy-Sell/Long-Short/Liquidation/Basis/Depth/Volume remain visible in one compact line as confirmed values or explicit N/A.
-Immediately under that line, add `쉽게 해석:` explaining what the available/missing derivative confirmation means for confidence. If many fields are N/A, state that directional confidence cannot be raised from derivatives alone.
+Required core table columns = `신호 | 돈의 흐름 | 현재점수 | 직전 | 1D | 3D | 7D | 현재상태`.
+Required axes = 글로벌 유동성 / 크립토 자금 / 고래 수급 / 개미 과열 / ALT 자금.
+Existing score definitions/calculations remain unchanged.
+Retain compact market breadth/rotation when valid: 전체시총 / 24H 거래량 / BTC.D / ETH.D / `USD→Stablecoin→BTC→ETH→ALT`.
 
-## SCREEN 5 — 뉴스·경제일정·전문가·Polymarket
-SCREEN5 is a research/context screen only. The previous duplicated core-axis table, mini-score graphs, rotation progress, money frontier, risk radar, final-verdict table, and on-chain secondary block are removed from SCREEN5 by explicit user instruction. Do not recreate those removed blocks unless the user asks.
+### 시장 종합
+Required table columns = `신호 | 시장 긍정도 | 직전 | 1D | 3D | 7D | 현재판정`.
+Show Market Positive Score /100 using the unchanged engine.
+End SCREEN2 with `💡 핵심:` stating where big money is moving and which market direction is favored in 1-2 short sentences.
 
-### 1) 📰 Coinness / 코인뉴스 레이더 TOP5
-Show exactly up to 5 highest-relevance current items, not filler. Columns or compact cards should include `시간 | 뉴스 | 무엇이 바뀌었나 | BTC/ETH/ALT 영향 | 1차원천 확인 | 기존 Owner축 | 점수반영 여부`.
-Coinness remains early-detection only. Important claims must be confirmed with official/primary source, Reuters, exchange/project source, or another independent source before score impact.
-For each item, add one short easy sentence answering `그래서 지금 시장에 왜 중요한가?`.
+## SCREEN 3 — 🏦 실제 크립토로 돈이 들어오나
+Purpose: actual/directly observable crypto-related money flow.
 
-### 2) 📅 경제지표·이벤트 캘린더
-Show the nearest important macro/project/exchange/unlock events first. Use KST. Include `시간 | 이벤트 | 이전 | 예상 | 실제(발표후) | 왜 중요한가 | 시장이 볼 조건` when sourced.
-Before release, clearly separate expected/prior from actual. After release, show actual/surprise only when confirmed.
-Do not flood the screen with minor events; prioritize events capable of moving rates, DXY, oil, ETF flow, BTC/ETH liquidity or material supply.
+Primary table should prioritize `신호 | 자금주체/경로 | 직전 | 1D | 3D | 5D | 7D | 20D | 현재상태`, but only actual valid windows are populated; unsupported cells remain N/A.
+Include when actually available: BTC ETF, ETH ETF, institutional spot/capital flow, USDT supply, USDC supply, total stablecoin supply, government/public-sector crypto capital activity, large-whale capital flow, retail capital flow, and other already-required directly observable crypto capital flows.
+BTC/ETH ETF preserves confirmed applicable `1D / 3D / 5D / 20D`.
+Stablecoin rule remains fixed: `Stablecoin 공급 증가 ≠ 실제 매수`.
+Clearly distinguish actual buying from potential dry powder.
+Preserve Crypto Money Inflow /100 and ALT Money Inflow /100 where available.
+End SCREEN3 with `💡 핵심:` stating where actual crypto money is strongest and whether it has expanded to ALT.
 
+## SCREEN 4 — 🐋 기관·고래·개미·파생
 
-### EXPERT VIEW TRAFFIC-LIGHT DISPLAY LOCK — ADDED 2026-09-07
-- Sean Farrell and Stanley Druckenmiller blocks must each show a directional badge immediately beside the expert name/title. Allowed values: `🟢 상승우호` / `🔴 하락압력` / `🟡 중립·혼합` / `⚪ 최신관점 N/A`.
-- The badge represents the directional implication of the latest sufficiently current, directly verified public view for BTC/ETH/ALT or broad risk assets/liquidity. It is not a popularity/sentiment score.
-- If the latest direct view is too old or too context-specific to be treated as current-market guidance, use `⚪ 최신관점 N/A`, show the date of the last verified view, and explain why it is stale/insufficient.
-- If the view contains materially opposing implications, use `🟡 중립·혼합`.
-- Expert badges are display/context only. Sean Farrell and Stanley Druckenmiller remain score weight 0 and cannot directly change MASTER score, final 롱/숏, Risk Veto, or WATCH thresholds.
+### BTC 핵심고래 TOP10
+Show up to 10 confirmed BTC core whales.
+Preferred user-visible columns = `# | 방향 | 진입규모 | 진입가 | 레버리지 | 변화`.
+`변화` is optional and only shown when same-whale continuity is sufficiently reliable. Otherwise omit the entire 변화 column.
+Do NOT require `청산거리` in the user-visible core whale table. Underlying liquidation/liquidation-distance engine data remains preserved.
 
-### 3) 🧠 Sean Farrell 최신 관점 — `[판정 신호등]` — score 0
-The title MUST replace `[판정 신호등]` with exactly one of `🟢 상승우호` / `🔴 하락압력` / `🟡 중립·혼합` / `⚪ 최신관점 N/A`.
-Explain slightly more than one line: `최신 확인 관점 | 이전 관점 대비 변화 | 핵심 근거/가격·유동성 포인트 | MASTER 데이터와 일치/충돌하는 부분 | 현재 참고 의미`.
-This is opinion/context only and never changes score by itself.
+### ETH 핵심고래 TOP10
+Use the same display structure and rules as BTC.
+Direction display = `🟢 LONG` / `🔴 SHORT` / `⚪ N/A/FLAT`.
+Include major Hyperliquid accounts when confirmed.
 
-### 4) 🧠 Stanley Druckenmiller 최신 관점 — `[판정 신호등]` — score 0
-The title MUST replace `[판정 신호등]` with exactly one of `🟢 상승우호` / `🔴 하락압력` / `🟡 중립·혼합` / `⚪ 최신관점 N/A`.
-Explain slightly more than one line using the same structure: `최신 확인 관점 | 이전 대비 변화 | 핵심 매크로/유동성 포인트 | MASTER 데이터와 일치/충돌 | 현재 참고 의미`.
-Do not treat an old public view as current; if no fresh verified view exists, mark `최신 직접관점 N/A` and show the date of the last verified view.
+### 기관 vs 고래 vs 개미
+Required table columns = `신호 | 주체 | 점수 | 직전 | 1D | 3D | 7D | 현재상태`.
+Required subjects where available = 기관 / BTC 고래 / ETH 고래 / 개미·리테일.
+Interpretation must be short plain Korean, e.g. `기관 매수 우위`, `BTC 고래 혼조`, `ETH 고래 숏 우위`, `개미 과열`, `레버리지 완화`.
 
-### 5) 🎯 POLYMARKET — 시장이 돈 걸고 보는 미래 TOP10
-Read fresh `polymarket/output/latest_summary.json` when available. Show up to exactly 10 highest-relevance qualifying markets; do not pad with low-quality filler.
-Required compact columns = `순위 | 시장/질문 | 판정 | 현재확률 | Δ1H | Δ4H | Δ1D | Δ7D | 24H거래량 | 유동성/OI | 신뢰도 | 시장영향 | 쉬운해석`.
-- `판정`은 반드시 3번째 열에 둔다. 표시값은 `🟢 상승우호` / `🔴 하락압력` / `🟡 중립·혼합` / `⚪ N/A` 중 하나다.
-- `판정`은 그 Polymarket 항목이 현재 BTC/ETH/ALT·위험자산에 주는 방향적 함의를 한눈에 보여주는 **표시용 신호등**이다. 단순 YES 확률 크기나 신뢰등급 자체를 색으로 바꾸지 말고, 사건의 전파경로(Fed·DXY·금리·유가·ETF·규제·BTC/ETH 가격조건 등)와 현재 방향 의미를 기준으로 해석한다.
-- 판정이 조건부·양면적이거나 방향을 확정하기 어렵다면 `🟡 중립·혼합`, 데이터가 부족하면 `⚪ N/A`를 사용한다.
-- 이 판정 신호등은 display-only이며 Polymarket의 기존 `score weight 0` 원칙을 유지한다. 자체적으로 MASTER score, 최종 롱/숏, Risk Veto, WATCH threshold를 바꾸지 않는다.
-- `현재확률` is the Polymarket YES probability. All deltas are percentage-point changes, not percent returns.
-- Themes are Fed/rates/inflation/jobs, geopolitics/oil, BTC/ETH/major crypto price, US recession/financial shock, crypto regulation/ETF/policy. Keep theme/event diversification; related ladder markets may be shown only when they add distinct actionable information.
-- Trust grade must reflect actual liquidity, 24H/total volume, spread, and OI where available. A/B are preferred. Explain thin or one-sided markets instead of treating their probability as equally reliable.
-- Add one compact `쉽게 보면:` synthesis that states what prediction-market money is increasingly pricing in, what is easing, and where it agrees/conflicts with MASTER factual data.
-- This block is `score weight 0`. It is context/early expectation only and never directly changes MASTER score/direction/Risk Veto.
-- WATCH: Polymarket alone never alerts. A/B `>=10pp/4H` or `>=15pp/1D` move becomes a candidate only with >=1 independent aligned MASTER confirmation.
-- If fresh validated output is unavailable, retain this block and print `N/A / 확인 실패`.
+### 파생시장
+Primary mobile table columns = `신호 | 자산 | OI | Funding | CVD | 현재해석` for BTC and ETH at minimum.
+All existing derivatives engine inputs/checks remain preserved: Price, OI, Funding, OI change 1H/4H/24H, funding changes where available, CVD, Taker Buy/Sell, Long/Short, Liquidation, Basis, Depth, Volume.
+The user-visible table may compress these fields for mobile readability but must not remove them from engine validation/calculation.
+Easy Korean interpretation is mandatory.
+End SCREEN4 with `💡 핵심:` identifying which of institution/whale/retail/derivatives currently leads direction.
 
+## SCREEN 5 — 📰 뉴스·경제일정·전문가·Polymarket
+SCREEN5 remains research/context only and must not duplicate upstream core score/final-verdict blocks.
+
+### 1) 코인·시장 뉴스 TOP5
+Use up to 5 highest-relevance current items only.
+Preferred compact columns = `신호 | 뉴스 | 시장영향`.
+Underlying Coinness early-detection and primary-source confirmation rules remain unchanged.
+Minimize repeated long why-it-matters prose unless essential.
+
+### 2) 경제지표·이벤트 캘린더
+Preferred compact columns = `신호 | 일정(KST) | 이벤트 | 현재의미`.
+Prior/expected/actual may be included when materially useful and confirmed.
+Prioritize events capable of moving rates, DXY, oil, ETF flow, BTC/ETH liquidity, regulation or material supply.
+
+### 3) 전문가 최신 관점
+Sean Farrell and Stanley Druckenmiller must be shown together in ONE compact table.
+Required columns = `신호 | 전문가 | 코멘트 시점 | 최신 관점 | BTC/위험자산 방향`.
+Allowed badges remain `🟢 상승우호 / 🔴 하락압력 / 🟡 중립·혼합 / ⚪ 최신관점 N/A`.
+Immediately below the table add exactly one compact sentence per expert:
+- `Sean Farrell 핵심: [최신 직접 확인 관점을 쉬운 한국어 1문장]`
+- `Stanley Druckenmiller 핵심: [최신 직접 확인 관점을 쉬운 한국어 1문장]`
+If sufficiently current direct view cannot be verified: `[전문가] 핵심: 최신 직접 관점 확인 불가 — 신규 공개 발언 대기.`
+Expert views remain score weight 0 and cannot directly change score/direction/Risk Veto/WATCH.
+
+### 4) Polymarket 기대 레이더
+Underlying Polymarket TOP10 selection, quality filtering, same-market/same-outcome delta, confidence, score-0 and WATCH confirmation rules remain unchanged.
+For mobile readability, preferred visible columns = `신호 | 시장 기대 | 현재확률 | 1D | 7D | 쉬운해석`; show 1H/4H too when a material short-term move is important.
+Do not treat Polymarket alone as factual confirmation.
+End SCREEN5 with `💡 핵심:` summarizing the common direction from news/calendar/experts/prediction markets in 1-2 short sentences.
+
+# N/A 항목 안내
+Only output when one or more unavailable values exist across SCREEN1~SCREEN5.
+Required table = `신호 | N/A 항목 | 이유 | 자동해소 여부 | 예상 노출시점 / 필요조치`.
+Do not repeat separate N/A tables inside each SCREEN.
+
+# ★ 최종 판정
+Required compact table columns = `신호 | 시장 긍정도 | 우세방향`.
+Immediately below add `핵심 메시지:` with the most important money/macro/whale/derivatives conclusion in 1-2 result-first sentences.
+
+## 후속 질문 및 제안 5가지
+OFFICIAL output includes exactly 5 compact follow-up questions or recommendations before footer. Keep them brief and directly related to current market/data validation/useful next analysis/output improvement. Recommendations never modify the MASTER contract automatically.
 
 ## OFFICIAL SCORE HISTORY — NEW PERSISTENCE FOUNDATION
 
@@ -326,10 +352,10 @@ No historical backfill. WATCH/manual non-official must not write/overwrite this 
 Easy Korean, minimal English. No actual Entry. Price rise alone cannot raise positive score. Required items never silently disappear. Missing required data = N/A row/block.
 Explicitly removed fields are not required items: do not show `Global M2` or the five removed stablecoin wallet-tracking rows as N/A.
 
-OFFICIAL may include five follow-up checks/questions before footer. Follow-up questions may proactively recommend data upgrades, GitHub integration work, source migration, or output-layout improvements; recommendation alone does not change the locked production contract.
+The mobile output UI lock above is authoritative for user-visible SCREEN order/layout and N/A presentation. It does not alter data collection, score weights, thresholds, Risk Veto, WATCH, official history, or collector behavior.
 
 Final OFFICIAL line, with nothing after it:
-`🕒 MASTER MARKET V1.2 | 실행완료: YYYY-MM-DD HH:mm KST | 롱/숏 | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST`
+`🕒 MASTER MARKET V1.2 | 실행완료: YYYY-MM-DD HH:mm KST | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST`
 
 Final WATCH line, with nothing after it:
-`🕒 MASTER MARKET WATCH | 감지완료: YYYY-MM-DD HH:mm KST | 롱/숏 | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST`
+`🕒 MASTER MARKET WATCH | 감지완료: YYYY-MM-DD HH:mm KST | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST`
