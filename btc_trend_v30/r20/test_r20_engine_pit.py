@@ -84,12 +84,12 @@ def test_higher_timeframe_asof_never_uses_future_week() -> None:
     h = b["4H"]
     w = b["1W"]
     assert len(w) > 5
-    # For every 4H row with weekly context, matched weekly close must have timestamp <= 4H close.
     valid = h["w_close"].notna()
-    # Reconstruct expected via asof and compare exact weekly close; any future-week use would differ near week boundaries.
+    h_times = h.loc[valid].reset_index(names="timestamp")[["timestamp"]].sort_values("timestamp")
+    w_rows = w.reset_index(names="timestamp")[["timestamp", "close"]].sort_values("timestamp")
     expected = pd.merge_asof(
-        h.loc[valid].reset_index()[["timestamp"]].sort_values("timestamp"),
-        w.reset_index()[["timestamp", "close"]].sort_values("timestamp"),
+        h_times,
+        w_rows,
         on="timestamp",
         direction="backward",
         allow_exact_matches=True,
