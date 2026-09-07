@@ -8,13 +8,17 @@ on:
       - 'money_master_os/**'
       - 'master_prompts/**'
       - 'state/**'
+      - 'source_health/**'
       - '.github/workflows/money_master_os_guard.yml'
+      - '.github/workflows/source_health_hourly.yml'
   pull_request:
     paths:
       - 'money_master_os/**'
       - 'master_prompts/**'
       - 'state/**'
+      - 'source_health/**'
       - '.github/workflows/money_master_os_guard.yml'
+      - '.github/workflows/source_health_hourly.yml'
 
 permissions:
   contents: read
@@ -37,3 +41,6 @@ jobs:
 
       - name: Dry-run new-room bootstrap for all five MASTERs
         run: python money_master_os/tools/test_bootstrap_all_masters.py
+
+      - name: Validate Source Health authority boundary
+        run: python money_master_os/tools/validate_source_health_contract.py
