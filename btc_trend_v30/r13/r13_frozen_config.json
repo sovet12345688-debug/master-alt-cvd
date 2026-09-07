@@ -1,0 +1,124 @@
+{
+  "design_intent": {
+    "anti_overfit": "R1.3 rules are frozen before any R1.3 OOS replay. R1.2 OOS is treated as diagnosis only, not as a tuning surface.",
+    "primary": "Increase early trend participation and MCR without weakening structural loss control.",
+    "probability": "확률 산출보류"
+  },
+  "engine_stage_policy": {
+    "LC": "Stage1 WATCH_ONLY; Stage>=2 execution-eligible",
+    "LR": "Stage>=1 execution-eligible",
+    "SC": "Stage1 WATCH_ONLY; Stage>=2 execution-eligible",
+    "SR": "Stage>=1 execution-eligible"
+  },
+  "entry_routes": {
+    "IGNITION": {
+      "allowed_risk_states": [
+        "OPEN"
+      ],
+      "breakout_persistence_buffer_h1_atr": 0.25,
+      "fixed_rr": 3.0,
+      "ignition_quality_min": 70,
+      "ignition_quality_score": {
+        "daily_transition_alignment": 10,
+        "directional_candle_quality": 20,
+        "ema20_alignment": 15,
+        "structure_break_prior3": 25,
+        "taker_imbalance_directional": 15,
+        "volume_ratio20_ge_1": 15
+      },
+      "independent_reasons_min": 3,
+      "max_stop_distance_pct": 0.15,
+      "next_candle_breakout_persistence_required": true,
+      "nonchase_daily_atr_max": 0.75,
+      "purpose": "Participate when trend ignition is confirmed before a full retest, while preventing chase.",
+      "safety_score_min": 80,
+      "structural_stop_rule": "Local 1H structure: prior3 opposite swing with 0.25*H1 ATR invalidation buffer, mirrored by direction",
+      "zone_touch_required": false
+    },
+    "RETEST": {
+      "allowed_risk_states": [
+        "OPEN",
+        "CAUTION"
+      ],
+      "fixed_rr": 3.0,
+      "independent_reasons_min": 2,
+      "max_stop_distance_pct": 0.15,
+      "next_candle_persistence_required": true,
+      "nonchase_daily_atr_max": 1.5,
+      "reaction_score_min": 65,
+      "safety_score_min": 80,
+      "structural_stop_rule": "R1.2 zone/0.45ATR reference +0.35ATR buffer, mirrored by direction",
+      "zone_touch_required": true
+    }
+  },
+  "four_hour_add": {
+    "automatic_add": false,
+    "independent_confirmation_required": true,
+    "same_risk_state_route_matrix": true,
+    "third_allocation_leg_on_1d": false
+  },
+  "freeze_timestamp_kst": "2026-09-07T13:50:00+09:00",
+  "hard_execution_gates": {
+    "closed_candle_only": true,
+    "nonchase_required": true,
+    "persistence_required": true,
+    "rr_min": 3.0,
+    "same_bar_tp_sl": "AMBIGUOUS",
+    "severe_risk_veto": "BLOCK when confirmed; N/A historical severe-event reconstruction cannot be silently treated as PASS",
+    "structural_stop_required": true
+  },
+  "model": "MASTER_BTC_TREND_V3_R1_3",
+  "oos_policy": {
+    "historical_r13_replay_after_freeze": "May be run for diagnostics but is not untouched promotion evidence because R1.3 design was motivated by R1.2 OOS diagnosis.",
+    "new_untouched_forward_oos_start_utc": "2026-09-05T00:00:00Z",
+    "promotion_evidence_note": "Forward untouched OOS is the clean promotion evidence. 30D/90D/365D labels mature only when their horizons are complete.",
+    "r12_oos_results_are_diagnostic_only": true,
+    "r13_oos_must_not_run_before_freeze": true
+  },
+  "parent_r1_2_commit": "6b3158d7c289b36153b2d9dc87f810c3562d1515",
+  "predeclared_validation_gates": {
+    "capture_to_stop_loss_ratio_gt": 1.0,
+    "cycle_independence": "Required",
+    "exact_v2_6_h2h": "Still required by current governance; if exact baseline remains non-replayable, status remains UNRESOLVED rather than using a proxy.",
+    "false_start_control": {
+      "confirmed_false_start_rate_max": 0.5,
+      "definition": "Confirmed false start / executed first-1H-entry episodes with complete 90D truth"
+    },
+    "long_expectancy_gt": 0.0,
+    "mcr_365d_mean_min": 0.2,
+    "mcr_90d_mean_min": 0.2,
+    "risk_governor_full_replay": "Required for production promotion",
+    "robustness": "Same predeclared Step8 battery concept; no best-variant adoption.",
+    "score_monotonicity": {
+      "minimum_bin_n": 10,
+      "rule": "Do not force PASS/FAIL when sample insufficient; otherwise higher score bins must not have lower mean R than lower bins."
+    },
+    "short_expectancy_gt": 0.0
+  },
+  "risk_state": {
+    "BLOCK": "TRANSITION_CONFLICT or confirmed Severe Risk Veto. No entry route allowed.",
+    "CAUTION": "Legacy FALSE_BOTTOM_RISK/FALSE_TOP_RISK/long_overextended/short_overextended present, but no transition conflict.",
+    "OPEN": "No transition conflict and no legacy caution flag.",
+    "legacy_flags_are_not_binary_blockers": true
+  },
+  "state_machine": [
+    "SCOUT_0PCT",
+    "ARMED",
+    "RETEST_CONFIRM or IGNITION_CONFIRM",
+    "1H_ENTRY",
+    "4H_ADD_OPTIONAL_SEPARATE_CONFIRM",
+    "1D_CONFIRM_LOG_ONLY"
+  ],
+  "status": "RESEARCH_BASELINE_FROZEN_PRE_OOS",
+  "unchanged_from_r1_2": [
+    "Point-in-Time only",
+    "No future features",
+    "Zone Family causal dedupe",
+    "Continuation Stage1 WATCH_ONLY",
+    "Fractal excluded from core score",
+    "Score is not probability",
+    "No OOS retuning",
+    "No protected-level or stop-migration invention",
+    "V2.6 untouched"
+  ]
+}
