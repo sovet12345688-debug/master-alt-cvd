@@ -36,6 +36,8 @@
   },
   "long_run_gate": {
     "required_for_p2_final_pass": true,
+    "contract_path": "money_master_os/acceptance/LONG_RUN_STABILITY_V1.json",
+    "runtime_latest_path": "p2_long_run/latest.json",
     "minimum_observation_hours": 24,
     "minimum_source_health_cycles": 12,
     "minimum_shared_fact_cycles": 12,
@@ -48,6 +50,9 @@
       "NO_NEW_ROOM_RESTORE_REGRESSION",
       "NO_PRIVACY_REGRESSION"
     ],
-    "status_before_completion": "LONG_RUN_PENDING"
+    "status_before_completion": "LONG_RUN_PENDING",
+    "terminal_pass": "FINAL_PASS",
+    "terminal_fail": "FINAL_FAIL",
+    "automatic_reset_forbidden": true
   }
 }
