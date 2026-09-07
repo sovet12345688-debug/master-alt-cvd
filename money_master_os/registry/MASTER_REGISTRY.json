@@ -1,7 +1,7 @@
 {
   "schema_version": "2.0",
   "registry_name": "MONEY_MASTER_OS_REGISTRY",
-  "updated_kst": "2026-09-07T10:00:00+09:00",
+  "updated_kst": "2026-09-07T11:00:00+09:00",
   "repository": "sovet12345688-debug/master-alt-cvd",
   "architecture": {
     "master_count": 5,
@@ -58,13 +58,14 @@
       "display_name": "MASTER ALT 1 · TOP100",
       "role": "top100_discovery_and_early_accumulation_scan",
       "expected_version": "V4.8 FINAL",
-      "repo_version": null,
-      "source_path": null,
+      "repo_version": "V4.8 FINAL",
+      "source_path": "master_prompts/master_alt_top100_v4_8_current.md",
       "contract_path": null,
       "manifest_path": "money_master_os/masters/alt_top100/manifest.json",
-      "status": "SOURCE_MISSING",
-      "bootstrap_allowed": false,
-      "execution_policy": "BLOCK_BOOTSTRAP_UNTIL_EXACT_V4_8_CANONICAL_SOURCE_IS_COMMITTED"
+      "status": "READY",
+      "bootstrap_allowed": true,
+      "execution_policy": "LOAD_EXACT_SOURCE_AND_VALIDATE",
+      "ui_policy": "CURRENT_LAYOUT_PRESERVED_USER_REFINEMENT_ALLOWED"
     },
     "alt_final20": {
       "display_name": "MASTER ALT 2 · FINAL20",
