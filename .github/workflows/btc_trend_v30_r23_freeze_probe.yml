@@ -1,0 +1,46 @@
+name: BTC TREND V3 R2.3 FREEZE PROBE
+
+on:
+  push:
+    branches: [btc-trend-v30-r23-detection-execution-separation]
+    paths:
+      - 'btc_trend_v30/r23/r23_frozen_config.json'
+      - 'btc_trend_v30/r23/r23_detector.py'
+      - 'btc_trend_v30/r23/test_r23_contract.py'
+      - '.github/workflows/btc_trend_v30_r23_freeze_probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: '1'
+  PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/btc_trend_v30
+
+jobs:
+  freeze-probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Parent R2.1 integrity
+        run: |
+          python btc_trend_v30/r21/r21_freeze_guard.py
+          python btc_trend_v30/r21/test_r21_contract.py
+      - name: PIT 7 of 7
+        run: (cd btc_trend_v30/r20 && python test_r20_engine_pit.py)
+      - name: R2.3 contract
+        run: python btc_trend_v30/r23/test_r23_contract.py
+      - name: Frozen identity probe
+        run: |
+          sha256sum btc_trend_v30/r23/r23_frozen_config.json
+          sha256sum btc_trend_v30/r23/r23_detector.py
+          sha256sum btc_trend_v30/r23/test_r23_contract.py
+          echo FROZEN_BLOB=$(git hash-object btc_trend_v30/r23/r23_frozen_config.json)
+          echo DETECTOR_BLOB=$(git hash-object btc_trend_v30/r23/r23_detector.py)
+          echo CONTRACT_BLOB=$(git hash-object btc_trend_v30/r23/test_r23_contract.py)
+          test ! -d btc_trend_v30/r23/output/historical_replay
+          echo HISTORICAL_REPLAY_PERFORMED_BEFORE_FREEZE=false
