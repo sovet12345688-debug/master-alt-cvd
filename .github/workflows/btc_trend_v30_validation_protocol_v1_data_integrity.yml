@@ -1,4 +1,4 @@
-name: BTC TREND V3.0 Validation Protocol V1 Step1-5
+name: BTC TREND V3.0 Validation Protocol V1 Step1-6
 # Research branch only. V2.6 is not read or modified.
 
 on:
@@ -10,6 +10,7 @@ on:
       - 'btc_trend_v30/validation_protocol_v1_step3_episode_dedupe.py'
       - 'btc_trend_v30/validation_protocol_v1_step4_outcome_labels.py'
       - 'btc_trend_v30/validation_protocol_v1_step5_walk_forward_oos.py'
+      - 'btc_trend_v30/validation_protocol_v1_step6_state_machine_replay.py'
       - '.github/workflows/btc_trend_v30_validation_protocol_v1_data_integrity.yml'
   workflow_dispatch:
 
@@ -20,9 +21,9 @@ env:
   PYTHONUNBUFFERED: '1'
 
 jobs:
-  validation-step1-5:
+  validation-step1-6:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -83,15 +84,27 @@ jobs:
           import json,sys
           d=json.load(open('btc_trend_v30/output/validation_v1/step5_walk_forward_oos/audit.json',encoding='utf-8'))
           print('STEP5=',d['step5'],'OOS_EPISODES=',d['oos_episodes'],'MED20=',d['oos_medium20_hit_rate'],'LONG_PRIMARY=',d['oos_long_primary_hit_rate'])
-          print('FOLDS=',d['folds'])
-          print('MONOTONICITY=',d['global_stage_monotonicity_preliminary'])
           if d['step5']!='PASS': sys.exit('STOP: Step5 HOLD')
           PY
 
-      - name: Upload Step1-5 audit artifact
+      - name: Step6 - 1H 4H 1D State Machine Replay
+        run: python btc_trend_v30/validation_protocol_v1_step6_state_machine_replay.py
+      - name: Step6 gate
+        run: |
+          python - <<'PY'
+          import json,sys
+          d=json.load(open('btc_trend_v30/output/validation_v1/step6_state_machine_replay/audit.json',encoding='utf-8'))
+          print('STEP6=',d['step6'],'EPISODES=',d['episode_counts'],'LEGS=',d['oos_raw_leg_metrics'])
+          print('DIRECTION=',d['direction'])
+          print('ENGINE=',d['engine'])
+          print('DATA_1H=',d['data']['one_hour'])
+          if d['step6']!='PASS': sys.exit('STOP: Step6 HOLD')
+          PY
+
+      - name: Upload Step1-6 audit artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: btc-trend-v30-validation-v1-step1-5
+          name: btc-trend-v30-validation-v1-step1-6
           path: btc_trend_v30/output/validation_v1/
           retention-days: 14
