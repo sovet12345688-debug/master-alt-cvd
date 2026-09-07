@@ -31,7 +31,7 @@
     "historical_identical_prompt_claim": false,
     "canonicalized_kst": "2026-09-07T11:33:00+09:00",
     "time_validity_research": "btc_backtest/output/time_validity_v2/summary.json",
-    "ui_canonicalized_kst": "2026-09-07T14:56:35+09:00"
+    "ui_canonicalized_kst": "2026-09-07T16:48:00+09:00"
   },
   "automation": {
     "mode": "MANUAL_ONLY",
@@ -45,6 +45,12 @@
     "ui_canonical_source": "money_master_os/masters/trading/MASTER-TRADING-UI-V2-FINAL.md",
     "screen_order_locked": true,
     "asset_ui_parity_required": true,
+    "screen_3_long_entry_zone_order": "ASCENDING_LOW_TO_HIGH",
+    "screen_4_short_entry_zone_order": "DESCENDING_HIGH_TO_LOW",
+    "screen_5_columns": ["축", "판정신호등", "현재 판정"],
+    "screen_5_signal_light_column_position": 2,
+    "screen_5_long_short_impact_columns_visible": false,
+    "engine_change": false,
     "user_approval_required_for_change": true,
     "later_user_refinement_allowed": true,
     "ui_only_change_must_not_rebuild_logic": true
