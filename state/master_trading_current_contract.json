@@ -12,7 +12,7 @@
     "canonicalization_mode": "USER_APPROVED_RULESET_PLUS_VALIDATED_GITHUB_OVERLAY",
     "historical_identical_prompt_claim": false,
     "canonicalized_kst": "2026-09-07T11:33:00+09:00",
-    "ui_canonicalized_kst": "2026-09-07T14:56:35+09:00",
+    "ui_canonicalized_kst": "2026-09-07T16:48:00+09:00",
     "asset_routing_locked_kst": "2026-09-07T15:00:00+09:00"
   },
   "independence": {
@@ -105,6 +105,19 @@
     "screen_order_locked": true,
     "asset_ui_parity_required": true,
     "mobile_first": true,
+    "entry_zone_display_order": {
+      "screen_3_long": "ASCENDING_LOW_TO_HIGH",
+      "screen_4_short": "DESCENDING_HIGH_TO_LOW",
+      "display_only_engine_unchanged": true
+    },
+    "screen_5_table": {
+      "columns": ["축", "판정신호등", "현재 판정"],
+      "signal_light_column_position": 2,
+      "long_impact_column_visible": false,
+      "short_impact_column_visible": false,
+      "signal_light_is_presentation_only": true,
+      "signal_light_values": ["🟢", "🟡", "🔴"]
+    },
     "time_validity_display_mode": "MAX_NEW_FILL_ALLOWED_UNTIL_KST",
     "time_validity_internal_labels_hidden_by_default": ["신선 유효", "유효", "다음 재검증"],
     "quick_command_go": {
