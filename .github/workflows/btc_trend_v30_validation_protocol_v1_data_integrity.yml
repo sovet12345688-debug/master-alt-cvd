@@ -1,0 +1,52 @@
+name: BTC TREND V3.0 Validation Protocol V1 Data Integrity
+
+on:
+  push:
+    branches: [btc-trend-v30-build]
+    paths:
+      - 'btc_trend_v30/validation_protocol_v1_data_integrity.py'
+      - '.github/workflows/btc_trend_v30_validation_protocol_v1_data_integrity.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: '1'
+
+jobs:
+  data-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install research dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas requests
+      - name: Run FINAL-LOCK data integrity audit
+        run: python btc_trend_v30/validation_protocol_v1_data_integrity.py
+      - name: Show gate verdict
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          p='btc_trend_v30/output/validation_v1/data_integrity/audit.json'
+          d=json.load(open(p,encoding='utf-8'))
+          print('ENGINE=', d['engine'])
+          print('PROTOCOL=', d['protocol'])
+          print('ROWS=', d['final_rows'], '/', d['expected_rows'])
+          print('RAW_PARTIAL=', d['raw']['partial_dates'])
+          print('REPAIR=', d['repair'])
+          print('FINAL_AUDIT=', d['final_audit'])
+          print('DATA_INTEGRITY=', d['data_integrity'])
+          print('NEXT=', d['next_step'])
+          print('PROMOTION=', d['promotion'])
+          PY
+      - name: Upload audit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v30-validation-v1-data-integrity
+          path: btc_trend_v30/output/validation_v1/data_integrity/
+          retention-days: 14
