@@ -1,0 +1,117 @@
+name: BTC TREND V3 R2.2 Incremental Episode FAST Forensic
+
+on:
+  push:
+    branches: [btc-trend-v30-r22-early-watch]
+    paths:
+      - 'btc_trend_v30/r22/fast/r22_incremental_episode_forensic.py'
+      - '.github/workflows/btc_trend_v30_r22_incremental_episode_forensic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONUNBUFFERED: '1'
+  PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/btc_trend_v30
+
+jobs:
+  incremental-forensic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+
+      - name: Frozen R2.2 identity preflight
+        run: |
+          python btc_trend_v30/r22/r22_freeze_guard.py
+          python btc_trend_v30/r22/test_r22_contract.py
+          python -m py_compile btc_trend_v30/r22/fast/r22_incremental_episode_forensic.py
+
+      - name: Download R2.1 historical evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: btc-trend-v30-r21-historical-diagnostic
+          repository: sovet12345688-debug/master-alt-cvd
+          run-id: 34116514316
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: forensic_inputs/r21
+
+      - name: Download R2.2 historical evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: btc-trend-v30-r22-historical-diagnostic
+          repository: sovet12345688-debug/master-alt-cvd
+          run-id: 34124855102
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: forensic_inputs/r22
+
+      - name: Artifact source guards
+        run: |
+          python - <<'PY'
+          import hashlib,json,sys
+          from pathlib import Path
+          p21=list(Path('forensic_inputs/r21').rglob('r21_positions.csv'))
+          a21=[p for p in Path('forensic_inputs/r21').rglob('audit.json') if '/r21/output/historical_replay/' in p.as_posix()]
+          p22=list(Path('forensic_inputs/r22').rglob('r22_positions.csv'))
+          a22=[p for p in Path('forensic_inputs/r22').rglob('audit.json') if '/r22/output/historical_replay/' in p.as_posix()]
+          checks=[len(p21)==1,len(a21)==1,len(p22)==1,len(a22)==1]
+          if not all(checks):
+              print('SOURCE_PATH_CHECKS=',checks,p21,a21,p22,a22); sys.exit(1)
+          d21=json.load(open(a21[0])); d22=json.load(open(a22[0]))
+          checks += [
+              d21['model']=='MASTER_BTC_TREND_V3_R2_1',
+              d21['counts']['executed_r21_episodes']==69,
+              d22['model']=='MASTER_BTC_TREND_V3_R2_2',
+              d22['counts']['executed_r22_episodes']==86,
+              d22['freeze_identity']['single_change_id']=='DAILY_20D_EXTREME_DISTANCE_HARD_GATE_TO_PRIORITY_ONLY',
+          ]
+          print('SOURCE_IDENTITY_CHECKS=',checks)
+          print('R21_AUDIT_SHA256=',hashlib.sha256(a21[0].read_bytes()).hexdigest())
+          print('R22_AUDIT_SHA256=',hashlib.sha256(a22[0].read_bytes()).hexdigest())
+          if not all(checks): sys.exit(1)
+          PY
+          # Parent artifact also carries baseline audit; remove it only from the temporary forensic input
+          # so the forensic script can select the R2.1 audit unambiguously. Source artifacts are immutable.
+          find forensic_inputs/r21 -path '*/output/validation_v1/step7_metrics/audit.json' -delete
+
+      - name: R2.2 incremental episode FAST forensic
+        run: |
+          rm -rf btc_trend_v30/r22/fast/output/incremental_episode_forensic
+          python btc_trend_v30/r22/fast/r22_incremental_episode_forensic.py \
+            forensic_inputs/r21 forensic_inputs/r22 btc_trend_v30/r22/fast/output/incremental_episode_forensic
+
+      - name: Forensic audit gate
+        run: |
+          python - <<'PY'
+          import json,sys
+          p='btc_trend_v30/r22/fast/output/incremental_episode_forensic/r22_incremental_episode_forensic.json'
+          d=json.load(open(p)); c=d['counts']
+          checks=[
+              d['status']=='R22_INCREMENTAL_EPISODE_FAST_FORENSIC_DIAGNOSTIC_ONLY',
+              c['r21_positions']==69,
+              c['r22_positions']==86,
+              c['net_position_increase']==17,
+              c['new_minus_dropped']==17,
+              d['shared_exact_seed_outcome_max_abs_delta_R'] < 1e-12,
+              all(d['source']['source_identity_guards'].values()),
+          ]
+          print('FORENSIC_COUNTS=',c)
+          print('FORENSIC_BY_DIRECTION=',d['new_episode_summary_by_direction'])
+          print('REPLACEMENT_ECONOMICS=',d['replacement_economics'])
+          print('FORENSIC_GATE=',checks)
+          if not all(checks): sys.exit(1)
+          PY
+
+      - name: Upload forensic evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v30-r22-incremental-episode-forensic
+          path: btc_trend_v30/r22/fast/output/incremental_episode_forensic/
+          retention-days: 14
