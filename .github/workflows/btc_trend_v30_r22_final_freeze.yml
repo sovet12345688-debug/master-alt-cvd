@@ -1,0 +1,46 @@
+name: BTC TREND V3 R2.2 FINAL FREEZE
+
+on:
+  push:
+    branches: [btc-trend-v30-r22-early-watch]
+    paths:
+      - 'btc_trend_v30/r22/r22_frozen_config.json'
+      - 'btc_trend_v30/r22/r22_engine.py'
+      - 'btc_trend_v30/r22/test_r22_contract.py'
+      - 'btc_trend_v30/r22/r22_freeze_manifest.json'
+      - 'btc_trend_v30/r22/r22_freeze_guard.py'
+      - '.github/workflows/btc_trend_v30_r22_final_freeze.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: '1'
+  PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/btc_trend_v30
+
+jobs:
+  r22-final-freeze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Parent R2.1 integrity
+        run: |
+          python btc_trend_v30/r21/r21_freeze_guard.py
+          (cd btc_trend_v30/r21 && python test_r21_contract.py)
+      - name: PIT availability 7 of 7
+        run: (cd btc_trend_v30/r20 && python test_r20_engine_pit.py)
+      - name: R2.2 contract 6 of 6
+        run: python btc_trend_v30/r22/test_r22_contract.py
+      - name: R2.2 FINAL freeze guard
+        run: python btc_trend_v30/r22/r22_freeze_guard.py
+      - name: Compile and replay firewall
+        run: |
+          python -m py_compile btc_trend_v30/r22/r22_engine.py btc_trend_v30/r22/r22_freeze_guard.py
+          test ! -d btc_trend_v30/r22/output/historical_replay
+          echo 'R22_FINAL_FREEZE_PASS'
+          echo 'HISTORICAL_REPLAY_PERFORMED_BEFORE_FREEZE=false'
