@@ -14,6 +14,7 @@ permissions:
 
 env:
   PYTHONUNBUFFERED: '1'
+  PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/btc_trend_v30
 
 jobs:
   r21-historical-diagnostic:
@@ -66,11 +67,7 @@ jobs:
               checks[rel]=(got==want)
               print(rel, got, 'PASS' if got==want else 'FAIL')
           a=json.load(open(root/'step7_metrics/audit.json'))
-          identity=[
-              a['step7']=='PASS',
-              a['raw_all_leg']['legs']==119,
-              math.isclose(a['raw_all_leg']['mean_unit_R'],0.07563025210084033,abs_tol=1e-12),
-          ]
+          identity=[a['step7']=='PASS',a['raw_all_leg']['legs']==119,math.isclose(a['raw_all_leg']['mean_unit_R'],0.07563025210084033,abs_tol=1e-12)]
           print('CANONICAL_SHA_CHECKS=',checks)
           print('R12_BASELINE_IDENTITY=',identity)
           if not all(checks.values()) or not all(identity): sys.exit(1)
@@ -84,20 +81,13 @@ jobs:
           python - <<'PY'
           import json,math,sys
           p='btc_trend_v30/r21/output/historical_replay/audit.json'
-          d=json.load(open(p))
-          s=d['summary']; sc=d['single_change_evaluation']
+          d=json.load(open(p)); s=d['summary']; sc=d['single_change_evaluation']
           print('R21_STATUS=',d['status'])
           print('R21_HARD_FAILURES=',d['hard_failures'])
           print('R21_UNRESOLVED=',d['unresolved_blockers'])
           print('R21_SUMMARY=',s)
           print('R21_SINGLE_CHANGE=',sc)
-          checks=[
-              d['model']=='MASTER_BTC_TREND_V3_R2_1',
-              d['status']=='HISTORICAL_DIAGNOSTIC_ONLY_NOT_UNTOUCHED_OOS',
-              d['production_promotion_evidence'] is False,
-              sc['short_confirm_core_same_timestamp']==0,
-              math.isclose(s['long_expectancy']['mean_R'],0.8346097626774698,abs_tol=1e-12),
-          ]
+          checks=[d['model']=='MASTER_BTC_TREND_V3_R2_1',d['status']=='HISTORICAL_DIAGNOSTIC_ONLY_NOT_UNTOUCHED_OOS',d['production_promotion_evidence'] is False,sc['short_confirm_core_same_timestamp']==0,math.isclose(s['long_expectancy']['mean_R'],0.8346097626774698,abs_tol=1e-12)]
           print('R21_AUDIT_CHECKS=',checks)
           if not all(checks): sys.exit(1)
           PY
