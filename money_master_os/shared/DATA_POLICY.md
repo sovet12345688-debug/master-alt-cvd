@@ -31,12 +31,28 @@ Use `CONFIRMED / INTERPRETATION / INFERENCE / N/A` where applicable.
 - MASTERs may consume the same Vault facts, but each MASTER independently decides weighting, interpretation, permission and execution.
 - Current/Entry/Trigger/SL/TP/R:R and other execution-critical values must still be revalidated by the responsible MASTER when required.
 
+## WATCH / Event-only authority boundary
+- Meaningful WATCH events live under `watch_events/` and are append-only event records, not a sixth MASTER.
+- `NO CHANGE = NO EVENT`. Routine heartbeat, scheduled no-op, unchanged repeats and reconstructed historical WATCH rows are forbidden.
+- The owning MASTER alone decides whether its canonical WATCH threshold is met. The central Event Store must not recalculate Hunter, Stealth, CVD, score, LEVEL1/LEVEL2, Risk Veto or any other MASTER-specific threshold.
+- MASTER MARKET V1.2, MASTER ALT TOP100 V4.8 and MASTER ALT FINAL20 V2.2.1 may publish only after their own canonical WATCH logic produces a meaningful change.
+- MASTER BTC TREND V2.6 keeps `NO hourly WATCH`; the Event Store must reject BTC MASTER-authored hourly WATCH events.
+- MASTER TRADING remains manual-only; recurring WATCH events are disabled unless the user explicitly changes the canonical policy.
+- A lifecycle-linked repeat is permitted only as `ESCALATED / DEESCALATED / CONFIRMED / REVERSED / CLEARED`; unchanged replay is forbidden.
+- Same `event_id` may never be written twice. `correlation_key` links later lifecycle changes without rewriting history.
+- WATCH events never overwrite `official_state/latest/*`, never update OFFICIAL score/history and never fill a missing OFFICIAL run.
+- WATCH events may preserve MASTER-authored score/delta/context evidence, but the Event Store itself cannot derive or alter those values.
+- WATCH events cannot contain execution-order fields such as Entry, SL, TP, R:R, leverage, order/position size, or actions `ENTER / SMALL ENTER / ADD`.
+- Public WATCH history must contain no personal balance, account identifier, private position size, credentials or private execution details.
+- System producers such as Source Health / Shared Fact Vault / OS Guard may emit operational status-transition events only. In V1 these are non-notifying diagnostics and cannot publish market direction.
+- Event persistence failure is non-blocking to the MASTER analysis and must not change score, direction, Risk Veto, Gate or OFFICIAL State.
+
 ## OFFICIAL State authority boundary
 - The latest persisted MASTER decision state lives under `official_state/latest/`.
 - Only an ACTUAL OFFICIAL MASTER run may be stored with `state_status=STORED`.
 - WATCH, provisional/current-candle, draft, dry-run, research-only, inferred, reconstructed or manually guessed values cannot be promoted to OFFICIAL State.
 - `NO_STORED_OFFICIAL_RUN` is a valid state and must remain empty until an actual OFFICIAL run is persisted.
-- Missing OFFICIAL history must not be reconstructed from chat memory, canonical prompt examples, raw collector outputs, another MASTER, Source Health, Shared Fact Vault, or legacy handoff files.
+- Missing OFFICIAL history must not be reconstructed from chat memory, canonical prompt examples, raw collector outputs, another MASTER, Source Health, Shared Fact Vault, WATCH Events, or legacy handoff files.
 - Source Health and Shared Fact Vault may be referenced as factual/data-availability inputs inside an OFFICIAL State, but they can never generate the MASTER's direction, score, Permission, Action, Entry, SL, TP, R:R, Coverage or confidence.
 - MASTER Coverage and confidence must come from that actual MASTER OFFICIAL run. `registered_source_health_pct` and Shared Fact Vault coverage are never MASTER Coverage.
 - `valid_until_kst`, next-run validity and freshness must be stored only when actually produced or explicitly defined by the MASTER. Unknown validity remains `UNKNOWN`; schedule cadence alone must not be used to manufacture an expiry.
@@ -56,6 +72,8 @@ Use `CONFIRMED / INTERPRETATION / INFERENCE / N/A` where applicable.
 - Latest normalized shared facts belong in `shared_fact_vault/output/latest.json`; raw/history data remains in the owning collectors.
 - Latest actual MASTER decision continuity belongs in `official_state/latest/<master_id>.json`.
 - Actual OFFICIAL history belongs in append-only `official_state/history/<master_id>/YYYY-MM.jsonl`.
+- Meaningful WATCH history belongs in append-only `watch_events/history/<producer_id>/YYYY-MM.jsonl`; no history file is created for no-change runs.
+- Latest WATCH continuity index belongs in `watch_events/latest/index.json` and cannot override OFFICIAL State.
 - Legacy `money_master_os/handoff/*_LATEST.json` files are migration artifacts once OFFICIAL State V1 exists and must not override it.
 - Raw high-volume market data stays in existing data engines; MONEY MASTER OS stores only continuity-critical pointers/state contracts.
 - Source Health stores only compact latest status, last-good pointers and status-change events; it does not duplicate raw market data.
