@@ -1,7 +1,7 @@
 {
   "schema_version": "2.0",
   "registry_name": "MONEY_MASTER_OS_REGISTRY",
-  "updated_kst": "2026-09-07T11:00:00+09:00",
+  "updated_kst": "2026-09-07T11:34:00+09:00",
   "repository": "sovet12345688-debug/master-alt-cvd",
   "architecture": {
     "master_count": 5,
@@ -83,13 +83,15 @@
       "display_name": "MASTER TRADING",
       "role": "execution_entry_stop_target_rr_and_time_validity",
       "expected_version": "CURRENT + TIME VALIDITY V2.1 OVERLAY",
-      "repo_version": null,
-      "source_path": null,
-      "contract_path": null,
+      "repo_version": "CURRENT + TIME VALIDITY V2.1 OVERLAY",
+      "source_path": "master_prompts/master_trading_current.md",
+      "contract_path": "state/master_trading_current_contract.json",
       "manifest_path": "money_master_os/masters/trading/manifest.json",
-      "status": "SOURCE_MISSING",
-      "bootstrap_allowed": false,
-      "execution_policy": "BLOCK_BOOTSTRAP_UNTIL_EXACT_CURRENT_CANONICAL_SOURCE_IS_COMMITTED",
+      "status": "READY",
+      "bootstrap_allowed": true,
+      "execution_policy": "LOAD_EXACT_SOURCE_AND_VALIDATE",
+      "automation_policy": "MANUAL_ONLY_UNTIL_EXPLICIT_USER_APPROVAL",
+      "ui_policy": "FOUR_SEMANTIC_SECTIONS_USER_REFINEMENT_ALLOWED",
       "privacy_policy": "PERSONAL_POSITION_BALANCE_AND_ACCOUNT_DATA_MUST_NOT_BE_STORED_IN_PUBLIC_REPOSITORY"
     }
   },
