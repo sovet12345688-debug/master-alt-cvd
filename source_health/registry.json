@@ -1,0 +1,157 @@
+{
+  "schema_version": "1.0",
+  "system": "MONEY_MASTER_OS_SOURCE_HEALTH",
+  "default_branch": "main",
+  "status_order": ["HEALTHY", "DEGRADED", "STALE", "FAILED", "MISSING", "UNKNOWN"],
+  "policy": {
+    "health_is_data_availability_not_trade_permission": true,
+    "missing_is_not_zero": true,
+    "stale_is_not_current": true,
+    "optional_source_failure_does_not_auto_block_master": true,
+    "last_good_is_pointer_only_not_current_fact": true,
+    "master_decisions_remain_independent": true,
+    "registered_source_health_is_not_master_coverage": true
+  },
+  "sources": {
+    "market_data_vault": {
+      "display_name": "MARKET Data Vault",
+      "workflow_file": "market_data_vault_hourly.yml",
+      "expected_interval_minutes": 60,
+      "warn_after_minutes": 90,
+      "stale_after_minutes": 150,
+      "state_path": "market_vault/state/vault_state.json",
+      "timestamp_field": "last_run_utc",
+      "checks": [
+        {"type": "min", "field": "mandatory_coverage_pct", "value": 80},
+        {"type": "empty_dict", "field": "failures"}
+      ],
+      "impact": {"market": "CORE", "btc_trend": "CONTEXT", "alt_top100": "CONTEXT", "alt_final20": "CONTEXT", "trading": "CONTEXT"}
+    },
+    "market_macro_liquidity": {
+      "display_name": "MARKET Macro Liquidity",
+      "workflow_file": "market_macro_liquidity_free_hourly.yml",
+      "expected_interval_minutes": 60,
+      "warn_after_minutes": 90,
+      "stale_after_minutes": 150,
+      "state_path": "market_vault/state/macro_liquidity_state.json",
+      "timestamp_field": "last_run_utc",
+      "checks": [
+        {"type": "empty_dict", "field": "failures"},
+        {"type": "min_len", "field": "collected_metrics", "value": 8}
+      ],
+      "impact": {"market": "CORE", "btc_trend": "CONTEXT", "trading": "CONTEXT"}
+    },
+    "market_etf_flows": {
+      "display_name": "MARKET BTC/ETH ETF Flows",
+      "workflow_file": "market_etf_flows_hourly.yml",
+      "expected_interval_minutes": 60,
+      "warn_after_minutes": 120,
+      "stale_after_minutes": 180,
+      "state_path": "market_vault/state/etf_flow_state.json",
+      "timestamp_field": "last_run_utc",
+      "checks": [
+        {"type": "empty_dict", "field": "failures"},
+        {"type": "contains_all", "field": "ok_assets", "values": ["BTC", "ETH"]}
+      ],
+      "impact": {"market": "CORE", "btc_trend": "OPTIONAL"}
+    },
+    "market_whales": {
+      "display_name": "MARKET Whale Recorder",
+      "workflow_file": "market_whale_validation.yml",
+      "expected_interval_minutes": 60,
+      "warn_after_minutes": 90,
+      "stale_after_minutes": 150,
+      "state_path": "market_whales/state/recorder_state.json",
+      "timestamp_field": "last_run_utc",
+      "checks": [
+        {"type": "equals", "field": "size_engine", "value": "PASS"},
+        {"type": "min", "field": "queried_wallets", "value": 50},
+        {"type": "max_ratio_sum", "numerator": "query_failures", "denominator_fields": ["queried_wallets", "query_failures"], "value": 0.10}
+      ],
+      "impact": {"market": "OPTIONAL", "btc_trend": "OPTIONAL"}
+    },
+    "derivatives": {
+      "display_name": "Derivatives OI/Funding + Microstructure",
+      "workflow_file": "derivatives_hourly.yml",
+      "expected_interval_minutes": 60,
+      "warn_after_minutes": 90,
+      "stale_after_minutes": 150,
+      "state_path": "derivatives/state/collector_state.json",
+      "timestamp_field": "last_run_utc",
+      "checks": [
+        {"type": "min", "field": "ok_count", "value": 1},
+        {"type": "min_ratio", "numerator": "ok_count", "denominator": "universe_count", "value": 0.80},
+        {"type": "equals", "field": "selected_venue", "value": "Bitget USDT Futures"}
+      ],
+      "impact": {"market": "OPTIONAL", "btc_trend": "OPTIONAL", "alt_final20": "OPTIONAL", "trading": "OPTIONAL"}
+    },
+    "alt2_live_large_flow": {
+      "display_name": "ALT2 Live Large Flow",
+      "workflow_file": "live_large_flow_hourly.yml",
+      "expected_interval_minutes": 60,
+      "warn_after_minutes": 120,
+      "stale_after_minutes": 180,
+      "state_path": "live_flow/state/collector_state.json",
+      "timestamp_field": "last_run_utc",
+      "checks": [
+        {"type": "equals", "field": "failure_count", "value": 0},
+        {"type": "min_ratio", "numerator": "ok_count", "denominator": "supported_count", "value": 0.80}
+      ],
+      "impact": {"alt_final20": "OPTIONAL"}
+    },
+    "stablecoin_exchange_flow": {
+      "display_name": "Stablecoin Treasury→Exchange Flow",
+      "workflow_file": "stablecoin_flow_hourly.yml",
+      "expected_interval_minutes": 60,
+      "warn_after_minutes": 120,
+      "stale_after_minutes": 180,
+      "state_path": "stablecoin_flow/state/collector_state.json",
+      "timestamp_field": "last_run_utc",
+      "checks": [
+        {"type": "min_sum", "fields": ["ok_count", "partial_count"], "value": 1}
+      ],
+      "impact": {"market": "OPTIONAL", "alt_top100": "OPTIONAL", "alt_final20": "OPTIONAL"}
+    },
+    "us_net_liquidity": {
+      "display_name": "US Net Liquidity Proxy",
+      "workflow_file": "net_liquidity_hourly.yml",
+      "expected_interval_minutes": 60,
+      "warn_after_minutes": 120,
+      "stale_after_minutes": 180,
+      "state_path": "net_liquidity/state/collector_state.json",
+      "timestamp_field": "last_run_utc",
+      "checks": [
+        {"type": "equals", "field": "status", "value": "OK"}
+      ],
+      "impact": {"market": "OPTIONAL", "btc_trend": "CONTEXT"}
+    },
+    "final20_long_cvd": {
+      "display_name": "FINAL20 Long-Horizon Spot CVD",
+      "workflow_file": "cvd_update.yml",
+      "expected_interval_minutes": 360,
+      "warn_after_minutes": 720,
+      "stale_after_minutes": 1800,
+      "state_path": "state/collector_state.json",
+      "timestamp_field": "updated_at",
+      "checks": [
+        {"type": "min_len", "field": "last_completed_date", "value": 10}
+      ],
+      "impact": {"alt_final20": "OPTIONAL"}
+    },
+    "polymarket_context": {
+      "display_name": "Polymarket Context",
+      "workflow_file": "polymarket_hourly.yml",
+      "expected_interval_minutes": 60,
+      "warn_after_minutes": 120,
+      "stale_after_minutes": 180,
+      "state_path": "polymarket/state/collector_state.json",
+      "timestamp_field": "generated_at_utc",
+      "checks": [
+        {"type": "equals", "field": "status", "value": "PASS"},
+        {"type": "equals", "field": "auth_required", "value": false},
+        {"type": "equals", "field": "score_weight", "value": 0}
+      ],
+      "impact": {"market": "CONTEXT"}
+    }
+  }
+}

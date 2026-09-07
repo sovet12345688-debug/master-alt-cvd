@@ -1,0 +1,78 @@
+name: MONEY MASTER OS Source Health
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '5 * * * *'
+  pull_request:
+    paths:
+      - 'source_health/**'
+      - 'money_master_os/registry/MASTER_REGISTRY.json'
+      - 'money_master_os/shared/DATA_POLICY.md'
+      - '.github/workflows/source_health_hourly.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'source_health/registry.json'
+      - 'source_health/collector.py'
+      - 'source_health/README.md'
+      - 'money_master_os/registry/MASTER_REGISTRY.json'
+      - 'money_master_os/shared/DATA_POLICY.md'
+      - '.github/workflows/source_health_hourly.yml'
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: money-master-os-source-health
+  cancel-in-progress: false
+
+jobs:
+  evaluate-source-health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || 'main' }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Source Health self-test
+        run: python source_health/collector.py --mode self-test
+
+      - name: Pull-request dry run
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python source_health/collector.py --mode dry-run
+
+      - name: Build central Source Health
+        if: github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python source_health/collector.py --mode collect
+
+      - name: Validate generated Source Health
+        if: github.event_name != 'pull_request'
+        run: python source_health/collector.py --mode validate
+
+      - name: Commit compact Source Health state
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name "money-master-source-health-bot"
+          git config user.email "money-master-source-health-bot@users.noreply.github.com"
+          git add source_health/output source_health/state source_health/events || true
+          if git diff --cached --quiet; then
+            echo "No Source Health changes"
+          else
+            git commit -m "state: refresh MONEY MASTER source health"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi

@@ -1,7 +1,7 @@
 {
   "schema_version": "2.0",
   "registry_name": "MONEY_MASTER_OS_REGISTRY",
-  "updated_kst": "2026-09-07T11:52:00+09:00",
+  "updated_kst": "2026-09-07T12:14:00+09:00",
   "repository": "sovet12345688-debug/master-alt-cvd",
   "architecture": {
     "master_count": 5,
@@ -14,7 +14,11 @@
     ],
     "fact_sharing_policy": "SHARED_FACTS_ALLOWED_DECISIONS_INDEPENDENT",
     "cross_master_blocking_dependency": false,
-    "production_research_separation_required": true
+    "production_research_separation_required": true,
+    "source_health_registry": "source_health/registry.json",
+    "source_health_latest": "source_health/output/latest.json",
+    "source_health_last_good": "source_health/state/last_good.json",
+    "source_health_policy": "DATA_AVAILABILITY_ONLY_NOT_MASTER_DECISION"
   },
   "global_policy": {
     "github_is_source_of_truth": true,
@@ -24,7 +28,9 @@
     "missing_source_blocks_bootstrap": true,
     "destructive_migration_forbidden": true,
     "five_master_identity_locked": true,
-    "shared_facts_do_not_imply_shared_conclusions": true
+    "shared_facts_do_not_imply_shared_conclusions": true,
+    "source_health_does_not_imply_trade_permission": true,
+    "last_good_does_not_become_current_fact": true
   },
   "masters": {
     "market": {

@@ -19,21 +19,32 @@ Legacy ambiguous ID `alt` is forbidden for V2 bootstrap.
 5. Verify `status`, `expected_version`, `repo_version`, `source_path/canonical_source`, `contract_path/machine_contract`, and `bootstrap_allowed`.
 6. If status is `VERSION_DRIFT` or `SOURCE_MISSING`, STOP automatic restoration. Report the block; never reconstruct from memory.
 7. If status is `READY`, read the exact canonical source and machine contract/state pointers.
-8. Read the latest valid handoff/state snapshot if one exists. Missing historical state must remain missing; do not backfill from conversation memory.
-9. Verify MONEY MASTER OS validation status.
-10. Before execution, print a compact bootstrap receipt: MASTER ID / display name / expected version / repository version / source path / source SHA or commit when available / contract path / state status / validation PASS or BLOCKED.
+8. If `source_health/output/latest.json` exists, read it as a non-blocking data-availability diagnostic. Do not interpret `registered_source_health_pct` as MASTER Coverage, confidence, direction, Permission, or an execution gate. If Source Health is missing, continue bootstrap and report diagnostic N/A.
+9. Read the latest valid handoff/state snapshot if one exists. Missing historical state must remain missing; do not backfill from conversation memory.
+10. Verify MONEY MASTER OS validation status.
+11. Before execution, print a compact bootstrap receipt: MASTER ID / display name / expected version / repository version / source path / source SHA or commit when available / contract path / Source Health status when available / state status / validation PASS or BLOCKED.
 
 ## Authority order for migration identity
 `Registry > MASTER Manifest > Canonical Source/Contract > Persisted State/Handoff > Chat context`
 
+Source Health is operational diagnostics, not identity authority and not a MASTER conclusion.
+
 Chat context may add current user instructions but must not silently replace the canonical identity or invent missing persisted history.
 
-## Current safe bootstrap state — 2026-09-07 11:58 KST — ALL 5 READY
+## Current safe bootstrap state — 2026-09-07 12:14 KST — ALL 5 READY
 - `market` — MASTER MARKET V1.2 FINAL: READY. Load `master_prompts/master_market_v1_2_current.md` and `state/master_market_v1_2_contract.json`.
 - `btc_trend` — MASTER BTC TREND V2.6 PRODUCTION: READY. Load `master_prompts/master_btc_trend_v2_6_current.md` and `state/master_btc_trend_v2_6_contract.json`. V3.0 remains research-only.
 - `alt_top100` — MASTER ALT 1 V4.8 FINAL: READY. Load `master_prompts/master_alt_top100_v4_8_current.md` exactly.
 - `alt_final20` — MASTER ALT 2 V2.2.1 FINAL20 DEEP FINAL: READY. Load `master_prompts/master_alt_final20_current.md` exactly.
 - `trading` — MASTER TRADING CURRENT + TIME VALIDITY V2.1 OVERLAY: READY. Load `master_prompts/master_trading_current.md` and `state/master_trading_current_contract.json`. Execution mode is manual-only.
+
+## Source Health rule
+- Latest central diagnostic path: `source_health/output/latest.json`.
+- `HEALTHY / DEGRADED / STALE / FAILED / MISSING / UNKNOWN` describes source availability only.
+- `registered_source_health_pct` summarizes only currently registered shared/repository sources. It is NOT the MASTER's own Coverage.
+- Optional/Context source failure does not automatically block a MASTER.
+- `last_good` is diagnostic only and must never be silently treated as a current fact.
+- MASTER-specific freshness and execution gates still control actual analysis/trading decisions.
 
 ## BTC production/research rule
 - New-room production bootstrap always loads V2.6 while the registry says production=`V2.6`.
