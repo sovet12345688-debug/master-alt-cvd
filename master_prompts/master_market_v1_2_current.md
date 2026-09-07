@@ -40,6 +40,27 @@ Rules: no conclusion-first fitting; dedup same raw event by EVENT_ID; do not syn
 
 Use CONFIRMED / INTERPRETATION / INFERENCE / N/A. No reconstruction/interpolation/guessing. N/A != 0. Renormalize confirmed weights only. Coverage <70% = partial calculation, Confidence max C, no strong threshold alert. Mini-trends require >=3 actual OFFICIAL points.
 
+
+## N/A EXPLANATION & RECOVERY LOCK — ADDED 2026-09-07
+
+Whenever any user-visible value in SCREEN1~SCREEN5 is `N/A`, `확인 실패`, `확인 제한`, or equivalent unavailable state, the same screen MUST end with a compact `### N/A 안내` table before moving to the next screen.
+
+Required columns = `N/A 항목 | 이유 | 자동해소 여부 | 예상 노출시점 / 필요조치`.
+
+Rules:
+- Every unavailable item shown in that screen must be accounted for. Items with exactly the same cause may be grouped only if every affected item name is explicitly listed.
+- Classify the reason into one of these operational states:
+  1) `축적 대기` = the collector/history is working but not enough actual observations exist yet.
+  2) `원천 갱신 대기` = market close, reporting calendar, release timing, or upstream publication timing.
+  3) `일시 수집 실패` = source/API/parser/query/extraction failed this run but the current architecture can retry automatically.
+  4) `현재 구조상 불가` = the present collector/source/schema cannot produce the field; waiting alone will NOT solve it.
+- For `축적 대기`, show the earliest expected exposure time only from a known first-valid timestamp and required window/cadence. Example: 1D/3D/7D becomes eligible after 24h/72h/168h of actual comparable history. Never invent an ETA when the first-valid timestamp is unknown; instead print `기준점 부족 → 예정시각 계산 불가`.
+- For `원천 갱신 대기`, show the next known source/release time when confirmed; otherwise print `다음 원천 갱신 후`.
+- For `일시 수집 실패`, say `다음 자동수집/다음 OFFICIAL에서 재시도` and never promise that the value will definitely recover by then.
+- For `현재 구조상 불가`, explicitly print `시간을 기다려도 자동 노출 안 됨` and name the missing requirement, e.g. `새 collector/API/source/schema 필요`.
+- Do not convert N/A to 0, do not backfill, interpolate, reuse another venue/source, or copy a past value merely to remove N/A.
+- If a screen has no unavailable values, omit the `N/A 안내` table entirely.
+
 ## CHANGE-WINDOW LOCK — 1D / 3D / 7D
 
 For the three locked summary tables below, change windows are cumulative and fixed as `1D | 3D | 7D`, in that order. `1D` and `3D` are inserted before the existing `7D` column; `7D` is not removed.
@@ -202,11 +223,21 @@ Show the nearest important macro/project/exchange/unlock events first. Use KST. 
 Before release, clearly separate expected/prior from actual. After release, show actual/surprise only when confirmed.
 Do not flood the screen with minor events; prioritize events capable of moving rates, DXY, oil, ETF flow, BTC/ETH liquidity or material supply.
 
-### 3) 🧠 Sean Farrell 최신 관점 — score 0
+
+### EXPERT VIEW TRAFFIC-LIGHT DISPLAY LOCK — ADDED 2026-09-07
+- Sean Farrell and Stanley Druckenmiller blocks must each show a directional badge immediately beside the expert name/title. Allowed values: `🟢 상승우호` / `🔴 하락압력` / `🟡 중립·혼합` / `⚪ 최신관점 N/A`.
+- The badge represents the directional implication of the latest sufficiently current, directly verified public view for BTC/ETH/ALT or broad risk assets/liquidity. It is not a popularity/sentiment score.
+- If the latest direct view is too old or too context-specific to be treated as current-market guidance, use `⚪ 최신관점 N/A`, show the date of the last verified view, and explain why it is stale/insufficient.
+- If the view contains materially opposing implications, use `🟡 중립·혼합`.
+- Expert badges are display/context only. Sean Farrell and Stanley Druckenmiller remain score weight 0 and cannot directly change MASTER score, final 롱/숏, Risk Veto, or WATCH thresholds.
+
+### 3) 🧠 Sean Farrell 최신 관점 — `[판정 신호등]` — score 0
+The title MUST replace `[판정 신호등]` with exactly one of `🟢 상승우호` / `🔴 하락압력` / `🟡 중립·혼합` / `⚪ 최신관점 N/A`.
 Explain slightly more than one line: `최신 확인 관점 | 이전 관점 대비 변화 | 핵심 근거/가격·유동성 포인트 | MASTER 데이터와 일치/충돌하는 부분 | 현재 참고 의미`.
 This is opinion/context only and never changes score by itself.
 
-### 4) 🧠 Stanley Druckenmiller 최신 관점 — score 0
+### 4) 🧠 Stanley Druckenmiller 최신 관점 — `[판정 신호등]` — score 0
+The title MUST replace `[판정 신호등]` with exactly one of `🟢 상승우호` / `🔴 하락압력` / `🟡 중립·혼합` / `⚪ 최신관점 N/A`.
 Explain slightly more than one line using the same structure: `최신 확인 관점 | 이전 대비 변화 | 핵심 매크로/유동성 포인트 | MASTER 데이터와 일치/충돌 | 현재 참고 의미`.
 Do not treat an old public view as current; if no fresh verified view exists, mark `최신 직접관점 N/A` and show the date of the last verified view.
 

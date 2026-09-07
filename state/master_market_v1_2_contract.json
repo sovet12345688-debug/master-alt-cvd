@@ -2,7 +2,7 @@
   "schema_version": "1.5",
   "master": "MASTER MARKET V1.2",
   "status": "FINAL_CUMULATIVE_LOCK",
-  "updated_kst": "2026-09-06T21:29:00+09:00",
+  "updated_kst": "2026-09-07T10:05:00+09:00",
   "purpose": "Machine-readable cumulative contract for MASTER MARKET. Existing required data, checks, and user-visible output blocks must survive future version upgrades unless the user explicitly orders removal.",
   "no_silent_omission": {
     "enabled": true,
@@ -192,13 +192,15 @@
       "rotation",
       "market breadth mini-line: total market cap/24H volume/BTC.D/ETH.D",
       "prior change TOP3 and 7D improve/worsen TOP3",
-      "primary current-market judgement; final verdict not duplicated in screen5"
+      "primary current-market judgement; final verdict not duplicated in screen5",
+      "if any N/A/unavailable value appears, append per-screen N/A 안내 with item|reason|automatic recovery yes/no|expected exposure time or required structural action"
     ],
     "screen2": [
       "table columns: item|current status traffic-light|current value|prior delta|1D|3D|7D|crypto positive score|easy interpretation",
       "Liquidity Lead with 55/65/75",
       "WTI+Brent detail",
-      "final crypto-positive summary"
+      "final crypto-positive summary",
+      "if any N/A/unavailable value appears, append per-screen N/A 안내 with item|reason|automatic recovery yes/no|expected exposure time or required structural action"
     ],
     "screen3": [
       "BTC/ETH ETF 1D/3D/5D/20D",
@@ -206,7 +208,8 @@
       "Crypto Money Inflow",
       "ALT Money Inflow",
       "fixed text: Stablecoin supply increase != actual buy",
-      "visually separate actual institution spot flow from potential stablecoin dry powder"
+      "visually separate actual institution spot flow from potential stablecoin dry powder",
+      "if any N/A/unavailable value appears, append per-screen N/A 안내 with item|reason|automatic recovery yes/no|expected exposure time or required structural action"
     ],
     "screen4": [
       "moving whale TOP3 when meaningful position-size changes exist",
@@ -216,7 +219,8 @@
       "derivatives table columns: asset|price|OI|Funding|OI 1H|OI 4H|OI 24H|judgement|easy interpretation",
       "CVD/Taker/Long-Short/Liquidation/Basis/Depth/Volume visible in compact line as value or N/A",
       "mandatory easy-Korean derivatives explainer, including confidence limitation when confirmations are N/A",
-      "whale direction/size cells: 🟢 LONG for long, 🔴 SHORT for short, ⚪ N/A/FLAT for unknown/flat; applies to moving TOP3 + BTC/ETH core whales; display-only, score effect 0"
+      "whale direction/size cells: 🟢 LONG for long, 🔴 SHORT for short, ⚪ N/A/FLAT for unknown/flat; applies to moving TOP3 + BTC/ETH core whales; display-only, score effect 0",
+      "if any N/A/unavailable value appears, append per-screen N/A 안내 with item|reason|automatic recovery yes/no|expected exposure time or required structural action"
     ],
     "screen5": [
       "research/context only; no duplicated core-axis/final-verdict/mini-score/rotation/money-frontier/risk-radar blocks",
@@ -225,7 +229,10 @@
       "Sean Farrell detailed compact view: latest verified view|change vs prior|key rationale|agreement/conflict with MASTER|reference meaning; score0",
       "Stanley Druckenmiller detailed compact view: latest verified view|change vs prior|key macro/liquidity rationale|agreement/conflict with MASTER|reference meaning; score0",
       "on-chain secondary block explicitly removed by user on 2026-09-05; do not output STH-SOPR/STH Realized Price/STH-MVRV/Exchange Netflow unless explicitly restored",
-      "Polymarket TOP10: rank|market/question|judgement traffic-light as 3rd column|current YES probability|1H|4H|1D|7D probability-point changes|24H volume|liquidity/OI|confidence|market impact|easy interpretation; score0; single-signal alert forbidden"
+      "Polymarket TOP10: rank|market/question|judgement traffic-light as 3rd column|current YES probability|1H|4H|1D|7D probability-point changes|24H volume|liquidity/OI|confidence|market impact|easy interpretation; score0; single-signal alert forbidden",
+      "if any N/A/unavailable value appears, append per-screen N/A 안내 with item|reason|automatic recovery yes/no|expected exposure time or required structural action",
+      "Sean Farrell title includes one expert judgement badge: 🟢 상승우호/🔴 하락압력/🟡 중립·혼합/⚪ 최신관점 N/A; score0",
+      "Stanley Druckenmiller title includes one expert judgement badge: 🟢 상승우호/🔴 하락압력/🟡 중립·혼합/⚪ 최신관점 N/A; score0"
     ],
     "footer": "🕒 MASTER MARKET V1.2 | 실행완료: YYYY-MM-DD HH:mm KST | 롱/숏 | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST",
     "watch_footer": "🕒 MASTER MARKET WATCH | 감지완료: YYYY-MM-DD HH:mm KST | 롱/숏 | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST"
@@ -330,5 +337,62 @@
     "risk_veto_effect": "NONE",
     "watch_threshold_effect": "NONE",
     "preserve_liquidation_risk_markers": true
+  },
+  "na_explanation_policy": {
+    "enabled": true,
+    "applies_to_screens": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "trigger_values": [
+      "N/A",
+      "확인 실패",
+      "확인 제한",
+      "equivalent unavailable state"
+    ],
+    "section_title": "N/A 안내",
+    "columns": [
+      "N/A 항목",
+      "이유",
+      "자동해소 여부",
+      "예상 노출시점 / 필요조치"
+    ],
+    "reason_classes": {
+      "ACCUMULATION_WAIT": "축적 대기",
+      "SOURCE_UPDATE_WAIT": "원천 갱신 대기",
+      "TEMPORARY_COLLECTION_FAILURE": "일시 수집 실패",
+      "STRUCTURALLY_UNAVAILABLE": "현재 구조상 불가"
+    },
+    "accumulation_rule": "ETA only from known first-valid timestamp + actual required window/cadence; 1D/3D/7D eligibility is 24h/72h/168h. If first-valid timestamp unknown, say 기준점 부족 → 예정시각 계산 불가.",
+    "source_update_rule": "Show next confirmed source/release time; otherwise 다음 원천 갱신 후.",
+    "temporary_failure_rule": "Say 다음 자동수집/다음 OFFICIAL에서 재시도; never guarantee recovery by that time.",
+    "structural_rule": "Explicitly say 시간을 기다려도 자동 노출 안 됨 and name the required new collector/API/source/schema.",
+    "grouping_rule": "Same-cause grouping allowed only when every affected unavailable item is explicitly named.",
+    "anti_fabrication": true,
+    "no_na_to_zero": true,
+    "no_interpolation_backfill_cross_source_fill": true
+  },
+  "expert_badge_policy": {
+    "enabled": true,
+    "experts": [
+      "Sean Farrell",
+      "Stanley Druckenmiller"
+    ],
+    "display_location": "Immediately beside expert name/title in SCREEN5",
+    "values": {
+      "bullish": "🟢 상승우호",
+      "bearish": "🔴 하락압력",
+      "mixed_neutral": "🟡 중립·혼합",
+      "stale_or_unavailable": "⚪ 최신관점 N/A"
+    },
+    "basis": "Directional implication of latest sufficiently current directly verified public view for crypto/risk assets/liquidity.",
+    "stale_rule": "If too old or context-specific for current-market guidance, use ⚪ 최신관점 N/A, show last verified date, explain staleness/insufficiency.",
+    "score_effect": 0,
+    "direction_effect": "NONE",
+    "risk_veto_effect": "NONE",
+    "watch_threshold_effect": "NONE"
   }
 }
