@@ -22,12 +22,29 @@ jobs:
           python-version: '3.12'
       - name: Install deterministic test dependencies
         run: python -m pip install --disable-pip-version-check numpy pandas
-      - name: Candidate config identity and replay firewall
+      - name: Candidate and frozen config identity + replay firewall
         run: |
           set -euo pipefail
-          sha256sum btc_trend_v30/r20/r20_candidate_config.json
+          echo CANDIDATE_SHA256=$(sha256sum btc_trend_v30/r20/r20_candidate_config.json | awk '{print $1}')
+          echo FROZEN_SHA256=$(sha256sum btc_trend_v30/r20/r20_frozen_config.json | awk '{print $1}')
+          echo ENGINE_BLOB=$(git hash-object btc_trend_v30/r20/r20_engine.py)
+          echo CONTRACT_BLOB=$(git hash-object btc_trend_v30/r20/r20_contract.py)
           test ! -e btc_trend_v30/r20/output/historical_replay/audit.json
           test ! -e btc_trend_v30/r20/output/full_replay/audit.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('btc_trend_v30/r20')
+          c=json.loads((p/'r20_candidate_config.json').read_text())
+          f=json.loads((p/'r20_frozen_config.json').read_text())
+          assert c['model']==f['model']=='MASTER_BTC_TREND_V3_R2_0'
+          assert c['status']=='PRE_FREEZE_CANDIDATE_NO_REPLAY'
+          assert f['status']=='FINAL_FROZEN_NO_REPLAY'
+          assert f['freeze_metadata']['historical_replay_performed_before_freeze'] is False
+          for k in ['evidence_firewall','data','features','long','short','holding','reset','predeclared_candidate_gates','forbidden']:
+              assert c[k]==f[k], k
+          print('FROZEN_SEMANTIC_IDENTITY_PASS')
+          PY
       - name: Contract load
         working-directory: btc_trend_v30/r20
         run: python r20_contract.py
