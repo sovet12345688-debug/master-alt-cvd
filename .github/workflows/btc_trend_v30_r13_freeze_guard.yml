@@ -1,0 +1,33 @@
+name: BTC TREND V3 R1.3 Pre-OOS Freeze Guard
+
+on:
+  push:
+    branches:
+      - btc-trend-v30-r13-freeze
+    paths:
+      - 'btc_trend_v30/r13/**'
+      - '.github/workflows/btc_trend_v30_r13_freeze_guard.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  freeze-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify immutable R1.3 pre-OOS freeze
+        run: python btc_trend_v30/r13/r13_freeze_guard.py
+      - name: Assert no R1.3 OOS output exists before freeze
+        shell: bash
+        run: |
+          if find btc_trend_v30 -type f \( -path '*r13*oos*' -o -path '*r13*validation*output*' \) | grep -q .; then
+            echo 'Unexpected R1.3 OOS/validation output found before freeze'
+            find btc_trend_v30 -type f \( -path '*r13*oos*' -o -path '*r13*validation*output*' \)
+            exit 1
+          fi
+          echo 'R1.3 OOS pre-freeze output count = 0'
