@@ -1,4 +1,4 @@
-name: BTC TREND V3.0 Validation Protocol V1 Step1-2
+name: BTC TREND V3.0 Validation Protocol V1 Step1-4
 # Research branch only. V2.6 is not read or modified.
 
 on:
@@ -7,6 +7,8 @@ on:
     paths:
       - 'btc_trend_v30/validation_protocol_v1_data_integrity.py'
       - 'btc_trend_v30/validation_protocol_v1_step2_r12_daily_scoring.py'
+      - 'btc_trend_v30/validation_protocol_v1_step3_episode_dedupe.py'
+      - 'btc_trend_v30/validation_protocol_v1_step4_outcome_labels.py'
       - '.github/workflows/btc_trend_v30_validation_protocol_v1_data_integrity.yml'
   workflow_dispatch:
 
@@ -17,7 +19,7 @@ env:
   PYTHONUNBUFFERED: '1'
 
 jobs:
-  validation-step1-2:
+  validation-step1-4:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -30,44 +32,52 @@ jobs:
 
       - name: Step1 - Data Integrity
         run: python btc_trend_v30/validation_protocol_v1_data_integrity.py
-
       - name: Step1 gate
         run: |
           python - <<'PY'
-          import json, sys
-          p='btc_trend_v30/output/validation_v1/data_integrity/audit.json'
-          d=json.load(open(p,encoding='utf-8'))
-          print('STEP1 DATA_INTEGRITY=',d['data_integrity'])
-          print('ROWS=',d['final_rows'],'/',d['expected_rows'])
-          print('RAW_SHORT_METADATA=',d['raw'].get('short_metadata_rows'))
-          print('API_DIAGNOSTIC=',d['api_crosscheck']['status'])
-          print('PROMOTION=',d['promotion'])
+          import json,sys
+          d=json.load(open('btc_trend_v30/output/validation_v1/data_integrity/audit.json',encoding='utf-8'))
+          print('STEP1=',d['data_integrity'],'ROWS=',d['final_rows'],'/',d['expected_rows'],'API=',d['api_crosscheck']['status'])
           if d['data_integrity']!='PASS': sys.exit('STOP: Step1 HOLD')
           PY
 
-      - name: Step2 - R1.2 LR LC SR SC FULL DAILY ROLLING
+      - name: Step2 - R1.2 four-engine FULL DAILY ROLLING
         run: python btc_trend_v30/validation_protocol_v1_step2_r12_daily_scoring.py
-
       - name: Step2 gate
         run: |
           python - <<'PY'
-          import json, sys
-          p='btc_trend_v30/output/validation_v1/step2_full_daily_scoring/audit.json'
-          d=json.load(open(p,encoding='utf-8'))
-          print('STEP2=',d['step2'])
-          print('ROWS=',d['rows'])
-          print('PIT=',d['point_in_time_prefix_invariance']['pass'])
-          print('COUNTS=',d['daily_counts'])
-          print('CONFLICT_DAYS=',d['transition_conflict_days'])
-          print('NEXT=',d['next_step'])
-          print('PROMOTION=',d['promotion'])
+          import json,sys
+          d=json.load(open('btc_trend_v30/output/validation_v1/step2_full_daily_scoring/audit.json',encoding='utf-8'))
+          print('STEP2=',d['step2'],'PIT=',d['point_in_time_prefix_invariance']['pass'],'COUNTS=',d['daily_counts'])
           if d['step2']!='PASS': sys.exit('STOP: Step2 HOLD')
           PY
 
-      - name: Upload Step1-2 audit artifact
+      - name: Step3 - Zone Family Independent Episode Dedupe
+        run: python btc_trend_v30/validation_protocol_v1_step3_episode_dedupe.py
+      - name: Step3 gate
+        run: |
+          python - <<'PY'
+          import json,sys
+          d=json.load(open('btc_trend_v30/output/validation_v1/step3_episode_dedupe/audit.json',encoding='utf-8'))
+          print('STEP3=',d['step3'],'DAILY_SIGNAL_N=',d['daily_signal_n'],'EPISODE_N=',d['independent_episode_n'],'PIT=',d['point_in_time_prefix_invariance']['pass'])
+          if d['step3']!='PASS': sys.exit('STOP: Step3 HOLD')
+          PY
+
+      - name: Step4 - Medium Long Outcome Labels
+        run: python btc_trend_v30/validation_protocol_v1_step4_outcome_labels.py
+      - name: Step4 gate
+        run: |
+          python - <<'PY'
+          import json,sys
+          d=json.load(open('btc_trend_v30/output/validation_v1/step4_outcome_labels/audit.json',encoding='utf-8'))
+          print('STEP4=',d['step4'],'EPISODES=',d['episodes'],'CENSORED=',d['censored'],'ENGINE=',d['engine_counts'])
+          if d['step4']!='PASS': sys.exit('STOP: Step4 HOLD')
+          PY
+
+      - name: Upload Step1-4 audit artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: btc-trend-v30-validation-v1-step1-2
+          name: btc-trend-v30-validation-v1-step1-4
           path: btc_trend_v30/output/validation_v1/
           retention-days: 14
