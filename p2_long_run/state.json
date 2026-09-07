@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "long_run_contract": "MONEY_MASTER_OS_V2_P2_LONG_RUN_V1",
   "run_id": "P2LR-20260907T051338Z-33c35eb7",
-  "status": "COLLECTING",
+  "status": "FINAL_FAIL",
   "started_at_utc": "2026-09-07T05:13:38.624357Z",
   "baseline_fingerprint": "a1cba498856cedc79f5f563101cca5a4ea2864cc7a026571bb2768f61cc4d2f5",
   "baseline_fingerprint_files": [
@@ -107,19 +107,24 @@
       "sha256": "7e1bf0e2a285d3590f700a26f7d4a42c80595ce5f4243a8c4403771bcc415c78"
     }
   ],
-  "latest_checkpoint_at_utc": "2026-09-07T05:34:38.282627Z",
-  "checkpoint_count": 2,
+  "latest_checkpoint_at_utc": "2026-09-07T06:42:10.461687Z",
+  "checkpoint_count": 3,
   "source_health_cycle_ids": [
     "2026-09-07T04:29:58.754142Z",
-    "2026-09-07T05:18:08.944698Z"
+    "2026-09-07T05:18:08.944698Z",
+    "2026-09-07T06:26:36.338001Z"
   ],
   "shared_fact_cycle_ids": [
     "2026-09-07T04:29:57.762233Z",
-    "2026-09-07T05:20:31.432890Z"
+    "2026-09-07T05:20:31.432890Z",
+    "2026-09-07T06:28:50.131175Z"
   ],
   "acceptance_pass_count": 2,
   "consecutive_core_unsafe": 0,
   "consecutive_monitoring_stale": 0,
-  "hard_fail_reasons": [],
-  "finalized_at_utc": null
+  "hard_fail_reasons": [
+    "MASTER_OR_CANONICAL_DRIFT_RESET_REQUIRED",
+    "NON_A3_BASELINE_ACCEPTANCE_FAILURE"
+  ],
+  "finalized_at_utc": "2026-09-07T06:42:10.461687Z"
 }
