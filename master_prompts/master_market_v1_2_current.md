@@ -50,6 +50,7 @@ Required columns = `신호 | N/A 항목 | 이유 | 자동해소 여부 | 예상 
 Rules:
 - Do NOT repeat a separate N/A table inside each screen.
 - Every unavailable item shown across SCREEN1~SCREEN5 must be accounted for. Items with exactly the same cause may be grouped only if every affected item name is explicitly listed.
+- Polymarket applicability exception: when a specific market has existed for less than 7 full days, `Δ7D` is NOT APPLICABLE rather than N/A. Do not require/display a 7D comparison for that market and do not create an N/A 안내 row merely because the market is too young for 7D history. This exception applies only when short market age is verified; a true 7D collection/history failure on an old-enough market remains N/A and must still be reported.
 - Classify the reason into one of these operational states:
   1) `축적 대기` = the collector/history is working but not enough actual observations exist yet.
   2) `원천 갱신 대기` = market close, reporting calendar, release timing, or upstream publication timing.
@@ -110,6 +111,7 @@ Coinness policy: Coinness is EARLY DETECTION ONLY. A Coinness item may trigger i
 - Market quality must use actual Polymarket volume/liquidity/spread/open-interest where available. Prefer A/B confidence; C is fallback only; D/filler is excluded.
 - Current probability is an expectation, not a confirmed future fact. Always cross-check with MASTER factual axes before interpreting market impact.
 - Probability change windows are `Δ1H | Δ4H | Δ1D | Δ7D` in percentage points, using the same market + same YES outcome from official Polymarket CLOB history or exact stored snapshots only. No interpolation/reconstruction.
+- `Δ7D` applicability rule: require/show 7D only when the exact market has existed for at least 7 full days AND an actual same-market/same-YES 7D observation exists. If verified market age is <7 full days, 7D is structurally not applicable: omit that row's 7D value/window (use only available 1H/4H/1D windows) and do NOT classify the missing 7D as N/A or include it in `N/A 항목 안내`. Do not suppress genuine 7D collection/history failures for markets old enough to support 7D.
 - Deduplicate related markets and apply event/theme diversification so one price ladder or one event does not crowd out the TOP10.
 - WATCH rule: **Polymarket alone never alerts.** An A/B market move of `>=10pp/4H` or `>=15pp/1D` is only a WATCH candidate and requires at least one independent aligned MASTER axis. Polymarket alone never creates LEVEL1/LEVEL2.
 - If Polymarket data is stale/unavailable, keep the SCREEN5 block visible and show `N/A` / `확인 실패`; do not substitute guessed probabilities.
@@ -300,6 +302,7 @@ Expert views remain score weight 0 and cannot directly change score/direction/Ri
 ### 4) Polymarket 기대 레이더
 Underlying Polymarket TOP10 selection, quality filtering, same-market/same-outcome delta, confidence, score-0 and WATCH confirmation rules remain unchanged.
 For mobile readability, preferred visible columns = `신호 | 시장 기대 | 현재확률 | 1D | 7D | 쉬운해석`; show 1H/4H too when a material short-term move is important.
+For a verified market younger than 7 full days, do not require or show the 7D value for that row; show only available windows such as 1H/4H/1D. A structurally non-applicable 7D must not generate an N/A 안내 item.
 Do not treat Polymarket alone as factual confirmation.
 End SCREEN5 with `💡 핵심:` summarizing the common direction from news/calendar/experts/prediction markets in 1-2 short sentences.
 
@@ -307,6 +310,7 @@ End SCREEN5 with `💡 핵심:` summarizing the common direction from news/calen
 Only output when one or more unavailable values exist across SCREEN1~SCREEN5.
 Required table = `신호 | N/A 항목 | 이유 | 자동해소 여부 | 예상 노출시점 / 필요조치`.
 Do not repeat separate N/A tables inside each SCREEN.
+Do not include Polymarket 7D merely because a verified market is younger than 7 full days; that case is `비적용`, not N/A. Genuine 7D failures on old-enough markets remain reportable N/A.
 
 # ★ 최종 판정
 Required compact table columns = `신호 | 시장 긍정도 | 우세방향`.
