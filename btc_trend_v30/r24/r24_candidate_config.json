@@ -1,0 +1,94 @@
+{
+  "model": "MASTER_BTC_TREND_V3_R2_4",
+  "status": "PRE_FREEZE_CANDIDATE_NO_REPLAY",
+  "parent": {
+    "model": "MASTER_BTC_TREND_V3_R2_1",
+    "branch": "btc-trend-v30-r21-short-core-delay",
+    "frozen_config_sha256": "80cff38e4aa9eebb98d052d644981a58e4576a99684d74fb4abf1f66482b9980",
+    "r21_engine_git_blob_sha1": "b8a0d741ad59a98496d13b6b66a6a74763a27545",
+    "r21_contract_git_blob_sha1": "ba6744311b0d4fb1c510eae2482360297616d3fd"
+  },
+  "single_change": {
+    "id": "MATURE_BEAR_SEED_ONLY_RISK_CAP",
+    "applies_to": "SHORT_RISK_ALLOCATION_ONLY",
+    "short_seed_rule_changed": false,
+    "short_confirm_market_rule_changed": false,
+    "short_core_market_rule_changed": false,
+    "short_exit_rule_changed": false,
+    "long_rule_changed": false
+  },
+  "mature_bear_classifier": {
+    "purpose": "Identify fully aligned long-duration bearish structure without using post-hoc distance, duration, volume, or outcome thresholds from the BEAR SHORT forensic.",
+    "risk_features": {
+      "ema200_span": 200,
+      "ema200_slope_lookback_completed_daily_bars": 20,
+      "causal_closed_daily_only": true
+    },
+    "all_conditions_required": {
+      "daily_close_below_ema200": true,
+      "daily_ema20_below_ema50": true,
+      "daily_ema50_below_ema200": true,
+      "daily_ema20_slope_5_negative": true,
+      "daily_ema50_slope_10_nonpositive": true,
+      "daily_ema200_slope_20_negative": true
+    },
+    "explicitly_not_used": [
+      "DISTANCE_BELOW_EMA200_THRESHOLD",
+      "DAYS_BELOW_EMA200_THRESHOLD",
+      "DAYS_SINCE_60D_HIGH_THRESHOLD",
+      "NEW_VOLUME_THRESHOLD",
+      "NEW_BREAK_DEPTH_THRESHOLD",
+      "WINNER_LOSER_MEDIAN_CUTOFF"
+    ]
+  },
+  "risk_action": {
+    "classification_latched_at_short_seed": true,
+    "mature_bear": {
+      "seed_allowed": true,
+      "seed_risk_R": 0.30,
+      "confirm_state_may_form": true,
+      "confirm_risk_add_R": 0.0,
+      "core_state_may_form_if_r21_conditions_pass": true,
+      "core_risk_add_R": 0.0,
+      "max_episode_risk_R": 0.30,
+      "hard_veto": false
+    },
+    "not_mature_bear": {
+      "inherit_r21_risk_allocation": true,
+      "seed_risk_R": 0.30,
+      "confirm_risk_add_R": 0.30,
+      "core_risk_add_R": 0.25,
+      "max_episode_risk_R": 0.85
+    }
+  },
+  "inherited_unchanged": {
+    "r21_short_core_separate_daily_confirmation": true,
+    "long_machine_all_rules": true,
+    "short_watch_seed_confirm_market_rules": true,
+    "short_core_market_conditions": true,
+    "stops": true,
+    "holding_and_exit_rules": true,
+    "reset_rules": true,
+    "pit_availability_semantics": true,
+    "predeclared_performance_gates": true
+  },
+  "evidence_firewall": {
+    "bear_short16_forensic_used_only_to_generate_structural_hypothesis": true,
+    "forensic_medians_not_used_as_thresholds": true,
+    "r24_historical_replay_performed_before_freeze": false,
+    "same_2021_2026_window_cannot_promote_production": true,
+    "r24_results_may_not_modify_frozen_r24": true
+  },
+  "forbidden_changes": [
+    "BEAR_SHORT_HARD_VETO",
+    "POST_HOC_EMA200_DISTANCE_CUTOFF",
+    "POST_HOC_DURATION_CUTOFF",
+    "POST_HOC_VOLUME_CUTOFF",
+    "LONG_RULE_CHANGE",
+    "SHORT_SEED_THRESHOLD_CHANGE",
+    "SHORT_STOP_CHANGE",
+    "SHORT_EXIT_CHANGE",
+    "R21_CORE_TIMING_CHANGE",
+    "MULTI_PARAMETER_TUNING"
+  ]
+}
