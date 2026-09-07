@@ -7,7 +7,9 @@
   "status": "READY",
   "canonical_source": "master_prompts/master_alt_top100_v4_8_current.md",
   "machine_contract": null,
+  "official_state": "official_state/latest/alt_top100.json",
   "state_sources": [
+    "official_state/latest/alt_top100.json",
     "state/github_data_ready_registry.json"
   ],
   "shared_dependencies": [
@@ -19,7 +21,8 @@
     "allowed": true,
     "require_exact_version_match": true,
     "require_source_present": true,
-    "require_validator_pass": true
+    "require_validator_pass": true,
+    "official_state_missing_behavior": "DO_NOT_RECONSTRUCT"
   },
   "source_provenance": {
     "origin": "ACTIVE_AUTOMATION_PROMPT",
@@ -34,6 +37,7 @@
   },
   "ownership": {
     "logic": "canonical_source",
+    "official_decision_state": "official_state",
     "purpose": "TOP100 discovery and early accumulation scan",
     "chat_memory": "NON_CANONICAL"
   }
