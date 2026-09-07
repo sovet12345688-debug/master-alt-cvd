@@ -1,10 +1,10 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "bridge_id": "BTC_TREND_OFFICIAL_STATE_BRIDGE",
   "master_id": "btc_trend",
   "master_version": "V2.6 PRODUCTION",
   "status": "READY",
-  "purpose": "Persist only actual successful MASTER BTC TREND BASIC OFFICIAL runs without reconstructing missing history.",
+  "purpose": "Persist only actual successful MASTER BTC TREND OFFICIAL runs without reconstructing missing history.",
   "source_of_truth": {
     "registry": "money_master_os/registry/MASTER_REGISTRY.json",
     "manifest": "money_master_os/masters/btc_trend/manifest.json",
@@ -15,7 +15,10 @@
   },
   "transport": {
     "inbox": "official_state/inbox/btc_trend/",
-    "accepted_file_pattern": "MBTC-V26-YYYYMMDD-HH10-KST.json",
+    "accepted_file_patterns": [
+      "MBTC-V26-YYYYMMDD-HH10-KST.json",
+      "MBTC-V26-YYYYMMDD-MANUAL-HHMM-KST.json"
+    ],
     "processor": "official_state/process_btc_trend_inbox.py",
     "workflow": ".github/workflows/btc_trend_official_state_bridge.yml",
     "trigger": "push_to_main_when_official_state/inbox/btc_trend/*.json_changes",
@@ -27,7 +30,8 @@
     "index": "official_state/latest/index.json"
   },
   "runtime_rules": {
-    "basic_official_only": true,
+    "scheduled_basic_official_publish": true,
+    "manual_official_publish_only_when_user_explicitly_requests": true,
     "manual_precision_publish_only_when_user_explicitly_marks_official": true,
     "watch_publish_forbidden": true,
     "provisional_publish_forbidden": true,
@@ -54,8 +58,10 @@
     "public_repository_safe": true
   },
   "run_id_policy": {
-    "format": "MBTC-V26-YYYYMMDD-HH10-KST",
+    "scheduled_format": "MBTC-V26-YYYYMMDD-HH10-KST",
+    "manual_explicit_format": "MBTC-V26-YYYYMMDD-MANUAL-HHMM-KST",
     "official_slots_kst": ["09:10", "17:10", "21:10"],
+    "manual_explicit_user_request_required": true,
     "duplicate_run_id_forbidden": true,
     "newer_than_latest_required": true
   },
