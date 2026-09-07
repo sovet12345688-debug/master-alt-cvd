@@ -1,0 +1,75 @@
+name: MASTER MARKET ETF Flows Hourly
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '39 * * * *'
+  push:
+    paths:
+      - 'market_vault/etf_flow_free_collector.py'
+      - '.github/workflows/market_etf_flows_hourly.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: master-market-etf-flows-hourly
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install
+        run: pip install -r market_vault/requirements.txt
+
+      - name: Syntax check
+        run: python -m py_compile market_vault/etf_flow_free_collector.py
+
+      - name: Collect BTC and ETH ETF flows
+        run: python market_vault/etf_flow_free_collector.py
+
+      - name: Validate 1D 3D 5D 20D windows
+        run: |
+          python - <<'PY'
+          import json,sys
+          p=json.load(open('market_vault/output/latest_etf_flows.json'))
+          if p.get('engine')!='MASTER_MARKET_FREE_ETF_FLOW_V1':
+              sys.exit('wrong ETF engine')
+          assets={x.get('asset'):x for x in p.get('assets',[])}
+          for name in ('BTC','ETH'):
+              a=assets.get(name)
+              if not a:
+                  sys.exit(f'missing {name} ETF data: {p.get("failures")}')
+              for k in ('flow_1d_usd_m','flow_3d_usd_m','flow_5d_usd_m','flow_20d_usd_m'):
+                  if a.get(k) is None:
+                      sys.exit(f'{name} missing {k}')
+              if int(a.get('trading_rows_available') or 0) < 20:
+                  sys.exit(f'{name} fewer than 20 trading rows')
+          print('ETF_1D_3D_5D_20D=PASS')
+          PY
+
+      - name: Commit generated data
+        run: |
+          git config user.name "market-etf-flow-bot"
+          git config user.email "market-etf-flow-bot@users.noreply.github.com"
+          git add market_vault/output/latest_etf_flows.json market_vault/state/etf_flow_state.json
+          if git diff --cached --quiet; then
+            echo "No generated data changes"
+          else
+            git commit -m "data: refresh free BTC ETH ETF flows"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
