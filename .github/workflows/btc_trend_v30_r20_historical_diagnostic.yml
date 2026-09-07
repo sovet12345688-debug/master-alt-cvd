@@ -5,6 +5,7 @@ on:
     branches: [btc-trend-v30-r20-design]
     paths:
       - 'btc_trend_v30/r20/r20_historical_diagnostic_replay.py'
+      - 'btc_trend_v30/r20/r20_historical_diagnostic_replay_runner.py'
       - '.github/workflows/btc_trend_v30_r20_historical_diagnostic.yml'
   workflow_dispatch:
 
@@ -32,6 +33,7 @@ jobs:
           (cd btc_trend_v30/r20 && python test_r20_contract.py)
           (cd btc_trend_v30/r20 && python test_r20_engine_pit.py)
           python -m py_compile btc_trend_v30/r20/r20_historical_diagnostic_replay.py
+          python -m py_compile btc_trend_v30/r20/r20_historical_diagnostic_replay_runner.py
       - name: Step1 Data Integrity
         run: python btc_trend_v30/validation_protocol_v1_data_integrity.py
       - name: Step1 gate
@@ -76,7 +78,7 @@ jobs:
           if not all(checks): sys.exit(1)
           PY
       - name: R2.0 REV2 frozen historical diagnostic
-        run: python btc_trend_v30/r20/r20_historical_diagnostic_replay.py
+        run: python btc_trend_v30/r20/r20_historical_diagnostic_replay_runner.py
       - name: R2.0 audit gate
         run: |
           python - <<'PY'
