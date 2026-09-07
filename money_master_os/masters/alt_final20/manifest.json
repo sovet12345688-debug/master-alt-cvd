@@ -1,0 +1,33 @@
+{
+  "schema_version": "2.0",
+  "master_id": "ALT_FINAL20",
+  "display_name": "MASTER ALT 2 · FINAL20",
+  "expected_version": "V2.2.1 FINAL20 DEEP FINAL",
+  "repo_version": "V2.2.1 FINAL20 DEEP FINAL",
+  "status": "READY",
+  "canonical_source": "master_prompts/master_alt_final20_current.md",
+  "machine_contract": null,
+  "state_sources": [
+    "state/github_data_ready_registry.json",
+    "output/final20_cvd_summary.json",
+    "derivatives/output/latest_summary.json",
+    "live_flow/output/live_large_flow_summary.json"
+  ],
+  "shared_dependencies": [
+    "money_master_os/shared/COMMON_RULES.md",
+    "money_master_os/shared/DATA_POLICY.md",
+    "money_master_os/shared/RISK_GATE.md"
+  ],
+  "bootstrap": {
+    "allowed": true,
+    "require_exact_version_match": true,
+    "require_source_present": true,
+    "require_validator_pass": true
+  },
+  "ownership": {
+    "logic": "canonical_source",
+    "data_engines": "existing repository outputs",
+    "purpose": "FINAL20 deep tracking, CVD and execution verification",
+    "chat_memory": "NON_CANONICAL"
+  }
+}
