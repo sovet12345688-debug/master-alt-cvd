@@ -3,6 +3,7 @@ on:
   push:
     branches: [btc-trend-v30-r14-fasttrack]
     paths:
+      - 'btc_trend_v30/r14/r14_full_diagnostic_replay.py'
       - '.github/workflows/btc_trend_v30_r14_fasttrack_c_accelerated.yml'
   workflow_dispatch:
 permissions:
@@ -58,7 +59,7 @@ jobs:
       - name: Canonical baseline identity
         run: |
           python - <<'PY'
-          import json,math,sys,os
+          import json,math,sys
           s1=json.load(open('btc_trend_v30/output/validation_v1/data_integrity/audit.json'))
           s7=json.load(open('btc_trend_v30/output/validation_v1/step7_metrics/audit.json'))
           checks={
@@ -66,7 +67,7 @@ jobs:
             'rows_3306':s1['final_rows']==3306,
             'step7_pass':s7['step7']=='PASS',
             'legs_119':s7['raw_all_leg']['legs']==119,
-            'mean_R_identity':math.isclose(s7['raw_all_leg']['mean_R'],0.07563025210084033,abs_tol=1e-12)
+            'mean_R_identity':math.isclose(s7['raw_all_leg']['mean_unit_R'],0.07563025210084033,abs_tol=1e-12)
           }
           print('CANONICAL_BASELINE_IDENTITY',checks)
           if not all(checks.values()): sys.exit(1)
