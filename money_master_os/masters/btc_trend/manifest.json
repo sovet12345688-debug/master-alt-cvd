@@ -11,6 +11,20 @@
   "ui_canonical_source": "master_prompts/master_btc_trend_v2_6_ui_final.md",
   "machine_contract": "state/master_btc_trend_v2_6_contract.json",
   "official_state": "official_state/latest/btc_trend.json",
+  "official_state_bridge": {
+    "status": "READY",
+    "contract": "official_state/btc_trend_bridge_contract.json",
+    "inbox": "official_state/inbox/btc_trend/",
+    "processor": "official_state/process_btc_trend_inbox.py",
+    "workflow": ".github/workflows/btc_trend_official_state_bridge.yml",
+    "publisher": "official_state/publish_official_state.py",
+    "latest": "official_state/latest/btc_trend.json",
+    "history": "official_state/history/btc_trend/YYYY-MM.jsonl",
+    "index": "official_state/latest/index.json",
+    "publish_actual_basic_official_only": true,
+    "no_stored_official_run_blocks_current_execution": false,
+    "persistence_failure_status": "PERSISTENCE_PENDING"
+  },
   "state_sources": [
     "official_state/latest/btc_trend.json",
     "btc_backtest/",
@@ -58,6 +72,7 @@
     "logic": "canonical_source",
     "user_visible_ui": "ui_canonical_source",
     "official_decision_state": "official_state",
+    "official_state_transport": "official_state_bridge",
     "research_assets": "btc_backtest + btc-fractal-v26-build",
     "chat_memory": "NON_CANONICAL"
   }
