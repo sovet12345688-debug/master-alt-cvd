@@ -47,13 +47,14 @@ jobs:
           import json,sys
           s=json.load(open('market_vault/state/macro_liquidity_state.json'))
           p=json.load(open('market_vault/output/latest_macro_liquidity.json'))
+          print(json.dumps(p,ensure_ascii=False,indent=2)[:16000])
           if p.get('engine')!='MASTER_MARKET_FREE_MACRO_LIQUIDITY_V1':
               sys.exit('wrong macro liquidity engine')
           names={m.get('metric') for m in p.get('metrics',[])}
           core={'FED_TOTAL_ASSETS','FED_RESERVE_BALANCES','ON_RRP','TGA_CLOSING_BALANCE','US_NET_LIQUIDITY_PROXY'}
           missing=core-names
           if missing:
-              sys.exit(f'missing core free macro metrics: {sorted(missing)}')
+              sys.exit(f'missing core free macro metrics: {sorted(missing)}; failures={s.get("failures",{})}')
           print('FREE_MACRO_CORE=PASS')
           print('optional_failures=',s.get('failures',{}))
           PY
@@ -71,11 +72,12 @@ jobs:
           print('FREE_MACRO_HISTORY_GUARD=PASS')
           PY
 
-      - name: Commit generated data
+      - name: Commit generated data and diagnostics
+        if: always()
         run: |
           git config user.name "market-macro-free-bot"
           git config user.email "market-macro-free-bot@users.noreply.github.com"
-          git add market_vault/data/macro_liquidity_free_history.csv market_vault/output/latest_macro_liquidity.json market_vault/state/macro_liquidity_state.json
+          git add market_vault/data/macro_liquidity_free_history.csv market_vault/output/latest_macro_liquidity.json market_vault/state/macro_liquidity_state.json || true
           if git diff --cached --quiet; then
             echo "No generated data changes"
           else
