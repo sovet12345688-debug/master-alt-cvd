@@ -1,0 +1,50 @@
+{
+  "model": "MASTER_BTC_TREND_V3_R2_0",
+  "analysis": "SHORT_21_FAST_FORENSIC",
+  "source": {
+    "run_id": 34109485827,
+    "artifact_id": 10013917179,
+    "artifact_sha256": "6130af9cf3ecb8c6522ccd927d26229dc276ca02b6bc97638b554c3e9e9435df",
+    "head_sha": "6e0c14f0b483dec1d15650e226ae65f9adc93800",
+    "frozen_config_sha256": "2acb4c8b1cd24bc03ff1c14947361caa281b44680aa60d2323e1572284bfd048"
+  },
+  "governance": {
+    "historical_diagnostic_only": true,
+    "full_replay_performed": false,
+    "r20_rev2_modified": false,
+    "post_hoc_rule_adoption_forbidden": true
+  },
+  "headline": {
+    "episodes": 21,
+    "wins": 6,
+    "losses": 15,
+    "sum_R": -0.31149676901845647,
+    "mean_R": -0.014833179477069355,
+    "hard_gate_short_expectancy": "FAIL"
+  },
+  "state_timing": {
+    "seed_only": {"n": 2, "wins": 0, "sum_R": -0.6, "mean_R": -0.3},
+    "confirm_core_same_timestamp": {"n": 16, "wins": 4, "losses": 12, "sum_R": -6.450647034499934, "mean_R": -0.40316543965624585},
+    "confirm_then_core_later": {"n": 3, "wins": 2, "losses": 1, "sum_R": 6.739150265481477, "mean_R": 2.246383421827159}
+  },
+  "stage_realized_R": {
+    "SEED": 0.451826632350981,
+    "CONFIRM": -0.6988596470353781,
+    "CORE": -0.06446375433406093,
+    "net": -0.31149676901845647
+  },
+  "route": {
+    "BREAKDOWN": {"n": 20, "wins": 5, "sum_R": -0.44134855201602763, "mean_R": -0.02206742760080138},
+    "FAILED_RETEST": {"n": 1, "wins": 1, "sum_R": 0.1298517829975713, "mean_R": 0.1298517829975713, "note": "INSUFFICIENT_N"}
+  },
+  "descriptive_live_available_hypotheses": {
+    "reference_gap_le_1pct": {"n": 8, "wins": 1, "sum_R": -3.054466885892889, "note": "POST_HOC_BIN_NOT_A_RULE"},
+    "reference_gap_1_to_2pct": {"n": 10, "wins": 4, "sum_R": 3.3224345325501736, "note": "POST_HOC_BIN_NOT_A_RULE"},
+    "reference_gap_gt_2pct": {"n": 3, "wins": 1, "sum_R": -0.5794644156757409, "note": "POST_HOC_BIN_NOT_A_RULE"}
+  },
+  "interpretation": {
+    "confirmed": "The dominant historical weakness is concentrated where CONFIRM and CORE are added at the same availability timestamp.",
+    "hypothesis_only": "For a future R2.1 candidate, require an independently later completed confirmation before CORE risk is added on SHORT.",
+    "not_allowed": "Do not patch R2.0 REV2 from these historical results."
+  }
+}
