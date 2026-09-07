@@ -6,7 +6,7 @@ on:
     - cron: '49 * * * *'
   push:
     paths:
-      - 'market_vault/macro_liquidity_free_collector.py'
+      - 'market_vault/macro_liquidity_free_collector_v2.py'
       - '.github/workflows/market_macro_liquidity_free_hourly.yml'
 
 permissions:
@@ -36,10 +36,10 @@ jobs:
         run: pip install -r market_vault/requirements.txt
 
       - name: Syntax check
-        run: python -m py_compile market_vault/macro_liquidity_free_collector.py
+        run: python -m py_compile market_vault/macro_liquidity_free_collector_v2.py
 
       - name: Collect free official macro liquidity data
-        run: python market_vault/macro_liquidity_free_collector.py
+        run: python market_vault/macro_liquidity_free_collector_v2.py
 
       - name: Validate core free metrics
         run: |
@@ -47,16 +47,20 @@ jobs:
           import json,sys
           s=json.load(open('market_vault/state/macro_liquidity_state.json'))
           p=json.load(open('market_vault/output/latest_macro_liquidity.json'))
-          print(json.dumps(p,ensure_ascii=False,indent=2)[:16000])
-          if p.get('engine')!='MASTER_MARKET_FREE_MACRO_LIQUIDITY_V1':
+          print(json.dumps(p,ensure_ascii=False,indent=2)[:18000])
+          if p.get('engine')!='MASTER_MARKET_FREE_MACRO_LIQUIDITY_V2':
               sys.exit('wrong macro liquidity engine')
           names={m.get('metric') for m in p.get('metrics',[])}
-          core={'FED_TOTAL_ASSETS','FED_RESERVE_BALANCES','ON_RRP','TGA_CLOSING_BALANCE','US_NET_LIQUIDITY_PROXY'}
+          core={'FED_TOTAL_ASSETS','FED_RESERVE_BALANCES','FED_RRP_TOTAL','TGA_CLOSING_BALANCE','US_NET_LIQUIDITY_PROXY'}
           missing=core-names
           if missing:
               sys.exit(f'missing core free macro metrics: {sorted(missing)}; failures={s.get("failures",{})}')
-          print('FREE_MACRO_CORE=PASS')
-          print('optional_failures=',s.get('failures',{}))
+          qra={'QRA_NET_MARKETABLE_BORROWING_CURRENT_Q','QRA_END_CASH_BALANCE_CURRENT_Q','QRA_NET_MARKETABLE_BORROWING_NEXT_Q','QRA_END_CASH_BALANCE_NEXT_Q'}
+          if qra-names:
+              sys.exit(f'missing QRA metrics: {sorted(qra-names)}; failures={s.get("failures",{})}')
+          if 'TREASURY_BUYBACK_ACTUAL_ACCEPTED' not in names:
+              sys.exit(f'missing actual buyback accepted amount; failures={s.get("failures",{})}')
+          print('FREE_MACRO_CORE_QRA_BUYBACK=PASS')
           PY
 
       - name: Validate same-source history windows
