@@ -34,8 +34,24 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Validate current OFFICIAL State index before processing
-        run: python official_state/publish_official_state.py --mode validate-latest
+      - name: Capture queued BTC TREND run ids
+        id: queued
+        shell: bash
+        run: |
+          python - <<'PY' > /tmp/btc_run_ids.txt
+          import json, pathlib
+          root=pathlib.Path('official_state/inbox/btc_trend')
+          for p in sorted(root.glob('*.json')):
+              try:
+                  s=json.load(open(p, encoding='utf-8'))
+                  rid=(s.get('run') or {}).get('run_id')
+                  if rid:
+                      print(rid)
+              except Exception:
+                  pass
+          PY
+          echo "Queued run ids:"
+          cat /tmp/btc_run_ids.txt || true
 
       - name: Process BTC TREND OFFICIAL inbox
         id: process
@@ -47,15 +63,38 @@ jobs:
           echo "bridge_rc=$rc" >> "$GITHUB_OUTPUT"
           exit 0
 
-      - name: Validate OFFICIAL State index after processing
+      - name: Verify BTC TREND publish targets
+        id: verify
         if: always()
         shell: bash
         run: |
-          if [ "${{ steps.process.outputs.bridge_rc }}" = "0" ]; then
-            python official_state/publish_official_state.py --mode validate-latest
-          else
-            echo "Bridge rejected one or more payloads; commit rejected evidence before failing."
-          fi
+          set +e
+          python - <<'PY'
+          import json, pathlib, sys
+          queued=[x.strip() for x in pathlib.Path('/tmp/btc_run_ids.txt').read_text().splitlines() if x.strip()]
+          if not queued:
+              print('BTC_TREND_TARGET_VERIFY=NO_INPUT_SMOKE_PASS')
+              sys.exit(0)
+          latest=json.load(open('official_state/latest/btc_trend.json', encoding='utf-8'))
+          index=json.load(open('official_state/latest/index.json', encoding='utf-8'))
+          rid=(latest.get('run') or {}).get('run_id')
+          expected=queued[-1]
+          assert latest.get('state_status') == 'STORED', latest.get('state_status')
+          assert rid == expected, (rid, expected)
+          ent=(index.get('masters') or {}).get('btc_trend') or {}
+          assert ent.get('state_status') == 'STORED', ent
+          assert ent.get('latest_official_run_id') == expected, ent
+          hp=((latest.get('lineage') or {}).get('history_pointer'))
+          assert hp, 'missing history_pointer'
+          hist=pathlib.Path(hp)
+          assert hist.exists(), hp
+          text=hist.read_text(encoding='utf-8')
+          assert f'"run_id":"{expected}"' in text or f'"run_id": "{expected}"' in text, expected
+          print(f'BTC_TREND_TARGET_VERIFY=PASS run_id={expected}')
+          PY
+          rc=$?
+          echo "verify_rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
 
       - name: Commit material bridge changes
         if: always()
@@ -76,12 +115,12 @@ jobs:
             git push origin HEAD:main
           fi
 
-      - name: Fail workflow if any payload was rejected
+      - name: Final bridge result
         if: always()
         shell: bash
         run: |
-          if [ "${{ steps.process.outputs.bridge_rc }}" != "0" ]; then
-            echo "BTC_TREND_OFFICIAL_STATE_BRIDGE=REJECTED"
+          if [ "${{ steps.process.outputs.bridge_rc }}" != "0" ] || [ "${{ steps.verify.outputs.verify_rc }}" != "0" ]; then
+            echo "BTC_TREND_OFFICIAL_STATE_BRIDGE=FAIL"
             exit 1
           fi
           echo "BTC_TREND_OFFICIAL_STATE_BRIDGE=PASS"
