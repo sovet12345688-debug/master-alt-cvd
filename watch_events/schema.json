@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0",
+  "system": "MONEY_MASTER_OS_WATCH_EVENTS",
+  "description": "Append-only meaningful-change events. Not OFFICIAL State and not a central decision engine.",
+  "required": [
+    "schema_version",
+    "event_id",
+    "correlation_key",
+    "event_class",
+    "change_type",
+    "event_level",
+    "producer",
+    "master_id",
+    "detected_at_kst",
+    "summary",
+    "reason_codes",
+    "evidence_refs",
+    "watch_payload",
+    "notification",
+    "lineage",
+    "privacy"
+  ],
+  "allowed_event_classes": [
+    "MASTER_WATCH",
+    "RISK_VETO",
+    "SYSTEM_HEALTH",
+    "DATA_ANOMALY"
+  ],
+  "allowed_change_types": [
+    "NEW",
+    "ESCALATED",
+    "DEESCALATED",
+    "CONFIRMED",
+    "REVERSED",
+    "CLEARED"
+  ],
+  "allowed_event_levels": [
+    "LEVEL1",
+    "LEVEL2",
+    "WATCH",
+    "SYSTEM",
+    "INFO"
+  ],
+  "policy": {
+    "no_change_no_event": true,
+    "unchanged_repeat_forbidden": true,
+    "append_only_history": true,
+    "same_event_id_duplicate_forbidden": true,
+    "correlation_key_links_lifecycle": true,
+    "master_authored_thresholds_only": true,
+    "central_recalculation_forbidden": true,
+    "watch_cannot_be_official_state": true,
+    "watch_cannot_create_execution_order": true,
+    "enter_add_small_enter_forbidden": true,
+    "private_trading_state_forbidden": true,
+    "chat_memory_backfill_forbidden": true,
+    "provisional_or_reconstructed_event_forbidden": true
+  }
+}
