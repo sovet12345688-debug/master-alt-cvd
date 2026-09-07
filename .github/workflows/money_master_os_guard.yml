@@ -10,8 +10,10 @@ on:
       - 'state/**'
       - 'source_health/**'
       - 'official_state/**'
+      - 'shared_fact_vault/**'
       - '.github/workflows/money_master_os_guard.yml'
       - '.github/workflows/source_health_hourly.yml'
+      - '.github/workflows/shared_fact_vault_hourly.yml'
   pull_request:
     paths:
       - 'money_master_os/**'
@@ -19,8 +21,10 @@ on:
       - 'state/**'
       - 'source_health/**'
       - 'official_state/**'
+      - 'shared_fact_vault/**'
       - '.github/workflows/money_master_os_guard.yml'
       - '.github/workflows/source_health_hourly.yml'
+      - '.github/workflows/shared_fact_vault_hourly.yml'
 
 permissions:
   contents: read
@@ -46,6 +50,9 @@ jobs:
 
       - name: Validate Source Health authority boundary
         run: python money_master_os/tools/validate_source_health_contract.py
+
+      - name: Validate Shared Fact Vault fact-only boundary
+        run: python shared_fact_vault/build_shared_facts.py --mode self-test
 
       - name: Validate OFFICIAL State latest/index contract
         run: python official_state/publish_official_state.py --mode validate-latest
