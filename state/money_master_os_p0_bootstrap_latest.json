@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0",
+  "test_name": "MONEY_MASTER_OS_V2_P0_NEW_ROOM_BOOTSTRAP",
+  "status": "PASS",
+  "completed_kst": "2026-09-07T11:57:36+09:00",
+  "validated_commit": "4a0defd627a32d4bf9c44ca26439bfc968d56315",
+  "workflow": {
+    "name": "MONEY MASTER OS Guard",
+    "run_id": 34078000618,
+    "job_id": 101607773789,
+    "conclusion": "success"
+  },
+  "scope": [
+    "five_master_identity",
+    "registry_to_manifest_resolution",
+    "shared_dependency_presence",
+    "canonical_source_presence_and_signature",
+    "machine_contract_presence_when_declared",
+    "bootstrap_loader_path_resolution",
+    "btc_v2_6_production_v3_0_research_separation",
+    "trading_public_repo_privacy_guard",
+    "no_chat_memory_reconstruction"
+  ],
+  "masters": {
+    "market": {
+      "version": "V1.2 FINAL",
+      "canonical_source": "master_prompts/master_market_v1_2_current.md",
+      "contract": "state/master_market_v1_2_contract.json",
+      "bootstrap": "PASS"
+    },
+    "btc_trend": {
+      "version": "V2.6 PRODUCTION",
+      "canonical_source": "master_prompts/master_btc_trend_v2_6_current.md",
+      "contract": "state/master_btc_trend_v2_6_contract.json",
+      "bootstrap": "PASS",
+      "research_version": "V3.0",
+      "research_status": "RESEARCH_ONLY"
+    },
+    "alt_top100": {
+      "version": "V4.8 FINAL",
+      "canonical_source": "master_prompts/master_alt_top100_v4_8_current.md",
+      "contract": null,
+      "bootstrap": "PASS"
+    },
+    "alt_final20": {
+      "version": "V2.2.1 FINAL20 DEEP FINAL",
+      "canonical_source": "master_prompts/master_alt_final20_current.md",
+      "contract": null,
+      "bootstrap": "PASS"
+    },
+    "trading": {
+      "version": "CURRENT + TIME VALIDITY V2.1 OVERLAY",
+      "canonical_source": "master_prompts/master_trading_current.md",
+      "contract": "state/master_trading_current_contract.json",
+      "bootstrap": "PASS",
+      "execution_mode": "MANUAL_ONLY"
+    }
+  },
+  "issues_found_and_fixed": [
+    {
+      "master": "market",
+      "issue": "Bootstrap loader marked READY but did not explicitly state the canonical source/contract path.",
+      "fix": "Added exact MARKET canonical and contract paths to BOOTSTRAP_LATEST.md."
+    },
+    {
+      "master": "alt_final20",
+      "issue": "Bootstrap loader marked READY but did not explicitly state the canonical source path.",
+      "fix": "Added exact ALT FINAL20 canonical path to BOOTSTRAP_LATEST.md."
+    }
+  ],
+  "p0_final_decision": "PASS",
+  "next_phase": "P1_SOURCE_HEALTH"
+}
