@@ -103,6 +103,13 @@ jobs:
             --json-output btc_trend_v30/r13/fast/output/sc_4h_add_forensics.json \
             --csv-output btc_trend_v30/r13/fast/output/sc_4h_add_cases.csv
 
+      - name: Run route-change forensic drilldown
+        run: |
+          mkdir -p btc_trend_v30/r13/fast/output
+          python btc_trend_v30/r13/fast/route_change_forensic.py \
+            --snapshot-root .fast_snapshot \
+            --output btc_trend_v30/r13/fast/output/route_change_forensic.json
+
       - name: Upload FAST diagnostic evidence
         uses: actions/upload-artifact@v4
         with:
