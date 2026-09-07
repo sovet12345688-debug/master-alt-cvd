@@ -1,0 +1,55 @@
+{
+  "model": "MASTER_BTC_TREND_V3_R2_1",
+  "status": "PREDECLARED_DIAGNOSTIC_SPEC",
+  "execution_engine": "FROZEN_R2_1_UNCHANGED",
+  "historical_window": ["2021-01-01T00:00:00Z", "2026-09-05T00:00:00Z"],
+  "evidence_firewall": {
+    "same_history_cannot_promote": true,
+    "variants_cannot_replace_frozen_baseline": true,
+    "no_best_variant_adoption": true,
+    "forward_oos_still_required": true
+  },
+  "robustness": {
+    "baseline_excluded_from_variant_count": true,
+    "variants": [
+      {"id":"VOL_STRICT","changes":{"volume_thresholds_multiplier":1.10}},
+      {"id":"VOL_LOOSE","changes":{"volume_thresholds_multiplier":0.90}},
+      {"id":"WATCH_TIGHT","changes":{"watch_distance_atr_multiplier":0.80}},
+      {"id":"WATCH_WIDE","changes":{"watch_distance_atr_multiplier":1.20}},
+      {"id":"STOP_TIGHT","changes":{"seed_stop_atr_multiplier":0.90}},
+      {"id":"STOP_WIDE","changes":{"seed_stop_atr_multiplier":1.10}},
+      {"id":"EXIT_TIGHT","changes":{"chandelier_atr_multiplier":0.90}},
+      {"id":"EXIT_WIDE","changes":{"chandelier_atr_multiplier":1.10}},
+      {"id":"CONFIRM_SHORTER","changes":{"long_confirm_window_days":4,"short_confirm_window_days":3}},
+      {"id":"CONFIRM_LONGER","changes":{"long_confirm_window_days":6,"short_confirm_window_days":5}}
+    ],
+    "edge_preservation_checks": {
+      "mcr90_ge": 0.20,
+      "mcr365_ge": 0.20,
+      "long_expectancy_gt": 0.0,
+      "short_expectancy_gt": 0.0,
+      "confirmed_false_start_rate_le": 0.45,
+      "capture_to_loss_gt": 1.10
+    },
+    "descriptive_classification": {
+      "STRONG": "8-10 of 10 variants preserve all six checks",
+      "MODERATE": "6-7 of 10 variants preserve all six checks",
+      "FRAGILE": "0-5 of 10 variants preserve all six checks"
+    }
+  },
+  "cycle": {
+    "primary_regime_definition": {
+      "ema200_span": 200,
+      "ema200_slope_lookback_days": 20,
+      "BULL": "latest completed Daily close > EMA200 and EMA200 slope20 > 0",
+      "BEAR": "latest completed Daily close < EMA200 and EMA200 slope20 < 0",
+      "TRANSITION": "otherwise"
+    },
+    "secondary_calendar_bucket": "UTC calendar year of seed time",
+    "minimum_bucket_n": 10,
+    "expectancy_floor_R": -0.15,
+    "primary_gate": "every eligible direction_x_regime bucket with n>=10 must have mean_R >= -0.15",
+    "secondary_audit": "direction_x_year buckets are reported and flagged with the same floor when n>=10"
+  },
+  "known_unresolved_baseline_gate_not_used_for_robustness_classification": "median_seed_lag_days_max_7"
+}
