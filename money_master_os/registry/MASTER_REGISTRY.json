@@ -1,7 +1,7 @@
 {
   "schema_version": "2.0",
   "registry_name": "MONEY_MASTER_OS_REGISTRY",
-  "updated_kst": "2026-09-07T11:34:00+09:00",
+  "updated_kst": "2026-09-07T11:52:00+09:00",
   "repository": "sovet12345688-debug/master-alt-cvd",
   "architecture": {
     "master_count": 5,
@@ -45,14 +45,15 @@
       "production_version": "V2.6",
       "research_version": "V3.0",
       "expected_version": "V2.6 PRODUCTION",
-      "repo_version": null,
-      "source_path": null,
-      "contract_path": null,
+      "repo_version": "V2.6 PRODUCTION",
+      "source_path": "master_prompts/master_btc_trend_v2_6_current.md",
+      "contract_path": "state/master_btc_trend_v2_6_contract.json",
       "manifest_path": "money_master_os/masters/btc_trend/manifest.json",
-      "status": "SOURCE_MISSING",
-      "bootstrap_allowed": false,
-      "execution_policy": "KEEP_V2_6_AS_PRODUCTION_CONTEXT_BUT_BLOCK_BOOTSTRAP_UNTIL_EXACT_CANONICAL_SOURCE_IS_COMMITTED",
-      "research_policy": "V3.0_RESEARCH_ONLY_UNTIL_ACCEPTANCE_AND_CANONICAL_PROMOTION"
+      "status": "READY",
+      "bootstrap_allowed": true,
+      "execution_policy": "LOAD_EXACT_SOURCE_AND_VALIDATE",
+      "research_policy": "V3.0_RESEARCH_ONLY_UNTIL_ACCEPTANCE_AND_CANONICAL_PROMOTION",
+      "ui_policy": "THREE_SEMANTIC_SCREENS_USER_REFINEMENT_ALLOWED"
     },
     "alt_top100": {
       "display_name": "MASTER ALT 1 · TOP100",
