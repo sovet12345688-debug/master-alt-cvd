@@ -47,6 +47,7 @@ jobs:
           python - <<'PY'
           import json,sys
           p=json.load(open('market_vault/output/latest_etf_flows.json'))
+          print(json.dumps(p,ensure_ascii=False,indent=2)[:12000])
           if p.get('engine')!='MASTER_MARKET_FREE_ETF_FLOW_V1':
               sys.exit('wrong ETF engine')
           assets={x.get('asset'):x for x in p.get('assets',[])}
@@ -62,11 +63,12 @@ jobs:
           print('ETF_1D_3D_5D_20D=PASS')
           PY
 
-      - name: Commit generated data
+      - name: Commit generated data and diagnostics
+        if: always()
         run: |
           git config user.name "market-etf-flow-bot"
           git config user.email "market-etf-flow-bot@users.noreply.github.com"
-          git add market_vault/output/latest_etf_flows.json market_vault/state/etf_flow_state.json
+          git add market_vault/output/latest_etf_flows.json market_vault/state/etf_flow_state.json || true
           if git diff --cached --quiet; then
             echo "No generated data changes"
           else
