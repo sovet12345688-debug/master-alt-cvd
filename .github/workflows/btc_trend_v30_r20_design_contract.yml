@@ -20,18 +20,29 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Candidate config identity
+      - name: Install deterministic test dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Candidate config identity and replay firewall
         run: |
           set -euo pipefail
           sha256sum btc_trend_v30/r20/r20_candidate_config.json
           test ! -e btc_trend_v30/r20/output/historical_replay/audit.json
+          test ! -e btc_trend_v30/r20/output/full_replay/audit.json
       - name: Contract load
         working-directory: btc_trend_v30/r20
         run: python r20_contract.py
+      - name: Engine load
+        working-directory: btc_trend_v30/r20
+        run: python r20_engine.py
       - name: Synthetic state-machine contract tests
         working-directory: btc_trend_v30/r20
         run: python test_r20_contract.py
+      - name: PIT prefix and future-mutation tests
+        working-directory: btc_trend_v30/r20
+        run: python test_r20_engine_pit.py
       - name: Compile
         run: |
           python -m py_compile btc_trend_v30/r20/r20_contract.py
+          python -m py_compile btc_trend_v30/r20/r20_engine.py
           python -m py_compile btc_trend_v30/r20/test_r20_contract.py
+          python -m py_compile btc_trend_v30/r20/test_r20_engine_pit.py
