@@ -1,0 +1,108 @@
+name: BTC TREND V3 R2.4 HISTORICAL DIAGNOSTIC
+
+on:
+  push:
+    branches: [btc-trend-v30-r24-mature-bear-risk]
+    paths:
+      - '.github/workflows/btc_trend_v30_r24_historical_diagnostic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  r24-historical-diagnostic:
+    runs-on: ubuntu-24.04
+    env:
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/btc_trend_v30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install research dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Frozen R2.4 identity and PIT preflight
+        run: |
+          set -euo pipefail
+          python btc_trend_v30/r21/r21_freeze_guard.py
+          python btc_trend_v30/r21/test_r21_contract.py
+          (cd btc_trend_v30/r20 && python test_r20_engine_pit.py)
+          python btc_trend_v30/r24/test_r24_contract.py
+          test "$(sha256sum btc_trend_v30/r24/r24_frozen_config.json | awk '{print $1}')" = "6358572604f79b4e376509b74fc977871e956175a3fba959aab7a583fa1a6a91"
+          test "$(git hash-object btc_trend_v30/r24/r24_frozen_config.json)" = "be557a20ed9489fead93a62d9a33ec280b89cd44"
+          test "$(git hash-object btc_trend_v30/r24/r24_engine.py)" = "a5a5d30d06bc4d99603e0fc92834f9a372794702"
+          test "$(git hash-object btc_trend_v30/r24/test_r24_contract.py)" = "402644f0f8e3fb43b866c6ee0b053fa32c4b5cb8"
+          test "$(git hash-object btc_trend_v30/r21/r21_engine.py)" = "b8a0d741ad59a98496d13b6b66a6a74763a27545"
+          echo R24_FROZEN_IDENTITY=PASS
+          echo R24_FREEZE_EVIDENCE_RUN=34168844405
+      - name: Download canonical validated Step1-10 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: btc-trend-v30-validation-v1-step1-10
+          repository: sovet12345688-debug/master-alt-cvd
+          run-id: 34084074525
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: btc_trend_v30/output/validation_v1
+      - name: Canonical input SHA and baseline identity guard
+        run: |
+          python - <<'PY'
+          import hashlib,json,math,sys
+          from pathlib import Path
+          root=Path('btc_trend_v30/output/validation_v1')
+          expected={
+            'data_integrity/btc_usdt_1d_matrix.csv':'0618a36ffa0f98a3a3318927f0602bb288ff231fe9d10299b5f8013015a8964a',
+            'step3_episode_dedupe/independent_episodes.csv':'aa4c9cc2f5c6bccfca71e65de4d7a81a64d9f0b8146fe06f416d9755f3ea467f',
+            'step4_outcome_labels/episode_medium_long_truth_labels.csv':'5b8116fc14ef2e66ab48d67f132ead2881f363192d5ad6325902a3e8c7f4a9ce',
+            'step6_state_machine_replay/btc_usdt_1h_matrix.csv':'259ba60e0b65df87591baa38628d1126b465342ff0a3848a9dabe348ad9fd729',
+            'step6_state_machine_replay/btc_usdt_complete_4h_matrix.csv':'22bdc9bf33d54b8ebb850d209046365a326324059d48d3aac2afa33a0c366a26',
+            'step7_metrics/audit.json':'1ab46eb52bb170cd1bc12bce3da8eabbc5478e83f3b358dc08e0a4b3604b323d',
+          }
+          checks={}
+          for rel,want in expected.items():
+              p=root/rel
+              got=hashlib.sha256(p.read_bytes()).hexdigest() if p.exists() else 'MISSING'
+              checks[rel]=(got==want)
+              print(rel, got, 'PASS' if got==want else 'FAIL')
+          a=json.load(open(root/'step7_metrics/audit.json'))
+          identity=[a['step7']=='PASS',a['raw_all_leg']['legs']==119,math.isclose(a['raw_all_leg']['mean_unit_R'],0.07563025210084033,abs_tol=1e-12)]
+          print('CANONICAL_SHA_CHECKS=',checks)
+          print('R12_BASELINE_IDENTITY=',identity)
+          if not all(checks.values()) or not all(identity): sys.exit(1)
+          PY
+      - name: Frozen R2.4 historical diagnostic
+        run: python btc_trend_v30/r24/r24_historical_diagnostic_replay_runner.py
+      - name: R2.4 audit integrity gate
+        run: |
+          python - <<'PY'
+          import json,math,sys
+          p='btc_trend_v30/r24/output/historical_replay/audit.json'
+          d=json.load(open(p)); s=d['summary']; c=d['counts']; cr=d['cycle_recheck']
+          checks=[
+            d['model']=='MASTER_BTC_TREND_V3_R2_4',
+            d['status']=='HISTORICAL_DIAGNOSTIC_ONLY_NOT_UNTOUCHED_OOS',
+            d['production_promotion_evidence'] is False,
+            c['executed_r24_episodes']==69,
+            c['long_episodes']==48,
+            c['short_episodes']==21,
+            math.isclose(s['long_expectancy']['mean_R'],0.8346097626774698,abs_tol=1e-12),
+            math.isclose(s['median_seed_lag_days_90d_truth'],10.166666666666668,abs_tol=1e-12),
+            cr['primary_gate'] in {'PASS','FAIL'},
+          ]
+          print('R24_SUMMARY=',s)
+          print('R24_COUNTS=',c)
+          print('R24_SINGLE_CHANGE=',d['single_change_evaluation'])
+          print('R24_CYCLE_RECHECK=',cr)
+          print('R24_INTEGRITY_CHECKS=',checks)
+          if not all(checks): sys.exit(1)
+          PY
+      - name: Upload R2.4 historical evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v30-r24-historical-diagnostic
+          path: |
+            btc_trend_v30/r24/output/historical_replay/
+            btc_trend_v30/output/validation_v1/step7_metrics/audit.json
+          retention-days: 14
