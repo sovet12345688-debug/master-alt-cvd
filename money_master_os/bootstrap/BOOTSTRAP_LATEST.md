@@ -28,12 +28,18 @@ Legacy ambiguous ID `alt` is forbidden for V2 bootstrap.
 
 Chat context may add current user instructions but must not silently replace the canonical identity or invent missing persisted history.
 
-## Current safe bootstrap state — 2026-09-07 11:34 KST
+## Current safe bootstrap state — 2026-09-07 11:52 KST — ALL 5 READY
 - `market` — MASTER MARKET V1.2 FINAL: READY.
-- `btc_trend` — production V2.6: BLOCKED by SOURCE_MISSING. V3.0 is research-only.
+- `btc_trend` — MASTER BTC TREND V2.6 PRODUCTION: READY. Load `master_prompts/master_btc_trend_v2_6_current.md` and `state/master_btc_trend_v2_6_contract.json`. V3.0 remains research-only.
 - `alt_top100` — MASTER ALT 1 V4.8 FINAL: READY. Load `master_prompts/master_alt_top100_v4_8_current.md` exactly.
 - `alt_final20` — MASTER ALT 2 V2.2.1 FINAL20 DEEP FINAL: READY.
 - `trading` — MASTER TRADING CURRENT + TIME VALIDITY V2.1 OVERLAY: READY. Load `master_prompts/master_trading_current.md` and `state/master_trading_current_contract.json`. Execution mode is manual-only.
+
+## BTC production/research rule
+- New-room production bootstrap always loads V2.6 while the registry says production=`V2.6`.
+- V3.0 research assets must not override, patch, or replace V2.6 production automatically.
+- V3.0 promotion requires explicit acceptance completion, exact V3.0 canonical source/contract, and an explicit registry promotion.
+- Historical/bootstrap values inside the V2.6 prompt are state history only; revalidate against current market data before treating them as current.
 
 ## Cross-MASTER rule
 Shared facts may be read from common GitHub data layers, but no MASTER may bootstrap from another MASTER's score, direction, permission, READY state, or final conclusion.
@@ -46,8 +52,9 @@ A READY MASTER may later receive user-approved output/UI refinement. Such a UI c
 
 ## Migration command examples
 - `새 방이야. MASTER MARKET 복원.`
+- `새 방이야. MASTER BTC TREND 복원.`
 - `새 방이야. MASTER ALT 1 TOP100 복원.`
 - `새 방이야. MASTER ALT 2 FINAL20 복원.`
 - `새 방이야. MASTER TRADING 복원.`
 
-If the selected MASTER is blocked, the assistant must explain which exact canonical source/contract is missing instead of recreating it from memory.
+If a selected MASTER becomes blocked later, the assistant must explain which exact canonical source/contract is missing instead of recreating it from memory.
