@@ -18,14 +18,27 @@ Use `CONFIRMED / INTERPRETATION / INFERENCE / N/A` where applicable.
 - `last_good` is a diagnostic pointer only. A stale source cannot be silently replaced with a `last_good` value and called current.
 - Another MASTER's health or conclusion is never a substitute for direct execution-critical revalidation.
 
+## Shared Fact Vault authority boundary
+- Common normalized facts live at `shared_fact_vault/output/latest.json`.
+- Shared Fact Vault contains facts only: value, unit, asset/venue/window, observation timestamp, source lineage, Source Health status and neutral data-quality/comparison metadata.
+- It must not publish LONG/SHORT, bullish/bearish interpretation, MASTER score, Permission, Action, candidate rank, Entry, SL, TP, R:R or ENTER.
+- Same semantic metric from different sources must remain source-qualified. The Vault must not silently reconcile, average or choose a winner across sources.
+- Same-source/same-definition comparison metadata may be reused. Cross-source deltas require a separately approved bridge.
+- A fact from `STALE / FAILED / MISSING` source may remain visible for lineage but must have `current_usable=false`.
+- `last_good` must never be substituted into the Vault as a current fact.
+- Shared Fact Vault Coverage is registered fact-source coverage only. It is never MASTER Coverage/confidence and never an execution gate.
+- Existing collectors remain raw/history owners. The Vault stores only compact normalized facts and must not duplicate high-volume history.
+- MASTERs may consume the same Vault facts, but each MASTER independently decides weighting, interpretation, permission and execution.
+- Current/Entry/Trigger/SL/TP/R:R and other execution-critical values must still be revalidated by the responsible MASTER when required.
+
 ## OFFICIAL State authority boundary
 - The latest persisted MASTER decision state lives under `official_state/latest/`.
 - Only an ACTUAL OFFICIAL MASTER run may be stored with `state_status=STORED`.
 - WATCH, provisional/current-candle, draft, dry-run, research-only, inferred, reconstructed or manually guessed values cannot be promoted to OFFICIAL State.
 - `NO_STORED_OFFICIAL_RUN` is a valid state and must remain empty until an actual OFFICIAL run is persisted.
-- Missing OFFICIAL history must not be reconstructed from chat memory, canonical prompt examples, raw collector outputs, another MASTER, Source Health, or legacy handoff files.
-- Source Health may be referenced as availability metadata inside an OFFICIAL State, but it can never generate the MASTER's direction, score, Permission, Action, Entry, SL, TP, R:R, Coverage or confidence.
-- MASTER Coverage and confidence must come from that actual MASTER OFFICIAL run. `registered_source_health_pct` is never MASTER Coverage.
+- Missing OFFICIAL history must not be reconstructed from chat memory, canonical prompt examples, raw collector outputs, another MASTER, Source Health, Shared Fact Vault, or legacy handoff files.
+- Source Health and Shared Fact Vault may be referenced as factual/data-availability inputs inside an OFFICIAL State, but they can never generate the MASTER's direction, score, Permission, Action, Entry, SL, TP, R:R, Coverage or confidence.
+- MASTER Coverage and confidence must come from that actual MASTER OFFICIAL run. `registered_source_health_pct` and Shared Fact Vault coverage are never MASTER Coverage.
 - `valid_until_kst`, next-run validity and freshness must be stored only when actually produced or explicitly defined by the MASTER. Unknown validity remains `UNKNOWN`; schedule cadence alone must not be used to manufacture an expiry.
 - A stored OFFICIAL State with freshness `UNKNOWN` or `EXPIRED` remains a historical official snapshot, not proof that its old decision is current.
 - Each MASTER owns its own OFFICIAL decision. Cross-MASTER facts may be shared, but another MASTER's score/direction/permission/action cannot be copied as this MASTER's owned conclusion.
@@ -40,6 +53,7 @@ Use `CONFIRMED / INTERPRETATION / INFERENCE / N/A` where applicable.
 
 ## Persistence
 - System logic belongs in canonical prompt/contract files.
+- Latest normalized shared facts belong in `shared_fact_vault/output/latest.json`; raw/history data remains in the owning collectors.
 - Latest actual MASTER decision continuity belongs in `official_state/latest/<master_id>.json`.
 - Actual OFFICIAL history belongs in append-only `official_state/history/<master_id>/YYYY-MM.jsonl`.
 - Legacy `money_master_os/handoff/*_LATEST.json` files are migration artifacts once OFFICIAL State V1 exists and must not override it.
