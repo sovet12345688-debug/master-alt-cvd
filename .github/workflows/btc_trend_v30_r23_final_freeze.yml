@@ -1,0 +1,55 @@
+name: BTC TREND V3 R2.3 FINAL FREEZE
+
+on:
+  push:
+    branches: [btc-trend-v30-r23-detection-execution-separation]
+    paths:
+      - 'btc_trend_v30/r23/r23_frozen_config.json'
+      - 'btc_trend_v30/r23/r23_detector.py'
+      - 'btc_trend_v30/r23/test_r23_contract.py'
+      - 'btc_trend_v30/r23/r23_freeze_manifest.json'
+      - 'btc_trend_v30/r23/r23_freeze_guard.py'
+      - 'btc_trend_v30/r23/R23_FINAL_FREEZE_SPEC.md'
+      - '.github/workflows/btc_trend_v30_r23_final_freeze.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: '1'
+  PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/btc_trend_v30
+
+jobs:
+  r23-final-freeze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Parent R2.1 integrity
+        run: |
+          python btc_trend_v30/r21/r21_freeze_guard.py
+          python btc_trend_v30/r21/test_r21_contract.py
+      - name: PIT availability 7 of 7
+        run: (cd btc_trend_v30/r20 && python test_r20_engine_pit.py)
+      - name: R2.3 contract 7 of 7
+        run: python btc_trend_v30/r23/test_r23_contract.py
+      - name: R2.3 FINAL freeze guard
+        run: python btc_trend_v30/r23/r23_freeze_guard.py
+      - name: Parent execution code untouched
+        run: |
+          test "$(git hash-object btc_trend_v30/r21/r21_engine.py)" = "b8a0d741ad59a98496d13b6b66a6a74763a27545"
+          test "$(git hash-object btc_trend_v30/r21/test_r21_contract.py)" = "ba6744311b0d4fb1c510eae2482360297616d3fd"
+          echo R21_EXECUTION_IDENTITY_PASS
+      - name: Compile and replay firewall
+        run: |
+          python -m py_compile btc_trend_v30/r23/r23_detector.py btc_trend_v30/r23/r23_freeze_guard.py btc_trend_v30/r23/test_r23_contract.py
+          test ! -d btc_trend_v30/r23/output/historical_replay
+          echo 'R23_FINAL_FREEZE_PASS'
+          echo 'EXECUTION_ENGINE_CHANGED=false'
+          echo 'HISTORICAL_REPLAY_PERFORMED_BEFORE_FREEZE=false'
