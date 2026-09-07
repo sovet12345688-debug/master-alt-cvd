@@ -1,0 +1,38 @@
+name: BTC TREND V3 R1.4 FAST-TRACK B Freeze Validation
+on:
+  push:
+    branches: [btc-trend-v30-r14-fasttrack]
+    paths:
+      - 'btc_trend_v30/r14/r14_frozen_config.json'
+      - 'btc_trend_v30/r14/r14_freeze_manifest.json'
+      - 'btc_trend_v30/r14/R14_FINAL_FREEZE_SPEC.md'
+      - 'btc_trend_v30/r14/r14_freeze_guard.py'
+      - 'btc_trend_v30/r14/r14_engine.py'
+      - 'btc_trend_v30/r14/test_r14_contract.py'
+      - '.github/workflows/btc_trend_v30_r14_fasttrack_b_freeze.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  freeze-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: R1.4 freeze guard
+        run: python btc_trend_v30/r14/r14_freeze_guard.py
+      - name: R1.4 engine load
+        run: python btc_trend_v30/r14/r14_engine.py
+      - name: R1.4 contract tests
+        run: python btc_trend_v30/r14/test_r14_contract.py
+      - name: Assert no R1.4 replay output exists before freeze validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -d btc_trend_v30/r14/output/full_replay ] && find btc_trend_v30/r14/output/full_replay -type f | grep -q .; then
+            echo 'Unexpected R1.4 replay output committed before freeze validation'
+            exit 1
+          fi
+          echo 'R14_REPLAY_OUTPUT_COMMITTED_PRE_FREEZE=0'
