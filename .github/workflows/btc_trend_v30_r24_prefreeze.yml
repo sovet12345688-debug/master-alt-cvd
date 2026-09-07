@@ -1,0 +1,50 @@
+name: BTC TREND V3 R2.4 PRE-FREEZE
+
+on:
+  push:
+    branches: [btc-trend-v30-r24-mature-bear-risk]
+    paths:
+      - 'btc_trend_v30/r24/**'
+      - '.github/workflows/btc_trend_v30_r24_prefreeze.yml'
+  workflow_dispatch:
+
+jobs:
+  prefreeze:
+    runs-on: ubuntu-24.04
+    env:
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/btc_trend_v30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Parent R2.1 + PIT guards
+        run: |
+          python btc_trend_v30/r21/r21_freeze_guard.py
+          python btc_trend_v30/r21/test_r21_contract.py
+          (cd btc_trend_v30/r20 && python test_r20_engine_pit.py)
+      - name: R2.4 single-change contract
+        run: python btc_trend_v30/r24/test_r24_contract.py
+      - name: No R2.4 historical replay before freeze
+        run: |
+          test ! -d btc_trend_v30/r24/output
+          test ! -f btc_trend_v30/r24/r24_historical_diagnostic_replay.py
+          echo R24_HISTORICAL_REPLAY_BEFORE_FREEZE=0
+      - name: Parent execution files unchanged
+        run: |
+          test "$(git hash-object btc_trend_v30/r21/r21_engine.py)" = "b8a0d741ad59a98496d13b6b66a6a74763a27545"
+          test "$(git hash-object btc_trend_v30/r21/r21_frozen_config.json)" = "5e2cab91781fb97519f4a37f9354c4ee545249e1"
+          echo R21_PARENT_EXECUTION_IDENTITY=PASS
+      - name: Candidate identity
+        run: |
+          sha256sum btc_trend_v30/r24/r24_candidate_config.json
+          git hash-object btc_trend_v30/r24/r24_candidate_config.json
+          git hash-object btc_trend_v30/r24/r24_engine.py
+          git hash-object btc_trend_v30/r24/test_r24_contract.py
+      - name: Compile
+        run: python -m compileall -q btc_trend_v30/r24
