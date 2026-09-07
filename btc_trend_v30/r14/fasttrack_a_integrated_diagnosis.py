@@ -16,6 +16,8 @@ def main():
     ap=argparse.ArgumentParser(); ap.add_argument('--snapshot-root',required=True); ap.add_argument('--output',required=True); a=ap.parse_args()
     root=Path(a.snapshot_root)/'r13/output/historical_diagnostic'
     legs=pd.read_csv(root/'r13_trade_legs.csv'); ep=pd.read_csv(root/'r13_episode_metrics.csv')
+    ids=set(ep.episode_id.astype(str))
+    legs=legs[legs.episode_id.astype(str).isin(ids)].copy()
     for c in ['confirm_time','resolved_time']: legs[c]=pd.to_datetime(legs[c],utc=True,format='mixed',errors='coerce')
     first=legs[legs.leg.eq('1H_ENTRY')].sort_values('confirm_time').drop_duplicates('episode_id').copy()
     add=legs[legs.leg.eq('4H_ADD')].copy()
@@ -46,14 +48,12 @@ def main():
     }
     if not all(checks.values()): raise SystemExit('A_INTEGRATED_DIAGNOSIS_IDENTITY_FAIL '+json.dumps(checks))
     out={
-      'status':'A_INTEGRATED_DIAGNOSIS_PASS_DIAGNOSTIC_ONLY',
-      'checks':checks,
+      'status':'A_INTEGRATED_DIAGNOSIS_PASS_DIAGNOSTIC_ONLY','checks':checks,
       'core':{
         'first_1h':rstats(first),'add_4h':rstats(add),'edge_given_back_pct':50.0,
-        'sc_add':rstats(sc),'route_change_add':rstats(route_change),
-        'first_loss_then_add':rstats(first_loss),'first_loss_short':rstats(first_loss_short),
-        'first_loss_caution':rstats(first_loss_caution),'first_loss_retest':rstats(first_loss_retest),
-        'false_start_rate':len(false_starts)/len(false_complete)
+        'sc_add':rstats(sc),'route_change_add':rstats(route_change),'first_loss_then_add':rstats(first_loss),
+        'first_loss_short':rstats(first_loss_short),'first_loss_caution':rstats(first_loss_caution),
+        'first_loss_retest':rstats(first_loss_retest),'false_start_rate':len(false_starts)/len(false_complete)
       },
       'integrated_bottlenecks_ranked':[
         {'rank':1,'name':'4H_ADD_THESIS_REUSE','evidence':'First 1H edge +16R; 4H ADD -8R. First-loss then ADD 45 cases = 3W/42L, -33R.'},
@@ -62,7 +62,7 @@ def main():
         {'rank':4,'name':'SC_FALSE_CONTINUATION','evidence':'SC 4H ADD 11 cases = 0W/11L; prior forensic found 10/11 without 20% 90D trend.'},
         {'rank':5,'name':'ROUTE_RECLASSIFICATION','evidence':'Route-changed ADD 12 cases = 0W/12L.'},
         {'rank':6,'name':'SAFETY_SCORE_SATURATION','evidence':'Prior false-start and SC audits showed Safety=100 across both good and bad cohorts; weak discrimination.'},
-        {'rank':7,'name':'TREND_CAPTURE_EXIT_BOTTLENECK','evidence':'R1.3 entry timing improved strongly but MCR remained 6.70%/3.57%, indicating position-management/exit capture remains a separate bottleneck.'}
+        {'rank':7,'name':'TREND_CAPTURE_EXIT_BOTTLENECK','evidence':'R1.3 entry timing improved strongly but MCR remained 6.70%/3.57%, so position-management/exit capture is a separate bottleneck.'}
       ],
       'design_constraints_for_r14':[
         'Keep R1.3 1H RETEST/IGNITION entry architecture unchanged as baseline signal layer.',
