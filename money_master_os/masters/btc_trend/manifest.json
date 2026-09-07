@@ -8,6 +8,7 @@
   "repo_version": "V2.6 PRODUCTION",
   "status": "READY",
   "canonical_source": "master_prompts/master_btc_trend_v2_6_current.md",
+  "ui_canonical_source": "master_prompts/master_btc_trend_v2_6_ui_final.md",
   "machine_contract": "state/master_btc_trend_v2_6_contract.json",
   "official_state": "official_state/latest/btc_trend.json",
   "state_sources": [
@@ -45,10 +46,17 @@
   "ui_policy": {
     "current_semantic_screens": 3,
     "later_user_refinement_allowed": true,
-    "ui_only_change_must_not_rebuild_logic": true
+    "ui_only_change_must_not_rebuild_logic": true,
+    "canonical_ui_source": "master_prompts/master_btc_trend_v2_6_ui_final.md",
+    "ui_source_precedence": "ui_canonical_source > canonical_source legacy OUTPUT layout",
+    "basic_official_and_precision_same_layout": true,
+    "screen1_mobile_compression": "3-column-first",
+    "signal_column_position": 2,
+    "status": "FINAL_LOCK"
   },
   "ownership": {
     "logic": "canonical_source",
+    "user_visible_ui": "ui_canonical_source",
     "official_decision_state": "official_state",
     "research_assets": "btc_backtest + btc-fractal-v26-build",
     "chat_memory": "NON_CANONICAL"
