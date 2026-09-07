@@ -36,8 +36,11 @@ The initial 0.70R risk position is split 50/50:
 
 This creates a deterministic trend-capture path without loosening entry quality or inventing discretionary trailing.
 
-## MCR
-MCR numerator is the positive weighted realized price return from the initial position only: fixed half + runner half. 4H ADD PnL is portfolio performance and is excluded from the MCR numerator. Gates remain mean MCR90 >=20% and MCR365 >=20%.
+## MCR horizon firewall
+MCR numerator uses only the initial position. For 90D and 365D separately, each fraction uses its actual exit if that exit occurred on/before the truth horizon; if still open at the horizon, it is marked at the last available close on/before that horizon. Post-horizon prices are forbidden. 4H ADD PnL is portfolio performance and is excluded from MCR. Gates remain mean MCR90 >=20% and MCR365 >=20%.
+
+## Predeclared robustness battery
+No best variant may replace the frozen baseline. Diagnostic perturbations are predeclared only: ADD progress 0.75R / 1.25R, runner fraction 0.40 / 0.60 with complementary fixed fraction.
 
 ## Predeclared gates
 - LONG portfolio expectancy >0R
@@ -55,5 +58,5 @@ MCR numerator is the positive weighted realized price return from the initial po
 ## Evidence firewall
 Because R1.4 was designed from R1.3 historical diagnosis, replaying 2021-2026 after this freeze is DIAGNOSTIC ONLY. Clean promotion evidence begins with forward data from 2026-09-05 UTC and matures only as the required horizons complete.
 
-Canonical config SHA256: `74a534dfb97ccc278f33cc5595d945737f5f3e7da93fb88c1866f43c016e8e6b`.
+Canonical config SHA256: `4745855cdf99052756ac0eb7046979399c474d73a966ada119f9c4ec13ec7a3d`.
 Any later rule or threshold change creates a new baseline/version.
