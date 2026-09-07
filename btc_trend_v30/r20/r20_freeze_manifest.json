@@ -1,0 +1,46 @@
+{
+  "model": "MASTER_BTC_TREND_V3_R2_0",
+  "status": "FINAL_FREEZE_MANIFEST",
+  "branch": "btc-trend-v30-r20-design",
+  "parent_r14_commit": "451e1a70812e0cdce341aa11b1ef3cb7d9fb7f31",
+  "evidence_firewall": {
+    "historical_replay_performed_before_freeze": false,
+    "historical_replay_can_promote": false,
+    "untouched_forward_start": "2026-09-05T00:00:00Z"
+  },
+  "identities": {
+    "candidate_config_sha256": "cda041cba387688e67801e3ca4bed7976e32a234cf47ee2439fa65caefee5907",
+    "frozen_config_sha256": "91f8c39d993e18927f24f19a39f3833ec1bc3002266c62c9e2f4faf24c76db88",
+    "engine_git_blob_sha1": "c24dc41e1b01691cb165c077dcc43d3da890a779",
+    "contract_git_blob_sha1": "08aa0069283e717532c9f520f02654e3384a9002",
+    "r14_frozen_config_git_blob_sha1": "83b09a5703ca9817431a1a43cc585815ae42d648",
+    "r14_engine_git_blob_sha1": "79f558217fea4bb7b4dedc2d2c473bb6fa2d27b8"
+  },
+  "pit": {
+    "run_id": 34105181179,
+    "job_id": 101688447501,
+    "status": "PASS",
+    "tests": 4,
+    "prefix_invariance": true,
+    "future_mutation_invariance": true,
+    "prior_range_shift": true,
+    "higher_timeframe_asof_no_future": true
+  },
+  "locked_gates": {
+    "mcr_90d_mean_min": 0.20,
+    "mcr_365d_mean_min": 0.20,
+    "trend_recall_90d_min": 0.55,
+    "trend_recall_365d_min": 0.55,
+    "confirmed_false_start_rate_max": 0.45,
+    "capture_to_loss_ratio_gt": 1.10,
+    "median_seed_lag_days_max": 7.0,
+    "cycle_bucket_expectancy_floor_R": -0.15,
+    "cycle_bucket_min_n": 10
+  },
+  "locked_risk": {
+    "long_total_episode_risk_R": 1.0,
+    "short_total_episode_risk_R": 0.85,
+    "stop_widening_forbidden": true,
+    "same_episode_automatic_reentry_forbidden": true
+  }
+}
