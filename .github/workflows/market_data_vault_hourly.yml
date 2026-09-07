@@ -4,6 +4,11 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '52 * * * *'
+  push:
+    paths:
+      - 'market_vault/output_adapter.py'
+      - 'tools/apply_master_market_actual_flow_patch.py'
+      - '.github/workflows/market_data_vault_hourly.yml'
 
 permissions:
   contents: write
@@ -31,13 +36,22 @@ jobs:
       - name: Install
         run: pip install -r market_vault/requirements.txt
 
+      - name: Apply canonical and contract actual-flow patch
+        run: |
+          python -m py_compile tools/apply_master_market_actual_flow_patch.py
+          python tools/apply_master_market_actual_flow_patch.py
+
       - name: Syntax + self test
         run: |
           python -m py_compile market_vault/collector_official.py
+          python -m py_compile market_vault/output_adapter.py
           python market_vault/collector_official.py --mode self-test
 
       - name: Collect same-source market history snapshot
         run: python market_vault/collector_official.py --mode collect
+
+      - name: Build Stablecoin and actor actual-value adapters
+        run: python market_vault/output_adapter.py
 
       - name: Validate official-source coverage
         run: python market_vault/collector_official.py --mode validate
@@ -58,6 +72,35 @@ jobs:
                   if b is not None and b.get('previous_snapshot_hour_utc') is None:
                       sys.exit(f'invalid comparison {m.get("metric")} {key}')
           print('MARKET_DATA_VAULT_COMPARISON_SAFETY=PASS')
+          PY
+
+      - name: Validate Stablecoin 3D 5D 7D 20D adapter and actual actor schema
+        run: |
+          python - <<'PY'
+          import json,sys
+          st=json.load(open('market_vault/output/latest_stablecoin_windows.json'))
+          ac=json.load(open('market_vault/output/latest_actor_flows.json'))
+          if st.get('engine')!='MASTER_MARKET_STABLECOIN_WINDOWS_V1':
+              sys.exit('wrong stablecoin adapter engine')
+          for m in st.get('metrics',[]):
+              if m.get('status')=='OK':
+                  for k in ('vs_1d','vs_3d','vs_5d','vs_7d','vs_20d'):
+                      if k not in m:
+                          sys.exit(f'missing stablecoin window {m.get("metric")} {k}')
+          if ac.get('engine')!='MASTER_MARKET_ACTOR_FLOW_ADAPTER_V1':
+              sys.exit('wrong actor adapter engine')
+          if ac.get('score_weight')!=0:
+              sys.exit('actor adapter must have score_weight 0')
+          for coin in ('BTC','ETH'):
+              inst=ac.get('institution',{}).get(coin,{})
+              if 'flow_7d_usd_m' not in inst:
+                  sys.exit(f'{coin} ETF 7D missing from actor adapter')
+              wh=ac.get('whale',{}).get(coin,{})
+              rp=ac.get('retail_proxy',{}).get(coin,{})
+              for k in ('current','1d','3d','7d'):
+                  if k not in wh or k not in rp:
+                      sys.exit(f'{coin} actor comparison key missing {k}')
+          print('MARKET_ACTUAL_FLOW_ADAPTERS=PASS')
           PY
 
       - name: Validate MARKET vault 24H FINAL QA integrity
@@ -107,15 +150,18 @@ jobs:
           print('MARKET_DATA_VAULT_24H_FINAL_QA=PASS')
           PY
 
-      - name: Save hourly market snapshot
+      - name: Validate canonical and contract patch
+        run: python tools/apply_master_market_actual_flow_patch.py
+
+      - name: Save hourly market snapshot and MASTER patch
         run: |
           git config user.name "market-data-vault-bot"
           git config user.email "market-data-vault-bot@users.noreply.github.com"
-          git add market_vault/data market_vault/output market_vault/state
+          git add market_vault/data market_vault/output market_vault/state master_prompts/master_market_v1_2_current.md state/master_market_v1_2_contract.json
           if git diff --cached --quiet; then
-            echo "No generated data changes"
+            echo "No generated data or contract changes"
           else
-            git commit -m "data: hourly MARKET data vault snapshot"
+            git commit -m "data: refresh MARKET vault and actual-flow adapters"
             git pull --rebase origin main
             git push origin HEAD:main
           fi
