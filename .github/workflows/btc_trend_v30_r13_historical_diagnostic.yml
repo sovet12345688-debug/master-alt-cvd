@@ -7,6 +7,7 @@ on:
     paths:
       - 'btc_trend_v30/r13/r13_historical_diagnostic_replay.py'
       - 'btc_trend_v30/r13/r13_historical_diagnostic_replay_runner.py'
+      - 'btc_trend_v30/r13/r13_4h_add_edge_diagnostic.py'
       - '.github/workflows/btc_trend_v30_r13_historical_diagnostic.yml'
   workflow_dispatch:
 
@@ -71,20 +72,28 @@ jobs:
       - name: R1.3 Historical Diagnostic Replay
         run: python btc_trend_v30/r13/r13_historical_diagnostic_replay_runner.py
 
+      - name: R1.3 4H ADD Edge Decomposition
+        run: python btc_trend_v30/r13/r13_4h_add_edge_diagnostic.py
+
       - name: Diagnostic integrity gate
         run: |
           python - <<'PY'
           import json,sys
           p='btc_trend_v30/r13/output/historical_diagnostic/audit.json'
           d=json.load(open(p,encoding='utf-8'))
+          a=json.load(open('btc_trend_v30/r13/output/historical_diagnostic/r13_4h_add_edge_diagnostic.json',encoding='utf-8'))
           print('STATUS=',d['status'])
           print('BASELINE_IDENTITY_PASS=',d['baseline_identity_pass'])
           print('COMPARISON=',json.dumps(d['comparison'],ensure_ascii=False,indent=2))
           print('R13_ROUTE=',json.dumps(d['r13']['route'],ensure_ascii=False,indent=2))
           print('R13_FALSE_START=',json.dumps(d['r13']['false_start'],ensure_ascii=False,indent=2))
+          print('4H_ADD_HEADLINE=',json.dumps(a['headline'],ensure_ascii=False,indent=2))
           if d['status']!='HISTORICAL_DIAGNOSTIC_ONLY_NOT_UNTOUCHED_OOS': sys.exit('Wrong governance status')
           if not d['baseline_identity_pass']: sys.exit('R1.2 identity mismatch')
           if d['interpretation_guardrails']['this_replay_can_promote_to_production'] is not False: sys.exit('Promotion firewall broken')
+          if not all(a['identity_checks'].values()): sys.exit('4H ADD identity mismatch')
+          if a['guardrails']['rules_changed'] is not False: sys.exit('Diagnostic changed rules')
+          if a['guardrails']['production_promotion_allowed'] is not False: sys.exit('4H diagnostic promotion firewall broken')
           PY
 
       - name: Assert R1.2 and V2.6 source untouched
