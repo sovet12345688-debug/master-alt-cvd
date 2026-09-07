@@ -1,0 +1,67 @@
+{
+  "model": "MASTER_BTC_TREND_V3_R2_3",
+  "status": "PRE_FREEZE_NO_REPLAY",
+  "parent": {
+    "model": "MASTER_BTC_TREND_V3_R2_1",
+    "branch": "btc-trend-v30-r21-short-core-delay",
+    "frozen_config_sha256": "80cff38e4aa9eebb98d052d644981a58e4576a99684d74fb4abf1f66482b9980",
+    "engine_git_blob_sha1": "b8a0d741ad59a98496d13b6b66a6a74763a27545",
+    "contract_git_blob_sha1": "ba6744311b0d4fb1c510eae2482360297616d3fd"
+  },
+  "single_change": {
+    "id": "ADD_NON_EXECUTION_EARLY_DETECTION_LAYER_ONLY",
+    "execution_engine": "FROZEN_R2_1_UNCHANGED",
+    "early_detection_can_execute": false,
+    "early_detection_can_modify_risk": false,
+    "early_detection_can_modify_stop": false,
+    "early_detection_can_modify_seed": false,
+    "states": ["EARLY_DETECT", "PRIORITY_WATCH", "EXECUTION_READY"],
+    "long_early_detection": {
+      "daily_close_above_ema20": true,
+      "daily_ema20_slope_positive": true,
+      "h4_close_above_ema20": true,
+      "h4_ema20_slope_positive": true
+    },
+    "short_early_detection": {
+      "daily_close_below_ema20": true,
+      "daily_ema20_slope_negative": true,
+      "h4_close_below_ema20": true,
+      "h4_ema20_slope_negative": true
+    },
+    "priority_extreme_near": {
+      "threshold_atr": 1.0,
+      "long_reference": "PRIOR_COMPLETED_20D_HIGH",
+      "short_reference": "PRIOR_COMPLETED_20D_LOW",
+      "execution_authority": false
+    },
+    "execution_ready_definition": "EXACT_PARENT_R21_SEED_CANDIDATE_ONLY"
+  },
+  "inherited_unchanged": {
+    "r21_seed_generation": true,
+    "r21_short_core_delay": true,
+    "long_and_short_risk": true,
+    "structural_stop": true,
+    "confirm_core_hold_exit_reset": true,
+    "pit_availability_semantics": true,
+    "predeclared_performance_gates": true
+  },
+  "forbidden_changes": [
+    "ANY_ENTRY_RULE_CHANGE",
+    "ANY_SEED_THRESHOLD_CHANGE",
+    "ANY_VOLUME_THRESHOLD_CHANGE",
+    "ANY_STOP_CHANGE",
+    "ANY_RISK_CHANGE",
+    "ANY_CONFIRM_CHANGE",
+    "ANY_CORE_CHANGE",
+    "ANY_EXIT_CHANGE",
+    "ANY_RESET_CHANGE",
+    "ANY_PIT_CHANGE",
+    "EARLY_DETECTION_AS_ORDER_AUTHORITY"
+  ],
+  "evidence_firewall": {
+    "r22_failure_used_only_to_motivate_detection_execution_separation": true,
+    "r23_historical_replay_before_freeze": false,
+    "r23_results_may_not_modify_this_candidate": true,
+    "same_historical_window_can_promote": false
+  }
+}
