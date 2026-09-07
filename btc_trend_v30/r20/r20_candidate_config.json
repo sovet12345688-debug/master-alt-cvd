@@ -24,7 +24,9 @@
     "volume_lookback": 20,
     "ema20_slope_days": 5,
     "ema50_slope_days": 10,
-    "chandelier_atr_multiple": 3.0
+    "chandelier_atr_multiple": 3.0,
+    "causal_h4_swing_lookback": 3,
+    "h4_reversal_sequence": "PRIOR_BAR_LH_THEN_CURRENT_LL_FOR_LONG_DERISK__MIRROR_FOR_SHORT"
   },
   "long": {
     "watch": {
@@ -51,7 +53,8 @@
       "stop": {
         "atr_multiple": 1.5,
         "max_stop_distance_pct": 0.12,
-        "causal_h4_swing_required": true
+        "causal_h4_swing_required": true,
+        "causal_h4_swing_lookback": 3
       }
     },
     "confirm": {
@@ -91,6 +94,9 @@
       },
       "failed_retest": {
         "prior_breakdown_lookback_days": 5,
+        "reference_rule": "MIN_OF_LATEST_COMPLETED_DAILY_EMA20_AND_PRIOR_COMPLETED_20D_LOW",
+        "prior_breakdown_requires_h4_close_below_reference": true,
+        "retest_requires_h4_high_at_or_above_reference": true,
         "h4_reclose_below_reference": true,
         "h4_close_below_ema20": true,
         "volume_ratio_min": 1.1
@@ -98,7 +104,8 @@
       "stop": {
         "atr_multiple": 1.5,
         "max_stop_distance_pct": 0.1,
-        "causal_h4_swing_required": true
+        "causal_h4_swing_required": true,
+        "causal_h4_swing_lookback": 3
       }
     },
     "confirm": {
@@ -122,6 +129,10 @@
     "break_even_move_mandatory": false,
     "stop_may_widen": false,
     "derisk_fraction": 0.5,
+    "h4_reversal_definition": {
+      "long_derisk": "PRIOR_COMPLETED_H4_HIGH_LT_HIGH_2_BARS_AGO_AND_CURRENT_COMPLETED_H4_LOW_LT_PRIOR_LOW",
+      "short_derisk": "PRIOR_COMPLETED_H4_LOW_GT_LOW_2_BARS_AGO_AND_CURRENT_COMPLETED_H4_HIGH_GT_PRIOR_HIGH"
+    },
     "long": {
       "derisk_requires_daily_below_ema20_and_h4_lh_ll": true,
       "full_exit_two_daily_below_ema20_with_nonpositive_slope": true,
