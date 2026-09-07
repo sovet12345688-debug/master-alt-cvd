@@ -42,6 +42,14 @@ DETAILS HIDDEN: 기본화면에 모든 MA/EMA/RSI/KDJ, OI raw windows, CVD raw t
 
 HISTORY: Precision은 직전 실제 8-chart precision과만 비교. checkpoint 생성 금지. Plan change label ONLY 유지/가격구간수정/기간수정/비중수정/상태변경/무효화. Reason ONLY 시장구조 변화/데이터 변경/방법론 변경.
 
+OFFICIAL STATE / NO_STORED_OFFICIAL_RUN — HARD RULE:
+- `NO_STORED_OFFICIAL_RUN`은 직전 GitHub OFFICIAL 이력이 저장되어 있지 않다는 뜻일 뿐, 현재 BASIC OFFICIAL 실행을 막는 Risk Veto 또는 fail-closed 조건이 아니다.
+- Registry=READY이고 Manifest/Canonical/Contract/version identity가 정상이며 필수 현재 데이터 재검증이 가능한 경우, 이전 OFFICIAL state가 없어도 현재 BASIC OFFICIAL은 최신 데이터로 정상 실행한다.
+- 이전 OFFICIAL state가 없으면 prior comparison/history/Δ만 N/A로 두고, 채팅 기억·legacy handoff·V3.0 research로 과거 값을 재구성하지 않는다.
+- fail-closed는 VERSION_DRIFT, SOURCE_MISSING, canonical/contract unreadable, validator failure 등 현재 실행의 identity/source 무결성 실패에만 적용한다. `NO_STORED_OFFICIAL_RUN` 자체에는 적용하지 않는다.
+- 성공적으로 완료된 BASIC OFFICIAL은 가능하면 `official_state/publish_official_state.py` 계약에 맞춰 `official_state/latest/btc_trend.json`과 append-only history에 저장한다.
+- 저장 경로/권한/호출 연결이 없어 persistence가 실패하더라도 이미 최신 데이터로 정상 검증·완료된 사용자-visible 현재 보고서를 소급 무효화하지 않는다. 이 경우 persistence 상태만 `PERSISTENCE_PENDING`으로 취급하고 다음 회차도 최신 데이터로 정상 재검증한다.
+
 TODAY LONG/SHORT ABSOLUTE: LONG/SHORT 최종 방향 계산 규칙 자체는 유지한다. 매 보고서에서 롱 또는 숏 하나를 내부적으로 산출하며 동률 tie-breaker=1D→4H→직전 OFFICIAL→현재 가격구조. Entry signal 아님. FINAL UI는 사용자 지정 3-SCREEN 레이아웃을 우선하므로 별도 today-direction 전용 행/문장은 사용자가 명시적으로 다시 요청하지 않는 한 추가하지 않는다.
 
 BOOTSTRAP: 마지막 공식 BASIC 2026-09-06 17:12 KST. 마지막 history는 LONG58:SHORT42, 장기우세 LONG, LONG 모아가기46/100, 중기 상승회복 유지·단기 횡보조정, 추세강도61, 최근추이→유지, 상승시동58, 매집46, 바닥45, 고점57, 당시가≈79.88K, 단기 S78.1~78.7K/R79.9~80.4K, 중기 S76.3~76.8K/R82.2~82.8K, 장기 S69.3~70.8K/R≈87K, S/R강도 대기, Fractal latest artifact 미확인, LONG A+ registry 0/0 비활성, fresh Bitget OI/Funding 미확인, 직전 오늘의 롱/숏=롱, LIVE LONG plan BTC-SWING-20260902-03 유지. Bootstrap 값은 최신 시장데이터가 아니라 history이므로 다음 실행 때 최신 시장자료와 유효 GitHub artifact로 재계산하고 새 데이터 없이 최신값인 것처럼 가장하지 않는다.
