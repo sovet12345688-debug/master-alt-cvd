@@ -1,0 +1,101 @@
+{
+  "schema_version": "1.0",
+  "milestone": "MONEY_MASTER_OS_V2_P1_OPERATING_INTEGRATION",
+  "status": "PASS",
+  "p1_core_control_plane": "COMPLETE",
+  "completed_kst": "2026-09-07T13:45:00+09:00",
+  "pull_request": 18,
+  "merge_commit": "bd786e81af84ae9a8817d505dfc3194216192a37",
+  "main_guard_run_id": 34084240092,
+  "main_guard_conclusion": "success",
+  "test_path": [
+    "COLLECTOR_STATE_AND_SOURCE_HEALTH",
+    "SHARED_FACT_VAULT_CONSUMER_MAPPING",
+    "EXACT_MASTER_BOOTSTRAP",
+    "ISOLATED_REAL_OFFICIAL_PUBLISHER",
+    "APPEND_ONLY_OFFICIAL_HISTORY",
+    "POST_OFFICIAL_NEW_ROOM_RESTORE",
+    "ISOLATED_REAL_WATCH_PUBLISHER",
+    "WATCH_ALLOW_BLOCK_POLICY",
+    "WATCH_OFFICIAL_NON_MUTATION",
+    "POST_WATCH_NEW_ROOM_RESTORE"
+  ],
+  "production_history_safety": {
+    "synthetic_official_persisted_to_main": false,
+    "synthetic_watch_persisted_to_main": false,
+    "isolated_temporary_copy_used": true,
+    "historical_backfill": "BLOCKED"
+  },
+  "current_data_layer_snapshot": {
+    "source_health": {
+      "overall": "DEGRADED",
+      "healthy": 8,
+      "failed": 2
+    },
+    "shared_fact_vault": {
+      "status": "HEALTHY",
+      "active_sources": 6,
+      "registered_source_coverage_pct": 100.0
+    }
+  },
+  "master_receipts": {
+    "market": {
+      "registered_fact_sources": 4,
+      "registered_fact_count": 286,
+      "bootstrap": "PASS",
+      "official_publish": "PASS",
+      "watch": "PUBLISH_PASS",
+      "restore_after_official": "PASS",
+      "restore_after_watch": "PASS"
+    },
+    "btc_trend": {
+      "registered_fact_sources": 4,
+      "registered_fact_count": 286,
+      "bootstrap": "PASS",
+      "official_publish": "PASS",
+      "watch": "BLOCKED_EXPECTED",
+      "restore_after_official": "PASS",
+      "restore_after_watch": "PASS"
+    },
+    "alt_top100": {
+      "registered_fact_sources": 1,
+      "registered_fact_count": 14,
+      "bootstrap": "PASS",
+      "official_publish": "PASS",
+      "watch": "PUBLISH_PASS",
+      "restore_after_official": "PASS",
+      "restore_after_watch": "PASS"
+    },
+    "alt_final20": {
+      "registered_fact_sources": 4,
+      "registered_fact_count": 855,
+      "bootstrap": "PASS",
+      "official_publish": "PASS",
+      "watch": "PUBLISH_PASS",
+      "restore_after_official": "PASS",
+      "restore_after_watch": "PASS"
+    },
+    "trading": {
+      "registered_fact_sources": 3,
+      "registered_fact_count": 278,
+      "bootstrap": "PASS",
+      "official_publish": "PASS",
+      "watch": "BLOCKED_EXPECTED",
+      "restore_after_official": "PASS",
+      "restore_after_watch": "PASS"
+    }
+  },
+  "hard_locks_verified": {
+    "five_master_identity": true,
+    "facts_shared_decisions_independent": true,
+    "source_health_not_trade_permission": true,
+    "official_actual_run_only": true,
+    "watch_never_official": true,
+    "watch_does_not_mutate_official": true,
+    "btc_v26_no_hourly_watch": true,
+    "trading_manual_only_no_recurring_watch": true,
+    "public_repo_private_trading_state_forbidden": true,
+    "new_room_restore_without_chat_memory": true
+  },
+  "next_phase": "P2_ACCEPTANCE_AND_LONG_RUN_STABILITY"
+}
