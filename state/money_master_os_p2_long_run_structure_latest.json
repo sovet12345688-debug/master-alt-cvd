@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0",
+  "milestone": "MONEY_MASTER_OS_V2_P2_LONG_RUN_STRUCTURE",
+  "structure_status": "ACTIVE",
+  "p2_final_status": "LONG_RUN_COLLECTING",
+  "activated_kst": "2026-09-07T14:13:38+09:00",
+  "pull_request": 20,
+  "merge_commit": "9edb0ecaf97ab5650e3c24b1acf2268a58ebd312",
+  "workflow": ".github/workflows/p2_long_run_hourly.yml",
+  "contract": "money_master_os/acceptance/LONG_RUN_STABILITY_V1.json",
+  "runner": "money_master_os/tools/run_p2_long_run.py",
+  "runtime_latest": "p2_long_run/latest.json",
+  "runtime_state": "p2_long_run/state.json",
+  "checkpoint_history": "p2_long_run/checkpoints/YYYY-MM.jsonl",
+  "first_run_id": "P2LR-20260907T051338Z-33c35eb7",
+  "first_checkpoint": {
+    "status": "COLLECTING",
+    "source_health_cycles": 1,
+    "shared_fact_cycles": 1,
+    "successful_acceptance_checkpoints": 1,
+    "core_unsafe": 0,
+    "monitoring_snapshot_stale": false,
+    "fingerprint_match": true,
+    "baseline_acceptance": "PASS"
+  },
+  "minimums": {
+    "observation_hours": 24,
+    "distinct_source_health_cycles": 12,
+    "distinct_shared_fact_cycles": 12,
+    "successful_acceptance_checkpoints": 3
+  },
+  "hard_locks": {
+    "synthetic_backfill_forbidden": true,
+    "automatic_reset_forbidden": true,
+    "one_core_failure_checkpoint_is_at_risk": true,
+    "two_consecutive_core_failure_checkpoints_fail": true,
+    "two_consecutive_stale_monitoring_checkpoints_fail": true,
+    "canonical_or_registry_drift_fails_and_requires_reset": true,
+    "non_a3_acceptance_regression_immediate_fail": true,
+    "terminal_failure_persisted_before_workflow_failure": true,
+    "official_watch_history_not_synthesized": true
+  },
+  "next_gate": "REAL_24H_OBSERVATION_AND_MINIMUM_CYCLE_COMPLETION"
+}
