@@ -9,7 +9,7 @@ import pandas as pd
 from btc_trend_v30.r24.r24_engine import R24Engine
 
 HERE = Path(__file__).resolve().parent
-CFG = json.loads((HERE / "r24_candidate_config.json").read_text(encoding="utf-8"))
+CFG = json.loads((HERE / "r24_frozen_config.json").read_text(encoding="utf-8"))
 
 
 def row(**kw) -> pd.Series:
@@ -28,6 +28,7 @@ def row(**kw) -> pd.Series:
 
 def main() -> None:
     e = R24Engine()
+    assert CFG["status"] == "FINAL_FROZEN_NO_REPLAY"
 
     # 1) Fully aligned causal bearish hierarchy => MATURE_BEAR.
     assert e.classify_short_maturity(row()) == "MATURE_BEAR"
@@ -75,7 +76,7 @@ def main() -> None:
     pd.testing.assert_series_equal(full.loc[prefix.index, "ema200"], prefix["ema200"])
     pd.testing.assert_series_equal(full.loc[prefix.index, "ema200_slope_20"], prefix["ema200_slope_20"])
 
-    # 7) No forensic winner/loser cutoff is allowed into candidate config.
+    # 7) No forensic winner/loser cutoff is allowed into frozen config.
     c = CFG["mature_bear_classifier"]
     assert c["explicitly_not_used"] == [
         "DISTANCE_BELOW_EMA200_THRESHOLD",
