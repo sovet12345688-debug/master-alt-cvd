@@ -1,0 +1,34 @@
+{
+  "mode": "R13_FAST_DIAGNOSTIC",
+  "snapshot_role": "CANONICAL_HISTORICAL_DIAGNOSTIC_SNAPSHOT",
+  "source_full_run": {
+    "run_id": 34089033099,
+    "job_id": 101638608017,
+    "head_sha": "020195eee2f9d4f47de7b39d3e398ffeb1303631",
+    "artifact_id": 10006287794,
+    "artifact_name": "btc-trend-v30-r13-historical-diagnostic",
+    "artifact_sha256": "e2ea97ab77f05dfd7029080b287df15a819f0a464d44f94f10e167a30bae467f",
+    "artifact_size_bytes": 52606
+  },
+  "contract": {
+    "canonical_config_sha256": "b417282c66bec49c1c5de672f8317635508eba1dd05f538074a1508f14217fa9",
+    "r13_engine_git_blob_sha": "5746cf72eec0fd337d5a7aa16e529a3c740ea9af",
+    "parent_r1_2_commit": "6b3158d7c289b36153b2d9dc87f810c3562d1515",
+    "governance_status_required": "HISTORICAL_DIAGNOSTIC_ONLY_NOT_UNTOUCHED_OOS",
+    "baseline_identity_pass_required": true,
+    "production_promotion_allowed": false
+  },
+  "files": {
+    "r13/output/historical_diagnostic/audit.json": "935b2a918717756b38cdc388fc3ef270871697ea38ac6f627503f6c5ad2cf83b",
+    "r13/output/historical_diagnostic/r12_episode_metrics_recomputed.csv": "e6e77d29ccbe78fffe83da1fc1be7e3510a3ea2bbef692ba8e5577472e0e8c65",
+    "r13/output/historical_diagnostic/r13_episode_metrics.csv": "15fbe710a5df7844927fbb4ffbfd275439cb0c266a9e2177a7c5f7a47b146ac0",
+    "r13/output/historical_diagnostic/r13_episode_state_replay.csv": "0017107886634dada69cb1bc60d4465b63693ed1fa75de08b39ad96cae69f379",
+    "r13/output/historical_diagnostic/r13_trade_legs.csv": "853d02d79a7a79f3915b5e798a958320f916dab19ca685f25be0d324618d91a2",
+    "output/validation_v1/step7_metrics/audit.json": "1ab46eb52bb170cd1bc12bce3da8eabbc5478e83f3b358dc08e0a4b3604b323d"
+  },
+  "fallback_policy": {
+    "on_any_hash_or_contract_mismatch": "STOP_FAST_AND_REQUIRE_NEW_FULL_REPLAY",
+    "never_auto_mutate_freeze_or_engine": true,
+    "never_use_fast_diagnostic_as_production_promotion_evidence": true
+  }
+}
