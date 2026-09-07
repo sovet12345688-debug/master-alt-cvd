@@ -7,6 +7,7 @@ on:
   push:
     paths:
       - 'market_vault/etf_flow_free_collector.py'
+      - 'market_vault/etf_flow_free_collector_v2.py'
       - '.github/workflows/market_etf_flows_hourly.yml'
 
 permissions:
@@ -36,10 +37,10 @@ jobs:
         run: pip install -r market_vault/requirements.txt
 
       - name: Syntax check
-        run: python -m py_compile market_vault/etf_flow_free_collector.py
+        run: python -m py_compile market_vault/etf_flow_free_collector_v2.py
 
       - name: Collect BTC and ETH ETF flows
-        run: python market_vault/etf_flow_free_collector.py
+        run: python market_vault/etf_flow_free_collector_v2.py
 
       - name: Validate 1D 3D 5D 20D windows
         run: |
