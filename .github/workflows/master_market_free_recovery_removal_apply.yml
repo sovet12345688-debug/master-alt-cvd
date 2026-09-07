@@ -1,0 +1,52 @@
+name: MASTER MARKET Free Recovery Removal Apply
+
+on:
+  push:
+    paths:
+      - '.github/workflows/master_market_free_recovery_removal_apply.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Apply canonical and contract patch
+        run: python tools/patch_master_market_free_recovery_removal.py
+      - name: Verify removals and recovery locks
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          canon = Path('master_prompts/master_market_v1_2_current.md').read_text(encoding='utf-8')
+          c = json.loads(Path('state/master_market_v1_2_contract.json').read_text(encoding='utf-8'))
+          assert '## FREE RECOVERY + EXPLICIT REMOVAL LOCK — ADDED 2026-09-07' in canon
+          assert 'Global M2' not in c['required_data']['macro_liquidity']
+          banned = {'Mint/Burn','Treasury balances','Treasury-to-Exchange','Exchange Balance','Mint->Treasury->Exchange->Spot Buy confirmation chain'}
+          assert not (banned & set(c['required_data']['crypto_capital_flow']))
+          assert c.get('explicitly_removed_fields',{}).get('must_not_show_as_na') is True
+          assert c.get('free_recovery_policy',{}).get('derivatives_microstructure',{}).get('venue') == 'Bitget USDT Futures'
+          assert c.get('free_recovery_policy',{}).get('macro_liquidity',{}).get('required_engine') == 'MASTER_MARKET_FREE_MACRO_LIQUIDITY_V2'
+          assert c.get('free_recovery_policy',{}).get('etf_flows',{}).get('required_engine') == 'MASTER_MARKET_FREE_ETF_FLOW_V1'
+          print('MASTER MARKET recovery/removal validation PASS')
+          PY
+      - name: Commit patched canonical and contract
+        run: |
+          if git diff --quiet -- master_prompts/master_market_v1_2_current.md state/master_market_v1_2_contract.json; then
+            echo 'No changes needed'
+            exit 0
+          fi
+          git config user.name 'master-market-patch-bot'
+          git config user.email 'master-market-patch-bot@users.noreply.github.com'
+          git add master_prompts/master_market_v1_2_current.md state/master_market_v1_2_contract.json
+          git commit -m 'lock: recover free MARKET data and remove obsolete fields'
+          git push origin HEAD:main
