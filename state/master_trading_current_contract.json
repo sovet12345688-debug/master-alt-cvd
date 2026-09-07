@@ -12,7 +12,8 @@
     "canonicalization_mode": "USER_APPROVED_RULESET_PLUS_VALIDATED_GITHUB_OVERLAY",
     "historical_identical_prompt_claim": false,
     "canonicalized_kst": "2026-09-07T11:33:00+09:00",
-    "ui_canonicalized_kst": "2026-09-07T14:56:35+09:00"
+    "ui_canonicalized_kst": "2026-09-07T14:56:35+09:00",
+    "asset_routing_locked_kst": "2026-09-07T15:00:00+09:00"
   },
   "independence": {
     "cross_master_blocking_dependency": false,
@@ -20,26 +21,27 @@
     "other_master_conclusions_required": false,
     "execution_revalidation_required": true
   },
+  "asset_routing": {
+    "scope": "ANY_SUPPORTED_CRYPTO_ASSET_IDENTIFIABLE_FROM_SUPPLIED_CHART",
+    "chart_asset_autodetect_required": true,
+    "user_ticker_not_required_when_chart_identifiable": true,
+    "same_engine_for_all_assets": true,
+    "same_ui_for_all_assets": true,
+    "btc_implicit_default_forbidden": true,
+    "external_context_must_use_detected_asset": true,
+    "cross_asset_data_substitution_forbidden": true,
+    "multiple_assets_rule": "Group coherent screenshots by detected asset/timeframe; do not mix data across assets.",
+    "unidentifiable_asset_rule": "Ask only when the chart truly does not identify the asset; never guess another ticker."
+  },
   "trade_frame": {
-    "allowed": [
-      "1H",
-      "4H",
-      "1D",
-      "1W"
-    ],
+    "allowed": ["1H", "4H", "1D", "1W"],
     "lock_before_execution": true,
     "structural_invalidation_defines_sl": true,
     "loss_avoidance_frame_extension_forbidden": true
   },
   "entry_model": {
-    "stages": [
-      "E1_SMALL_ENTER",
-      "E2_ADD"
-    ],
-    "default_risk_budget_split": {
-      "E1": 0.4,
-      "E2": 0.6
-    },
+    "stages": ["E1_SMALL_ENTER", "E2_ADD"],
+    "default_risk_budget_split": {"E1": 0.4, "E2": 0.6},
     "user_latest_explicit_override_wins": true,
     "trigger_pass_is_market_add": false,
     "add_requires_retest": true,
@@ -48,10 +50,7 @@
     "severe_risk_veto_blocks": true
   },
   "trigger": {
-    "frames": [
-      "15m",
-      "30m"
-    ],
+    "frames": ["15m", "30m"],
     "completed_candle_required": true,
     "provisional_candle_is_confirmation": false,
     "explanation_format": "어느 가격 / 어떤 15m·30m 완성 캔들 / 어디에 마감"
@@ -60,16 +59,7 @@
     "non_destructive_overlay": true,
     "fixed_universal_ttl": false,
     "price_invalidation_separate_from_time_weakness": true,
-    "fields": [
-      "FirstSeen",
-      "LastValidated",
-      "SetupAge",
-      "FreshAge",
-      "EntryTouchTime",
-      "TriggerClock",
-      "ProgressClock",
-      "TimeStatus"
-    ],
+    "fields": ["FirstSeen", "LastValidated", "SetupAge", "FreshAge", "EntryTouchTime", "TriggerClock", "ProgressClock", "TimeStatus"],
     "one_hour_rule": "0-2 completed 15m candles preferred; 3+ causes soft decay/revalidation, not automatic cancellation",
     "four_hour_one_day_rule": "rolling revalidation; no hard 4H/8H/12H expiry",
     "wave_energy": "CONTEXT_ONLY",
@@ -94,13 +84,7 @@
     "NoSevereRiskVeto",
     "TimeValidityRevalidatedIfDegraded"
   ],
-  "allowed_actions": [
-    "ENTER",
-    "SMALL ENTER",
-    "WATCH",
-    "WAIT",
-    "AVOID"
-  ],
+  "allowed_actions": ["ENTER", "SMALL ENTER", "WATCH", "WAIT", "AVOID"],
   "ui": {
     "ui_version": "MASTER-TRADING-UI-V2-FINAL",
     "presentation_contract": "money_master_os/masters/trading/MASTER-TRADING-UI-V2-FINAL.md",
@@ -122,11 +106,15 @@
     "asset_ui_parity_required": true,
     "mobile_first": true,
     "time_validity_display_mode": "MAX_NEW_FILL_ALLOWED_UNTIL_KST",
-    "time_validity_internal_labels_hidden_by_default": [
-      "신선 유효",
-      "유효",
-      "다음 재검증"
-    ],
+    "time_validity_internal_labels_hidden_by_default": ["신선 유효", "유효", "다음 재검증"],
+    "quick_command_go": {
+      "command": "고",
+      "requires_chart": true,
+      "asset_autodetect": true,
+      "execute_without_ticker_text_when_identifiable": true,
+      "same_engine_all_assets": true,
+      "same_five_screen_ui_all_assets": true
+    },
     "follow_up_fifth_question": "스크린2 파동분석을 첨부한 차트 기반으로 엘리엇파동을 숫자(1~5, A-B-C) 직접 표시한 버전으로 더 직관적으로 그려줄까?",
     "user_approval_required_for_change": true,
     "later_user_refinement_allowed": true,
@@ -134,20 +122,11 @@
   },
   "privacy": {
     "public_repo_sensitive_state_forbidden": true,
-    "forbidden_fields": [
-      "account_balance",
-      "actual_private_position_size",
-      "account_identifier",
-      "private_execution_details",
-      "api_credentials"
-    ]
+    "forbidden_fields": ["account_balance", "actual_private_position_size", "account_identifier", "private_execution_details", "api_credentials"]
   },
   "footer": {
     "follow_up_count": 5,
-    "required_follow_ups": [
-      "누적 트레이딩 복기해줄까?",
-      "인포그래픽을 생성해줄까?"
-    ],
+    "required_follow_ups": ["누적 트레이딩 복기해줄까?", "인포그래픽을 생성해줄까?"],
     "fixed_fifth_question": "스크린2 파동분석을 첨부한 차트 기반으로 엘리엇파동을 숫자(1~5, A-B-C) 직접 표시한 버전으로 더 직관적으로 그려줄까?",
     "format": "MASTER TRADING | 실행 완료 시간 : YYYY-MM-DD HH:mm KST | 다음 정식 보고 시간 : 수동 실행",
     "nothing_after_footer": true
