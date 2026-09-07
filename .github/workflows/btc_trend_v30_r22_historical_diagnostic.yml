@@ -1,0 +1,123 @@
+name: BTC TREND V3 R2.2 Historical Diagnostic
+
+on:
+  push:
+    branches: [btc-trend-v30-r22-early-watch]
+    paths:
+      - 'btc_trend_v30/r22/r22_historical_diagnostic_replay_runner.py'
+      - '.github/workflows/btc_trend_v30_r22_historical_diagnostic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONUNBUFFERED: '1'
+  PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/btc_trend_v30
+
+jobs:
+  r22-historical-diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install research dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+
+      - name: Frozen R2.2 preflight
+        run: |
+          set -euo pipefail
+          python btc_trend_v30/r22/r22_freeze_guard.py
+          python btc_trend_v30/r22/test_r22_contract.py
+          (cd btc_trend_v30/r20 && python test_r20_engine_pit.py)
+          python -m py_compile btc_trend_v30/r22/r22_historical_diagnostic_replay_runner.py
+
+      - name: Download canonical validated Step1-10 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: btc-trend-v30-validation-v1-step1-10
+          repository: sovet12345688-debug/master-alt-cvd
+          run-id: 34084074525
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: btc_trend_v30/output/validation_v1
+
+      - name: Download frozen R2.1 historical parent artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: btc-trend-v30-r21-historical-diagnostic
+          repository: sovet12345688-debug/master-alt-cvd
+          run-id: 34116514316
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: btc_trend_v30
+
+      - name: Canonical and parent SHA guards
+        run: |
+          python - <<'PY'
+          import hashlib,json,math,sys
+          from pathlib import Path
+          expected={
+            'btc_trend_v30/output/validation_v1/data_integrity/btc_usdt_1d_matrix.csv':'0618a36ffa0f98a3a3318927f0602bb288ff231fe9d10299b5f8013015a8964a',
+            'btc_trend_v30/output/validation_v1/step3_episode_dedupe/independent_episodes.csv':'aa4c9cc2f5c6bccfca71e65de4d7a81a64d9f0b8146fe06f416d9755f3ea467f',
+            'btc_trend_v30/output/validation_v1/step4_outcome_labels/episode_medium_long_truth_labels.csv':'5b8116fc14ef2e66ab48d67f132ead2881f363192d5ad6325902a3e8c7f4a9ce',
+            'btc_trend_v30/output/validation_v1/step6_state_machine_replay/btc_usdt_1h_matrix.csv':'259ba60e0b65df87591baa38628d1126b465342ff0a3848a9dabe348ad9fd729',
+            'btc_trend_v30/output/validation_v1/step6_state_machine_replay/btc_usdt_complete_4h_matrix.csv':'22bdc9bf33d54b8ebb850d209046365a326324059d48d3aac2afa33a0c366a26',
+            'btc_trend_v30/output/validation_v1/step7_metrics/audit.json':'1ab46eb52bb170cd1bc12bce3da8eabbc5478e83f3b358dc08e0a4b3604b323d',
+            'btc_trend_v30/r21/output/historical_replay/audit.json':'9a1f518536209016081db794c9fe191e115f3dc4c40020fb7de67e8ec8febbad',
+          }
+          ok=True
+          for rel,want in expected.items():
+              p=Path(rel); got=hashlib.sha256(p.read_bytes()).hexdigest() if p.exists() else 'MISSING'
+              good=got==want; ok=ok and good
+              print(rel,got,'PASS' if good else 'FAIL')
+          p=json.load(open('btc_trend_v30/r21/output/historical_replay/audit.json'))
+          identity=[
+              p['model']=='MASTER_BTC_TREND_V3_R2_1',
+              p['status']=='HISTORICAL_DIAGNOSTIC_ONLY_NOT_UNTOUCHED_OOS',
+              p['production_promotion_evidence'] is False,
+              math.isclose(p['summary']['median_seed_lag_days_90d_truth'],10.166666666666668,abs_tol=1e-12),
+          ]
+          print('R21_PARENT_IDENTITY=',identity)
+          if not ok or not all(identity): sys.exit(1)
+          PY
+
+      - name: Frozen R2.2 historical diagnostic
+        run: python btc_trend_v30/r22/r22_historical_diagnostic_replay_runner.py
+
+      - name: R2.2 audit gate
+        run: |
+          python - <<'PY'
+          import json,sys
+          p='btc_trend_v30/r22/output/historical_replay/audit.json'
+          d=json.load(open(p)); sc=d['single_change_evaluation']
+          print('R22_STATUS=',d['status'])
+          print('R22_HARD_FAILURES=',d['hard_failures'])
+          print('R22_UNRESOLVED=',d['unresolved_blockers'])
+          print('R22_SUMMARY=',d['summary'])
+          print('R22_SINGLE_CHANGE=',sc)
+          checks=[
+              d['model']=='MASTER_BTC_TREND_V3_R2_2',
+              d['status']=='HISTORICAL_DIAGNOSTIC_ONLY_NOT_UNTOUCHED_OOS',
+              d['production_promotion_evidence'] is False,
+              d['freeze_identity']['single_change_id']=='DAILY_20D_EXTREME_DISTANCE_HARD_GATE_TO_PRIORITY_ONLY',
+              sc['parent_r21_run_id']==34116514316,
+              sc['parent_r21_artifact_id']==10016474113,
+          ]
+          print('R22_AUDIT_CHECKS=',checks)
+          if not all(checks): sys.exit(1)
+          PY
+
+      - name: Upload R2.2 historical evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v30-r22-historical-diagnostic
+          path: |
+            btc_trend_v30/r22/output/historical_replay/
+            btc_trend_v30/r21/output/historical_replay/audit.json
+            btc_trend_v30/output/validation_v1/step7_metrics/audit.json
+          retention-days: 14
