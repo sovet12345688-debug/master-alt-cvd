@@ -76,3 +76,6 @@ jobs:
 
       - name: Five-MASTER operating end-to-end integration
         run: python money_master_os/tools/test_operating_integration_all_masters.py
+
+      - name: P2 baseline acceptance
+        run: python money_master_os/tools/run_p2_acceptance.py
