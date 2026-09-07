@@ -1,0 +1,159 @@
+{
+  "schema_version": "1.0",
+  "master_id": "BTC_TREND_CURRENT",
+  "display_name": "MASTER BTC TREND",
+  "production_version": "V2.6",
+  "research_version": "V3.0",
+  "status": "FINAL_PRODUCTION_CANONICAL",
+  "canonical_source": "master_prompts/master_btc_trend_v2_6_current.md",
+  "source_provenance": {
+    "origin": "ACTIVE_AUTOMATION_PROMPT",
+    "automation_title": "MASTER BTC TREND V2.6 [3-SCREEN · FRACTAL+S/R STRENGTH · FINAL]",
+    "captured_kst": "2026-09-07T11:50:00+09:00",
+    "historical_identical_prompt_claim": true
+  },
+  "production_research_separation": {
+    "production": "V2.6",
+    "research": "V3.0",
+    "v3_research_only": true,
+    "silent_promotion_forbidden": true,
+    "promotion_requires_acceptance": true,
+    "promotion_requires_exact_canonical_source_and_contract": true
+  },
+  "independence": {
+    "external_master_dependency": "NONE",
+    "shared_public_facts_allowed": true,
+    "other_master_conclusions_required": false,
+    "cross_master_blocking_dependency": false
+  },
+  "schedule": {
+    "official_kst": ["09:10", "17:10", "21:10"],
+    "hourly_watch": false,
+    "four_hour_watch": false,
+    "plan_watch": false,
+    "background_polling": false,
+    "manual_precision_on_request": true
+  },
+  "timeframe_roles": {
+    "1W": "regime_context",
+    "1D": "primary_judgement",
+    "4H": "turn_continuation",
+    "1H": "precision_timing_only"
+  },
+  "coverage": {
+    "A": ">=85",
+    "B": "70-84",
+    "C": "50-69",
+    "LOW": "<50",
+    "strong_confirmation_min": 70,
+    "missing_weighted_fields": "EXCLUDE_AND_RENORMALIZE_VALID_WEIGHT"
+  },
+  "core_scores": {
+    "TREND_LONG_SHORT": "1D22|4H10|1W8|volume+wave15|EMA/MA10|spot+BTC ETF10|derivatives8|overextension/value7|liquidity+macro10",
+    "IGNITION": "1D25|4H15|volume15|spotETF15|wave10|derivatives8|NonChase7|macro5",
+    "MATURITY": "overextension20|1D/1W resistance15|wave exhaustion15|distribution15|OI/Funding10|CVD divergence10|valuation10|macro5",
+    "BOTTOM": "1D22|4H10|1W8|capitulation15|EMA/RSI/MACD/Wave10|spotETF10|OI washout+CVD+taker10|value8|macro7",
+    "TOP": "1D22|4H10|1W8|blowoff/distribution15|EMA/RSI/MACD/Wave10|spotETF10|OI/Funding+CVD+taker10|value8|macro7",
+    "ACCUMULATION": "1D Base/HL/compression20|4H improvement10|1W location8|volume lead17|spotETF/exchange flow15|CVD/taker/derivatives8|NonChase/value10|EMA/wave7|macro5",
+    "bottom_no_confirmed_1d_turn_max": 59,
+    "top_intact_1d_hh_hl_max": 59,
+    "accumulation_rapid_rise_max": 64
+  },
+  "derivatives": {
+    "primary_oi_source": "Bitget USDT Futures BTC same venue/contract family",
+    "freshness_minutes_max": 90,
+    "oi_windows": ["1H", "4H", "24H"],
+    "funding": ["current", "change"],
+    "na_is_zero": false,
+    "backfill_forbidden": true,
+    "interpolation_forbidden": true,
+    "cross_venue_repair_forbidden": true,
+    "okx_visible_oi_role": "CHECKSUM_CONFIDENCE_ONLY",
+    "derivatives_alone_can_pass_entry_gate": false
+  },
+  "direction_ratio": {
+    "display": "LONG xx : SHORT yy",
+    "sum": 100,
+    "calibrated_probability": false,
+    "dominant_gap_points_min": 10,
+    "neutral_if_gap_below": 10,
+    "direction_change_auto_close_reverse_forbidden": true
+  },
+  "execution": {
+    "earliest_reversal_clue": "OBSERVE_ONLY",
+    "earliest_reversal_allocation": 0,
+    "long_short_mirror_gate": true,
+    "reaction_min": 65,
+    "independent_reaction_reasons_min": 2,
+    "safety_min": 80,
+    "non_chasing_required": true,
+    "structural_sl_required": true,
+    "minimum_rr": 3.0,
+    "severe_risk_veto_blocks": true,
+    "completed_candle_confirmation_required": true,
+    "allowed_actions": [
+      "✅ 지금 1차 LONG 가능",
+      "✅ LONG 추가 가능",
+      "✅ 지금 1차 SHORT 가능",
+      "✅ SHORT 추가 가능",
+      "⏳ 아직 신규포지션 대기",
+      "❌ 신규포지션 금지"
+    ]
+  },
+  "fractal": {
+    "mode": "READ_ONLY_AUXILIARY",
+    "top_level_score_weight": 0,
+    "entry_gate_weight": 0,
+    "plan_weight": 0,
+    "schedule_weight": 0,
+    "branch": "btc-fractal-v26-build",
+    "workflow": "BTC Fractal V2.6 Validation",
+    "confidence_calibration": "FAILED_NO_HIGH_MEDIUM_LOW",
+    "long_a_plus": "RETROSPECTIVE_RESEARCH_ONLY_UNTIL_PROSPECTIVE_VALIDATION",
+    "prospective_tracking_start": "2026-09-04",
+    "prospective_backfill_forbidden": true
+  },
+  "sr_strength": {
+    "engine": "BTC_SR_STRENGTH_V0_2",
+    "branch": "btc-fractal-v26-build",
+    "workflow": "BTC S/R Strength V0.2 Validation",
+    "score_is_future_probability": false,
+    "allowed_after_completed_reaction_only": true,
+    "4H_support": "PASS",
+    "4H_resistance": "PASS",
+    "1D_support": "PASS",
+    "1D_resistance": "PASS",
+    "1W": "NOT_APPROVED_INSUFFICIENT_SAMPLE",
+    "bands": {"weak":"0-49","normal":"50-79","strong":"80-100"}
+  },
+  "output": {
+    "semantic_screens": 3,
+    "screen_titles": [
+      "지금 BTC는 어떤 자리인가",
+      "그래서 어디서 어떤 방향으로 모을까",
+      "역사 프렉탈 · LONG/SHORT 별도 판독"
+    ],
+    "later_user_refinement_allowed": true,
+    "ui_only_change_must_not_rebuild_logic": true,
+    "details_hidden_by_default": true
+  },
+  "today_direction": {
+    "must_choose_one": ["롱", "숏"],
+    "neutral_wait_forbidden_in_this_line": true,
+    "entry_signal": false,
+    "tie_breaker": ["1D", "4H", "previous_OFFICIAL", "current_price_structure"]
+  },
+  "history": {
+    "precision_compare_only_previous_actual_8_chart_run": true,
+    "checkpoint_fabrication_forbidden": true,
+    "backfill_forbidden": true,
+    "bootstrap_history_is_current_market_data": false
+  },
+  "footer": {
+    "follow_up_count": 5,
+    "lines": 2,
+    "master_line": "🕒 MASTER BTC TREND | 실행완료: YYYY-MM-DD HH:mm KST",
+    "next_report_line": "다음 정식보고 시간 : YYYY-MM-DD HH:mm KST",
+    "nothing_after_footer": true
+  }
+}
