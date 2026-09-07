@@ -99,6 +99,8 @@ for key, entry in masters.items():
             fail(f"{key}: READY but canonical source missing")
         if expected != repo_version:
             fail(f"{key}: READY but expected/repo versions differ")
+        if manifest.get("canonical_source") != source_rel:
+            fail(f"{key}: registry source_path / manifest canonical_source mismatch")
         notes.append(f"{key}: READY with exact canonical source")
     elif status == "VERSION_DRIFT":
         if allowed:
@@ -125,9 +127,9 @@ if "alt_top100" not in masters or "alt_final20" not in masters:
 
 btc = masters.get("btc_trend", {})
 if btc.get("production_version") != "V2.6":
-    fail("btc_trend production_version must remain V2.6 during Phase 1")
+    fail("btc_trend production_version must remain V2.6 during current production/research separation")
 if btc.get("research_version") != "V3.0":
-    fail("btc_trend research_version must remain V3.0 during Phase 1")
+    fail("btc_trend research_version must remain V3.0 during current production/research separation")
 if btc.get("research_policy") != "V3.0_RESEARCH_ONLY_UNTIL_ACCEPTANCE_AND_CANONICAL_PROMOTION":
     fail("btc_trend research policy must block silent V3.0 promotion")
 
@@ -139,6 +141,20 @@ if market_source.exists():
         fail("MARKET canonical signature missing")
     if "ABSOLUTE ANTI-OMISSION LOCK" not in text:
         fail("MARKET anti-omission lock missing")
+
+alt_top100_source = ROOT / "master_prompts/master_alt_top100_v4_8_current.md"
+if alt_top100_source.exists():
+    text = alt_top100_source.read_text(encoding="utf-8")
+    required_signatures = [
+        "MASTER ALT V4.8 REAL-DATA CORE FINAL",
+        "TOP100 DISCOVERY",
+        "INDEPENDENCE HARD LOCK",
+        "DAILY OFFICIAL — EXACT 4 SCREEN",
+        "ENTER HARD GATE"
+    ]
+    for signature in required_signatures:
+        if signature not in text:
+            fail(f"ALT TOP100 V4.8 canonical signature missing: {signature}")
 
 alt_final20_source = ROOT / "master_prompts/master_alt_final20_current.md"
 if alt_final20_source.exists():
@@ -152,15 +168,16 @@ if trading.get("privacy_policy") != "PERSONAL_POSITION_BALANCE_AND_ACCOUNT_DATA_
     fail("trading privacy policy missing")
 
 if errors:
-    print("MONEY MASTER OS V2 PHASE 1 VALIDATION: FAIL")
+    print("MONEY MASTER OS V2 VALIDATION: FAIL")
     for e in errors:
         print(f"- ERROR: {e}")
     sys.exit(1)
 
-print("MONEY MASTER OS V2 PHASE 1 VALIDATION: PASS")
+print("MONEY MASTER OS V2 VALIDATION: PASS")
 print("- Exactly five independent MASTER identities are registered.")
 print("- ALT TOP100 and ALT FINAL20 are separated.")
 print("- BTC TREND V2.6 production and V3.0 research are separated.")
+print("- READY masters require exact canonical sources.")
 print("- SOURCE_MISSING masters remain blocked from unsafe bootstrap.")
 for n in notes:
     print(f"- {n}")
