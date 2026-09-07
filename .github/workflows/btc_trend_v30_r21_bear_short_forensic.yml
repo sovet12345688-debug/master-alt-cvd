@@ -1,0 +1,86 @@
+name: BTC TREND V3 R2.1 BEAR SHORT 16 FAST Forensic
+
+on:
+  push:
+    branches: [btc-trend-v30-r21-bear-short-forensic]
+    paths:
+      - 'btc_trend_v30/r21/fast/bear_short16_forensic.py'
+      - '.github/workflows/btc_trend_v30_r21_bear_short_forensic.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  forensic:
+    runs-on: ubuntu-24.04
+    env:
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/btc_trend_v30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Frozen R2.1 and PIT guards
+        run: |
+          python btc_trend_v30/r21/r21_freeze_guard.py
+          python btc_trend_v30/r21/test_r21_contract.py
+          (cd btc_trend_v30/r20 && python test_r20_engine_pit.py)
+      - name: Download canonical historical matrices
+        uses: actions/download-artifact@v4
+        with:
+          name: btc-trend-v30-validation-v1-step1-10
+          repository: sovet12345688-debug/master-alt-cvd
+          run-id: 34084074525
+          github-token: ${{ github.token }}
+          path: forensic_inputs/canonical
+      - name: Download robustness-cycle evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: btc-trend-v30-r21-robustness-cycle-diagnostic
+          repository: sovet12345688-debug/master-alt-cvd
+          run-id: 34129292873
+          github-token: ${{ github.token }}
+          path: forensic_inputs/robustness
+      - name: Source identity guards
+        run: |
+          test -f forensic_inputs/canonical/data_integrity/btc_usdt_1d_matrix.csv
+          test -f forensic_inputs/canonical/step6_state_machine_replay/btc_usdt_complete_4h_matrix.csv
+          test -f forensic_inputs/canonical/step6_state_machine_replay/btc_usdt_1h_matrix.csv
+          test -f forensic_inputs/robustness/variants/BASELINE_IDENTITY/r20_positions.csv
+          echo CANONICAL_RUN=34084074525
+          echo CANONICAL_ARTIFACT=10004727447
+          echo CANONICAL_SHA256=11362981be0938ec9c5f4d2aea00d1db5be5fc86ec41db7964f6fb83dc7bc8a3
+          echo ROBUSTNESS_RUN=34129292873
+          echo ROBUSTNESS_ARTIFACT=10021432053
+          echo ROBUSTNESS_SHA256=07f21af952e1517a34d97d7571857b5cc2af02736787d8ef8e6fabc34c335c6d
+      - name: Run BEAR SHORT 16 forensic
+        run: |
+          rm -rf btc_trend_v30/r21/fast/output/bear_short16_forensic
+          python btc_trend_v30/r21/fast/bear_short16_forensic.py
+      - name: Forensic integrity gate
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path('btc_trend_v30/r21/fast/output/bear_short16_forensic/bear_short16_audit.json')
+          d=json.load(open(p))
+          checks=[
+            d['status']=='R21_BEAR_SHORT16_FAST_FORENSIC_HISTORICAL_DIAGNOSTIC_ONLY',
+            d['identity_checks']['short_total']==21,
+            d['identity_checks']['bear_short_n']==16,
+            abs(d['identity_checks']['bear_short_mean_R'] - (-0.23525625119728688)) < 1e-12,
+            d['outcome']['wins'] + d['outcome']['losses'] == 16,
+          ]
+          print('FORENSIC_INTEGRITY=', checks)
+          if not all(checks): raise SystemExit(1)
+          PY
+      - name: Upload forensic evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v30-r21-bear-short16-forensic
+          path: btc_trend_v30/r21/fast/output/bear_short16_forensic/
+          retention-days: 14
+          if-no-files-found: error
