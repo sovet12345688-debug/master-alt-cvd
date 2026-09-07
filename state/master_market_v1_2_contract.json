@@ -1,8 +1,8 @@
 {
-  "schema_version": "1.7",
+  "schema_version": "1.8",
   "master": "MASTER MARKET V1.2",
   "status": "FINAL_CUMULATIVE_LOCK",
-  "updated_kst": "2026-09-07T16:01:55+09:00",
+  "updated_kst": "2026-09-07T16:12:31+09:00",
   "purpose": "Machine-readable cumulative contract for MASTER MARKET. Existing required data, checks, and user-visible output blocks must survive future version upgrades unless the user explicitly orders removal.",
   "no_silent_omission": {
     "enabled": true,
@@ -60,7 +60,7 @@
       "SCREEN2_MARKET_POSITIVE_SCORE",
       "SCREEN4_INSTITUTION_WHALE_RETAIL_TABLE"
     ],
-    "screen5_exception": "SCREEN5 is research/context only and does not duplicate upstream core-axis score tables."
+    "screen5_exception": "SCREEN5 is research/context only and does not duplicate upstream core-axis score tables. Polymarket 7D is additionally applicability-gated by verified market age >=7 full days."
   },
   "schedule": {
     "timezone": "Asia/Seoul",
@@ -150,7 +150,7 @@
     "prediction_markets": [
       "Polymarket market-impact TOP10",
       "YES probability current",
-      "probability-point change 1H/4H/1D/7D",
+      "probability-point change 1H/4H/1D/7D where applicable",
       "24H and total volume",
       "liquidity",
       "open interest",
@@ -168,7 +168,7 @@
     "stablecoin": "USDT/USDC/total stablecoin supply are potential dry-powder context only. Supply increase/decrease alone is not confirmed spot buying/selling. Removed wallet-tracking fields are not required and must not be shown as recurring N/A.",
     "treasury_buyback": "Maximum announced amount is not actual accepted amount and is not QE. Use actual accepted/settlement/net-liquidity effect when available.",
     "optional_failure": "Do not loop/retry indefinitely. Mandatory sufficient => continue and expose N/A explicitly.",
-    "polymarket": "Public Gamma/CLOB/Data APIs; forward-expectation context only; score weight 0. Same-market/same-YES-outcome deltas only. Polymarket alone never alerts or flips score/direction/Risk Veto.",
+    "polymarket": "Public Gamma/CLOB/Data APIs; forward-expectation context only; score weight 0. Same-market/same-YES-outcome deltas only. 7D is required only for verified markets at least 7 full days old; a younger market's 7D is NOT_APPLICABLE and must not create an N/A 안내 item. Genuine 7D failures on old-enough markets remain N/A. Polymarket alone never alerts or flips score/direction/Risk Veto.",
     "stablecoin_window_adapter": "Read market_vault/output/latest_stablecoin_windows.json when fresh for same-source prior/1D/3D/5D/7D/20D Stablecoin comparisons. No interpolation or backfill.",
     "actor_flow_adapter": "Read market_vault/output/latest_actor_flows.json when fresh for SCREEN4 actual-value institution/whale/retail-proxy comparisons. Adapter score weight is 0 and does not alter underlying score engine, Risk Veto, WATCH, or official history."
   },
@@ -259,10 +259,11 @@
       "immediately below expert table add exactly one easy-Korean core-view sentence for Sean Farrell and one for Stanley Druckenmiller",
       "on-chain secondary block remains explicitly removed unless user restores it",
       "Polymarket underlying TOP10/quality/same-market delta/confidence/score0/WATCH confirmation rules remain unchanged",
-      "Polymarket preferred mobile visible columns: signal|market expectation|current probability|1D|7D|easy interpretation; include 1H/4H when materially important",
+      "Polymarket preferred mobile visible columns: signal|market expectation|current probability|1D|7D|easy interpretation; include 1H/4H when materially important; 7D is shown only when the verified market age is at least 7 full days",
+      "Polymarket market age <7 full days => 7D NOT_APPLICABLE; omit that row's 7D value/window and do not create N/A 안내 for it",
       "end with compact 💡 핵심 summary"
     ],
-    "consolidated_na_section": "After SCREEN5, if any unavailable value exists, show one consolidated N/A 항목 안내 table with signal|item|reason|automatic recovery yes/no|expected exposure time or required action. Do not repeat per-screen N/A tables.",
+    "consolidated_na_section": "After SCREEN5, if any unavailable value exists, show one consolidated N/A 항목 안내 table with signal|item|reason|automatic recovery yes/no|expected exposure time or required action. Do not repeat per-screen N/A tables. Verified Polymarket market age <7 full days makes 7D NOT_APPLICABLE, not N/A, so it must not appear in this section; old-enough-market 7D failures remain N/A.",
     "final_verdict": "After N/A section (if any), show ★ 최종 판정 table with signal|Market Positive Score|dominant direction, then one compact 핵심 메시지.",
     "follow_up": "OFFICIAL includes exactly 5 compact follow-up questions/recommendations before footer.",
     "footer": "🕒 MASTER MARKET V1.2 | 실행완료: YYYY-MM-DD HH:mm KST | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST",
@@ -307,6 +308,11 @@
       "1D",
       "7D"
     ],
+    "window_applicability": {
+      "7D": "Require/show only when exact market age is verified >=7 full days and an actual same-market/same-YES 7D observation exists.",
+      "younger_than_7d": "NOT_APPLICABLE: omit 7D for that market and do not create N/A 안내 solely for the absent 7D.",
+      "old_enough_but_missing": "N/A: genuine collection/history failure remains visible and must be explained."
+    },
     "quality_inputs": [
       "24H volume",
       "total volume",
@@ -332,7 +338,7 @@
       "direction",
       "Risk Veto"
     ],
-    "missing_behavior": "Keep SCREEN5 Polymarket block visible and mark N/A/CONFIRMATION_FAILED. Never guess probability.",
+    "missing_behavior": "Keep SCREEN5 Polymarket block visible and mark true unavailable values N/A/CONFIRMATION_FAILED. Never guess probability. A verified market younger than 7 full days has 7D NOT_APPLICABLE rather than missing/N/A.",
     "onchain_output_remains_removed": true,
     "judgement_display": {
       "enabled": true,
@@ -413,6 +419,7 @@
     "temporary_failure_rule": "Say 다음 자동수집/다음 OFFICIAL에서 재시도; never guarantee recovery by that time.",
     "structural_rule": "Explicitly say 시간을 기다려도 자동 노출 안 됨 and name the required new collector/API/source/schema.",
     "grouping_rule": "Same-cause grouping allowed only when every affected unavailable item is explicitly named.",
+    "polymarket_7d_exception": "Verified market age <7 full days => 7D NOT_APPLICABLE and excluded from N/A 안내. Genuine 7D failure for a market old enough to support 7D remains N/A.",
     "anti_fabrication": true,
     "no_na_to_zero": true,
     "no_interpolation_backfill_cross_source_fill": true,
