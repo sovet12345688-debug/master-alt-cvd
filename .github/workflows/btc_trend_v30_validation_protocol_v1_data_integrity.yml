@@ -14,6 +14,7 @@ on:
       - 'btc_trend_v30/validation_protocol_v1_step6_runner.py'
       - 'btc_trend_v30/validation_protocol_v1_step7_metrics.py'
       - 'btc_trend_v30/validation_protocol_v1_step8_robustness.py'
+      - 'btc_trend_v30/validation_protocol_v1_step8_runner.py'
       - '.github/workflows/btc_trend_v30_validation_protocol_v1_data_integrity.yml'
   workflow_dispatch:
 
@@ -113,7 +114,7 @@ jobs:
           PY
 
       - name: Step8 - LOCO Robustness Weight Threshold Zone ATR Cycle
-        run: python btc_trend_v30/validation_protocol_v1_step8_robustness.py
+        run: python btc_trend_v30/validation_protocol_v1_step8_runner.py
       - name: Step8 gate
         run: |
           python - <<'PY'
