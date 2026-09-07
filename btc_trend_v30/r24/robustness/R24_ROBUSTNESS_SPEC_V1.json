@@ -1,0 +1,55 @@
+{
+  "model": "MASTER_BTC_TREND_V3_R2_4",
+  "status": "PREDECLARED_DIAGNOSTIC_SPEC",
+  "execution_engine": "FROZEN_R2_4_RISK_OVERLAY_UNCHANGED",
+  "historical_window": ["2021-01-01T00:00:00Z", "2026-09-05T00:00:00Z"],
+  "evidence_firewall": {
+    "same_history_cannot_promote": true,
+    "variants_cannot_replace_frozen_r24": true,
+    "no_best_variant_adoption": true,
+    "forward_oos_still_required": true
+  },
+  "baseline_expected": {
+    "executed_episodes": 69,
+    "mcr90_mean": 0.24041115304814,
+    "mcr365_mean": 0.3790848934096434,
+    "long_expectancy_mean_R": 0.8346097626774698,
+    "short_expectancy_mean_R": 0.16100864900887032,
+    "confirmed_false_start_rate": 0.0,
+    "capture_to_loss_ratio": 2.553275169877916,
+    "median_seed_lag_days": 10.166666666666668,
+    "episode_order_mdd_R": -4.0
+  },
+  "variants": [
+    {"id":"VOL_STRICT","changes":{"volume_thresholds_multiplier":1.10}},
+    {"id":"VOL_LOOSE","changes":{"volume_thresholds_multiplier":0.90}},
+    {"id":"WATCH_TIGHT","changes":{"watch_distance_atr_multiplier":0.80}},
+    {"id":"WATCH_WIDE","changes":{"watch_distance_atr_multiplier":1.20}},
+    {"id":"STOP_TIGHT","changes":{"seed_stop_atr_multiplier":0.90}},
+    {"id":"STOP_WIDE","changes":{"seed_stop_atr_multiplier":1.10}},
+    {"id":"EXIT_TIGHT","changes":{"chandelier_atr_multiplier":0.90}},
+    {"id":"EXIT_WIDE","changes":{"chandelier_atr_multiplier":1.10}},
+    {"id":"CONFIRM_SHORTER","changes":{"long_confirm_window_days":4,"short_confirm_window_days":3}},
+    {"id":"CONFIRM_LONGER","changes":{"long_confirm_window_days":6,"short_confirm_window_days":5}}
+  ],
+  "edge_preservation_checks": {
+    "mcr90_ge": 0.20,
+    "mcr365_ge": 0.20,
+    "long_expectancy_gt": 0.0,
+    "short_expectancy_gt": 0.0,
+    "confirmed_false_start_rate_le": 0.45,
+    "capture_to_loss_gt": 1.10
+  },
+  "classification": {
+    "STRONG": "8-10 of 10 variants preserve all six checks",
+    "MODERATE": "6-7 of 10 variants preserve all six checks",
+    "FRAGILE": "0-5 of 10 variants preserve all six checks"
+  },
+  "secondary_audit": {
+    "report_episode_order_mdd": true,
+    "report_seed_lag_but_do_not_use_for_robustness_classification": true,
+    "report_bear_short_bucket_using_predeclared_r21_cycle_formula": true,
+    "bear_short_floor_R": -0.15,
+    "minimum_bucket_n": 10
+  }
+}
