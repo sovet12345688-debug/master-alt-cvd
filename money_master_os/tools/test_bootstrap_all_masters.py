@@ -6,6 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 REGISTRY_PATH = ROOT / "money_master_os/registry/MASTER_REGISTRY.json"
 BOOTSTRAP_PATH = ROOT / "money_master_os/bootstrap/BOOTSTRAP_LATEST.md"
+OFFICIAL_INDEX_PATH = ROOT / "official_state/latest/index.json"
 
 EXPECTED_IDS = ["market", "btc_trend", "alt_top100", "alt_final20", "trading"]
 SOURCE_SIGNATURES = {
@@ -33,7 +34,7 @@ def load_json(path, master_id="GLOBAL"):
 
 
 if not REGISTRY_PATH.exists():
-    print("P0 NEW-ROOM BOOTSTRAP TEST: FAIL")
+    print("P0/P1 NEW-ROOM BOOTSTRAP TEST: FAIL")
     print("- GLOBAL: Registry missing")
     sys.exit(1)
 
@@ -42,18 +43,41 @@ masters = registry.get("masters", {})
 if list(masters.keys()) != EXPECTED_IDS:
     fail("GLOBAL", f"master identity/order mismatch: {list(masters.keys())}")
 
-if registry.get("architecture", {}).get("master_count") != 5:
+architecture = registry.get("architecture", {})
+policy = registry.get("global_policy", {})
+if architecture.get("master_count") != 5:
     fail("GLOBAL", "master_count must be 5")
-if registry.get("architecture", {}).get("cross_master_blocking_dependency") is not False:
+if architecture.get("cross_master_blocking_dependency") is not False:
     fail("GLOBAL", "cross-master blocking dependency must remain false")
-if registry.get("global_policy", {}).get("github_is_source_of_truth") is not True:
-    fail("GLOBAL", "GitHub source-of-truth policy missing")
-if registry.get("global_policy", {}).get("silent_reconstruction_forbidden") is not True:
-    fail("GLOBAL", "silent reconstruction must be forbidden")
+if architecture.get("official_state_index") != "official_state/latest/index.json":
+    fail("GLOBAL", "official_state_index not registered")
+for key in [
+    "github_is_source_of_truth",
+    "silent_reconstruction_forbidden",
+    "official_state_requires_actual_official_run",
+    "watch_and_provisional_cannot_be_official_state",
+    "missing_official_state_is_not_reconstructed",
+    "official_state_validity_is_not_inferred",
+    "public_repo_private_trading_state_forbidden",
+]:
+    if policy.get(key) is not True:
+        fail("GLOBAL", f"global policy not locked true: {key}")
 
 bootstrap_text = BOOTSTRAP_PATH.read_text(encoding="utf-8") if BOOTSTRAP_PATH.exists() else ""
 if not bootstrap_text:
     fail("GLOBAL", "bootstrap loader contract missing")
+for required_text in [
+    "official_state/latest/index.json",
+    "NO_STORED_OFFICIAL_RUN",
+    "legacy handoff",
+    "UNKNOWN",
+]:
+    if required_text not in bootstrap_text:
+        fail("GLOBAL", f"bootstrap OFFICIAL State rule missing: {required_text}")
+
+official_index = load_json(OFFICIAL_INDEX_PATH) if OFFICIAL_INDEX_PATH.exists() else {}
+if set((official_index.get("masters") or {}).keys()) != set(EXPECTED_IDS):
+    fail("GLOBAL", "OFFICIAL State index must contain five exact MASTER IDs")
 
 for master_id in EXPECTED_IDS:
     entry = masters.get(master_id)
@@ -73,6 +97,7 @@ for master_id in EXPECTED_IDS:
     manifest_rel = entry.get("manifest_path")
     source_rel = entry.get("source_path")
     contract_rel = entry.get("contract_path")
+    official_rel = entry.get("official_state_path")
 
     if not manifest_rel:
         fail(master_id, "manifest_path missing")
@@ -96,6 +121,8 @@ for master_id in EXPECTED_IDS:
         fail(master_id, "manifest must require source presence")
     if bootstrap.get("require_validator_pass") is not True:
         fail(master_id, "manifest must require validator PASS")
+    if bootstrap.get("official_state_missing_behavior") != "DO_NOT_RECONSTRUCT":
+        fail(master_id, "OFFICIAL State missing behavior must be DO_NOT_RECONSTRUCT")
 
     deps = manifest.get("shared_dependencies", [])
     if not deps:
@@ -126,26 +153,51 @@ for master_id in EXPECTED_IDS:
             fail(master_id, "registry contract_path and manifest machine_contract differ")
         elif not (ROOT / contract_rel).exists():
             fail(master_id, f"machine contract missing: {contract_rel}")
-        else:
-            contract = load_json(ROOT / contract_rel, master_id)
-            if not contract:
-                fail(master_id, "machine contract empty/unparseable")
+        elif not load_json(ROOT / contract_rel, master_id):
+            fail(master_id, "machine contract empty/unparseable")
 
-    # New-room loader must explicitly know this master id and canonical source.
+    if not official_rel:
+        fail(master_id, "official_state_path missing")
+    elif manifest.get("official_state") != official_rel:
+        fail(master_id, "manifest official_state does not match Registry")
+    elif not (ROOT / official_rel).exists():
+        fail(master_id, f"OFFICIAL State file missing: {official_rel}")
+    else:
+        official = load_json(ROOT / official_rel, master_id)
+        idx = (official_index.get("masters") or {}).get(master_id, {})
+        if official.get("master_id") != master_id:
+            fail(master_id, "OFFICIAL State master_id mismatch")
+        if official.get("master_version") != entry.get("expected_version"):
+            fail(master_id, "OFFICIAL State version mismatch")
+        if official.get("source_path") != source_rel:
+            fail(master_id, "OFFICIAL State source_path mismatch")
+        if (official.get("lineage") or {}).get("cross_master_decision_dependency") is not False:
+            fail(master_id, "OFFICIAL State cross-master decision dependency must be false")
+        if idx.get("state_path") != official_rel:
+            fail(master_id, "OFFICIAL index state_path mismatch")
+        if idx.get("state_status") != official.get("state_status"):
+            fail(master_id, "OFFICIAL index state_status mismatch")
+        if official.get("state_status") == "NO_STORED_OFFICIAL_RUN":
+            run = official.get("run") or {}
+            decision = official.get("decision") or {}
+            if run.get("run_id") is not None:
+                fail(master_id, "placeholder must not invent run_id")
+            if any(decision.get(k) is not None for k in ["direction", "permission_or_environment", "action"]):
+                fail(master_id, "placeholder must not invent decision")
+
     if f"`{master_id}`" not in bootstrap_text:
         fail(master_id, "bootstrap loader does not list master id")
     if source_rel not in bootstrap_text:
         fail(master_id, "bootstrap loader does not identify canonical source path")
 
-    # MASTER-specific non-drift invariants.
     if master_id == "btc_trend":
         if entry.get("production_version") != "V2.6" or entry.get("research_version") != "V3.0":
             fail(master_id, "V2.6 production / V3.0 research separation broken")
-        if entry.get("research_policy") != "V3.0_RESEARCH_ONLY_UNTIL_ACCEPTANCE_AND_CANONICAL_PROMOTION":
-            fail(master_id, "V3.0 silent-promotion guard missing")
         research = manifest.get("research", {})
         if research.get("version") != "V3.0" or research.get("status") != "RESEARCH_ONLY":
             fail(master_id, "manifest research separation broken")
+        if research.get("official_state_promotion_forbidden") is not True:
+            fail(master_id, "V3 research -> production OFFICIAL State guard missing")
 
     if master_id == "trading":
         privacy = manifest.get("privacy", {})
@@ -155,29 +207,30 @@ for master_id in EXPECTED_IDS:
             fail(master_id, "TRADING manual-only policy drifted")
 
     master_failed = any(e.startswith(master_id + ":") for e in errors)
+    state_status = ((official_index.get("masters") or {}).get(master_id) or {}).get("state_status")
     receipts.append({
         "master_id": master_id,
-        "display_name": entry.get("display_name"),
         "version": entry.get("repo_version"),
-        "manifest": manifest_rel,
         "canonical_source": source_rel,
         "contract": contract_rel,
+        "official_state": official_rel,
+        "official_status": state_status,
         "bootstrap": "FAIL" if master_failed else "PASS",
     })
 
-print("P0 NEW-ROOM BOOTSTRAP TEST RECEIPTS")
+print("P0/P1 NEW-ROOM BOOTSTRAP TEST RECEIPTS")
 for r in receipts:
     print(
         f"- {r['master_id']} | {r['version']} | source={r['canonical_source']} | "
-        f"contract={r['contract'] or 'N/A'} | bootstrap={r['bootstrap']}"
+        f"official={r['official_status']} | bootstrap={r['bootstrap']}"
     )
 
 if errors:
-    print("P0 NEW-ROOM BOOTSTRAP TEST: FAIL")
+    print("P0/P1 NEW-ROOM BOOTSTRAP TEST: FAIL")
     for e in errors:
         print(f"- ERROR: {e}")
     sys.exit(1)
 
-print("P0 NEW-ROOM BOOTSTRAP TEST: PASS")
-print("- All five MASTERs can be reconstructed from GitHub identity/source contracts without chat-memory reconstruction.")
-print("- P0 identity, canonical-source, bootstrap, production/research separation, and privacy checks passed.")
+print("P0/P1 NEW-ROOM BOOTSTRAP TEST: PASS")
+print("- All five MASTER identities/sources and exact OFFICIAL State pointers can be restored without chat-memory reconstruction.")
+print("- NO_STORED_OFFICIAL_RUN remains explicit rather than being synthetically backfilled.")
