@@ -10,7 +10,7 @@ from btc_trend_v30.r21.r21_engine import R21Engine
 from btc_trend_v30.r23.r23_detector import R23Engine, _early_long, _early_short, _priority_extreme_near
 
 HERE = Path(__file__).resolve().parent
-CFG = json.loads((HERE / "r23_candidate_config.json").read_text(encoding="utf-8"))
+CFG = json.loads((HERE / "r23_frozen_config.json").read_text(encoding="utf-8"))
 
 
 def row(**kwargs):
@@ -40,6 +40,7 @@ def test_early_short_can_exist_before_parent_watch():
 
 def test_detector_has_no_execution_authority():
     sc = CFG["single_change"]
+    assert CFG["status"] == "FINAL_FROZEN_NO_REPLAY"
     assert sc["early_detection_can_execute"] is False
     assert sc["early_detection_can_modify_seed"] is False
     assert sc["early_detection_can_modify_risk"] is False
