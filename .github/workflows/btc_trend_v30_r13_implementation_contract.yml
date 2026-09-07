@@ -1,0 +1,61 @@
+name: BTC TREND V3 R1.3 Implementation Contract
+
+on:
+  push:
+    branches:
+      - btc-trend-v30-r13-freeze
+    paths:
+      - 'btc_trend_v30/r13/**'
+      - '.github/workflows/btc_trend_v30_r13_implementation_contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  implementation-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Freeze guard
+        run: python btc_trend_v30/r13/r13_freeze_guard.py
+      - name: Engine load without historical replay
+        run: python btc_trend_v30/r13/r13_engine.py
+      - name: Config to code 1-to-1 audit
+        run: |
+          mkdir -p /tmp/r13_contract
+          python btc_trend_v30/r13/r13_implementation_audit.py | tee /tmp/r13_contract/implementation_audit.json
+      - name: Frozen contract synthetic tests
+        run: |
+          python btc_trend_v30/r13/test_r13_contract.py | tee /tmp/r13_contract/contract_tests.txt
+      - name: Assert no R1.3 historical/OOS replay output exists
+        shell: bash
+        run: |
+          if find btc_trend_v30 -type f \( -path '*r13*oos*' -o -path '*r13*historical*replay*' -o -path '*r13*validation*output*' \) | grep -q .; then
+            echo 'Unexpected R1.3 OOS/historical replay output exists during implementation contract stage'
+            find btc_trend_v30 -type f \( -path '*r13*oos*' -o -path '*r13*historical*replay*' -o -path '*r13*validation*output*' \)
+            exit 1
+          fi
+          echo 'R1.3 performance/OOS replay output count = 0'
+      - name: Assert R1.2 and V2.6 source remain untouched
+        shell: bash
+        run: |
+          BASE=6b3158d7c289b36153b2d9dc87f810c3562d1515
+          git diff --name-only "$BASE" HEAD | tee /tmp/r13_contract/changed_files.txt
+          if git diff --name-only "$BASE" HEAD | grep -Ev '^(btc_trend_v30/r13/|\.github/workflows/btc_trend_v30_r13_)' | grep -q .; then
+            echo 'Disallowed non-R1.3 file change detected'
+            git diff --name-only "$BASE" HEAD | grep -Ev '^(btc_trend_v30/r13/|\.github/workflows/btc_trend_v30_r13_)'
+            exit 1
+          fi
+          echo 'R1.2/V2.6 untouched = TRUE'
+      - name: Upload implementation contract evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v30-r13-implementation-contract
+          path: /tmp/r13_contract/
+          retention-days: 14
