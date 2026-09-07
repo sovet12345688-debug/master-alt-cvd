@@ -1,0 +1,83 @@
+name: MONEY MASTER OS Shared Fact Vault
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '12 * * * *'
+  pull_request:
+    paths:
+      - 'shared_fact_vault/**'
+      - 'source_health/**'
+      - 'market_vault/output/**'
+      - 'derivatives/output/**'
+      - 'live_flow/output/**'
+      - 'output/final20_cvd_summary.json'
+      - 'money_master_os/registry/MASTER_REGISTRY.json'
+      - 'money_master_os/shared/DATA_POLICY.md'
+      - '.github/workflows/shared_fact_vault_hourly.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'shared_fact_vault/registry.json'
+      - 'shared_fact_vault/build_shared_facts.py'
+      - 'shared_fact_vault/schema.json'
+      - 'source_health/output/latest.json'
+      - 'market_vault/output/**'
+      - 'derivatives/output/**'
+      - 'live_flow/output/**'
+      - 'output/final20_cvd_summary.json'
+      - 'money_master_os/registry/MASTER_REGISTRY.json'
+      - 'money_master_os/shared/DATA_POLICY.md'
+      - '.github/workflows/shared_fact_vault_hourly.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: money-master-os-shared-fact-vault
+  cancel-in-progress: false
+
+jobs:
+  build-shared-facts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || 'main' }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Shared Fact Vault self-test
+        run: python shared_fact_vault/build_shared_facts.py --mode self-test
+
+      - name: Pull-request dry run
+        if: github.event_name == 'pull_request'
+        run: python shared_fact_vault/build_shared_facts.py --mode dry-run
+
+      - name: Build Shared Fact Vault
+        if: github.event_name != 'pull_request'
+        run: python shared_fact_vault/build_shared_facts.py --mode build
+
+      - name: Validate generated Shared Fact Vault
+        if: github.event_name != 'pull_request'
+        run: python shared_fact_vault/build_shared_facts.py --mode validate
+
+      - name: Commit compact Shared Fact Vault
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name "money-master-shared-fact-bot"
+          git config user.email "money-master-shared-fact-bot@users.noreply.github.com"
+          git add shared_fact_vault/output/latest.json
+          if git diff --cached --quiet; then
+            echo "No Shared Fact Vault changes"
+          else
+            git commit -m "state: refresh MONEY MASTER shared facts"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi

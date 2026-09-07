@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MONEY MASTER OS Shared Fact Vault V1",
+  "type": "object",
+  "required": ["schema_version", "system", "generated_at_utc", "vault_status", "policy", "source_health_snapshot", "sources", "facts", "gaps"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "system": {"const": "MONEY_MASTER_OS_SHARED_FACT_VAULT"},
+    "generated_at_utc": {"type": "string"},
+    "vault_status": {"enum": ["HEALTHY", "DEGRADED", "NOT_BUILT"]},
+    "registered_fact_source_coverage_pct": {"type": ["number", "null"]},
+    "policy": {"type": "object"},
+    "source_health_snapshot": {"type": "object"},
+    "sources": {"type": "object"},
+    "facts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["fact_id", "metric", "domain", "value", "unit", "fact_type", "evidence_label", "source_id", "source_name", "source_observation_time", "source_status", "current_usable", "source_data_path", "lineage"],
+        "properties": {
+          "fact_id": {"type": "string"},
+          "metric": {"type": "string"},
+          "domain": {"type": "string"},
+          "asset": {"type": ["string", "null"]},
+          "venue": {"type": ["string", "null"]},
+          "window": {"type": ["string", "null"]},
+          "value": {},
+          "unit": {"type": ["string", "null"]},
+          "fact_type": {"enum": ["OBSERVED", "DERIVED_METRIC"]},
+          "evidence_label": {"const": "CONFIRMED"},
+          "source_id": {"type": "string"},
+          "source_name": {"type": "string"},
+          "source_url": {"type": ["string", "null"]},
+          "source_observation_time": {"type": "string"},
+          "source_frequency": {"type": ["string", "null"]},
+          "source_status": {"enum": ["HEALTHY", "DEGRADED", "STALE", "FAILED", "MISSING", "UNKNOWN"]},
+          "current_usable": {"type": "boolean"},
+          "source_health_reason_codes": {"type": "array"},
+          "source_data_path": {"type": "string"},
+          "neutral_context": {"type": "object"},
+          "lineage": {"type": "object"}
+        }
+      }
+    },
+    "gaps": {"type": "array"}
+  }
+}
