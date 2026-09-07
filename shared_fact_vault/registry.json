@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0",
+  "system": "MONEY_MASTER_OS_SHARED_FACT_VAULT",
+  "policy": {
+    "facts_only": true,
+    "master_decisions_forbidden": true,
+    "cross_source_reconciliation_forbidden": true,
+    "stale_or_failed_not_current": true,
+    "last_good_substitution_forbidden": true,
+    "missing_is_not_zero": true,
+    "chat_memory_backfill_forbidden": true,
+    "raw_high_volume_duplication_forbidden": true,
+    "vault_coverage_is_not_master_coverage": true
+  },
+  "active_adapters": {
+    "market_data_vault": {
+      "adapter": "market_metrics",
+      "domain": "MARKET_GLOBAL",
+      "data_path": "market_vault/output/latest_summary.json",
+      "source_health_id": "market_data_vault",
+      "allowed_consumers": ["market", "btc_trend", "alt_top100", "alt_final20", "trading"]
+    },
+    "market_macro_liquidity": {
+      "adapter": "macro_metrics",
+      "domain": "MACRO_LIQUIDITY",
+      "data_path": "market_vault/output/latest_macro_liquidity.json",
+      "source_health_id": "market_macro_liquidity",
+      "allowed_consumers": ["market", "btc_trend", "trading"]
+    },
+    "market_etf_flows": {
+      "adapter": "etf_assets",
+      "domain": "ETF_FLOW",
+      "data_path": "market_vault/output/latest_etf_flows.json",
+      "source_health_id": "market_etf_flows",
+      "allowed_consumers": ["market", "btc_trend"]
+    },
+    "derivatives": {
+      "adapter": "derivatives_assets",
+      "domain": "DERIVATIVES",
+      "data_path": "derivatives/output/latest_summary.json",
+      "source_health_id": "derivatives",
+      "allowed_consumers": ["market", "btc_trend", "alt_final20", "trading"]
+    },
+    "alt2_live_large_flow": {
+      "adapter": "large_flow_assets",
+      "domain": "SPOT_LARGE_TRADE_FLOW",
+      "data_path": "live_flow/output/live_large_flow_summary.json",
+      "source_health_id": "alt2_live_large_flow",
+      "allowed_consumers": ["alt_final20"]
+    },
+    "final20_long_cvd": {
+      "adapter": "long_cvd_results",
+      "domain": "SPOT_LONG_HORIZON_CVD",
+      "data_path": "output/final20_cvd_summary.json",
+      "source_health_id": "final20_long_cvd",
+      "allowed_consumers": ["alt_final20"]
+    }
+  },
+  "deferred_sources": {
+    "market_whales": "Wallet/position entity normalization needs a separate identity contract; do not flatten into anonymous facts yet.",
+    "stablecoin_exchange_flow": "Collector is currently failed/stale and data schema has not been locked for shared normalization.",
+    "us_net_liquidity": "Separate collector is currently failed/missing; macro adapter already exposes an explicit official-source proxy without substituting this failed source.",
+    "polymarket_context": "Context probabilities require a separate event/market identity key before shared normalization."
+  }
+}
