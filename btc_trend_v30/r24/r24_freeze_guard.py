@@ -13,8 +13,8 @@ FROZEN = HERE / "r24_frozen_config.json"
 ENGINE = HERE / "r24_engine.py"
 CONTRACT = HERE / "test_r24_contract.py"
 MANIFEST = HERE / "r24_freeze_manifest.json"
-R21_ENGINE = ROOT / "r21/r21_engine.py"
-R21_FROZEN = ROOT / "r21/r21_frozen_config.json"
+R21_ENGINE = ROOT / "btc_trend_v30/r21/r21_engine.py"
+R21_FROZEN = ROOT / "btc_trend_v30/r21/r21_frozen_config.json"
 
 
 def sha256(path: Path) -> str:
