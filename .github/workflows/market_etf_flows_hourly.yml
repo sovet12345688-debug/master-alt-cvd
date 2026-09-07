@@ -41,7 +41,7 @@ jobs:
       - name: Collect BTC and ETH ETF flows
         run: python market_vault/etf_flow_free_collector_v4.py
 
-      - name: Validate 1D 3D 5D 20D windows
+      - name: Validate 1D 3D 5D 7D 20D windows
         run: |
           python - <<'PY'
           import json,sys
@@ -54,12 +54,12 @@ jobs:
               a=assets.get(name)
               if not a:
                   sys.exit(f'missing {name} ETF data: {p.get("failures")}')
-              for k in ('flow_1d_usd_m','flow_3d_usd_m','flow_5d_usd_m','flow_20d_usd_m'):
+              for k in ('flow_1d_usd_m','flow_3d_usd_m','flow_5d_usd_m','flow_7d_usd_m','flow_20d_usd_m'):
                   if a.get(k) is None:
                       sys.exit(f'{name} missing {k}')
               if int(a.get('trading_rows_available') or 0) < 20:
                   sys.exit(f'{name} fewer than 20 trading rows')
-          print('ETF_1D_3D_5D_20D=PASS')
+          print('ETF_1D_3D_5D_7D_20D=PASS')
           PY
 
       - name: Commit generated data and diagnostics
