@@ -1,11 +1,12 @@
-name: BTC TREND V3.0 Validation Protocol V1 Data Integrity
-# FINAL Protocol V1.0 Step 1 execution trigger; research branch only.
+name: BTC TREND V3.0 Validation Protocol V1 Step1-2
+# Research branch only. V2.6 is not read or modified.
 
 on:
   push:
     branches: [btc-trend-v30-build]
     paths:
       - 'btc_trend_v30/validation_protocol_v1_data_integrity.py'
+      - 'btc_trend_v30/validation_protocol_v1_step2_r12_daily_scoring.py'
       - '.github/workflows/btc_trend_v30_validation_protocol_v1_data_integrity.yml'
   workflow_dispatch:
 
@@ -16,7 +17,7 @@ env:
   PYTHONUNBUFFERED: '1'
 
 jobs:
-  data-integrity:
+  validation-step1-2:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -26,28 +27,47 @@ jobs:
           python-version: '3.12'
       - name: Install research dependencies
         run: python -m pip install --disable-pip-version-check numpy pandas requests
-      - name: Run FINAL-LOCK data integrity audit
+
+      - name: Step1 - Data Integrity
         run: python btc_trend_v30/validation_protocol_v1_data_integrity.py
-      - name: Show gate verdict
-        shell: bash
+
+      - name: Step1 gate
         run: |
           python - <<'PY'
-          import json
+          import json, sys
           p='btc_trend_v30/output/validation_v1/data_integrity/audit.json'
           d=json.load(open(p,encoding='utf-8'))
-          print('ENGINE=', d['engine'])
-          print('PROTOCOL=', d['protocol'])
-          print('ROWS=', d['final_rows'], '/', d['expected_rows'])
-          print('RAW_PARTIAL=', d['raw']['partial_dates'])
-          print('REPAIR=', d['repair'])
-          print('FINAL_AUDIT=', d['final_audit'])
-          print('DATA_INTEGRITY=', d['data_integrity'])
-          print('NEXT=', d['next_step'])
-          print('PROMOTION=', d['promotion'])
+          print('STEP1 DATA_INTEGRITY=',d['data_integrity'])
+          print('ROWS=',d['final_rows'],'/',d['expected_rows'])
+          print('RAW_SHORT_METADATA=',d['raw'].get('short_metadata_rows'))
+          print('API_DIAGNOSTIC=',d['api_crosscheck']['status'])
+          print('PROMOTION=',d['promotion'])
+          if d['data_integrity']!='PASS': sys.exit('STOP: Step1 HOLD')
           PY
-      - name: Upload audit artifact
+
+      - name: Step2 - R1.2 LR LC SR SC FULL DAILY ROLLING
+        run: python btc_trend_v30/validation_protocol_v1_step2_r12_daily_scoring.py
+
+      - name: Step2 gate
+        run: |
+          python - <<'PY'
+          import json, sys
+          p='btc_trend_v30/output/validation_v1/step2_full_daily_scoring/audit.json'
+          d=json.load(open(p,encoding='utf-8'))
+          print('STEP2=',d['step2'])
+          print('ROWS=',d['rows'])
+          print('PIT=',d['point_in_time_prefix_invariance']['pass'])
+          print('COUNTS=',d['daily_counts'])
+          print('CONFLICT_DAYS=',d['transition_conflict_days'])
+          print('NEXT=',d['next_step'])
+          print('PROMOTION=',d['promotion'])
+          if d['step2']!='PASS': sys.exit('STOP: Step2 HOLD')
+          PY
+
+      - name: Upload Step1-2 audit artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: btc-trend-v30-validation-v1-data-integrity
-          path: btc_trend_v30/output/validation_v1/data_integrity/
+          name: btc-trend-v30-validation-v1-step1-2
+          path: btc_trend_v30/output/validation_v1/
           retention-days: 14
