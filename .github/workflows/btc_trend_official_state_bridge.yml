@@ -7,6 +7,9 @@ on:
       - main
     paths:
       - 'official_state/inbox/btc_trend/*.json'
+      - 'official_state/process_btc_trend_inbox.py'
+      - 'official_state/btc_trend_bridge_contract.json'
+      - '.github/workflows/btc_trend_official_state_bridge.yml'
 
 permissions:
   contents: write
