@@ -1,5 +1,5 @@
-name: BTC TREND V3.0 Validation Protocol V1 Step1-8
-# Research branch only. V2.6 is not read or modified.
+name: BTC TREND V3.0 Validation Protocol V1 Step1-9
+# Research branch only. V2.6 production is read-only canonical context and is never modified.
 
 on:
   push:
@@ -15,6 +15,7 @@ on:
       - 'btc_trend_v30/validation_protocol_v1_step7_metrics.py'
       - 'btc_trend_v30/validation_protocol_v1_step8_robustness.py'
       - 'btc_trend_v30/validation_protocol_v1_step8_runner.py'
+      - 'btc_trend_v30/validation_protocol_v1_step9_exact_v26_h2h.py'
       - '.github/workflows/btc_trend_v30_validation_protocol_v1_data_integrity.yml'
   workflow_dispatch:
 
@@ -25,7 +26,7 @@ env:
   PYTHONUNBUFFERED: '1'
 
 jobs:
-  validation-step1-8:
+  validation-step1-9:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -129,10 +130,27 @@ jobs:
           if d['step8']!='PASS': sys.exit('STOP: Step8 HOLD')
           PY
 
-      - name: Upload Step1-8 audit artifact
+      - name: Step9 - Exact V2.6 Head-to-Head Audit
+        run: python btc_trend_v30/validation_protocol_v1_step9_exact_v26_h2h.py
+      - name: Step9 gate
+        run: |
+          python - <<'PY'
+          import json,sys
+          d=json.load(open('btc_trend_v30/output/validation_v1/step9_exact_v26_h2h/audit.json',encoding='utf-8'))
+          print('STEP9_AUDIT=',d['step9_audit'])
+          print('EXACT_H2H_STATUS=',d['exact_h2h_status'])
+          print('REPLAYABILITY=',d['replayability'])
+          print('REASON_CODES=',d['reason_codes'])
+          print('PROMOTION=',d['promotion'])
+          if d['step9_audit']!='PASS': sys.exit('STOP: Step9 canonical audit HOLD')
+          if d['exact_h2h_status'] not in ('READY_EXACT_REPLAY','LINK_NA_EXACT_BASELINE_NOT_REPLAYABLE'):
+              sys.exit('STOP: Step9 H2H status invalid')
+          PY
+
+      - name: Upload Step1-9 audit artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: btc-trend-v30-validation-v1-step1-8
+          name: btc-trend-v30-validation-v1-step1-9
           path: btc_trend_v30/output/validation_v1/
           retention-days: 14
