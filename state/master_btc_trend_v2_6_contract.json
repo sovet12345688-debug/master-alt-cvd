@@ -149,6 +149,19 @@
     "backfill_forbidden": true,
     "bootstrap_history_is_current_market_data": false
   },
+  "official_state_runtime": {
+    "no_stored_official_run_semantics": "PRIOR_HISTORY_MISSING_ONLY_NOT_EXECUTION_VETO",
+    "fail_closed_on_no_stored_official_run": false,
+    "current_official_execution_allowed_if_identity_and_current_data_valid": true,
+    "prior_comparison_when_missing": "N/A_NO_RECONSTRUCTION",
+    "forbidden_reconstruction_sources": ["chat_memory", "legacy_handoff", "V3.0_research"],
+    "fail_closed_conditions": ["VERSION_DRIFT", "SOURCE_MISSING", "CANONICAL_OR_CONTRACT_UNREADABLE", "VALIDATOR_FAIL"],
+    "persist_successful_basic_official": true,
+    "publisher_contract": "official_state/publish_official_state.py",
+    "persistence_targets": ["official_state/latest/btc_trend.json", "official_state/history/btc_trend/YYYY-MM.jsonl"],
+    "persistence_failure_invalidates_current_visible_report": false,
+    "persistence_failure_status": "PERSISTENCE_PENDING"
+  },
   "footer": {
     "follow_up_count": 5,
     "lines": 2,
