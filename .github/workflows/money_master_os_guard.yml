@@ -11,6 +11,7 @@ on:
       - 'source_health/**'
       - 'official_state/**'
       - 'shared_fact_vault/**'
+      - 'watch_events/**'
       - '.github/workflows/money_master_os_guard.yml'
       - '.github/workflows/source_health_hourly.yml'
       - '.github/workflows/shared_fact_vault_hourly.yml'
@@ -22,6 +23,7 @@ on:
       - 'source_health/**'
       - 'official_state/**'
       - 'shared_fact_vault/**'
+      - 'watch_events/**'
       - '.github/workflows/money_master_os_guard.yml'
       - '.github/workflows/source_health_hourly.yml'
       - '.github/workflows/shared_fact_vault_hourly.yml'
@@ -56,6 +58,15 @@ jobs:
 
       - name: Validate Shared Fact Vault fact-only boundary
         run: python shared_fact_vault/build_shared_facts.py --mode self-test
+
+      - name: Validate WATCH Event Store integration contract
+        run: python money_master_os/tools/validate_watch_event_contract.py
+
+      - name: Validate WATCH Event Store latest index
+        run: python watch_events/publish_watch_event.py --mode validate-latest
+
+      - name: WATCH Event Store anti-noise / anti-execution self-test
+        run: python watch_events/publish_watch_event.py --mode self-test
 
       - name: Validate OFFICIAL State latest/index contract
         run: python official_state/publish_official_state.py --mode validate-latest

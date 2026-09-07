@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0",
+  "system": "MONEY_MASTER_OS_WATCH_EVENTS",
+  "history_root": "watch_events/history",
+  "latest_index": "watch_events/latest/index.json",
+  "publisher": "watch_events/publish_watch_event.py",
+  "master_producers": {
+    "market": {
+      "enabled": true,
+      "version": "V1.2 FINAL",
+      "canonical_source": "master_prompts/master_market_v1_2_current.md",
+      "rule_owner": "MASTER",
+      "allowed_event_classes": ["MASTER_WATCH", "RISK_VETO"],
+      "note": "Use canonical URGENT WATCH only. Central store does not recalculate LEVEL1/LEVEL2."
+    },
+    "btc_trend": {
+      "enabled": false,
+      "version": "V2.6 PRODUCTION",
+      "canonical_source": "master_prompts/master_btc_trend_v2_6_current.md",
+      "reason": "NO_HOURLY_WATCH_LOCKED"
+    },
+    "alt_top100": {
+      "enabled": true,
+      "version": "V4.8 FINAL",
+      "canonical_source": "master_prompts/master_alt_top100_v4_8_current.md",
+      "rule_owner": "MASTER",
+      "allowed_event_classes": ["MASTER_WATCH", "RISK_VETO"],
+      "note": "Use canonical HUNTER WATCH ALERT only. No central score recalculation."
+    },
+    "alt_final20": {
+      "enabled": true,
+      "version": "V2.2.1 FINAL20 DEEP FINAL",
+      "canonical_source": "master_prompts/master_alt_final20_current.md",
+      "rule_owner": "MASTER",
+      "allowed_event_classes": ["MASTER_WATCH", "RISK_VETO"],
+      "note": "Use canonical WATCH only. NEW CVD_RUN_ID and other gates remain owned by MASTER."
+    },
+    "trading": {
+      "enabled": false,
+      "version": "CURRENT + TIME VALIDITY V2.1 OVERLAY",
+      "canonical_source": "master_prompts/master_trading_current.md",
+      "reason": "MANUAL_ONLY_NO_RECURRING_WATCH"
+    }
+  },
+  "system_producers": {
+    "source_health": {
+      "enabled": true,
+      "allowed_event_classes": ["SYSTEM_HEALTH", "DATA_ANOMALY"],
+      "notification_default": false,
+      "rule": "status transition only; no market direction"
+    },
+    "shared_fact_vault": {
+      "enabled": true,
+      "allowed_event_classes": ["SYSTEM_HEALTH", "DATA_ANOMALY"],
+      "notification_default": false,
+      "rule": "availability/lineage anomaly only; no score or direction"
+    },
+    "money_master_os_guard": {
+      "enabled": true,
+      "allowed_event_classes": ["SYSTEM_HEALTH"],
+      "notification_default": false,
+      "rule": "contract/bootstrap validation transition only"
+    }
+  },
+  "global_policy": {
+    "no_event_on_no_change": true,
+    "no_heartbeat_rows": true,
+    "producer_master_owns_meaningful_threshold": true,
+    "central_event_store_is_persistence_and_dedup_only": true,
+    "watch_event_never_overwrites_official_state": true,
+    "watch_event_never_updates_official_score_history": true,
+    "btc_v26_hourly_watch_remains_disabled": true,
+    "trading_recurring_watch_remains_disabled": true,
+    "public_repo_private_trading_state_forbidden": true
+  }
+}
