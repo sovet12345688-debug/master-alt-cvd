@@ -11,6 +11,7 @@ on:
       - 'btc_trend_v30/validation_protocol_v1_step4_outcome_labels.py'
       - 'btc_trend_v30/validation_protocol_v1_step5_walk_forward_oos.py'
       - 'btc_trend_v30/validation_protocol_v1_step6_state_machine_replay.py'
+      - 'btc_trend_v30/validation_protocol_v1_step6_runner.py'
       - '.github/workflows/btc_trend_v30_validation_protocol_v1_data_integrity.yml'
   workflow_dispatch:
 
@@ -88,7 +89,7 @@ jobs:
           PY
 
       - name: Step6 - 1H 4H 1D State Machine Replay
-        run: python btc_trend_v30/validation_protocol_v1_step6_state_machine_replay.py
+        run: python btc_trend_v30/validation_protocol_v1_step6_runner.py
       - name: Step6 gate
         run: |
           python - <<'PY'
