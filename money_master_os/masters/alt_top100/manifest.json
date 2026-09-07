@@ -3,9 +3,9 @@
   "master_id": "ALT_TOP100",
   "display_name": "MASTER ALT 1 · TOP100",
   "expected_version": "V4.8 FINAL",
-  "repo_version": null,
-  "status": "SOURCE_MISSING",
-  "canonical_source": null,
+  "repo_version": "V4.8 FINAL",
+  "status": "READY",
+  "canonical_source": "master_prompts/master_alt_top100_v4_8_current.md",
   "machine_contract": null,
   "state_sources": [
     "state/github_data_ready_registry.json"
@@ -16,14 +16,24 @@
     "money_master_os/shared/RISK_GATE.md"
   ],
   "bootstrap": {
-    "allowed": false,
-    "block_reason": "Exact MASTER ALT V4.8 TOP100 canonical source is not yet committed. Do not substitute the FINAL20 V2.2.1 source.",
+    "allowed": true,
     "require_exact_version_match": true,
     "require_source_present": true,
     "require_validator_pass": true
   },
+  "source_provenance": {
+    "origin": "ACTIVE_AUTOMATION_PROMPT",
+    "automation_title": "MASTER ALT V4.8 [TOP100 · INDEPENDENT · MAX REASONING · FINAL]",
+    "captured_kst": "2026-09-07T11:00:00+09:00",
+    "rule": "Do not reconstruct from chat memory; canonical changes require explicit approved update."
+  },
+  "ui_policy": {
+    "current_layout_preserved": true,
+    "later_user_refinement_allowed": true,
+    "logic_change_required_for_ui_only_change": false
+  },
   "ownership": {
-    "logic": "MISSING_UNTIL_EXACT_V4_8_SOURCE_COMMITTED",
+    "logic": "canonical_source",
     "purpose": "TOP100 discovery and early accumulation scan",
     "chat_memory": "NON_CANONICAL"
   }
