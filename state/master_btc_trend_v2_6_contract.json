@@ -27,11 +27,7 @@
     "cross_master_blocking_dependency": false
   },
   "schedule": {
-    "official_kst": [
-      "09:10",
-      "17:10",
-      "21:10"
-    ],
+    "official_kst": ["09:10", "17:10", "21:10"],
     "hourly_watch": false,
     "four_hour_watch": false,
     "plan_watch": false,
@@ -66,15 +62,8 @@
   "derivatives": {
     "primary_oi_source": "Bitget USDT Futures BTC same venue/contract family",
     "freshness_minutes_max": 90,
-    "oi_windows": [
-      "1H",
-      "4H",
-      "24H"
-    ],
-    "funding": [
-      "current",
-      "change"
-    ],
+    "oi_windows": ["1H", "4H", "24H"],
+    "funding": ["current", "change"],
     "na_is_zero": false,
     "backfill_forbidden": true,
     "interpolation_forbidden": true,
@@ -135,11 +124,7 @@
     "1D_support": "PASS",
     "1D_resistance": "PASS",
     "1W": "NOT_APPROVED_INSUFFICIENT_SAMPLE",
-    "bands": {
-      "weak": "0-49",
-      "normal": "50-79",
-      "strong": "80-100"
-    }
+    "bands": {"weak":"0-49","normal":"50-79","strong":"80-100"}
   },
   "output": {
     "semantic_screens": 3,
@@ -153,18 +138,10 @@
     "details_hidden_by_default": true
   },
   "today_direction": {
-    "must_choose_one": [
-      "롱",
-      "숏"
-    ],
+    "must_choose_one": ["롱", "숏"],
     "neutral_wait_forbidden_in_this_line": true,
     "entry_signal": false,
-    "tie_breaker": [
-      "1D",
-      "4H",
-      "previous_OFFICIAL",
-      "current_price_structure"
-    ]
+    "tie_breaker": ["1D", "4H", "previous_OFFICIAL", "current_price_structure"]
   },
   "history": {
     "precision_compare_only_previous_actual_8_chart_run": true,
@@ -201,139 +178,29 @@
     "screen1": {
       "title": "BTC 현황 요약",
       "tables": [
-        {
-          "title": "중장기 방향",
-          "columns": [
-            "항목",
-            "신호",
-            "현재값",
-            "판정"
-          ],
-          "required_rows": [
-            "LONG vs SHORT",
-            "현재 우세방향",
-            "모아가기 적합도",
-            "현재 추세",
-            "추세 강도",
-            "최근 추이"
-          ]
-        },
-        {
-          "title": "매수·매도·매집 근거",
-          "columns": [
-            "구분",
-            "신호",
-            "핵심 근거",
-            "판정"
-          ],
-          "required_rows": [
-            "매수",
-            "매도",
-            "매집"
-          ],
-          "reason_max": "1 short phrase"
-        },
-        {
-          "title": "역사 프렉탈 · 바닥/고점",
-          "columns": [
-            "항목",
-            "신호",
-            "현재 위치/점수",
-            "판정"
-          ],
-          "required_rows": [
-            "역사 프렉탈 현재 위치",
-            "MASTER 동조/충돌",
-            "BOTTOM/100",
-            "TOP/100",
-            "LONG A+ 미래검증 추적 요약"
-          ]
-        },
-        {
-          "title": "단·중·장기 S/R",
-          "columns": [
-            "구분",
-            "신호",
-            "핵심 지지",
-            "핵심 저항",
-            "강도"
-          ],
-          "required_rows": [
-            "단기",
-            "중기",
-            "장기"
-          ]
-        }
+        {"title":"중장기 방향","columns":["항목","신호","현재값","판정"],"required_rows":["LONG vs SHORT","현재 우세방향","모아가기 적합도","현재 추세","추세 강도","최근 추이"]},
+        {"title":"매수·매도·매집 근거","columns":["구분","신호","핵심 근거","판정"],"required_rows":["매수","매도","매집"],"reason_max":"1 short phrase"},
+        {"title":"역사 프렉탈 · 바닥/고점","columns":["항목","신호","현재 위치/점수","판정"],"required_rows":["역사 프렉탈 현재 위치","MASTER 동조/충돌","BOTTOM/100","TOP/100","LONG A+ 미래검증 추적 요약"]},
+        {"title":"단·중·장기 S/R","columns":["구분","신호","핵심 지지","핵심 저항","강도"],"required_rows":["단기","중기","장기"]}
       ],
       "summary_lines": 1
     },
     "screen2": {
       "title": "중장기 추세 및 파동 분석",
       "single_wave_table": {
-        "columns": [
-          "프레임",
-          "신호",
-          "파동",
-          "현재 위치",
-          "메인 시나리오",
-          "대안 시나리오"
-        ],
-        "required_rows": [
-          "장기(1W~1D) / 대파동",
-          "중기(4H~1D) / 중파동",
-          "단기(15m~1H 또는 30m~1H) / 소파동"
-        ]
+        "columns": ["프레임","신호","파동","현재 위치","메인 시나리오","대안 시나리오"],
+        "required_rows": ["장기(1W~1D) / 대파동","중기(4H~1D) / 중파동","단기(15m~1H 또는 30m~1H) / 소파동"]
       },
-      "blocks_after_table": [
-        "가장 확률 높은 메인 시나리오",
-        "조심해야 할 대안 시나리오",
-        "실전용 해석"
-      ],
+      "blocks_after_table": ["가장 확률 높은 메인 시나리오","조심해야 할 대안 시나리오","실전용 해석"],
       "practical_interpretation_max_lines": 2,
       "elliott_count_if_unconfirmed": "DO_NOT_INVENT_1_TO_5_OR_ABC"
     },
     "screen3": {
       "title": "핵심 가격 구간 정리",
       "tables": [
-        {
-          "title": "중장기 방향 요약",
-          "columns": [
-            "항목",
-            "신호",
-            "현재값",
-            "판정"
-          ],
-          "required_rows": [
-            "중장기 방향",
-            "지금 행동",
-            "틀렸다는 기준",
-            "큰 구조 무효화"
-          ]
-        },
-        {
-          "title": "LONG 포지션 후보 3가지",
-          "columns": [
-            "구간",
-            "신호",
-            "진입 후보",
-            "성격",
-            "무효화 기준"
-          ],
-          "max_rows": 3,
-          "use_live_long_plan_if_valid": true
-        },
-        {
-          "title": "SHORT 포지션 후보 3가지",
-          "columns": [
-            "구간",
-            "신호",
-            "진입 후보",
-            "성격",
-            "무효화 기준"
-          ],
-          "max_rows": 3,
-          "invent_missing_candidates": false
-        }
+        {"title":"중장기 방향 요약","columns":["항목","신호","현재값","판정"],"required_rows":["중장기 방향","지금 행동","틀렸다는 기준","큰 구조 무효화"]},
+        {"title":"LONG 포지션 후보 3가지","columns":["구간","신호","진입 후보","성격","무효화 기준"],"max_rows":3,"use_live_long_plan_if_valid":true},
+        {"title":"SHORT 포지션 후보 3가지","columns":["구간","신호","진입 후보","성격","무효화 기준"],"max_rows":3,"invent_missing_candidates":false}
       ],
       "summary_lines": 1
     },
