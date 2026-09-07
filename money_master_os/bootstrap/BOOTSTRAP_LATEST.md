@@ -28,11 +28,11 @@ Legacy ambiguous ID `alt` is forbidden for V2 bootstrap.
 
 Chat context may add current user instructions but must not silently replace the canonical identity or invent missing persisted history.
 
-## Current safe bootstrap state — 2026-09-07 11:52 KST — ALL 5 READY
-- `market` — MASTER MARKET V1.2 FINAL: READY.
+## Current safe bootstrap state — 2026-09-07 11:58 KST — ALL 5 READY
+- `market` — MASTER MARKET V1.2 FINAL: READY. Load `master_prompts/master_market_v1_2_current.md` and `state/master_market_v1_2_contract.json`.
 - `btc_trend` — MASTER BTC TREND V2.6 PRODUCTION: READY. Load `master_prompts/master_btc_trend_v2_6_current.md` and `state/master_btc_trend_v2_6_contract.json`. V3.0 remains research-only.
 - `alt_top100` — MASTER ALT 1 V4.8 FINAL: READY. Load `master_prompts/master_alt_top100_v4_8_current.md` exactly.
-- `alt_final20` — MASTER ALT 2 V2.2.1 FINAL20 DEEP FINAL: READY.
+- `alt_final20` — MASTER ALT 2 V2.2.1 FINAL20 DEEP FINAL: READY. Load `master_prompts/master_alt_final20_current.md` exactly.
 - `trading` — MASTER TRADING CURRENT + TIME VALIDITY V2.1 OVERLAY: READY. Load `master_prompts/master_trading_current.md` and `state/master_trading_current_contract.json`. Execution mode is manual-only.
 
 ## BTC production/research rule
