@@ -1,0 +1,81 @@
+{
+  "schema_version": "1.0",
+  "bridge_id": "BTC_TREND_OFFICIAL_STATE_BRIDGE",
+  "master_id": "btc_trend",
+  "master_version": "V2.6 PRODUCTION",
+  "status": "READY",
+  "purpose": "Persist only actual successful MASTER BTC TREND BASIC OFFICIAL runs without reconstructing missing history.",
+  "source_of_truth": {
+    "registry": "money_master_os/registry/MASTER_REGISTRY.json",
+    "manifest": "money_master_os/masters/btc_trend/manifest.json",
+    "canonical": "master_prompts/master_btc_trend_v2_6_current.md",
+    "machine_contract": "state/master_btc_trend_v2_6_contract.json",
+    "official_state_schema": "official_state/schema.json",
+    "publisher": "official_state/publish_official_state.py"
+  },
+  "transport": {
+    "inbox": "official_state/inbox/btc_trend/",
+    "accepted_file_pattern": "MBTC-V26-YYYYMMDD-HH10-KST.json",
+    "processor": "official_state/process_btc_trend_inbox.py",
+    "workflow": ".github/workflows/btc_trend_official_state_bridge.yml",
+    "trigger": "push_to_main_when_official_state/inbox/btc_trend/*.json_changes",
+    "rejected": "official_state/rejected/btc_trend/"
+  },
+  "publish_targets": {
+    "latest": "official_state/latest/btc_trend.json",
+    "history": "official_state/history/btc_trend/YYYY-MM.jsonl",
+    "index": "official_state/latest/index.json"
+  },
+  "runtime_rules": {
+    "basic_official_only": true,
+    "manual_precision_publish_only_when_user_explicitly_marks_official": true,
+    "watch_publish_forbidden": true,
+    "provisional_publish_forbidden": true,
+    "research_publish_forbidden": true,
+    "historical_backfill_forbidden": true,
+    "chat_memory_reconstruction_forbidden": true,
+    "legacy_handoff_reconstruction_forbidden": true,
+    "v3_research_reconstruction_forbidden": true,
+    "no_stored_official_run_blocks_current_execution": false,
+    "persistence_failure_invalidates_visible_report": false,
+    "persistence_failure_status": "PERSISTENCE_PENDING",
+    "public_repo_private_account_data_forbidden": true
+  },
+  "state_payload_required": {
+    "state_status": "STORED",
+    "master_id": "btc_trend",
+    "display_name": "MASTER BTC TREND",
+    "master_version": "V2.6 PRODUCTION",
+    "run_type": "OFFICIAL",
+    "state_origin": "ACTUAL_STORED_RUN",
+    "canonical_identity_verified": true,
+    "cross_master_decision_dependency": false,
+    "contains_personal_account_data": false,
+    "public_repository_safe": true
+  },
+  "run_id_policy": {
+    "format": "MBTC-V26-YYYYMMDD-HH10-KST",
+    "official_slots_kst": ["09:10", "17:10", "21:10"],
+    "duplicate_run_id_forbidden": true,
+    "newer_than_latest_required": true
+  },
+  "field_mapping": {
+    "direction": "actual current LONG/SHORT result from the completed run",
+    "action": "actual allowed execution decision from the completed run",
+    "coverage_pct": "actual MASTER Coverage if calculated, otherwise null",
+    "confidence": "actual MASTER confidence if calculated, otherwise null",
+    "known_na": "actual missing optional/mandatory items from the run",
+    "stale_sources": "actual stale sources from the run",
+    "time_mismatch_warnings": "actual timestamp mismatch warnings from the run",
+    "core_state": "public-safe actual run outputs only: LONG/SHORT ratio, trend, accumulation/bottom/top, trajectory, verified S/R and public LIVE plan state as applicable",
+    "invalidations": "actual structural invalidations produced by the run only",
+    "risk_veto": "actual severe risk veto list from the run only"
+  },
+  "anti_fabrication": {
+    "missing_value": "null_or_NA_as_schema_allows",
+    "infer_prior_official": false,
+    "infer_valid_until_from_schedule": false,
+    "invent_scores_or_prices": false,
+    "store_private_user_position_or_balance": false
+  }
+}
