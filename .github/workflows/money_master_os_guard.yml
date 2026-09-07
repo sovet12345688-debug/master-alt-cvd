@@ -51,6 +51,9 @@ jobs:
       - name: Validate Source Health authority boundary
         run: python money_master_os/tools/validate_source_health_contract.py
 
+      - name: Validate Shared Fact Vault integration contract
+        run: python money_master_os/tools/validate_shared_fact_vault_contract.py
+
       - name: Validate Shared Fact Vault fact-only boundary
         run: python shared_fact_vault/build_shared_facts.py --mode self-test
 
