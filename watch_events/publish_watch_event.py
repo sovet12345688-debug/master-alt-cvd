@@ -14,6 +14,7 @@ REGISTRY_PATH = ROOT / "money_master_os/registry/MASTER_REGISTRY.json"
 WATCH_REGISTRY_PATH = ROOT / "watch_events/registry.json"
 SCHEMA_PATH = ROOT / "watch_events/schema.json"
 INDEX_PATH = ROOT / "watch_events/latest/index.json"
+LATEST_DIR = ROOT / "watch_events/latest"
 HISTORY_ROOT = ROOT / "watch_events/history"
 MASTER_IDS = {"market", "btc_trend", "alt_top100", "alt_final20", "trading"}
 KST = timezone(timedelta(hours=9))
@@ -92,8 +93,35 @@ def validate_index() -> list[str]:
         ent = (idx.get("masters") or {}).get(mid) or {}
         if ent.get("watch_enabled") is not cfg.get("enabled"):
             errors.append(f"{mid}: watch_enabled mismatch")
+        path = ent.get("latest_event_path")
+        event_id = ent.get("latest_event_id")
+        if path is None:
+            if event_id is not None:
+                errors.append(f"{mid}: latest_event_id exists without latest_event_path")
+        else:
+            p = ROOT / path
+            if not p.exists():
+                errors.append(f"{mid}: latest_event_path missing")
+            else:
+                latest = load_json(p)
+                if latest.get("event_id") != event_id:
+                    errors.append(f"{mid}: latest event id/path mismatch")
+    for sid, ent in (idx.get("systems") or {}).items():
+        path = ent.get("latest_event_path")
+        event_id = ent.get("latest_event_id")
+        if path is None:
+            if event_id is not None:
+                errors.append(f"{sid}: latest_event_id exists without latest_event_path")
+        else:
+            p = ROOT / path
+            if not p.exists():
+                errors.append(f"{sid}: latest_event_path missing")
+            else:
+                latest = load_json(p)
+                if latest.get("event_id") != event_id:
+                    errors.append(f"{sid}: latest event id/path mismatch")
     pol = idx.get("policy") or {}
-    for key in ("empty_index_is_valid", "no_change_is_not_persisted", "watch_is_not_official", "no_historical_backfill"):
+    for key in ("empty_index_is_valid", "no_change_is_not_persisted", "watch_is_not_official", "no_historical_backfill", "latest_copy_is_lookup_only"):
         if pol.get(key) is not True:
             errors.append(f"index policy not locked true: {key}")
     return errors
@@ -232,10 +260,14 @@ def publish(input_path: Path) -> None:
     producer = event["producer"]
     pid = producer["id"]
     month = detected.astimezone(KST).strftime("%Y-%m")
-    history_path = HISTORY_ROOT / pid / f"{month}.jsonl"
+    history_rel = f"watch_events/history/{pid}/{month}.jsonl"
+    history_path = ROOT / history_rel
     history_path.parent.mkdir(parents=True, exist_ok=True)
     with history_path.open("a", encoding="utf-8") as fh:
         fh.write(json.dumps(event, ensure_ascii=False, separators=(",", ":")) + "\n")
+
+    latest_rel = f"watch_events/latest/{pid}.json"
+    write_json(ROOT / latest_rel, event)
 
     idx = load_json(INDEX_PATH)
     idx["generated_kst"] = datetime.now(KST).isoformat(timespec="seconds")
@@ -243,14 +275,16 @@ def publish(input_path: Path) -> None:
     if producer["type"] == "MASTER":
         ent = idx["masters"][event["master_id"]]
         ent["latest_event_id"] = event["event_id"]
+        ent["latest_event_path"] = latest_rel
         ent["latest_detected_at_kst"] = event["detected_at_kst"]
         ent["event_count"] = int(ent.get("event_count", 0)) + 1
     else:
         ent = idx["systems"][pid]
         ent["latest_event_id"] = event["event_id"]
+        ent["latest_event_path"] = latest_rel
         ent["event_count"] = int(ent.get("event_count", 0)) + 1
     write_json(INDEX_PATH, idx)
-    print(f"WATCH_EVENT_PUBLISH=PASS event_id={event['event_id']}")
+    print(f"WATCH_EVENT_PUBLISH=PASS event_id={event['event_id']} history={history_rel}")
 
 
 def self_test() -> None:
@@ -283,10 +317,19 @@ def self_test() -> None:
     btc["master_id"] = "btc_trend"
     if not validate_event(btc):
         raise SystemExit("WATCH_EVENT_SELF_TEST=FAIL BTC hourly WATCH was not blocked")
+    trading = json.loads(json.dumps(sample))
+    trading["producer"].update({"id": "trading", "version": "CURRENT + TIME VALIDITY V2.1 OVERLAY"})
+    trading["master_id"] = "trading"
+    if not validate_event(trading):
+        raise SystemExit("WATCH_EVENT_SELF_TEST=FAIL TRADING recurring WATCH was not blocked")
     bad = json.loads(json.dumps(sample))
     bad["watch_payload"] = {"action": "ENTER"}
     if not validate_event(bad):
         raise SystemExit("WATCH_EVENT_SELF_TEST=FAIL ENTER action was not blocked")
+    execution = json.loads(json.dumps(sample))
+    execution["watch_payload"] = {"entry": 1, "sl": 0.9, "tp1": 1.3}
+    if not validate_event(execution):
+        raise SystemExit("WATCH_EVENT_SELF_TEST=FAIL execution fields were not blocked")
     print("WATCH_EVENT_SELF_TEST=PASS")
 
 
