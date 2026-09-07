@@ -1,0 +1,39 @@
+name: BTC TREND V3 R2.1 Final Freeze
+
+on:
+  push:
+    branches: [btc-trend-v30-r21-short-core-delay]
+    paths:
+      - 'btc_trend_v30/r21/**'
+      - '.github/workflows/btc_trend_v30_r21_final_freeze.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  r21-final-freeze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Final freeze guard
+        run: python btc_trend_v30/r21/r21_freeze_guard.py
+      - name: Single-change contract
+        run: python btc_trend_v30/r21/test_r21_contract.py
+      - name: Parent R2.0 files untouched
+        run: |
+          set -euo pipefail
+          CHANGED="$(git diff --name-only 6e0c14f0b483dec1d15650e226ae65f9adc93800...HEAD -- btc_trend_v30/r20 || true)"
+          echo "R20_CHANGED=$CHANGED"
+          test -z "$CHANGED"
+      - name: No R2.1 replay before freeze
+        run: test ! -e btc_trend_v30/r21/output/historical_replay/audit.json
+      - name: Compile frozen overlay
+        run: python -m py_compile btc_trend_v30/r21/r21_engine.py btc_trend_v30/r21/test_r21_contract.py btc_trend_v30/r21/r21_freeze_guard.py
