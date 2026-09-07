@@ -1,0 +1,57 @@
+{
+  "model": "MASTER_BTC_TREND_V3_R2_2",
+  "status": "PRE_FREEZE_NO_REPLAY",
+  "parent": {
+    "model": "MASTER_BTC_TREND_V3_R2_1",
+    "branch": "btc-trend-v30-r21-short-core-delay",
+    "frozen_config_sha256": "80cff38e4aa9eebb98d052d644981a58e4576a99684d74fb4abf1f66482b9980",
+    "engine_git_blob_sha1": "b8a0d741ad59a98496d13b6b66a6a74763a27545",
+    "contract_git_blob_sha1": "ba6744311b0d4fb1c510eae2482360297616d3fd"
+  },
+  "single_change": {
+    "id": "DAILY_20D_EXTREME_DISTANCE_HARD_GATE_TO_PRIORITY_ONLY",
+    "applies_to": ["LONG_WATCH", "SHORT_WATCH"],
+    "unchanged_distance_threshold_atr": 1.0,
+    "hard_gate_removed": true,
+    "priority_flag_retained": true,
+    "interpretation": "Daily distance to the prior completed 20D high/low within 1 ATR no longer blocks WATCH. The same 1 ATR threshold remains a non-execution priority flag only. All actual SEED route triggers and risk controls remain unchanged."
+  },
+  "inherited_unchanged": {
+    "long_daily_ema20_side": true,
+    "long_daily_ema20_slope": true,
+    "long_h4_ema20_side": true,
+    "long_h4_ema20_slope": true,
+    "short_daily_ema20_side": true,
+    "short_daily_ema20_slope": true,
+    "short_h4_ema20_side": true,
+    "short_h4_ema20_slope": true,
+    "short_weekly_daily_regime": true,
+    "seed_breakout_reclaim_failed_retest_triggers": true,
+    "seed_volume_and_close_location": true,
+    "stop_geometry": true,
+    "risk_budget": true,
+    "confirm_core_holding_exit_reset": true,
+    "r21_short_core_separate_daily_confirmation": true,
+    "pit_availability_semantics": true,
+    "predeclared_gates": true
+  },
+  "evidence_firewall": {
+    "seed_lag_forensic_used_only_to_generate_hypothesis": true,
+    "r22_historical_replay_performed_before_freeze": false,
+    "r22_results_may_not_modify_this_candidate": true,
+    "production_promotion_from_same_historical_window": false
+  },
+  "forbidden_changes": [
+    "DISTANCE_THRESHOLD_TUNING",
+    "ROUTE_TRIGGER_CHANGE",
+    "VOLUME_THRESHOLD_CHANGE",
+    "STOP_CHANGE",
+    "RISK_CHANGE",
+    "CONFIRM_CHANGE",
+    "CORE_CHANGE_EXCEPT_INHERITED_R21_TIMING",
+    "EXIT_CHANGE",
+    "RESET_CHANGE",
+    "PIT_CHANGE",
+    "MULTI_PARAMETER_TUNING"
+  ]
+}
