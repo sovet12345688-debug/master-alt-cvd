@@ -1,0 +1,72 @@
+name: MASTER MARKET N/A + Expert Badge Lock
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'tools/patch_master_market_na_explain_expert_badges.py'
+      - '.github/workflows/master_market_na_expert_badge_lock.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Apply N/A explanation + expert badge lock
+        run: python tools/patch_master_market_na_explain_expert_badges.py
+
+      - name: Validate lock
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('master_prompts/master_market_v1_2_current.md').read_text(encoding='utf-8')
+          c=json.load(open('state/master_market_v1_2_contract.json',encoding='utf-8'))
+          assert 'N/A EXPLANATION & RECOVERY LOCK — ADDED 2026-09-07' in p
+          assert 'N/A 항목 | 이유 | 자동해소 여부 | 예상 노출시점 / 필요조치' in p
+          assert '시간을 기다려도 자동 노출 안 됨' in p
+          assert 'EXPERT VIEW TRAFFIC-LIGHT DISPLAY LOCK — ADDED 2026-09-07' in p
+          assert 'Sean Farrell 최신 관점 — `[판정 신호등]` — score 0' in p
+          assert 'Stanley Druckenmiller 최신 관점 — `[판정 신호등]` — score 0' in p
+          np=c.get('na_explanation_policy') or {}
+          assert np.get('enabled') is True
+          assert np.get('applies_to_screens') == [1,2,3,4,5]
+          assert np.get('reason_classes',{}).get('STRUCTURALLY_UNAVAILABLE') == '현재 구조상 불가'
+          ep=c.get('expert_badge_policy') or {}
+          assert ep.get('enabled') is True
+          assert ep.get('experts') == ['Sean Farrell','Stanley Druckenmiller']
+          assert ep.get('score_effect') == 0
+          vals=ep.get('values') or {}
+          for v in ['🟢 상승우호','🔴 하락압력','🟡 중립·혼합','⚪ 최신관점 N/A']:
+              assert v in vals.values()
+          for s in ['screen1','screen2','screen3','screen4','screen5']:
+              assert any('N/A 안내' in x for x in c['required_output'][s])
+          print('MASTER_MARKET_NA_EXPERT_BADGE_LOCK=PASS')
+          PY
+
+      - name: Commit canonical + contract lock
+        run: |
+          git config user.name "master-market-contract-bot"
+          git config user.email "master-market-contract-bot@users.noreply.github.com"
+          git add master_prompts/master_market_v1_2_current.md state/master_market_v1_2_contract.json
+          if git diff --cached --quiet; then
+            echo "No lock changes"
+          else
+            git commit -m "feat: lock N/A recovery notes and expert badges in MASTER MARKET"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
