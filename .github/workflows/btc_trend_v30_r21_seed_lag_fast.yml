@@ -1,0 +1,108 @@
+name: BTC TREND V3 R2.1 Seed Lag FAST
+
+on:
+  push:
+    branches: [btc-trend-v30-r21-short-core-delay]
+    paths:
+      - 'btc_trend_v30/r21/fast/seed_lag_forensic.py'
+      - '.github/workflows/btc_trend_v30_r21_seed_lag_fast.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONUNBUFFERED: '1'
+  PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/btc_trend_v30
+
+jobs:
+  seed-lag-fast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+
+      - name: Frozen R2.1 guard
+        run: |
+          set -euo pipefail
+          python btc_trend_v30/r21/r21_freeze_guard.py
+          (cd btc_trend_v30/r21 && python test_r21_contract.py)
+          python -m py_compile btc_trend_v30/r21/fast/seed_lag_forensic.py
+
+      - name: Download canonical Step1-10 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: btc-trend-v30-validation-v1-step1-10
+          repository: sovet12345688-debug/master-alt-cvd
+          run-id: 34084074525
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: btc_trend_v30/output/validation_v1
+
+      - name: Download frozen R2.1 historical artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: btc-trend-v30-r21-historical-diagnostic
+          repository: sovet12345688-debug/master-alt-cvd
+          run-id: 34116514316
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: btc_trend_v30
+
+      - name: Canonical SHA guards
+        run: |
+          python - <<'PY'
+          import hashlib,sys
+          from pathlib import Path
+          expected={
+            'btc_trend_v30/output/validation_v1/data_integrity/btc_usdt_1d_matrix.csv':'0618a36ffa0f98a3a3318927f0602bb288ff231fe9d10299b5f8013015a8964a',
+            'btc_trend_v30/output/validation_v1/step6_state_machine_replay/btc_usdt_complete_4h_matrix.csv':'22bdc9bf33d54b8ebb850d209046365a326324059d48d3aac2afa33a0c366a26',
+            'btc_trend_v30/r21/output/historical_replay/audit.json':'9a1f518536209016081db794c9fe191e115f3dc4c40020fb7de67e8ec8febbad',
+            'btc_trend_v30/r21/output/historical_replay/r21_positions.csv':'e72e9a8eee0c7d3d07f1b7fbe4f111ba8e158bf11e56671a3c80a31f95fd66e1',
+            'btc_trend_v30/r21/output/historical_replay/r21_seed_candidates.csv':'2a5b885513e5c9b6b581e884cfbf736a77cd17c29200954fa9c10fa1d31eb8cc',
+            'btc_trend_v30/r21/output/historical_replay/truth_episode_metrics.csv':'e8c2ad32eff9ff8cee0e668a9a8b4238b670298023911fed90de9e907acb5256',
+          }
+          ok=True
+          for rel,want in expected.items():
+              p=Path(rel); got=hashlib.sha256(p.read_bytes()).hexdigest() if p.exists() else 'MISSING'
+              good=got==want; ok=ok and good
+              print(rel,got,'PASS' if good else 'FAIL')
+          if not ok: sys.exit(1)
+          PY
+
+      - name: Run FAST seed-lag forensic
+        run: python btc_trend_v30/r21/fast/seed_lag_forensic.py
+
+      - name: FAST audit gate
+        run: |
+          python - <<'PY'
+          import json,sys,math
+          p='btc_trend_v30/r21/fast/output/seed_lag_forensic/summary.json'
+          d=json.load(open(p))
+          print(json.dumps(d,indent=2))
+          checks=[
+            d['mode']=='FAST_READ_ONLY_SEED_LAG_FORENSIC',
+            d['production_promotion_evidence'] is False,
+            d['frozen_r21_modified'] is False,
+            d['seed_reconstruction_identity'] is True,
+            d['medium_truth_positive_episodes']==57,
+            d['participated_90d']==56,
+            d['late_or_missed']==33,
+            d['raw_seed_within_7d_but_execution_late']==0,
+            d['raw_seed_equals_executed_seed_for_all_late_executed'] is True,
+          ]
+          print('FAST_CHECKS=',checks)
+          if not all(checks): sys.exit(1)
+          PY
+
+      - name: Upload FAST evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v30-r21-seed-lag-fast
+          path: btc_trend_v30/r21/fast/output/seed_lag_forensic/
+          retention-days: 14
