@@ -46,10 +46,10 @@ def _require_ohlcv(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def feature_frame(df: pd.DataFrame, cfg: Optional[dict] = None) -> pd.DataFrame:
-    """Causal completed-candle features.
+    """Causal candle features on source candle-open timestamps.
 
-    Current completed OHLCV may be used at its own close timestamp. Any comparator
-    that represents a prior range/baseline is explicitly shifted by one bar.
+    Rolling comparators that represent a prior range/baseline are shifted by one bar.
+    Availability timing is handled separately before cross-timeframe as-of joins.
     """
     cfg = cfg or _load_cfg()
     x = _require_ohlcv(df)
@@ -64,14 +64,11 @@ def feature_frame(df: pd.DataFrame, cfg: Optional[dict] = None) -> pd.DataFrame:
     x["ema50"] = x["close"].ewm(span=ema_slow, adjust=False, min_periods=ema_slow).mean()
 
     prev_close = x["close"].shift(1)
-    tr = pd.concat(
-        [
-            x["high"] - x["low"],
-            (x["high"] - prev_close).abs(),
-            (x["low"] - prev_close).abs(),
-        ],
-        axis=1,
-    ).max(axis=1)
+    tr = pd.concat([
+        x["high"] - x["low"],
+        (x["high"] - prev_close).abs(),
+        (x["low"] - prev_close).abs(),
+    ], axis=1).max(axis=1)
     x["atr14"] = tr.ewm(alpha=1.0 / atr_n, adjust=False, min_periods=atr_n).mean()
 
     x["prior20_high"] = x["high"].rolling(lookback, min_periods=lookback).max().shift(1)
@@ -86,35 +83,39 @@ def feature_frame(df: pd.DataFrame, cfg: Optional[dict] = None) -> pd.DataFrame:
     rng = (x["high"] - x["low"]).replace(0.0, np.nan)
     x["close_location"] = (x["close"] - x["low"]) / rng
 
-    # Deterministic causal swing reference: prior 3 completed bars, excluding current.
     x["causal_swing_low3"] = x["low"].rolling(3, min_periods=3).min().shift(1)
     x["causal_swing_high3"] = x["high"].rolling(3, min_periods=3).max().shift(1)
-
-    # Causal two-step structure reversal: prior bar first establishes LH/HL,
-    # current completed bar then confirms LL/HH.
     x["lh_then_ll"] = (x["high"].shift(1) < x["high"].shift(2)) & (x["low"] < x["low"].shift(1))
     x["hl_then_hh"] = (x["low"].shift(1) > x["low"].shift(2)) & (x["high"] > x["high"].shift(1))
     return x
 
 
+def _availability_shift(frame: pd.DataFrame, hours: int) -> pd.DataFrame:
+    out = frame.copy()
+    out.index = out.index + pd.Timedelta(hours=int(hours))
+    out.index.name = frame.index.name
+    return out
+
+
 def completed_weekly_features(daily: pd.DataFrame, cfg: Optional[dict] = None) -> pd.DataFrame:
-    """Build only completed UTC Monday-Sunday weeks from completed daily bars."""
+    """Completed Monday-Sunday weeks, indexed at Monday 00:00 UTC availability."""
     cfg = cfg or _load_cfg()
     d = _require_ohlcv(daily)
-    # W-SUN label/right: week becomes available only at its final Sunday daily close.
     w = d.resample("W-SUN", label="right", closed="right").agg(
         open=("open", "first"), high=("high", "max"), low=("low", "min"), close=("close", "last"), volume=("volume", "sum")
     )
-    # Require 7 daily bars so partial first/last weeks cannot masquerade as completed weeks.
     cnt = d["close"].resample("W-SUN", label="right", closed="right").count()
     w = w[cnt == 7].dropna()
-    return feature_frame(w, cfg)
+    wf = feature_frame(w, cfg)
+    # W-SUN label is Sunday 00:00 source open time. The Sunday candle is only complete
+    # at Monday 00:00 UTC, so weekly context becomes available one day later.
+    return _availability_shift(wf, 24)
 
 
-def asof_context(intraday: pd.DataFrame, higher: pd.DataFrame, prefix: str) -> pd.DataFrame:
-    """Attach the latest completed higher-timeframe row available at each intraday close."""
+def asof_context(intraday: pd.DataFrame, higher_available: pd.DataFrame, prefix: str) -> pd.DataFrame:
+    """Attach only higher-timeframe rows whose close/availability timestamp has passed."""
     lo = intraday.sort_index().reset_index().rename(columns={intraday.index.name or "index": "timestamp"})
-    hi = higher.sort_index().reset_index().rename(columns={higher.index.name or "index": "timestamp"})
+    hi = higher_available.sort_index().reset_index().rename(columns={higher_available.index.name or "index": "timestamp"})
     rename = {c: f"{prefix}_{c}" for c in hi.columns if c != "timestamp"}
     hi = hi.rename(columns=rename)
     m = pd.merge_asof(lo, hi, on="timestamp", direction="backward", allow_exact_matches=True)
@@ -123,13 +124,20 @@ def asof_context(intraday: pd.DataFrame, higher: pd.DataFrame, prefix: str) -> p
 
 def build_feature_bundle(daily: pd.DataFrame, h4: pd.DataFrame, h1: Optional[pd.DataFrame] = None, cfg: Optional[dict] = None) -> Dict[str, pd.DataFrame]:
     cfg = cfg or _load_cfg()
-    d = feature_frame(daily, cfg)
-    h = feature_frame(h4, cfg)
-    w = completed_weekly_features(daily, cfg)
-    h_ctx = asof_context(asof_context(h, d, "d"), w, "w")
-    out = {"1D": d, "4H": h_ctx, "1W": w}
+    offsets = cfg["data"]["timeframe_available_offset_hours"]
+
+    # Source matrices use candle OPEN timestamps. Convert feature rows to decision-time
+    # availability timestamps before any cross-timeframe join.
+    d_source = feature_frame(daily, cfg)
+    d_available = _availability_shift(d_source, int(offsets["1D"]))
+    h_source = feature_frame(h4, cfg)
+    h_available = _availability_shift(h_source, int(offsets["4H"]))
+    w_available = completed_weekly_features(daily, cfg)
+
+    h_ctx = asof_context(asof_context(h_available, d_available, "d"), w_available, "w")
+    out = {"1D": d_source, "4H": h_ctx, "1W": w_available}
     if h1 is not None:
-        out["1H"] = feature_frame(h1, cfg)
+        out["1H"] = _availability_shift(feature_frame(h1, cfg), int(offsets["1H"]))
     return out
 
 
@@ -155,15 +163,15 @@ def short_watch(row: pd.Series, cfg: dict) -> bool:
     return bool(row["d_close"] < row["d_ema20"] and row["d_ema20_slope_5"] < 0 and dist_ok and row["close"] < row["ema20"] and row["ema20_slope_5"] < 0)
 
 
+def _latest_completed_daily_pos(daily: pd.DataFrame, decision_ts: pd.Timestamp, cfg: dict) -> int:
+    offset = pd.Timedelta(hours=int(cfg["data"]["timeframe_available_offset_hours"]["1D"]))
+    source_cutoff = pd.Timestamp(decision_ts) - offset
+    return int(daily.index.searchsorted(source_cutoff, side="right") - 1)
+
+
 def _long_reclaim_flag(daily: pd.DataFrame, ts: pd.Timestamp, cfg: dict) -> bool:
-    if ts not in daily.index:
-        # most recent completed daily context
-        pos = daily.index.searchsorted(ts, side="right") - 1
-        if pos < 0:
-            return False
-        ts = daily.index[pos]
-    i = daily.index.get_loc(ts)
-    if not isinstance(i, (int, np.integer)) or i < 1:
+    i = _latest_completed_daily_pos(daily, ts, cfg)
+    if i < 1:
         return False
     row = daily.iloc[i]
     prev = daily.iloc[i - 1]
@@ -184,10 +192,6 @@ def _short_failed_retest_flag(h4_ctx: pd.DataFrame, pos: int, cfg: dict) -> bool
     row = h4_ctx.iloc[pos]
     if not _finite(row.get("d_ema20"), row.get("d_prior20_low"), row.get("high"), row.get("close"), row.get("ema20"), row.get("volume_ratio")):
         return False
-    # Deterministic causal reference: lower of current completed daily EMA20 and prior-20D low.
-    # A valid failed retest requires a prior completed 4H close below that reference within
-    # the configured daily lookback, then current high trades back to/above reference and
-    # current completed close returns below it.
     reference = min(float(row["d_ema20"]), float(row["d_prior20_low"]))
     bars = int(cfg["short"]["seed"]["failed_retest"]["prior_breakdown_lookback_days"]) * 6
     start = max(0, pos - bars)
