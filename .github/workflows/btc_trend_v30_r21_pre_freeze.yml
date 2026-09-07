@@ -1,0 +1,51 @@
+name: BTC TREND V3 R2.1 Single-Change Pre-Freeze
+
+on:
+  push:
+    branches: [btc-trend-v30-r21-short-core-delay]
+    paths:
+      - 'btc_trend_v30/r21/**'
+      - '.github/workflows/btc_trend_v30_r21_pre_freeze.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  r21-pre-freeze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Parent R2.0 REV2 identity
+        run: |
+          set -euo pipefail
+          test "$(git hash-object btc_trend_v30/r20/r20_frozen_config_rev2.json)" = "9f1a54edb0312bd86f230f025f539bd4255a016f"
+          test "$(git hash-object btc_trend_v30/r20/r20_engine.py)" = "cf5c5bf7a10ba699fe695964b7e7f435dead016b"
+      - name: R2.1 single-change contract
+        run: python btc_trend_v30/r21/test_r21_contract.py
+      - name: No parent-file changes since R2.1 branch base
+        run: |
+          set -euo pipefail
+          CHANGED="$(git diff --name-only 6e0c14f0b483dec1d15650e226ae65f9adc93800...HEAD -- btc_trend_v30/r20 || true)"
+          echo "R20_CHANGED=$CHANGED"
+          test -z "$CHANGED"
+      - name: No R2.1 historical replay before freeze
+        run: |
+          set -euo pipefail
+          test ! -e btc_trend_v30/r21/output/historical_replay/audit.json
+          python - <<'PY'
+          import json
+          p='btc_trend_v30/r21/r21_candidate_config.json'
+          d=json.load(open(p))
+          assert d['evidence_firewall']['r21_historical_replay_performed_before_freeze'] is False
+          print('R21_NO_REPLAY_BEFORE_FREEZE_PASS')
+          PY
+      - name: Compile R2.1 overlay
+        run: python -m py_compile btc_trend_v30/r21/r21_engine.py btc_trend_v30/r21/test_r21_contract.py
