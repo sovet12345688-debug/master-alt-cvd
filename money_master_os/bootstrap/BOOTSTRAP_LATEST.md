@@ -35,11 +35,11 @@ Legacy handoff is migration context only once OFFICIAL State V1 exists.
 Chat context may add current user instructions but must not silently replace canonical identity or invent missing persisted history.
 
 ## Current safe bootstrap state — 2026-09-07 P1 OFFICIAL STATE
-- `market` — MASTER MARKET V1.2 FINAL: READY. Canonical source/contract valid. Latest persisted OFFICIAL State is stored at `official_state/latest/market.json` from an actually persisted MARKET OFFICIAL history row.
-- `btc_trend` — MASTER BTC TREND V2.6 PRODUCTION: READY. V3.0 remains research-only. OFFICIAL State starts `NO_STORED_OFFICIAL_RUN` until an actual V2.6 OFFICIAL result is published.
-- `alt_top100` — MASTER ALT 1 V4.8 FINAL: READY. OFFICIAL State starts `NO_STORED_OFFICIAL_RUN` until an actual V4.8 OFFICIAL result is published.
-- `alt_final20` — MASTER ALT 2 V2.2.1 FINAL20 DEEP FINAL: READY. Raw CVD/derivatives/live-flow files are data engines, not MASTER OFFICIAL conclusions. OFFICIAL State starts `NO_STORED_OFFICIAL_RUN` until an actual MASTER OFFICIAL result is published.
-- `trading` — MASTER TRADING CURRENT + TIME VALIDITY V2.1 OVERLAY: READY and manual-only. OFFICIAL State starts `NO_STORED_OFFICIAL_RUN` until an actual TRADING OFFICIAL result is published. Public repository privacy rules remain mandatory.
+- `market` — MASTER MARKET V1.2 FINAL: READY. Load `master_prompts/master_market_v1_2_current.md` + `state/master_market_v1_2_contract.json` + `official_state/latest/market.json`. Latest persisted OFFICIAL State comes only from an actually persisted MARKET OFFICIAL history row.
+- `btc_trend` — MASTER BTC TREND V2.6 PRODUCTION: READY. Load `master_prompts/master_btc_trend_v2_6_current.md` + `state/master_btc_trend_v2_6_contract.json` + `official_state/latest/btc_trend.json`. V3.0 remains research-only. OFFICIAL State starts `NO_STORED_OFFICIAL_RUN` until an actual V2.6 OFFICIAL result is published.
+- `alt_top100` — MASTER ALT 1 V4.8 FINAL: READY. Load `master_prompts/master_alt_top100_v4_8_current.md` + `official_state/latest/alt_top100.json`. OFFICIAL State starts `NO_STORED_OFFICIAL_RUN` until an actual V4.8 OFFICIAL result is published.
+- `alt_final20` — MASTER ALT 2 V2.2.1 FINAL20 DEEP FINAL: READY. Load `master_prompts/master_alt_final20_current.md` + `official_state/latest/alt_final20.json`. Raw CVD/derivatives/live-flow files are data engines, not MASTER OFFICIAL conclusions. OFFICIAL State starts `NO_STORED_OFFICIAL_RUN` until an actual MASTER OFFICIAL result is published.
+- `trading` — MASTER TRADING CURRENT + TIME VALIDITY V2.1 OVERLAY: READY and manual-only. Load `master_prompts/master_trading_current.md` + `state/master_trading_current_contract.json` + `official_state/latest/trading.json`. OFFICIAL State starts `NO_STORED_OFFICIAL_RUN` until an actual TRADING OFFICIAL result is published. Public repository privacy rules remain mandatory.
 
 ## OFFICIAL State rule
 - Index: `official_state/latest/index.json`.
