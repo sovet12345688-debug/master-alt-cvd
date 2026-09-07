@@ -23,12 +23,18 @@ The legacy ambiguous registry key `alt` is no longer valid for V2 bootstrap.
 - Existing collectors, market data, histories, and current prompt files remain untouched unless explicitly changed.
 - A MASTER with `VERSION_DRIFT` or `SOURCE_MISSING` is blocked from automatic bootstrap until its exact approved canonical prompt is committed.
 
-## Current Phase 1 status — 2026-09-07 10:00 KST
+## Current status — 2026-09-07 11:00 KST
 - MASTER MARKET: `READY` — repository canonical source matches V1.2 FINAL.
 - MASTER BTC TREND: `SOURCE_MISSING` — production identity is V2.6; V3.0 remains research-only. Exact V2.6 production canonical source is not yet committed.
-- MASTER ALT 1 · TOP100: `SOURCE_MISSING` — project target is V4.8 FINAL; exact V4.8 canonical source is not yet committed.
+- MASTER ALT 1 · TOP100: `READY` — exact active MASTER ALT V4.8 automation prompt was captured as `master_prompts/master_alt_top100_v4_8_current.md` without reconstruction from chat memory.
 - MASTER ALT 2 · FINAL20: `READY` — repository canonical source matches V2.2.1 FINAL20 DEEP FINAL.
 - MASTER TRADING: `SOURCE_MISSING` — current execution rules exist in project operation, but exact canonical source/output contract is not yet committed.
+
+## ALT TOP100 V4.8 source provenance
+- Source origin: currently active automation `MASTER ALT V4.8 [TOP100 · INDEPENDENT · MAX REASONING · FINAL]`.
+- Canonical path: `master_prompts/master_alt_top100_v4_8_current.md`.
+- The current visible layout is preserved for continuity, but later user-approved UI refinement is allowed without requiring the analytical logic to be rebuilt.
+- Future automated execution should load the canonical source rather than reconstructing the prompt from chat memory.
 
 ## BTC production/research separation
 - Production: MASTER BTC TREND V2.6.
