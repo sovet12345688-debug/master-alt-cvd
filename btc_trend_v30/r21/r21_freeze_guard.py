@@ -6,7 +6,7 @@ import subprocess
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-ROOT = HERE.parents[1]
+ROOT = HERE.parent
 MANIFEST = json.loads((HERE / 'r21_freeze_manifest.json').read_text(encoding='utf-8'))
 CAND = HERE / 'r21_candidate_config.json'
 FROZEN = HERE / 'r21_frozen_config.json'
