@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0",
+  "long_run_id": "MONEY_MASTER_OS_V2_P2_LONG_RUN_V1",
+  "purpose": "Observe the same accepted MONEY MASTER OS control-plane version across real recurring cycles before P2 FINAL PASS.",
+  "schedule": {
+    "workflow": ".github/workflows/p2_long_run_hourly.yml",
+    "cron_utc": "25 * * * *",
+    "ordering_intent": [
+      "Source Health at :05",
+      "Shared Fact Vault at :12",
+      "P2 Long-run checkpoint at :25"
+    ]
+  },
+  "minimums": {
+    "observation_hours": 24,
+    "distinct_source_health_cycles": 12,
+    "distinct_shared_fact_cycles": 12,
+    "successful_acceptance_checkpoints": 3
+  },
+  "snapshot_freshness": {
+    "max_source_health_snapshot_age_minutes": 150,
+    "max_shared_fact_snapshot_age_minutes": 150,
+    "two_consecutive_stale_monitoring_checkpoints_fail": true
+  },
+  "core_outage_policy": {
+    "bad_statuses": ["FAILED", "STALE", "MISSING", "UNKNOWN"],
+    "one_checkpoint": "AT_RISK",
+    "two_consecutive_checkpoints": "FINAL_FAIL"
+  },
+  "version_stability": {
+    "lock_fingerprint_on_first_checkpoint": true,
+    "fingerprint_scope": [
+      "MASTER registry",
+      "five MASTER manifests",
+      "five canonical sources",
+      "declared machine contracts",
+      "COMMON_RULES",
+      "DATA_POLICY",
+      "RISK_GATE",
+      "Source Health registry",
+      "Shared Fact Vault registry",
+      "OFFICIAL State contract",
+      "WATCH Event contract",
+      "Acceptance criteria",
+      "Long-run contract"
+    ],
+    "fingerprint_change": "FINAL_FAIL_RESET_REQUIRED",
+    "automatic_reset_forbidden": true
+  },
+  "immediate_hard_fail": [
+    "MASTER_OR_CANONICAL_DRIFT",
+    "NON_A3_BASELINE_ACCEPTANCE_FAILURE",
+    "SHARED_FACT_AUTHORITY_VIOLATION",
+    "OFFICIAL_WATCH_CROSS_CONTAMINATION",
+    "NEW_ROOM_RESTORE_REGRESSION",
+    "PRIVACY_REGRESSION",
+    "BTC_V26_PRODUCTION_V3_RESEARCH_SEPARATION_REGRESSION"
+  ],
+  "terminal_statuses": ["FINAL_PASS", "FINAL_FAIL"],
+  "nonterminal_statuses": ["COLLECTING", "AT_RISK", "COLLECTING_INSUFFICIENT_CYCLES"],
+  "history_policy": {
+    "append_only_checkpoint_history": true,
+    "synthetic_historical_backfill_forbidden": true,
+    "terminal_run_requires_explicit_reset_to_restart": true,
+    "reset_keeps_old_history": true
+  },
+  "p2_final_pass": {
+    "all_minimums_required": true,
+    "no_terminal_failure": true,
+    "latest_checkpoint_must_be_clean": true,
+    "result": "P2_FINAL_PASS"
+  }
+}

@@ -1,0 +1,73 @@
+name: MONEY MASTER OS P2 Long Run
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '25 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'money_master_os/acceptance/LONG_RUN_STABILITY_V1.json'
+      - 'money_master_os/tools/run_p2_long_run.py'
+      - '.github/workflows/p2_long_run_hourly.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: money-master-os-p2-long-run
+  cancel-in-progress: false
+
+jobs:
+  checkpoint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Long-run self-test
+        run: python money_master_os/tools/run_p2_long_run.py --mode self-test
+
+      - name: Collect real long-run checkpoint
+        id: collect
+        continue-on-error: true
+        run: python money_master_os/tools/run_p2_long_run.py --mode collect
+
+      - name: Validate long-run runtime state
+        run: python money_master_os/tools/run_p2_long_run.py --mode validate
+
+      - name: Commit append-only checkpoint and compact state
+        run: |
+          git config user.name "money-master-p2-long-run-bot"
+          git config user.email "money-master-p2-long-run-bot@users.noreply.github.com"
+          git add p2_long_run state/money_master_os_p2_acceptance_latest.json || true
+          if git diff --cached --quiet; then
+            echo "No P2 long-run state changes"
+          else
+            git commit -m "state: record P2 long-run checkpoint"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+      - name: Enforce terminal failure after persistence
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('p2_long_run/latest.json')
+          if not p.exists():
+              raise SystemExit('P2 long-run latest state missing')
+          status = json.loads(p.read_text())['status']
+          print(f'P2_LONG_RUN_STATUS={status}')
+          if status == 'FINAL_FAIL':
+              raise SystemExit(1)
+          PY
