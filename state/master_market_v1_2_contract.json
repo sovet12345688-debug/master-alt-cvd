@@ -2,7 +2,7 @@
   "schema_version": "1.6",
   "master": "MASTER MARKET V1.2",
   "status": "FINAL_CUMULATIVE_LOCK",
-  "updated_kst": "2026-09-07T11:32:46+09:00",
+  "updated_kst": "2026-09-07T14:28:00+09:00",
   "purpose": "Machine-readable cumulative contract for MASTER MARKET. Existing required data, checks, and user-visible output blocks must survive future version upgrades unless the user explicitly orders removal.",
   "no_silent_omission": {
     "enabled": true,
@@ -45,14 +45,15 @@
       "3D",
       "7D"
     ],
-    "column_order_rule": "For the remaining locked summary tables, show 1D then 3D then 7D. Existing 7D is preserved.",
+    "column_order_rule": "For locked mobile summary tables, show 1D then 3D then 7D after prior/직전 when applicable.",
     "data_rule": "Use only actual stored values, actual cumulative flow, or same-source comparable observations. No interpolation or reconstruction. Missing windows remain visible as N/A.",
     "applies_to": [
-      "SCREEN1_CORE_5_AXES",
-      "SCREEN2_MACRO_TABLE",
+      "SCREEN1_BTC_LIQUIDITY_LEAD",
+      "SCREEN2_CORE_5_AXES",
+      "SCREEN2_MARKET_POSITIVE_SCORE",
       "SCREEN4_INSTITUTION_WHALE_RETAIL_TABLE"
     ],
-    "screen5_exception": "SCREEN5 core-axis table was explicitly removed by user because it duplicated upstream decision content."
+    "screen5_exception": "SCREEN5 is research/context only and does not duplicate upstream core-axis score tables."
   },
   "schedule": {
     "timezone": "Asia/Seoul",
@@ -177,60 +178,81 @@
     "Crypto_Money_Inflow": true,
     "ALT_Money_Inflow": true
   },
+  "mobile_output_policy": {
+    "enabled": true,
+    "priority": "MOBILE_FIRST",
+    "result_first": true,
+    "compact_tables_primary": true,
+    "traffic_light_required_on_judgement_tables": true,
+    "screen_summary_required": true,
+    "screen_summary_label": "💡 핵심:",
+    "minimize_trigger_condition_explanation": true,
+    "preferred_change_symbols": "↑ / → / ↓",
+    "easy_korean": true,
+    "engine_change": "NONE"
+  },
   "required_output": {
     "screen_count": 5,
     "screen1": [
-      "market state/action environment/big-money leader/largest risk",
-      "5 core axes table columns: axis|status|score|prior delta|1D|3D|7D",
-      "institution/whale/retail traffic lights",
-      "rotation",
-      "market breadth mini-line: total market cap/24H volume/BTC.D/ETH.D",
-      "prior change TOP3 and 7D improve/worsen TOP3",
-      "primary current-market judgement; final verdict not duplicated in screen5",
-      "if any N/A/unavailable value appears, append per-screen N/A 안내 with item|reason|automatic recovery yes/no|expected exposure time or required structural action"
+      "title: 전 세계 거시 환경",
+      "global macro table columns: signal|item|current value|prior|1D|3D|7D|easy interpretation",
+      "show already-required available macro/liquidity/rates/USD/oil/equity items; do not restore explicitly removed fields",
+      "BTC Liquidity Lead table columns: signal|current score|prior|1D|3D|7D|current stage",
+      "BTC Liquidity Lead visibly emphasizes 55 as 상승 초입 기준; thresholds 55/65/75 unchanged",
+      "oil remains mandatory and underlying Oil Hard Importance logic unchanged",
+      "end with compact 💡 핵심 summary"
     ],
     "screen2": [
-      "table columns: item|current status traffic-light|current value|prior delta|1D|3D|7D|crypto positive score|easy interpretation",
-      "Liquidity Lead with 55/65/75",
-      "WTI+Brent detail",
-      "final crypto-positive summary",
-      "if any N/A/unavailable value appears, append per-screen N/A 안내 with item|reason|automatic recovery yes/no|expected exposure time or required structural action"
+      "title: 지금 돈은 어디로 가고 있나",
+      "core 5-axis table columns: signal|money flow|current score|prior|1D|3D|7D|current status",
+      "required axes: global liquidity|crypto money|whale flow|retail overheating|ALT money",
+      "retain compact market breadth and USD->Stablecoin->BTC->ETH->ALT rotation when valid",
+      "market summary table columns: signal|Market Positive Score|prior|1D|3D|7D|current judgement",
+      "end with compact 💡 핵심 summary"
     ],
     "screen3": [
-      "BTC/ETH ETF 1D/3D/5D/20D",
-      "USDT/USDC/total stablecoin supply; same-source history when available",
-      "Crypto Money Inflow",
-      "ALT Money Inflow",
+      "title: 실제 크립토로 돈이 들어오나",
+      "actual money-flow table prioritizes signal|capital source/path|prior|1D|3D|5D|7D|20D|current status; populate only valid windows and keep unsupported cells N/A",
+      "BTC/ETH ETF preserve confirmed 1D/3D/5D/20D",
+      "include institutional flow, USDT/USDC/total stablecoin supply, and other already-required directly observable crypto capital flows when available",
+      "Crypto Money Inflow and ALT Money Inflow remain visible where available",
       "fixed text: Stablecoin supply increase != actual buy",
-      "visually separate actual institution spot flow from potential stablecoin dry powder",
-      "if any N/A/unavailable value appears, append per-screen N/A 안내 with item|reason|automatic recovery yes/no|expected exposure time or required structural action",
-      "removed wallet-tracking fields and Global M2 must not appear as recurring N/A"
+      "actual buying and potential dry powder remain clearly distinguished",
+      "removed wallet-tracking fields and Global M2 must not appear as recurring N/A",
+      "end with compact 💡 핵심 summary"
     ],
     "screen4": [
-      "moving whale TOP3 when meaningful position-size changes exist",
-      "BTC whales max10 and ETH whales max10 with ranks 6-10 allowed only as compressed continuation, never deleted",
-      "institution vs whale vs retail table columns: subject|status|score|prior delta|1D|3D|7D|easy interpretation",
-      "mandatory easy-Korean explainer after institution-vs-whale-vs-retail table",
-      "derivatives table columns: asset|price|OI|Funding|OI 1H|OI 4H|OI 24H|judgement|easy interpretation",
-      "CVD/Taker/Long-Short/Liquidation/Basis/Depth/Volume visible in compact line as value or N/A",
-      "mandatory easy-Korean derivatives explainer, including confidence limitation when confirmations are N/A",
-      "whale direction/size cells: 🟢 LONG for long, 🔴 SHORT for short, ⚪ N/A/FLAT for unknown/flat; applies to moving TOP3 + BTC/ETH core whales; display-only, score effect 0",
-      "if any N/A/unavailable value appears, append per-screen N/A 안내 with item|reason|automatic recovery yes/no|expected exposure time or required structural action"
+      "title: 기관·고래·개미·파생",
+      "BTC whales max10 and ETH whales max10",
+      "user-visible core whale columns: rank|side|entry size|entry price|leverage|change(optional)",
+      "change column is shown only when same-whale continuity is reliable; otherwise omit entire change column",
+      "liquidation distance is not required in the user-visible core whale tables; underlying Liquidation/Liq Distance data and risk/WATCH logic remain preserved",
+      "whale side display: 🟢 LONG / 🔴 SHORT / ⚪ N/A/FLAT",
+      "institution vs whale vs retail table columns: signal|subject|score|prior|1D|3D|7D|current status",
+      "derivatives mobile table columns: signal|asset|OI|Funding|CVD|current interpretation",
+      "all existing derivative engine fields remain preserved for validation/calculation even when compressed in user-visible table",
+      "mandatory easy-Korean derivative interpretation",
+      "end with compact 💡 핵심 summary"
     ],
     "screen5": [
-      "research/context only; no duplicated core-axis/final-verdict/mini-score/rotation/money-frontier/risk-radar blocks",
-      "Coinness/News TOP5 with time|headline|what changed|BTC-ETH-ALT impact|primary confirmation|owner|score impact and why-it-matters sentence",
-      "economic calendar with KST time|event|prior|expected|actual after release|why important|market condition",
-      "Sean Farrell detailed compact view: latest verified view|change vs prior|key rationale|agreement/conflict with MASTER|reference meaning; score0",
-      "Stanley Druckenmiller detailed compact view: latest verified view|change vs prior|key macro/liquidity rationale|agreement/conflict with MASTER|reference meaning; score0",
-      "on-chain secondary block explicitly removed by user on 2026-09-05; do not output STH-SOPR/STH Realized Price/STH-MVRV/Exchange Netflow unless explicitly restored",
-      "Polymarket TOP10: rank|market/question|judgement traffic-light as 3rd column|current YES probability|1H|4H|1D|7D probability-point changes|24H volume|liquidity/OI|confidence|market impact|easy interpretation; score0; single-signal alert forbidden",
-      "if any N/A/unavailable value appears, append per-screen N/A 안내 with item|reason|automatic recovery yes/no|expected exposure time or required structural action",
-      "Sean Farrell title includes one expert judgement badge: 🟢 상승우호/🔴 하락압력/🟡 중립·혼합/⚪ 최신관점 N/A; score0",
-      "Stanley Druckenmiller title includes one expert judgement badge: 🟢 상승우호/🔴 하락압력/🟡 중립·혼합/⚪ 최신관점 N/A; score0"
+      "title: 뉴스·경제일정·전문가·Polymarket",
+      "research/context only; no duplicated upstream core-score/final-verdict blocks",
+      "News TOP5 preferred compact columns: signal|news|market impact; Coinness/primary-confirmation rules unchanged",
+      "economic calendar preferred compact columns: signal|KST time|event|current meaning; prior/expected/actual may appear when materially useful and confirmed",
+      "Sean Farrell and Stanley Druckenmiller are shown together in one compact expert table",
+      "expert table columns: signal|expert|comment date/time|latest view|BTC/risk-asset direction",
+      "expert badges remain 🟢 상승우호/🔴 하락압력/🟡 중립·혼합/⚪ 최신관점 N/A; score0",
+      "immediately below expert table add exactly one easy-Korean core-view sentence for Sean Farrell and one for Stanley Druckenmiller",
+      "on-chain secondary block remains explicitly removed unless user restores it",
+      "Polymarket underlying TOP10/quality/same-market delta/confidence/score0/WATCH confirmation rules remain unchanged",
+      "Polymarket preferred mobile visible columns: signal|market expectation|current probability|1D|7D|easy interpretation; include 1H/4H when materially important",
+      "end with compact 💡 핵심 summary"
     ],
-    "footer": "🕒 MASTER MARKET V1.2 | 실행완료: YYYY-MM-DD HH:mm KST | 롱/숏 | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST",
-    "watch_footer": "🕒 MASTER MARKET WATCH | 감지완료: YYYY-MM-DD HH:mm KST | 롱/숏 | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST"
+    "consolidated_na_section": "After SCREEN5, if any unavailable value exists, show one consolidated N/A 항목 안내 table with signal|item|reason|automatic recovery yes/no|expected exposure time or required action. Do not repeat per-screen N/A tables.",
+    "final_verdict": "After N/A section (if any), show ★ 최종 판정 table with signal|Market Positive Score|dominant direction, then one compact 핵심 메시지.",
+    "follow_up": "OFFICIAL includes exactly 5 compact follow-up questions/recommendations before footer.",
+    "footer": "🕒 MASTER MARKET V1.2 | 실행완료: YYYY-MM-DD HH:mm KST | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST",
+    "watch_footer": "🕒 MASTER MARKET WATCH | 감지완료: YYYY-MM-DD HH:mm KST | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST"
   },
   "official_score_history": {
     "enabled": true,
@@ -301,7 +323,7 @@
     "judgement_display": {
       "enabled": true,
       "column_name": "판정",
-      "column_position": 3,
+      "column_position": "mobile-optimized",
       "values": {
         "bullish": "🟢 상승우호",
         "bearish": "🔴 하락압력",
@@ -326,12 +348,21 @@
       "btc_core_whales",
       "eth_core_whales"
     ],
-    "cell_rule": "Prefix the existing direction/size cell; no redundant extra column required.",
+    "core_table_columns": [
+      "rank",
+      "side",
+      "entry_size",
+      "entry_price",
+      "leverage",
+      "change_optional"
+    ],
+    "change_rule": "Show change only when the same whale/account is reliably tracked with actual comparable observations; otherwise omit the entire change column.",
+    "user_visible_liquidation_distance": "OMIT_FROM_CORE_TABLE",
+    "underlying_liquidation_data_preserved": true,
     "score_effect": 0,
     "direction_effect": "NONE",
     "risk_veto_effect": "NONE",
-    "watch_threshold_effect": "NONE",
-    "preserve_liquidation_risk_markers": true
+    "watch_threshold_effect": "NONE"
   },
   "na_explanation_policy": {
     "enabled": true,
@@ -342,14 +373,16 @@
       4,
       5
     ],
+    "presentation": "ONE_CONSOLIDATED_SECTION_AFTER_SCREEN5",
     "trigger_values": [
       "N/A",
       "확인 실패",
       "확인 제한",
       "equivalent unavailable state"
     ],
-    "section_title": "N/A 안내",
+    "section_title": "N/A 항목 안내",
     "columns": [
+      "신호",
       "N/A 항목",
       "이유",
       "자동해소 여부",
@@ -377,7 +410,7 @@
       "Sean Farrell",
       "Stanley Druckenmiller"
     ],
-    "display_location": "Immediately beside expert name/title in SCREEN5",
+    "display_location": "Together in SCREEN5 compact expert table",
     "values": {
       "bullish": "🟢 상승우호",
       "bearish": "🔴 하락압력",
@@ -386,6 +419,7 @@
     },
     "basis": "Directional implication of latest sufficiently current directly verified public view for crypto/risk assets/liquidity.",
     "stale_rule": "If too old or context-specific for current-market guidance, use ⚪ 최신관점 N/A, show last verified date, explain staleness/insufficiency.",
+    "one_sentence_summary_required_per_expert": true,
     "score_effect": 0,
     "direction_effect": "NONE",
     "risk_veto_effect": "NONE",
@@ -408,7 +442,7 @@
         "Volume"
       ],
       "source_type": "free public Bitget market APIs; no trading auth",
-      "failure_behavior": "Keep only actually affected required fields as N/A and explain under SCREEN4 N/A 안내; never cross-fill venue or guess."
+      "failure_behavior": "Keep only actually affected required fields as N/A and explain in the consolidated N/A section; never cross-fill venue or guess."
     },
     "macro_liquidity": {
       "output": "market_vault/output/latest_macro_liquidity.json",
