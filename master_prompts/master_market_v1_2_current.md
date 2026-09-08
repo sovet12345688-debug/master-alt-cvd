@@ -69,7 +69,7 @@ Change windows are cumulative and fixed as `1D | 3D | 7D`, in that order, wherev
 - Use only actual stored values, actual cumulative flow, or same-source comparable observations.
 - Never interpolate or reconstruct a missing 1D/3D/7D value from unrelated snapshots.
 - If a valid comparison cannot be produced, keep the required comparison cell and print `N/A`.
-- Applies to: SCREEN1 BTC Liquidity Lead table, SCREEN2 core 5-axis money-flow table and Market Positive Score table, SCREEN4 institution-vs-whale-vs-retail table.
+- Applies to: SCREEN1 BTC Liquidity Lead table, SCREEN2 core money-flow table and Market Positive Score table, SCREEN4 institution-vs-whale-vs-retail table.
 - SCREEN5 is research/context only and does not duplicate these core axes.
 
 ## SCHEDULE
@@ -225,19 +225,26 @@ End SCREEN1 with `💡 핵심:` summarizing current global environment and dista
 Purpose: fastest whole-market money-flow status board.
 
 Required core table columns = `신호 | 돈의 흐름 | 현재값 | 직전 | 1D | 3D | 7D | 현재상태`.
-Required axes = 글로벌 유동성 / 크립토 자금 / 고래 수급 / 개미 과열 / ALT 자금.
+Required logical axes remain 글로벌 유동성 / 크립토 자금 / 고래 수급 / 개미 수급 / ALT 자금, but for readability `고래 수급` and `개미 수급` MUST each be split into separate BTC and ETH rows.
+Required visible rows in order = 글로벌 유동성 / 크립토 자금 / 고래 수급 BTC / 고래 수급 ETH / 개미 수급 BTC / 개미 수급 ETH / ALT 자금.
 Row-value rules:
 - 글로벌 유동성 = existing BTC Liquidity Lead-style score value `/100`; existing score engine/thresholds unchanged.
 - 크립토 자금 = existing Crypto Money Inflow score `/100`; existing score engine unchanged.
-- 고래 수급 = NO synthetic score. Show actual current BTC/ETH large-whale exposure from the same Hyperliquid signed-position source, prioritizing `LONG USD / SHORT USD / NET USD` (or compact BTC NET / ETH NET when mobile space is tight). `NET = LONG 총액 - SHORT 총액`; negative NET means short exposure is larger, positive NET means long exposure is larger.
-- 개미 과열 = NO synthetic score. Show actual same-venue Bitget futures active `LONG% / SHORT%` ratio proxy and current Funding context; this is a retail-positioning proxy, not verified retail-wallet identity.
+- 고래 수급 BTC = NO synthetic score. Show `순포지션(NET) $X` from actual Hyperliquid BTC large-whale exposure. `고래 NET = LONG 총액 - SHORT 총액`; negative = 숏 우세, positive = 롱 우세.
+- 고래 수급 ETH = NO synthetic score. Show `순포지션(NET) $X` from actual Hyperliquid ETH large-whale exposure using the same formula and sign meaning.
+- 개미 수급 BTC = NO synthetic score. From the same-venue Bitget futures active positioning proxy calculate and show `순포지션(NET) X.XX%p`, where `개미 NET = LONG% - SHORT%`; negative = 숏 쏠림, positive = 롱 쏠림. Current Funding context may be appended briefly in `현재상태` or after the NET value when useful.
+- 개미 수급 ETH = NO synthetic score. Use the same Bitget same-venue rule and `LONG% - SHORT%` formula for ETH. This is a retail-positioning proxy, not verified retail-wallet identity.
 - ALT 자금 = existing ALT Money Inflow score `/100`; existing score engine unchanged.
+Display rules:
+- In SCREEN2, primary visible value for all four whale/retail BTC/ETH rows is NET. Do not force LONG/SHORT raw components into the main current-value cell when that harms readability.
+- If useful, raw components may be compressed in `현재상태`: whales `L $... / S $...`; retail `L ...% / S ...% + Funding ...`, but NET remains the headline value.
+- Traffic-light meaning for NET rows: positive NET = 🟢 directionally long-leaning, negative NET = 🔴 directionally short-leaning, near-zero/mixed = 🟡. N/A remains ⚪. This is a display judgement only and does not create a new score.
 Comparison-window rules:
 - 글로벌 유동성 / 크립토 자금 / ALT 자금 use their valid stored score history for 직전/1D/3D/7D.
-- 고래 수급 uses actual same-source Hyperliquid whale exposure snapshots for 직전/1D/3D/7D.
-- 개미 과열 uses actual same-venue Bitget LONG%/SHORT% + Funding observations for 직전/1D/3D/7D.
+- 고래 수급 BTC/ETH use actual same-source Hyperliquid NET snapshots for 직전/1D/3D/7D.
+- 개미 수급 BTC/ETH use actual same-venue Bitget `LONG%-SHORT%` NET observations for 직전/1D/3D/7D; Funding is context, not part of the NET arithmetic.
 - Missing actual comparison history remains N/A; never backfill or manufacture a score.
-- The absence of a separate `고래 수급 점수` or `개미 과열 점수` is NOT itself an N/A item and must not create an N/A 안내 row. Only missing required actual values/windows are N/A.
+- The absence of a separate whale-flow or retail-flow 0-100 score is NOT itself an N/A item and must not create an N/A 안내 row. Only missing required actual values/windows are N/A.
 Retain compact market breadth/rotation when valid: 전체시총 / 24H 거래량 / BTC.D / ETH.D / `USD→Stablecoin→BTC→ETH→ALT`.
 
 ### 시장 종합
@@ -366,7 +373,7 @@ No historical backfill. WATCH/manual non-official must not write/overwrite this 
 - Use `market_vault/output/latest_macro_liquidity.json` when fresh for the free official-source US Net Liquidity proxy/Fed/QRA/actual Buyback evidence.
 - Use `market_vault/output/latest_etf_flows.json` when fresh for BTC/ETH ETF 1D/3D/5D/7D/20D; its mirror is transport/cache only, not a new score/source owner.
 - Use `market_vault/output/latest_stablecoin_windows.json` when fresh for same-source Stablecoin prior/1D/3D/5D/7D/20D comparisons; missing history stays N/A and is never interpolated/backfilled.
-- Use `market_vault/output/latest_actor_flows.json` when fresh for SCREEN4 actual-value institution/whale/retail-proxy comparisons; this adapter adds no score weight and does not alter Market Positive Score, Risk Veto, WATCH, or official score history.
+- Use `market_vault/output/latest_actor_flows.json` when fresh for SCREEN2 and SCREEN4 actual-value institution/whale/retail-proxy comparisons; this adapter adds no score weight and does not alter Market Positive Score, Risk Veto, WATCH, or official score history.
 - Use `market_whales/output/latest_summary.json` and events/history when fresh for Hyperliquid official-API-derived position data.
 - Use `polymarket/output/latest_summary.json` when fresh for score-0 forward-expectation TOP10; its probability deltas must remain same-market/same-outcome and cannot substitute factual macro/crypto data.
 - Current direct sources remain primary for DXY/oil/equities/Fed balance sheet/ETF/news when GitHub does not have a validated adapter.
