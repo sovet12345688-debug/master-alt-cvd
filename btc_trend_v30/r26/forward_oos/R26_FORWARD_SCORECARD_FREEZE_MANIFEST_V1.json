@@ -1,0 +1,21 @@
+{
+  "manifest": "R26_FORWARD_SCORECARD_FREEZE_MANIFEST_V1",
+  "status": "FROZEN_BEFORE_STRICT_FORWARD_OUTCOMES",
+  "created_utc": "2026-09-08",
+  "purpose": "Lock the automatic Forward Scorecard implementation and every reused metric-formula source so future Forward outcomes cannot silently change the evaluator.",
+  "files": {
+    "btc_trend_v30/r26/forward_oos/forward_scorecard.py": "92224684016e1205152cdfdd317e40e1224920c0",
+    "btc_trend_v30/r26/forward_oos/R26_FORWARD_PROMOTION_SPEC_V1.json": "a01ed85bda4512326d42e1d3eccc0b9ac8ee3dce",
+    "btc_trend_v30/r26/forward_oos/forward_tracker.py": "2cb6e6221a14e85309f66058f89e97fe05482e8e",
+    "btc_trend_v30/validation_protocol_v1_step2_r12_daily_scoring.py": "a89e0d2b4e59c13f442dc5a2c67c1a4faa0fbc4b",
+    "btc_trend_v30/validation_protocol_v1_step3_episode_dedupe.py": "8ccd6f18aeb9f10bf79fd45ff084f4c1cc7c0489",
+    "btc_trend_v30/validation_protocol_v1_step4_outcome_labels.py": "667796752d45044551455de25264979db6bf48a2",
+    "btc_trend_v30/r20/r20_historical_diagnostic_replay.py": "118bb7b022c75dc1c8268d0911bb9e11af2e9573",
+    "btc_trend_v30/r20/r20_frozen_config_rev2.json": "9f1a54edb0312bd86f230f025f539bd4255a016f"
+  },
+  "governance": {
+    "forward_result_may_not_change_manifest": true,
+    "manifest_change_requires_new_prospective_version": true,
+    "retroactive_reinterpretation_forbidden": true
+  }
+}
