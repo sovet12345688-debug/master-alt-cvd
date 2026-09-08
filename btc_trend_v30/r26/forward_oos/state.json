@@ -1,0 +1,67 @@
+{
+  "model": "MASTER_BTC_TREND_V3_R2_6",
+  "asof_utc": "2026-09-08T03:08:17.424009+00:00",
+  "policy_oos_start": "2026-09-05T00:00:00+00:00",
+  "final_freeze_time": "2026-09-08T02:40:15+00:00",
+  "strict_forward_start": "2026-09-08T04:00:00+00:00",
+  "status": "COLLECTING",
+  "production_decision": "HOLD",
+  "automatic_promotion": false,
+  "freeze_identity": {
+    "r26_frozen_sha256": "bbdbbe173e8f16bb6d57d6ed5bdff52d616c42fead5b59b39c5b3d7188a64a61",
+    "r26_frozen_blob": "09d6d6689f46c16f3a40b16c58495a999e4f9e75",
+    "r26_engine_blob": "c511b99205314d351bacb441cc88d70d9a4947ee",
+    "r26_contract_blob": "ae6e8bd3cbafdc8b8a2c9672db5ee16e324850b3",
+    "r25_engine_blob": "b5efe7378de839b338057826e0a7cb29926ec3a6"
+  },
+  "freeze_checks": {
+    "r26_frozen_sha256": true,
+    "r26_frozen_blob": true,
+    "r26_engine_blob": true,
+    "r26_contract_blob": true,
+    "r25_engine_blob": true
+  },
+  "data": {
+    "symbol": "BTCUSDT",
+    "market": "BINANCE_SPOT_PUBLIC",
+    "closed_candles_only": true,
+    "warmup_start": "2025-01-01T00:00:00+00:00",
+    "sources_1d": [
+      "https://data-api.binance.vision/api/v3/klines"
+    ],
+    "sources_4h": [
+      "https://data-api.binance.vision/api/v3/klines"
+    ],
+    "sources_1h": [
+      "https://data-api.binance.vision/api/v3/klines"
+    ],
+    "rows_1d": 615,
+    "rows_4h": 3690,
+    "rows_1h": 14763
+  },
+  "counts": {
+    "all_detection_rows_since_policy_start": 13,
+    "strict_detection_rows": 0,
+    "all_seeds_since_policy_start": 0,
+    "bridge_seeds": 0,
+    "strict_seeds": 0,
+    "positions": 0
+  },
+  "strict_forward_metrics": {
+    "episodes": 0,
+    "resolved": 0,
+    "open": 0,
+    "mean_R_resolved": null,
+    "sum_R_resolved": 0.0,
+    "wins": 0,
+    "losses": 0,
+    "mdd_R_resolved_order": null
+  },
+  "governance": {
+    "bridge_window_counts_for_production": false,
+    "strict_forward_counts_for_production": true,
+    "historical_diagnostic_counts_for_production": false,
+    "no_threshold_tuning_from_forward": true,
+    "no_automatic_promotion": true
+  }
+}
