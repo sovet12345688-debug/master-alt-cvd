@@ -19,18 +19,23 @@ def fetch_plotly_text(url: str) -> tuple[str, str]:
     if "Plotly.newPlot" in raw:
         return raw, url
 
-    # charts.checkonchain.com currently serves a tiny HTML handoff page whose
-    # anchor points at the public static charts CDN. Follow that handoff without
-    # Selenium/browser automation.
+    # Checkonchain's public front URL can be a tiny HTML/JS handoff to the CDN.
+    # Normalize escaped URLs and find the CDN target regardless of whether it is
+    # in href=, JS, meta markup, or plain text. No browser automation needed.
+    normalized = raw.replace("\\/", "/").replace("&amp;", "&")
     m = re.search(
-        r'href=["\'](https://charts-cdn[.]checkonchain[.]com/[^"\']+[.]html)["\']',
-        raw,
+        r'https://charts-cdn[.]checkonchain[.]com/[^\s"\'<>]+[.]html',
+        normalized,
         flags=re.I,
     )
     if not m:
-        raise ValueError("Plotly.newPlot not found and no Checkonchain CDN handoff found")
+        head = re.sub(r"\s+", " ", normalized[:500])
+        raise ValueError(
+            "Plotly.newPlot not found and no Checkonchain CDN target found; "
+            f"page_head={head!r}"
+        )
 
-    cdn = m.group(1).replace("&amp;", "&")
+    cdn = m.group(0)
     raw2 = core.fetch_text(cdn)
     if "Plotly.newPlot" not in raw2:
         raise ValueError(f"CDN page has no Plotly.newPlot: {cdn}")
@@ -86,15 +91,11 @@ def merge_named_traces(
 
 
 def select_metric_trace(ts: list[dict[str, Any]], kind: str) -> dict[str, Any]:
-    # Prefer the exact continuous trace when the chart supplies it.
     try:
         return core.find_trace(ts, core.TRACE_NAMES[kind])
     except ValueError:
         pass
 
-    # Some current Checkonchain indicator charts split one logical series into
-    # profit/loss-colored traces. Merge only the two actual STH data traces;
-    # threshold/band lines are intentionally ignored.
     if kind == "mvrv":
         return merge_named_traces(
             ts,
@@ -119,7 +120,7 @@ def sth_metric(kind: str) -> dict[str, Any]:
             raw, effective_url = fetch_plotly_text(url)
             ts = core.plotly_traces(raw)
             t = select_metric_trace(ts, kind)
-            p = core.trace_stats(t)  # includes the <=72h freshness guard
+            p = core.trace_stats(t)
             p.update(
                 {
                     "source": f"{source_label} public static Plotly HTML (no API key)",
@@ -143,8 +144,6 @@ def sth_metric(kind: str) -> dict[str, Any]:
 
 
 def main() -> None:
-    # Swap only the STH source adapter. Whale NET, CVD, risk thresholds, output
-    # schema/history and all score-weight=0 guards stay owned by the core engine.
     core.sth_metric = sth_metric
     core.main()
 
