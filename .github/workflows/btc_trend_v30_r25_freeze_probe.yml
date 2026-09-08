@@ -1,0 +1,35 @@
+name: BTC TREND V3 R2.5 FREEZE PROBE
+
+on:
+  push:
+    branches: [btc-trend-v30-r25-full-risk-governor]
+    paths:
+      - 'btc_trend_v30/r25/**'
+      - '.github/workflows/btc_trend_v30_r25_freeze_probe.yml'
+  workflow_dispatch:
+
+env:
+  PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/btc_trend_v30
+
+jobs:
+  freeze-probe:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Contracts and identity
+        run: |
+          set -euo pipefail
+          (cd btc_trend_v30/r20 && python test_r20_engine_pit.py)
+          python btc_trend_v30/r21/test_r21_contract.py
+          python btc_trend_v30/r24/test_r24_contract.py
+          python btc_trend_v30/r25/test_r25_contract.py
+          test "$(sha256sum btc_trend_v30/r24/r24_frozen_config.json | awk '{print $1}')" = "6358572604f79b4e376509b74fc977871e956175a3fba959aab7a583fa1a6a91"
+          echo "R25_FROZEN_SHA256=$(sha256sum btc_trend_v30/r25/r25_frozen_config.json | awk '{print $1}')"
+          echo "R25_FROZEN_BLOB=$(git hash-object btc_trend_v30/r25/r25_frozen_config.json)"
+          echo "R25_ENGINE_BLOB=$(git hash-object btc_trend_v30/r25/r25_engine.py)"
+          echo "R25_CONTRACT_BLOB=$(git hash-object btc_trend_v30/r25/test_r25_contract.py)"
+          echo "R25_REPLAY_BEFORE_FREEZE=0"
