@@ -1,0 +1,242 @@
+{
+  "model": "MASTER_BTC_TREND_V3_R2_6",
+  "scorecard": "R26_FORWARD_SCORECARD_V1",
+  "promotion_spec": "R26_FORWARD_PROMOTION_SPEC_V1",
+  "asof_utc": "2026-09-08T06:58:05.312417+00:00",
+  "strict_forward_start": "2026-09-08T04:00:00+00:00",
+  "automated_assessment": "HOLD_COLLECTING",
+  "production_decision": "HOLD",
+  "automatic_production_promotion": false,
+  "formal_review_required": true,
+  "eligibility": {
+    "complete": false,
+    "strict_calendar_days": 0,
+    "minimum_strict_calendar_days": 365,
+    "resolved_total": 0,
+    "minimum_resolved_total": 12,
+    "resolved_long": 0,
+    "minimum_resolved_long": 5,
+    "resolved_short": 0,
+    "minimum_resolved_short": 5,
+    "mcr90_windows": 0,
+    "minimum_mcr90_windows": 5,
+    "mcr365_windows": 0,
+    "minimum_mcr365_windows": 3,
+    "state_all_min_n": 0,
+    "minimum_state_n": 10,
+    "items": {
+      "calendar": {
+        "value": 0,
+        "minimum": 365,
+        "status": "WAIT"
+      },
+      "resolved_total": {
+        "value": 0,
+        "minimum": 12,
+        "status": "WAIT"
+      },
+      "resolved_long": {
+        "value": 0,
+        "minimum": 5,
+        "status": "WAIT"
+      },
+      "resolved_short": {
+        "value": 0,
+        "minimum": 5,
+        "status": "WAIT"
+      },
+      "mcr90_windows": {
+        "value": 0,
+        "minimum": 5,
+        "status": "WAIT"
+      },
+      "mcr365_windows": {
+        "value": 0,
+        "minimum": 3,
+        "status": "WAIT"
+      },
+      "state_all": {
+        "value": 0,
+        "minimum": 10,
+        "status": "WAIT"
+      }
+    }
+  },
+  "performance": {
+    "long": {
+      "episodes": 0,
+      "resolved": 0,
+      "mean_R": null,
+      "wins": 0,
+      "losses": 0
+    },
+    "short": {
+      "episodes": 0,
+      "resolved": 0,
+      "mean_R": null,
+      "wins": 0,
+      "losses": 0
+    },
+    "resolved_total": 0,
+    "capture_to_loss_ratio": null,
+    "episode_order_mdd_R": null
+  },
+  "truth_mcr": {
+    "status": "PASS",
+    "daily_sources": [
+      "https://data-api.binance.vision/api/v3/klines"
+    ],
+    "strict_truth_episodes": 0,
+    "mature_mcr90_truth_windows": 0,
+    "mature_mcr365_truth_windows": 0,
+    "mcr90_mean": null,
+    "mcr365_mean": null,
+    "formula_source": "validation_protocol_v1_step3_episode_dedupe + step4_outcome_labels + r20 captured_return_for_window"
+  },
+  "state_quality": {
+    "minimum_n": 10,
+    "all_required_eligible": false,
+    "all_required_pass": null,
+    "every_eligible_direction_pass": null,
+    "result": "N/A_NOT_MATURE",
+    "structural_invariants": {
+      "all_pass": true
+    }
+  },
+  "cycle_safety": {
+    "minimum_n": 10,
+    "floor_R": -0.15,
+    "failed_eligible_regime_buckets": [],
+    "result": "N/A_NOT_MATURE"
+  },
+  "mature_bear_short": {
+    "n": 0,
+    "mean_R": null,
+    "minimum_n": 10,
+    "floor_R": -0.15,
+    "result": "N/A_NOT_MATURE"
+  },
+  "early_detection": {
+    "strict_chains": 0,
+    "early_chains": 0,
+    "priority_chains": 0,
+    "raw_seed_chains": 0,
+    "executed_chains": 0,
+    "early_to_seed_conversion": null,
+    "early_to_executed_conversion": null,
+    "priority_to_seed_conversion": null,
+    "noise_chain_rate": null,
+    "explicit_early_to_executed_n": 0,
+    "median_explicit_early_lead_hours": null,
+    "lead_result": "N/A_NOT_MATURE"
+  },
+  "gates": {
+    "long_expectancy": {
+      "value": null,
+      "n": 0,
+      "status": "N/A_NOT_MATURE"
+    },
+    "short_expectancy": {
+      "value": null,
+      "n": 0,
+      "status": "N/A_NOT_MATURE"
+    },
+    "capture_to_loss": {
+      "value": null,
+      "n": 0,
+      "status": "N/A_NOT_MATURE"
+    },
+    "mcr90": {
+      "value": null,
+      "n": 0,
+      "status": "N/A_NOT_MATURE"
+    },
+    "mcr365": {
+      "value": null,
+      "n": 0,
+      "status": "N/A_NOT_MATURE"
+    },
+    "mdd": {
+      "value": null,
+      "n": 0,
+      "status": "N/A_NOT_MATURE"
+    },
+    "state_monotonicity": {
+      "value": null,
+      "status": "N/A_NOT_MATURE"
+    },
+    "cycle_safety": {
+      "value": null,
+      "status": "N/A_NOT_MATURE"
+    },
+    "mature_bear_short": {
+      "value": null,
+      "n": 0,
+      "status": "N/A_NOT_MATURE"
+    }
+  },
+  "mature_gate_failures": [],
+  "integrity": {
+    "checks": {
+      "frozen_identity": {
+        "pass": true,
+        "detail": {
+          "r26_frozen_sha256": true,
+          "r26_frozen_blob": true,
+          "r26_engine_blob": true,
+          "r26_contract_blob": true,
+          "r25_engine_blob": true
+        }
+      },
+      "promotion_spec_identity": {
+        "pass": true,
+        "expected_blob": "a01ed85bda4512326d42e1d3eccc0b9ac8ee3dce",
+        "actual_blob": "a01ed85bda4512326d42e1d3eccc0b9ac8ee3dce"
+      },
+      "pit_and_contract_precheck": {
+        "pass": true,
+        "source": "GitHub Actions Frozen identity and PIT contract step"
+      },
+      "closed_candles_only": {
+        "pass": true
+      },
+      "phase_firewall_detections": {
+        "rows": 13,
+        "unknown_phase": 0,
+        "strict_before_start": 0,
+        "bridge_at_or_after_start": 0,
+        "pass": true
+      },
+      "phase_firewall_seeds": {
+        "rows": 0,
+        "unknown_phase": 0,
+        "strict_before_start": 0,
+        "bridge_at_or_after_start": 0,
+        "pass": true
+      },
+      "phase_firewall_positions": {
+        "rows": 0,
+        "unknown_phase": 0,
+        "strict_before_start": 0,
+        "bridge_at_or_after_start": 0,
+        "pass": true
+      },
+      "detector_zero_execution_authority": {
+        "pass": true
+      },
+      "frozen_execution_authority_unchanged": {
+        "pass": true
+      }
+    },
+    "hard_failures": [],
+    "pass": true
+  },
+  "governance": {
+    "strict_forward_only": true,
+    "bridge_counts_for_promotion": false,
+    "historical_counts_for_promotion": false,
+    "no_threshold_tuning_from_forward": true,
+    "scorecard_cannot_auto_promote": true,
+    "formal_review_required_for_pass_extend_fail": true
+  }
+}
