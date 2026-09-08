@@ -9,18 +9,18 @@
   "contract_path": "state/master_btc_trend_v2_6_contract.json",
   "run": {
     "run_type": "OFFICIAL",
-    "run_id": "MBTC-V26-20260908-1710-KST",
-    "executed_kst": "2026-09-08T17:10:29+09:00",
-    "updated_kst": "2026-09-08T17:10:29+09:00",
-    "prior_official_run_id": "MBTC-V26-20260908-0910-KST"
+    "run_id": "MBTC-V26-20260908-2110-KST",
+    "executed_kst": "2026-09-08T21:10:00+09:00",
+    "updated_kst": "2026-09-08T21:10:00+09:00",
+    "prior_official_run_id": "MBTC-V26-20260908-1710-KST"
   },
   "validity": {
     "valid_until_kst": null,
-    "next_official_run_kst": "2026-09-08T21:10:00+09:00",
+    "next_official_run_kst": "2026-09-09T09:10:00+09:00",
     "freshness_status": "CURRENT"
   },
   "data_quality": {
-    "coverage_pct": 86,
+    "coverage_pct": null,
     "confidence": null,
     "known_na": [
       "FRACTAL_CURRENT_ARTIFACT_UNAVAILABLE",
@@ -42,10 +42,10 @@
   },
   "core_state": {
     "market_snapshot": {
-      "current_price_usdt": 78410.01,
+      "current_price_usdt": 78276.84,
       "price_source": "Binance Spot BTCUSDT",
-      "price_checked_kst": "2026-09-08T17:08:17+09:00",
-      "price_change_24h_pct": -1.323,
+      "price_checked_kst": "2026-09-08T21:10:00+09:00",
+      "price_change_24h_pct": -1.474,
       "high_24h": 79643.5,
       "low_24h": 78179.98
     },
@@ -59,14 +59,14 @@
     "bottom_score": 58,
     "top_score": 47,
     "trend": {
-      "state": "장기 회복 유지 · 중기 조정 심화 · 단기 78.2K 지지 시험",
+      "state": "장기 회복 유지 · 중기 조정 심화 · 단기 78.18K 지지 재시험",
       "strength": 52,
       "trajectory": "↓ 악화 중"
     },
     "wave": {
       "large": "상승 회복 대파동은 유지되나 82.3K 이후 조정폭 확대",
       "medium": "82.3K 이후 조정파가 78K대로 심화",
-      "small": "78.18K 저점 형성 후 단기 방어 시험"
+      "small": "78.18K 저점권 재시험"
     },
     "support_resistance": {
       "short": {
@@ -87,40 +87,31 @@
     },
     "derivatives": {
       "source": "Bitget USDT Futures BTC same venue/contract family",
-      "snapshot_time_utc": "2026-09-08T07:00:00Z",
+      "snapshot_time_utc": "2026-09-08T11:00:00Z",
       "status": "OK_FRESH_UNDER_90M_AT_ANALYSIS",
-      "oi_change_1h_pct": 1.1944391357177064,
-      "price_change_1h_pct": 0.024362244897968566,
-      "oi_change_4h_pct": 1.296758886143956,
-      "price_change_4h_pct": -0.5747257595812849,
-      "oi_change_24h_pct": 3.2803171681006438,
-      "price_change_24h_pct": -1.4296757650223313,
-      "funding_rate": 9.9e-05,
-      "state": "PRICE_DOWN_OI_UP_BEARISH_BUILD"
+      "mark_price": 78354.6,
+      "open_interest_usdt": 2734428029.6300306,
+      "oi_change_1h_pct": -0.4212846604270126,
+      "price_change_1h_pct": -0.552860634952046,
+      "funding_rate": 0.0001,
+      "state": "SHORT_TERM_DELEVERAGING"
     },
     "microstructure": {
-      "snapshot_time_utc": "2026-09-08T07:20:10.969980Z",
-      "cvd_1h_usdt": -10333909.183689997,
-      "taker_buy_ratio": 0.45950692060198706,
-      "taker_sell_ratio": 0.5404930793980129,
-      "long_short_position_ratio": 0.9912,
-      "depth_imbalance_0_5pct": 0.004287513360724633,
-      "state": "BEARISH_CVD_TAKER_SELL_DOMINANT_DEPTH_NEUTRAL"
+      "snapshot_time_utc": "2026-09-08T11:17:57.656276Z",
+      "cvd_1h_usdt": 3207665.910389997,
+      "taker_buy_ratio": 0.514703273360074,
+      "taker_sell_ratio": 0.48529672663992585,
+      "long_short_position_ratio": 0.9908,
+      "depth_imbalance_0_5pct": -0.010996900525227902,
+      "state": "CVD_TAKER_BUY_SLIGHTLY_POSITIVE_DEPTH_NEUTRAL"
     },
     "spot_etf": {
       "last_confirmed_us_btc_etf_flow_date": "2026-09-04",
       "last_confirmed_us_btc_etf_flow_usd_m": 174.6,
       "flow_3d_usd_m": 1006.5,
       "flow_5d_usd_m": 986.7,
+      "flow_7d_usd_m": 1027.1,
       "state": "SPOT_FLOW_SUPPORTIVE_LAST_CONFIRMED"
-    },
-    "macro": {
-      "state": "MIXED_WITH_RISK_OFF_HEADWIND",
-      "drivers": [
-        "DXY near 98.84 and softer on day",
-        "Brent near 97 USD",
-        "carry-unwind and geopolitical risk remain headwinds"
-      ]
     },
     "fractal": {
       "current_status": "N/A_CURRENT_ARTIFACT_UNAVAILABLE",
@@ -147,7 +138,7 @@
   },
   "lineage": {
     "state_origin": "ACTUAL_STORED_RUN",
-    "run_record_source": "BASIC_OFFICIAL_AUTOMATION_2026-09-08T17:10:29+09:00",
+    "run_record_source": "BASIC_OFFICIAL_AUTOMATION_2026-09-08T21:10:00+09:00",
     "history_pointer": "official_state/history/btc_trend/2026-09.jsonl",
     "canonical_identity_verified": true,
     "cross_master_decision_dependency": false
