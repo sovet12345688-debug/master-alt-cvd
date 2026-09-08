@@ -5,7 +5,7 @@ import subprocess
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-ROOT = HERE.parents[3]
+ROOT = HERE.parents[2]
 MANIFEST = HERE / "R26_FORWARD_SCORECARD_FREEZE_MANIFEST_V1.json"
 
 
