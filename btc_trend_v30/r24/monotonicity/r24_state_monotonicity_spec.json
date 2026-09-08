@@ -1,0 +1,49 @@
+{
+  "model": "MASTER_BTC_TREND_V3_R2_4",
+  "status": "PREDECLARED_HISTORICAL_DIAGNOSTIC_ONLY",
+  "purpose": "Test whether deeper frozen execution states correspond to non-decreasing realized episode quality without changing R2.4.",
+  "frozen_identity": {
+    "r24_frozen_config_sha256": "6358572604f79b4e376509b74fc977871e956175a3fba959aab7a583fa1a6a91",
+    "r24_engine_git_blob_sha1": "a5a5d30d06bc4d99603e0fc92834f9a372794702",
+    "parent_r21_engine_git_blob_sha1": "b8a0d741ad59a98496d13b6b66a6a74763a27545"
+  },
+  "state_order": ["SEED_REACHED", "CONFIRMED_REACHED", "CORE_REACHED"],
+  "cohort_definition": {
+    "SEED_REACHED": "all resolved executed episodes",
+    "CONFIRMED_REACHED": "resolved episodes with confirmed_time present",
+    "CORE_REACHED": "resolved episodes with core_time present; DERISK remains CORE_REACHED",
+    "outcome_metric": "marked_R_at_end",
+    "segments": ["ALL", "LONG", "SHORT"]
+  },
+  "primary_test": {
+    "metric": "mean_terminal_R",
+    "rule": "For every adjacent eligible reached-state comparison, later-state mean_terminal_R must be >= earlier-state mean_terminal_R.",
+    "minimum_n_per_cohort": 10,
+    "minimum_n_source": "Reuse frozen cycle_bucket_min_n=10; do not introduce a new sample-size threshold.",
+    "required_all_segment_comparisons": ["SEED_REACHED_TO_CONFIRMED_REACHED", "CONFIRMED_REACHED_TO_CORE_REACHED"],
+    "directional_comparisons": "Evaluate LONG and SHORT when both adjacent cohorts have n>=10; otherwise report N/A rather than fail.",
+    "tolerance_R": 0.0,
+    "overall_pass_rule": "PASS only if both ALL comparisons are eligible and pass, and every eligible LONG/SHORT comparison also passes."
+  },
+  "secondary_tests_not_used_for_primary_pass": {
+    "positive_outcome_rate": "Report whether positive terminal-R rate is non-decreasing.",
+    "structural_stop_rate": "Report whether STRUCTURAL_STOP rate is non-increasing.",
+    "exclusive_max_state_bins": ["SEED_ONLY", "CONFIRMED_NO_CORE", "CORE_REACHED"],
+    "risk_add_leg_quality": "Optional/report-only if clean leg-level reconstruction is available."
+  },
+  "structural_invariants_required": {
+    "no_core_without_confirm": true,
+    "no_derisk_without_core": true,
+    "confirm_time_not_before_seed": true,
+    "core_time_not_before_confirm": true,
+    "derisk_time_not_before_core": true,
+    "short_core_separate_completed_daily_rule_inherited": true
+  },
+  "evidence_firewall": {
+    "same_2021_2026_history_cannot_promote_production": true,
+    "results_may_not_modify_frozen_r24": true,
+    "no_post_result_formula_selection": true,
+    "no_threshold_tuning": true,
+    "forward_untouched_oos_still_required": true
+  }
+}
