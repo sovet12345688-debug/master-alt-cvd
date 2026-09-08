@@ -1,0 +1,16 @@
+{
+  "manifest": "R26_FORWARD_LEDGER_GUARD_FREEZE_MANIFEST_V1",
+  "status": "FROZEN_BEFORE_FIRST_STRICT_FORWARD_LEDGER_ROW",
+  "created_utc": "2026-09-08",
+  "purpose": "Lock the STRICT Forward ledger integrity evaluator before first strict evidence so later outcomes cannot weaken append-only protections.",
+  "files": {
+    "btc_trend_v30/r26/forward_oos/R26_FORWARD_LEDGER_INTEGRITY_SPEC_V1.json": "49efdab5da40d88f03a3dcf9ede3830ef31f71e3",
+    "btc_trend_v30/r26/forward_oos/ledger_integrity_guard.py": "5155118e7fab195578c30481c2ed0520bd2a65a1"
+  },
+  "governance": {
+    "forward_result_may_not_change_manifest": true,
+    "manifest_change_requires_new_prospective_version": true,
+    "retroactive_rebaseline_forbidden": true,
+    "guard_has_zero_execution_authority": true
+  }
+}
