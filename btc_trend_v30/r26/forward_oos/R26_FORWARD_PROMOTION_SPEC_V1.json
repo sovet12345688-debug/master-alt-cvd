@@ -1,0 +1,126 @@
+{
+  "spec": "R26_FORWARD_PROMOTION_SPEC_V1",
+  "model": "MASTER_BTC_TREND_V3_R2_6",
+  "status": "PREDECLARED_BEFORE_STRICT_FORWARD_OUTCOMES",
+  "created_date_utc": "2026-09-08",
+  "strict_forward_start": "2026-09-08T04:00:00Z",
+  "earliest_calendar_review_time": "2027-09-08T04:00:00Z",
+  "purpose": "Predeclare the evidence required to promote Frozen R2.6 from HOLD. This specification evaluates R2.6; it may not modify R2.6.",
+  "frozen_identity": {
+    "r26_frozen_config_sha256": "bbdbbe173e8f16bb6d57d6ed5bdff52d616c42fead5b59b39c5b3d7188a64a61",
+    "r26_frozen_config_blob": "09d6d6689f46c16f3a40b16c58495a999e4f9e75",
+    "r26_engine_blob": "c511b99205314d351bacb441cc88d70d9a4947ee",
+    "r26_contract_blob": "ae6e8bd3cbafdc8b8a2c9672db5ee16e324850b3",
+    "r25_execution_engine_blob": "b5efe7378de839b338057826e0a7cb29926ec3a6",
+    "r23_detector_blob": "ba6cfd98fb88970558002189ddae994e0e6c5c19"
+  },
+  "evidence_firewall": {
+    "strict_forward_only": true,
+    "bridge_counts_for_promotion": false,
+    "historical_diagnostic_counts_for_promotion": false,
+    "threshold_tuning_from_forward": false,
+    "automatic_promotion": false,
+    "closed_candles_only": true,
+    "btc_only": true,
+    "forward_failure_may_not_modify_frozen_r26": true,
+    "future_change_requires_separate_candidate_version": true
+  },
+  "decision_states": {
+    "HOLD_COLLECTING": "Promotion review is not yet eligible.",
+    "EXTEND": "Calendar minimum has been reached but one or more required evidence cohorts remain immature or inconclusive without a hard failure.",
+    "PASS": "All eligibility requirements, integrity hard gates and primary performance gates pass at a separately executed promotion review.",
+    "FAIL": "An integrity hard failure occurs or a mature primary performance gate fails. FAIL does not authorize tuning Frozen R2.6."
+  },
+  "review_eligibility": {
+    "minimum_strict_calendar_days": 365,
+    "minimum_resolved_episodes_total": 12,
+    "minimum_resolved_long_episodes": 5,
+    "minimum_resolved_short_episodes": 5,
+    "minimum_mature_mcr90_truth_windows": 5,
+    "minimum_mature_mcr365_truth_windows": 3,
+    "required_state_monotonicity_all_cohort_n": 10,
+    "rule": "If any required eligibility item is below minimum after the calendar minimum, decision is EXTEND, not FAIL."
+  },
+  "integrity_hard_gates": {
+    "frozen_identity_drift": "FAIL_IF_ANY",
+    "pit_contract_failure": "FAIL_IF_ANY",
+    "non_closed_candle_used": "FAIL_IF_ANY",
+    "bridge_or_historical_contamination_of_strict_metrics": "FAIL_IF_ANY",
+    "detector_execution_authority_violation": "FAIL_IF_ANY",
+    "frozen_entry_stop_risk_confirm_core_exit_reset_change": "FAIL_IF_ANY"
+  },
+  "primary_performance_gates": {
+    "long_expectancy_mean_R": {
+      "minimum_n": 5,
+      "pass": "> 0.0",
+      "source": "Reuse R2.5 robustness edge-preservation rule"
+    },
+    "short_expectancy_mean_R": {
+      "minimum_n": 5,
+      "pass": "> 0.0",
+      "source": "Reuse R2.5 robustness edge-preservation rule"
+    },
+    "capture_to_loss_ratio": {
+      "minimum_resolved_total": 12,
+      "pass": "> 1.10",
+      "source": "Reuse R2.5 robustness edge-preservation rule"
+    },
+    "mcr90_mean": {
+      "minimum_mature_truth_windows": 5,
+      "pass": ">= 0.20",
+      "source": "Reuse R2.5 robustness edge-preservation rule"
+    },
+    "mcr365_mean": {
+      "minimum_mature_truth_windows": 3,
+      "pass": ">= 0.20",
+      "source": "Reuse R2.5 robustness edge-preservation rule"
+    },
+    "episode_order_mdd_R": {
+      "pass": "> -6.0",
+      "rationale": "Predeclared safety tolerance at 1.5x the absolute Frozen R2.5 historical diagnostic MDD of -4.0R."
+    }
+  },
+  "state_quality_gate": {
+    "state_order": ["SEED_REACHED", "CONFIRMED_REACHED", "CORE_REACHED"],
+    "outcome_metric": "marked_R_at_end",
+    "primary_metric": "mean_terminal_R",
+    "minimum_n_per_cohort": 10,
+    "rule": "Every eligible adjacent reached-state mean_terminal_R must be non-decreasing.",
+    "overall_requirement": "Both ALL adjacent comparisons must be eligible and pass for PASS. Every eligible LONG or SHORT comparison must also pass. Ineligible direction-specific comparisons do not fail the model."
+  },
+  "cycle_safety_gate": {
+    "regime_buckets": ["BULL", "BEAR", "TRANSITION"],
+    "minimum_n_per_bucket": 10,
+    "mean_R_floor": -0.15,
+    "rule": "Any eligible direction x regime bucket below -0.15R is FAIL. Buckets below minimum n remain N/A and do not by themselves block PASS.",
+    "source": "Reuse R2.4/R2.5 cycle secondary audit rule"
+  },
+  "mature_bear_short_safety": {
+    "minimum_n": 10,
+    "mean_R_floor": -0.15,
+    "rule": "If eligible, MATURE_BEAR SHORT mean R must be >= -0.15R. If n<10 it remains N/A.",
+    "note": "R2.4 MATURE_BEAR remains Seed-only risk capped at 0.30R."
+  },
+  "early_detection_quality": {
+    "execution_authority": false,
+    "minimum_explicit_early_to_executed_samples_for_lead_review": 4,
+    "median_explicit_early_lead_hours_pass": ">= 4.0",
+    "early_to_seed_conversion": "DESCRIPTIVE_ONLY_NO_HARD_THRESHOLD",
+    "early_to_executed_conversion": "DESCRIPTIVE_ONLY_NO_HARD_THRESHOLD",
+    "priority_to_seed_conversion": "DESCRIPTIVE_ONLY_NO_HARD_THRESHOLD",
+    "noise_chain_rate": "DESCRIPTIVE_ONLY_NO_HARD_THRESHOLD",
+    "rationale": "R2.3 awareness has zero capital authority and the historical R2.3 diagnostic explicitly did not predeclare a conversion promotion gate. A minimum one 4H cadence median lead is required only to demonstrate genuine advance warning."
+  },
+  "promotion_decision_rule": {
+    "PASS": "Review eligibility complete AND all integrity hard gates pass AND all primary performance gates pass AND state quality gate passes AND no eligible cycle or MATURE_BEAR safety bucket fails.",
+    "EXTEND": "No hard failure, but one or more required eligibility or state cohorts are immature/N/A after the calendar minimum.",
+    "FAIL": "Any integrity hard gate fails, any mature primary performance gate fails, state quality fails when eligible, or any eligible cycle/MATURE_BEAR safety bucket breaches its floor.",
+    "HOLD_COLLECTING": "Before minimum 365 strict-forward calendar days or before a formal promotion review."
+  },
+  "governance": {
+    "production_decision_requires_separate_review_run": true,
+    "tracker_may_not_auto_promote": true,
+    "spec_may_not_be_changed_in_response_to_forward_results": true,
+    "amendment_policy": "Any future change to this promotion specification must be versioned as a new prospective spec and applies only to data collected after that new spec freeze; it cannot retroactively reinterpret prior R2.6 strict-forward evidence."
+  }
+}
