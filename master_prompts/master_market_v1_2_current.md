@@ -224,9 +224,20 @@ End SCREEN1 with `💡 핵심:` summarizing current global environment and dista
 ## SCREEN 2 — 💰 지금 돈은 어디로 가고 있나
 Purpose: fastest whole-market money-flow status board.
 
-Required core table columns = `신호 | 돈의 흐름 | 현재점수 | 직전 | 1D | 3D | 7D | 현재상태`.
+Required core table columns = `신호 | 돈의 흐름 | 현재값 | 직전 | 1D | 3D | 7D | 현재상태`.
 Required axes = 글로벌 유동성 / 크립토 자금 / 고래 수급 / 개미 과열 / ALT 자금.
-Existing score definitions/calculations remain unchanged.
+Row-value rules:
+- 글로벌 유동성 = existing BTC Liquidity Lead-style score value `/100`; existing score engine/thresholds unchanged.
+- 크립토 자금 = existing Crypto Money Inflow score `/100`; existing score engine unchanged.
+- 고래 수급 = NO synthetic score. Show actual current BTC/ETH large-whale exposure from the same Hyperliquid signed-position source, prioritizing `LONG USD / SHORT USD / NET USD` (or compact BTC NET / ETH NET when mobile space is tight). `NET = LONG 총액 - SHORT 총액`; negative NET means short exposure is larger, positive NET means long exposure is larger.
+- 개미 과열 = NO synthetic score. Show actual same-venue Bitget futures active `LONG% / SHORT%` ratio proxy and current Funding context; this is a retail-positioning proxy, not verified retail-wallet identity.
+- ALT 자금 = existing ALT Money Inflow score `/100`; existing score engine unchanged.
+Comparison-window rules:
+- 글로벌 유동성 / 크립토 자금 / ALT 자금 use their valid stored score history for 직전/1D/3D/7D.
+- 고래 수급 uses actual same-source Hyperliquid whale exposure snapshots for 직전/1D/3D/7D.
+- 개미 과열 uses actual same-venue Bitget LONG%/SHORT% + Funding observations for 직전/1D/3D/7D.
+- Missing actual comparison history remains N/A; never backfill or manufacture a score.
+- The absence of a separate `고래 수급 점수` or `개미 과열 점수` is NOT itself an N/A item and must not create an N/A 안내 row. Only missing required actual values/windows are N/A.
 Retain compact market breadth/rotation when valid: 전체시총 / 24H 거래량 / BTC.D / ETH.D / `USD→Stablecoin→BTC→ETH→ALT`.
 
 ### 시장 종합
