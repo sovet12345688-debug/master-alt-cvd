@@ -32,9 +32,13 @@
     "four_hour_watch": false,
     "plan_watch": false,
     "background_polling": false,
-    "manual_precision_on_request": true
+    "manual_precision_on_request": true,
+    "precision_auto_run_on_image_attachment": false,
+    "precision_go_trigger": "고",
+    "precision_go_trigger_requires_prior_btc_chart_images": true
   },
   "timeframe_roles": {
+    "1M": "optional_long_term_context_in_precision_if_attached",
     "1W": "regime_context",
     "1D": "primary_judgement",
     "4H": "turn_continuation",
@@ -69,7 +73,10 @@
     "interpolation_forbidden": true,
     "cross_venue_repair_forbidden": true,
     "okx_visible_oi_role": "CHECKSUM_CONFIDENCE_ONLY",
-    "derivatives_alone_can_pass_entry_gate": false
+    "derivatives_alone_can_pass_entry_gate": false,
+    "precision_visible_auxiliary_indicators": ["OI", "CVD", "Taker Buy/Sell", "RSI", "KDJ", "거래량"],
+    "precision_exchange_price_difference_analysis": "FORBIDDEN",
+    "precision_indicator_missing_policy": "N/A_NO_CROSS_VENUE_FILL"
   },
   "direction_ratio": {
     "display": "LONG xx : SHORT yy",
@@ -127,15 +134,12 @@
     "bands": {"weak":"0-49","normal":"50-79","strong":"80-100"}
   },
   "output": {
-    "semantic_screens": 3,
-    "screen_titles": [
-      "지금 BTC는 어떤 자리인가",
-      "그래서 어디서 어떤 방향으로 모을까",
-      "역사 프렉탈 · LONG/SHORT 별도 판독"
-    ],
+    "basic_official_semantic_screens": 3,
+    "precision_uses_separate_override": true,
     "later_user_refinement_allowed": true,
     "ui_only_change_must_not_rebuild_logic": true,
-    "details_hidden_by_default": true
+    "details_hidden_by_default_in_basic": true,
+    "precision_table_first": true
   },
   "today_direction": {
     "must_choose_one": ["롱", "숏"],
@@ -144,10 +148,11 @@
     "tie_breaker": ["1D", "4H", "previous_OFFICIAL", "current_price_structure"]
   },
   "history": {
-    "precision_compare_only_previous_actual_8_chart_run": true,
+    "precision_compare_only_previous_actual_precision_run": true,
     "checkpoint_fabrication_forbidden": true,
     "backfill_forbidden": true,
-    "bootstrap_history_is_current_market_data": false
+    "bootstrap_history_is_current_market_data": false,
+    "manual_precision_updates_official_history_only_on_explicit_user_request": true
   },
   "official_state_runtime": {
     "no_stored_official_run_semantics": "PRIOR_HISTORY_MISSING_ONLY_NOT_EXECUTION_VETO",
@@ -164,72 +169,82 @@
   },
   "footer": {
     "follow_up_count": 5,
-    "lines": 2,
-    "master_line": "🕒 MASTER BTC TREND | 실행완료: YYYY-MM-DD HH:mm KST",
-    "next_report_line": "다음 정식보고 시간 : YYYY-MM-DD HH:mm KST",
-    "nothing_after_footer": true
+    "always_include_follow_ups": true,
+    "github_change_follow_up_position": 4,
+    "github_change_follow_up_exact": "변경 사항 발생. github 변경 패치 작업 진행 도와줄까?"
   },
   "presentation_override": {
-    "version": "FINAL_UI_2026-09-07B",
+    "version": "FINAL_UI_2026-09-08_PRECISION_V2",
     "scope": "DISPLAY_ONLY",
     "supersedes_legacy_output_layout": true,
     "engine_logic_change_allowed": false,
-    "basic_official_and_precision_same_layout": true,
+    "basic_official_and_precision_same_layout": false,
+    "basic_official_layout": "EXISTING_3_SCREEN_FINAL",
     "mobile_first": true,
     "table_first": true,
-    "traffic_light": {
-      "required_in_every_table": true,
-      "column_name": "신호",
-      "column_position": 2,
-      "hard_lock": "기준축 | 신호 | 나머지 정보",
-      "bands": {
-        "green": "우호/강함/유지",
-        "yellow": "중립/대기/확인필요",
-        "red": "위험/반대/무효화",
-        "white": "N/A/데이터 부족"
+    "position_overlay_policy": "IGNORE_COMPLETELY",
+    "cross_exchange_price_difference_policy": "DO_NOT_ANALYZE_OR_EXPLAIN",
+    "precision": {
+      "trigger": {
+        "exact_go_command": "고",
+        "requires_btc_chart_images_attached_before_command": true,
+        "image_attachment_alone_auto_runs": false,
+        "explicit_precision_request_also_allowed": true
+      },
+      "accepted_timeframes": ["1M", "1W", "1D", "4H", "1H"],
+      "missing_timeframe_policy": "N/A_OR_OMIT_OPTIONAL_1M_NO_INVENTION",
+      "sections_in_order": [
+        "최종 상태판",
+        "타임프레임 통합 분석",
+        "거래소 보조지표 통합 분석",
+        "엘리엇파동 관점",
+        "상승/하락 시나리오",
+        "최종 정밀판정",
+        "지금 딱 하나만 볼 가격"
+      ],
+      "timeframe_table": {
+        "single_table_required": true,
+        "columns": ["TF", "구조", "모멘텀", "핵심 지지", "핵심 저항", "현재판정"],
+        "rows_in_order": ["1M", "1W", "1D", "4H", "1H"],
+        "repetitive_long_form_timeframe_sections_forbidden": true
+      },
+      "exchange_auxiliary_table": {
+        "single_table_required": true,
+        "orientation": "ROWS_INDICATORS_COLUMNS_EXCHANGES",
+        "columns": ["지표", "Bitget", "OKX"],
+        "required_rows": ["OI", "CVD", "Taker Buy/Sell", "RSI", "KDJ", "거래량"],
+        "cell_analysis_depth": "CURRENT_VALUE_OR_DIRECTION_TO_RECENT_CHANGE_TO_PRICE_STRUCTURE_MEANING",
+        "cross_exchange_price_comparison_forbidden": true,
+        "missing_indicator": "N/A_NO_ESTIMATE_NO_CROSS_FILL",
+        "summary_required_below_table": true,
+        "summary_prefix": "💡 핵심 요약:",
+        "summary_content": "현재 매수/매도 수급 우세 + 가장 중요한 확인 지표"
+      },
+      "elliott_table": {
+        "columns": ["구분", "현재 판단"],
+        "required_rows": ["큰 파동 위치", "현재 세부파동", "가장 가능성 높은 카운팅", "대안 카운팅", "상승 확인선", "하락 확인선", "파동 무효화", "신뢰도"],
+        "main_and_alternative_required": true,
+        "unconfirmed_numeric_wave_count_must_not_be_asserted_as_fact": true,
+        "confidence_is_market_probability": false
+      },
+      "scenario_table": {
+        "columns": ["시나리오", "확인 조건", "예상 경로", "무효화"],
+        "required_rows": ["🟢 상승", "🔴 하락"]
+      },
+      "final_verdict_table": {
+        "columns": ["항목", "결과"],
+        "required_rows": ["1M(첨부 시)", "1W", "1D", "4H", "1H", "OI·CVD 수급", "엘리엇파동", "최종 우세", "신뢰도"],
+        "one_price_line_required": true,
+        "one_price_prefix": "지금 딱 하나만 볼 가격:"
       }
     },
-    "screen1": {
-      "title": "BTC 현황 요약",
-      "mobile_compression": "3_COLUMN_FIRST",
-      "vertical_growth_allowed": true,
-      "tables": [
-        {"title":"중장기 방향","columns":["항목","신호","현재"],"required_rows":["LONG vs SHORT","우세방향","모아가기 적합도","현재 추세","추세 강도","최근 추이"],"merge_value_and_judgement":true},
-        {"title":"매수·매도·매집 근거","columns":["구분","신호","핵심 판단"],"required_rows":["매수","매도","매집"],"reason_and_judgement_merged":true},
-        {"title":"역사 프렉탈 · 바닥/고점","columns":["항목","신호","현재"],"required_rows":["역사 프렉탈","MASTER 관계","BOTTOM","TOP","LONG A+ 추적"],"merge_value_and_judgement":true},
-        {"title":"단·중·장기 S/R","columns":["구분","신호","핵심 S/R"],"required_rows":["단기","중기","장기"],"stack_support_resistance_strength_vertically":true}
-      ],
-      "summary_lines": 1
-    },
-    "screen2": {
-      "title": "중장기 추세 및 파동 분석",
-      "single_wave_table": {
-        "columns": ["프레임","신호","파동","현재 위치","메인 시나리오","대안 시나리오"],
-        "required_rows": ["장기(1W~1D) / 대파동","중기(4H~1D) / 중파동","단기(15m~1H 또는 30m~1H) / 소파동"]
-      },
-      "blocks_after_table": ["가장 확률 높은 메인 시나리오","조심해야 할 대안 시나리오","실전용 해석"],
-      "practical_interpretation_max_lines": 2,
-      "elliott_count_if_unconfirmed": "DO_NOT_INVENT_1_TO_5_OR_ABC"
-    },
-    "screen3": {
-      "title": "핵심 가격 구간 정리",
-      "tables": [
-        {"title":"중장기 방향 요약","columns":["항목","신호","현재값","판정"],"required_rows":["중장기 방향","지금 행동","틀렸다는 기준","큰 구조 무효화"]},
-        {"title":"LONG 포지션 후보 3가지","columns":["구간","신호","진입 후보","성격","무효화 기준"],"max_rows":3,"use_live_long_plan_if_valid":true},
-        {"title":"SHORT 포지션 후보 3가지","columns":["구간","신호","진입 후보","성격","무효화 기준"],"max_rows":3,"invent_missing_candidates":false}
-      ],
-      "summary_lines": 1
-    },
     "footer_followup": {
-      "master_time_line": "MASTER BTC TREND ㅣ 실행 완료 시간 : YYYY-MM-DD HH:mm KST ㅣ 다음 정식 보고 시간 : YYYY-MM-DD HH:mm KST",
       "follow_up_count": 5,
-      "follow_up_position": "AFTER_MASTER_TIME_LINE",
+      "always_required": true,
       "follow_up_4_mode": "CONDITIONAL_GITHUB_PATCH_NECESSITY",
       "required_follow_up_4_if_github_change_needed": "변경 사항 발생. github 변경 패치 작업 진행 도와줄까?",
       "forbid_follow_up_4_phrase_if_no_github_change_needed": true,
-      "required_follow_up_5": "스크린2 파동분석을 첨부한 차트 기반으로 엘리엇파동을 숫자(1~5, A-B-C) 직접 표시한 버전으로 더 직관적으로 그려줄까?",
-      "auto_image_generation": false,
-      "elliott_image_on_explicit_follow_up_5_only": true
+      "auto_image_generation": false
     }
   },
   "change_management": {
