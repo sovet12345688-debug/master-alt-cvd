@@ -12,6 +12,10 @@ on:
       - 'btc_trend_v30/r26/forward_oos/scorecard_freeze_guard.py'
       - 'btc_trend_v30/r26/forward_oos/R26_FORWARD_PROMOTION_SPEC_V1.json'
       - 'btc_trend_v30/r26/forward_oos/R26_FORWARD_SCORECARD_FREEZE_MANIFEST_V1.json'
+      - 'btc_trend_v30/r26/forward_oos/ledger_integrity_guard.py'
+      - 'btc_trend_v30/r26/forward_oos/ledger_integrity_guard_selftest.py'
+      - 'btc_trend_v30/r26/forward_oos/R26_FORWARD_LEDGER_INTEGRITY_SPEC_V1.json'
+      - 'btc_trend_v30/r26/forward_oos/R26_FORWARD_LEDGER_GUARD_FREEZE_MANIFEST_V1.json'
       - '.github/workflows/btc_trend_v30_r26_forward_oos.yml'
 
 permissions:
@@ -51,6 +55,16 @@ jobs:
           set -euo pipefail
           python btc_trend_v30/r26/forward_oos/forward_tracker.py
 
+      - name: Frozen Forward ledger integrity guard
+        run: |
+          set -euo pipefail
+          test "$(git hash-object btc_trend_v30/r26/forward_oos/R26_FORWARD_LEDGER_GUARD_FREEZE_MANIFEST_V1.json)" = "aaa9fda112cede84a3331e80d8b21252bcef611f"
+          test "$(git hash-object btc_trend_v30/r26/forward_oos/R26_FORWARD_LEDGER_INTEGRITY_SPEC_V1.json)" = "49efdab5da40d88f03a3dcf9ede3830ef31f71e3"
+          test "$(git hash-object btc_trend_v30/r26/forward_oos/ledger_integrity_guard.py)" = "191884d064bf29f09c6567ce2978e51f2af65022"
+          test "$(git hash-object btc_trend_v30/r26/forward_oos/ledger_integrity_guard_selftest.py)" = "ef2d0f783f896a29118c44f270baa726432a9c0c"
+          python btc_trend_v30/r26/forward_oos/ledger_integrity_guard_selftest.py
+          python btc_trend_v30/r26/forward_oos/ledger_integrity_guard.py
+
       - name: Frozen Forward scorecard evaluator guard
         run: |
           set -euo pipefail
@@ -63,7 +77,7 @@ jobs:
           set -euo pipefail
           python btc_trend_v30/r26/forward_oos/forward_scorecard.py
 
-      - name: Commit tracker and scorecard ledger
+      - name: Commit tracker, integrity and scorecard ledger
         run: |
           set -euo pipefail
           git config user.name 'r26-forward-oos-bot'
@@ -76,6 +90,9 @@ jobs:
                   btc_trend_v30/r26/forward_oos/state.json \
                   btc_trend_v30/r26/forward_oos/latest.md \
                   btc_trend_v30/r26/forward_oos/runs.jsonl \
+                  btc_trend_v30/r26/forward_oos/ledger_integrity_state.json \
+                  btc_trend_v30/r26/forward_oos/ledger_integrity_runs.jsonl \
+                  btc_trend_v30/r26/forward_oos/ledger_integrity_report.json \
                   btc_trend_v30/r26/forward_oos/scorecard.json \
                   btc_trend_v30/r26/forward_oos/scorecard.md \
                   btc_trend_v30/r26/forward_oos/scorecard_runs.jsonl \
@@ -91,6 +108,7 @@ jobs:
           fi
 
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: r26-forward-oos-${{ github.run_id }}
           path: btc_trend_v30/r26/forward_oos/
