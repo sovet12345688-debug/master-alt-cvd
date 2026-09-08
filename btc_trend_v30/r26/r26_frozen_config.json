@@ -1,0 +1,60 @@
+{
+  "model": "MASTER_BTC_TREND_V3_R2_6",
+  "status": "FINAL_FROZEN_NO_REPLAY",
+  "integration_type": "R23_DETECTION_PLUS_R25_EXECUTION_NO_RULE_CHANGE",
+  "freeze_metadata": {
+    "candidate_config_sha256": "c57d6c4ba22017968b0e00880955faa537a39c01630a4451edeaa0ab0e0758f8",
+    "candidate_config_git_blob_sha1": "0cf6cc5ec00fd62c2735b29765d08ac28c580b2b",
+    "pre_freeze_run_id": 34180587748,
+    "freeze_probe_run_id": 34180630547,
+    "historical_replay_performed_before_freeze": false
+  },
+  "execution_parent": {
+    "model": "MASTER_BTC_TREND_V3_R2_5",
+    "branch": "btc-trend-v30-r25-full-risk-governor",
+    "frozen_config_sha256": "de19afb53a87c78418d2a9c7545f4ecdddc1b6867cc76e3ce56f348fa0e8a841",
+    "frozen_config_git_blob_sha1": "c890ec9b73e2d75c25d9b1a4b2923dc42ee26ab5",
+    "engine_git_blob_sha1": "b5efe7378de839b338057826e0a7cb29926ec3a6",
+    "contract_git_blob_sha1": "c249b50cdf8d30b5c938b8f28d421ca08ac42965"
+  },
+  "detector_parent": {
+    "model": "MASTER_BTC_TREND_V3_R2_3",
+    "branch": "btc-trend-v30-r23-detection-execution-separation",
+    "frozen_config_sha256": "ab9984b655edc109332edd23de6f04a75252fd993360d9d92146d51da53d9356",
+    "frozen_config_git_blob_sha1": "19f3b48e92ea237ddc54c30a83468304d507d52c",
+    "detector_sha256": "0f9e62f26770aa011186e04061f06bb144471587c1fc9a4648311cf22a71d532",
+    "detector_git_blob_sha1": "ba6cfd98fb88970558002189ddae994e0e6c5c19",
+    "contract_git_blob_sha1": "450957d0eace09af1e518d05d37fa61ddfaead39"
+  },
+  "single_change": {
+    "id": "INTEGRATE_FROZEN_R23_AWARENESS_WITH_FROZEN_R25_EXECUTION",
+    "execution_rules_changed": false,
+    "signal_rules_changed": false,
+    "risk_rules_changed": false,
+    "stop_rules_changed": false,
+    "state_transition_rules_changed": false,
+    "exit_rules_changed": false,
+    "reset_rules_changed": false,
+    "pit_rules_changed": false,
+    "detector_can_execute": false,
+    "detector_can_modify_risk": false,
+    "detector_can_modify_stop": false,
+    "detector_can_modify_seed": false,
+    "detector_states": ["EARLY_DETECT", "PRIORITY_WATCH", "EXECUTION_READY"],
+    "execution_ready_definition": "EXACT_FROZEN_R25_SEED_CANDIDATE_ONLY",
+    "priority_extreme_near_threshold_atr": 1.0
+  },
+  "authority": {
+    "awareness_owner": "FROZEN_R23_LOGIC",
+    "execution_owner": "FROZEN_R25_ONLY",
+    "capital_owner": "FROZEN_R25_ONLY",
+    "stop_owner": "FROZEN_R25_ONLY",
+    "exit_owner": "FROZEN_R25_ONLY"
+  },
+  "evidence_firewall": {
+    "historical_replay_before_freeze": false,
+    "same_history_cannot_promote": true,
+    "integration_results_may_not_modify_frozen_parents": true,
+    "forward_untouched_oos_required": true
+  }
+}
