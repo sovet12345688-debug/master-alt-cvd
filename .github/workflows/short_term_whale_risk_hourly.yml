@@ -7,6 +7,7 @@ on:
   push:
     paths:
       - 'onchain/short_term_whale_risk.py'
+      - 'onchain/short_term_whale_risk_runner.py'
       - '.github/workflows/short_term_whale_risk_hourly.yml'
 
 permissions:
@@ -33,10 +34,12 @@ jobs:
           python-version: '3.12'
 
       - name: Syntax check
-        run: python -m py_compile onchain/short_term_whale_risk.py
+        run: |
+          python -m py_compile onchain/short_term_whale_risk.py
+          python -m py_compile onchain/short_term_whale_risk_runner.py
 
       - name: Build free proxy
-        run: python onchain/short_term_whale_risk.py
+        run: python onchain/short_term_whale_risk_runner.py
 
       - name: Validate output contract
         run: |
