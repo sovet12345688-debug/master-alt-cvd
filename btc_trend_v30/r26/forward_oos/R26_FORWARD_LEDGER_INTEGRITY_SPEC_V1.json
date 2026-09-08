@@ -1,0 +1,82 @@
+{
+  "spec": "R26_FORWARD_LEDGER_INTEGRITY_SPEC_V1",
+  "status": "FROZEN_BEFORE_FIRST_STRICT_FORWARD_LEDGER_ROW",
+  "created_utc": "2026-09-08",
+  "strict_forward_start": "2026-09-08T04:00:00Z",
+  "purpose": "Prevent previously witnessed STRICT_FORWARD ledger facts from being silently deleted, rewritten, re-keyed, or retroactively reinterpreted while allowing legitimate new rows and live open-position evolution.",
+  "bootstrap": {
+    "allowed_only_when_all_protected_strict_rows_zero": true,
+    "retroactive_rebaseline_after_strict_evidence": false
+  },
+  "protected_ledgers": {
+    "detections": {
+      "file": "detections.csv",
+      "phase": "STRICT_FORWARD",
+      "key_fields": ["timestamp", "direction"],
+      "mode": "IMMUTABLE_FULL_ROW_ON_FIRST_OBSERVATION"
+    },
+    "events": {
+      "file": "events.csv",
+      "phase": "STRICT_FORWARD",
+      "key_fields": ["timestamp", "direction", "event_type"],
+      "mode": "IMMUTABLE_FULL_ROW_ON_FIRST_OBSERVATION"
+    },
+    "seeds": {
+      "file": "seeds.csv",
+      "phase": "STRICT_FORWARD",
+      "key_fields": ["timestamp", "direction", "route"],
+      "mode": "IMMUTABLE_FULL_ROW_ON_FIRST_OBSERVATION"
+    },
+    "transactions": {
+      "file": "transactions.csv",
+      "phase": "STRICT_FORWARD",
+      "key_fields": ["episode_id", "stage", "open_time", "time", "reason"],
+      "mode": "IMMUTABLE_FULL_ROW_ON_FIRST_OBSERVATION"
+    },
+    "position_identity": {
+      "file": "positions.csv",
+      "phase": "STRICT_FORWARD",
+      "key_fields": ["episode_id"],
+      "hash_fields": [
+        "episode_id", "direction", "route", "family_key", "reference", "seed_time",
+        "seed_entry", "stop", "phase", "r25_maturity_class", "r25_seed_risk_R",
+        "r25_confirm_risk_add_R", "r25_core_risk_add_R", "r25_max_episode_risk_R"
+      ],
+      "mode": "IMMUTABLE_IDENTITY_FROM_FIRST_OBSERVATION_OPEN_OR_RESOLVED"
+    },
+    "resolved_positions": {
+      "file": "positions.csv",
+      "phase": "STRICT_FORWARD",
+      "key_fields": ["episode_id"],
+      "resolved_field": "resolved",
+      "mode": "IMMUTABLE_FULL_ROW_AFTER_FIRST_RESOLVED_OBSERVATION"
+    }
+  },
+  "allowed_changes": [
+    "append newly completed STRICT_FORWARD detections/events/seeds/transactions",
+    "update dynamic fields of an unresolved open position without changing its frozen identity fields",
+    "transition an open position to resolved once, after which the complete resolved row becomes immutable",
+    "append later independent episodes"
+  ],
+  "forbidden_changes": [
+    "delete a previously witnessed protected STRICT_FORWARD row",
+    "change any field of a previously witnessed immutable detection/event/seed/transaction row",
+    "change frozen identity fields of an existing STRICT_FORWARD position",
+    "change or delete a position after it has been witnessed resolved",
+    "replace the integrity baseline after STRICT_FORWARD evidence exists"
+  ],
+  "audit_chain": {
+    "state_file": "ledger_integrity_state.json",
+    "append_only_log": "ledger_integrity_runs.jsonl",
+    "latest_report": "ledger_integrity_report.json",
+    "hash": "SHA256_CANONICAL_JSON_CHAIN",
+    "git_history_is_audit_witness": true
+  },
+  "governance": {
+    "guard_has_zero_execution_authority": true,
+    "guard_does_not_change_r26_engine_or_thresholds": true,
+    "guard_failure_blocks_scorecard_and_ledger_commit": true,
+    "forward_results_may_not_tune_this_spec": true,
+    "spec_change_requires_new_prospective_version": true
+  }
+}
