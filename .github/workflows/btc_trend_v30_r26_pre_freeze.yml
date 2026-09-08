@@ -10,6 +10,9 @@ on:
 jobs:
   pre-freeze:
     runs-on: ubuntu-24.04
+    env:
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/btc_trend_v30
     steps:
       - uses: actions/checkout@v4
         with:
