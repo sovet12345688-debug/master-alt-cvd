@@ -391,3 +391,39 @@ Final OFFICIAL line, with nothing after it:
 
 Final WATCH line, with nothing after it:
 `🕒 MASTER MARKET WATCH | 감지완료: YYYY-MM-DD HH:mm KST | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST`
+
+## SHORT-TERM WHALE PROFIT-TAKING RISK — ADDITIVE OVERRIDE 2026-09-08
+
+This latest additive rule supersedes the earlier generic on-chain-removal rule ONLY for this compact auxiliary. The old full on-chain secondary-confirmation block remains removed.
+
+### Purpose / truth label
+- Add one required SCREEN4 auxiliary named `단기 고래 차익실현 위험`.
+- It is a FREE PROXY and MUST NOT be presented as the exact CryptoQuant `STH Whale Unrealized P&L` series.
+- The exact CryptoQuant STH Whale series is not calculated or reverse-engineered.
+- Score weight = 0. This auxiliary cannot by itself change Market Positive Score, BTC Liquidity Lead, Crypto Money Inflow, ALT Money Inflow, final direction, Risk Veto, or WATCH.
+
+### Free 5-axis composition
+Read `onchain/output/latest_short_term_whale_risk.json` when fresh and `engine=MASTER_ST_WHALE_PROFIT_TAKING_RISK_PROXY_V1` / schema compatible. Required user-visible table columns = `신호 | 지표 | 현재 | 상태` and rows in this exact order:
+1. `STH 미실현 수익상태 (Whale 대체)` — Checkonchain public STH cohort NUPL/unrealized-profit-state proxy. Use current value + trailing 4Y percentile when supplied. This is the substitute for the unavailable exact STH Whale unrealized-P&L row.
+2. `STH-MVRV` — Checkonchain public STH MVRV. Profit-zone/upper-percentile context only.
+3. `STH-SOPR` — Checkonchain public STH SOPR. `>1` means realized spending is on average in profit; use current + 7D average/percentile context when supplied.
+4. `Hyperliquid 고래 NET` — existing BTC large-whale NET from actual >=$20M Hyperliquid signed-position aggregate. `NET = LONG USD - SHORT USD`; negative is short-leaning, positive is long-leaning.
+5. `BTC CVD` — existing Bitget 1H futures CVD; negative means aggressive selling dominates, positive means aggressive buying dominates.
+
+### Simple auxiliary risk logic
+- Collector row signal is display/risk context only: `🔴` risk confirmation, `🟡` caution/mixed, `🟢` low risk/opposite confirmation, `⚪` N/A.
+- Equal-weight display points: red=1, yellow=0.5, green=0. With fewer than 3 available rows => `확인 제한`.
+- Overall display level: intensity >=0.80 `🔴 매우 높음`; >=0.60 `🔴 높음`; >=0.35 `🟡 중간`; otherwise `🟢 낮음`.
+- This display level is NOT a new official MASTER score and has no score weight.
+- The three STH rows are latent/realized profit-pressure context; Hyperliquid NET and CVD are current-market confirmation. Do not treat high STH profit alone as proof of selling.
+
+### Source / collector lock
+- Free/no-key source only. Primary STH source = public Checkonchain static Plotly HTML; no paid CryptoQuant API.
+- Collector = `onchain/short_term_whale_risk.py`; scheduled workflow = `.github/workflows/short_term_whale_risk_hourly.yml`; output = `onchain/output/latest_short_term_whale_risk.json`; history = `onchain/data/short_term_whale_risk_history.csv`.
+- Hyperliquid NET and CVD are read from existing validated MASTER outputs; no duplicate external collector is required for those axes.
+- No backfill, interpolation, guessed values, screenshot OCR, or cross-source fill. Missing/ambiguous/stale component => that row is `N/A`; if user-visible, include it in consolidated `N/A 항목 안내`.
+
+### Limited restoration boundary
+- User explicitly restored only the STH cohort proxy rows needed for this new auxiliary: `STH 미실현 수익상태(Whale 대체)`, `STH-MVRV`, `STH-SOPR`.
+- `STH Realized Price`, `Exchange Netflow`, and the old general on-chain synthesis block remain REMOVED and must not reappear unless separately restored by explicit user command.
+- SCREEN5 remains unchanged; this auxiliary belongs in SCREEN4 after the derivatives/whale context and before SCREEN4 `💡 핵심:`. SCREEN4 core data/score logic remains unchanged.
