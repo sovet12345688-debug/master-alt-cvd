@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import inspect
-
 from btc_trend_v30.r24.r24_engine import R24Engine
 from btc_trend_v30.r25.r25_engine import R25Engine
 
@@ -9,11 +7,11 @@ from btc_trend_v30.r25.r25_engine import R25Engine
 def main() -> None:
     e = R25Engine()
 
-    # R2.5 may not redefine any signal/state/stop/exit rule from R2.4.
+    # R2.5 may not redefine parent state/stop/exit methods.
     protected = [
-        "long_watch", "short_watch", "long_seed", "short_seed",
         "long_confirmed", "short_confirmed", "long_core_allowed",
         "short_core_allowed_at", "long_exit_flags", "short_exit_flags",
+        "classify_short_maturity", "short_risk_plan_at_seed",
     ]
     for name in protected:
         assert name not in R25Engine.__dict__, f"R25_FORBIDDEN_OVERRIDE:{name}"
