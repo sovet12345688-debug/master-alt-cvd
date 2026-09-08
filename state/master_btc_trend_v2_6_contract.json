@@ -174,7 +174,7 @@
     "github_change_follow_up_exact": "변경 사항 발생. github 변경 패치 작업 진행 도와줄까?"
   },
   "presentation_override": {
-    "version": "FINAL_UI_2026-09-08_PRECISION_V2",
+    "version": "FINAL_UI_2026-09-08_PRECISION_V3",
     "scope": "DISPLAY_ONLY",
     "supersedes_legacy_output_layout": true,
     "engine_logic_change_allowed": false,
@@ -210,12 +210,28 @@
       },
       "exchange_auxiliary_table": {
         "single_table_required": true,
-        "orientation": "ROWS_INDICATORS_COLUMNS_EXCHANGES",
-        "columns": ["지표", "Bitget", "OKX"],
+        "orientation": "ROWS_INDICATORS_UNIFIED_NO_EXCHANGE_COLUMNS",
+        "columns": ["지표", "신호", "핵심값·상태", "정밀 해석"],
         "required_rows": ["OI", "CVD", "Taker Buy/Sell", "RSI", "KDJ", "거래량"],
+        "exchange_columns_forbidden": true,
+        "source_label_policy": "OPTIONAL_INLINE_SOURCE_LABEL_ONLY_BITGET_OR_OKX",
         "cell_analysis_depth": "CURRENT_VALUE_OR_DIRECTION_TO_RECENT_CHANGE_TO_PRICE_STRUCTURE_MEANING",
         "cross_exchange_price_comparison_forbidden": true,
         "missing_indicator": "N/A_NO_ESTIMATE_NO_CROSS_FILL",
+        "volume_analysis": {
+          "detail_level": "ENHANCED_REQUIRED",
+          "compare_current_to_visible_moving_average": ["MA5", "MA10"],
+          "compare_to_prior_breakout_or_impulse_volume": true,
+          "compare_up_candle_vs_down_candle_volume": true,
+          "price_volume_divergence_or_pressure_exhaustion_check": true,
+          "timeframe_roles": {
+            "1W": "large_trend_capital_participation",
+            "1D": "breakout_and_trend_continuation_confidence",
+            "4H": "healthy_pullback_vs_distribution",
+            "1H": "reversal_and_breakout_timing"
+          },
+          "incomplete_candle_volume_is_confirmation": false
+        },
         "summary_required_below_table": true,
         "summary_prefix": "💡 핵심 요약:",
         "summary_content": "현재 매수/매도 수급 우세 + 가장 중요한 확인 지표"
