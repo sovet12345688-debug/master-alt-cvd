@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.8",
+  "schema_version": "1.9",
   "master": "MASTER MARKET V1.2",
   "status": "FINAL_CUMULATIVE_LOCK",
   "updated_kst": "2026-09-08T14:00:00+09:00",
@@ -15,20 +15,8 @@
   "change_management": {
     "recommendation_freedom": true,
     "rule": "RECOMMEND FREELY, EXPLAIN TRADE-OFFS, PRESERVE BY DEFAULT, EXECUTE DESTRUCTIVE OR CONTRACT-BREAKING CHANGES ONLY WITH USER APPROVAL.",
-    "allowed_recommendations": [
-      "data-source upgrade or replacement",
-      "GitHub collector or schema improvement",
-      "new data layer or adapter",
-      "freshness/quality validation improvement",
-      "output layout or readability improvement",
-      "deprecation or replacement of a weak source",
-      "score-history or persistence improvement"
-    ],
-    "recommendation_channels": [
-      "report body",
-      "audit note",
-      "follow-up questions"
-    ],
+    "allowed_recommendations": ["data-source upgrade or replacement","GitHub collector or schema improvement","new data layer or adapter","freshness/quality validation improvement","output layout or readability improvement","deprecation or replacement of a weak source","score-history or persistence improvement"],
+    "recommendation_channels": ["report body","audit note","follow-up questions"],
     "execution_policy": {
       "additive_non_destructive": "may be proposed proactively; implementation should preserve the locked information set unless the user explicitly authorizes a contract change",
       "destructive_or_contract_breaking": "requires explicit user approval before execution",
@@ -47,19 +35,10 @@
     }
   },
   "change_windows": {
-    "locked_windows": [
-      "1D",
-      "3D",
-      "7D"
-    ],
+    "locked_windows": ["1D","3D","7D"],
     "column_order_rule": "For locked mobile summary tables, show 1D then 3D then 7D after prior/직전 when applicable.",
     "data_rule": "Use only actual stored values, actual cumulative flow, or same-source comparable observations. No interpolation or reconstruction. Missing windows remain visible as N/A.",
-    "applies_to": [
-      "SCREEN1_BTC_LIQUIDITY_LEAD",
-      "SCREEN2_CORE_5_AXES",
-      "SCREEN2_MARKET_POSITIVE_SCORE",
-      "SCREEN4_INSTITUTION_WHALE_RETAIL_TABLE"
-    ],
+    "applies_to": ["SCREEN1_BTC_LIQUIDITY_LEAD","SCREEN2_CORE_MONEY_FLOW","SCREEN2_MARKET_POSITIVE_SCORE","SCREEN4_INSTITUTION_WHALE_RETAIL_TABLE"],
     "screen5_exception": "SCREEN5 is research/context only and does not duplicate upstream core-axis score tables. Polymarket 7D is additionally applicability-gated by verified market age >=7 full days."
   },
   "schedule": {
@@ -123,17 +102,21 @@
     ],
     "screen2": [
       "title: 지금 돈은 어디로 가고 있나",
-      "core 5-axis table columns: signal|money flow|current value|prior|1D|3D|7D|current status",
-      "required axes: global liquidity|crypto money|whale flow|retail overheating|ALT money",
+      "core table columns: signal|money flow|current value|prior|1D|3D|7D|current status",
+      "logical axes preserved: global liquidity|crypto money|whale flow|retail flow|ALT money",
+      "required visible rows in order: global liquidity|crypto money|whale BTC|whale ETH|retail BTC|retail ETH|ALT money",
       "global liquidity current value = existing BTC Liquidity Lead-style score /100; score engine/thresholds unchanged",
       "crypto money current value = existing Crypto Money Inflow score /100; engine unchanged",
-      "whale flow current value = NO synthetic score; show actual Hyperliquid BTC/ETH large-whale LONG USD|SHORT USD|NET USD, or compact BTC NET|ETH NET when needed",
-      "whale NET definition = LONG total USD - SHORT total USD; negative NET = short exposure larger, positive NET = long exposure larger",
-      "retail overheating current value = NO synthetic score; show actual same-venue Bitget active LONG%|SHORT% ratio proxy plus current Funding context; not verified retail-wallet identity",
+      "whale BTC current value = actual Hyperliquid BTC large-whale 순포지션(NET) USD; NET = LONG total USD - SHORT total USD; negative short-leaning, positive long-leaning",
+      "whale ETH current value = actual Hyperliquid ETH large-whale 순포지션(NET) USD with the same formula and sign meaning",
+      "retail BTC current value = actual same-venue Bitget active-position proxy 순포지션(NET) in percentage points; NET = LONG% - SHORT%; negative short-leaning, positive long-leaning; Funding is context only",
+      "retail ETH current value = actual same-venue Bitget active-position proxy 순포지션(NET) in percentage points using the same formula; not verified retail-wallet identity",
       "ALT money current value = existing ALT Money Inflow score /100; engine unchanged",
-      "comparison windows: scored axes use valid stored score history; whale uses actual same-source Hyperliquid exposure snapshots; retail uses actual same-venue Bitget LONG%|SHORT%+Funding observations",
+      "headline display for whale/retail BTC/ETH rows must be NET; raw LONG/SHORT components may be compressed into current status only when useful",
+      "NET traffic-light display: positive=🟢 long-leaning, negative=🔴 short-leaning, near-zero/mixed=🟡, unavailable=⚪; display-only, no new score",
+      "comparison windows: scored axes use valid stored score history; whale BTC/ETH use actual same-source Hyperliquid NET snapshots; retail BTC/ETH use actual same-venue Bitget LONG%-SHORT% NET observations; Funding not included in NET arithmetic",
       "missing actual comparison history remains N/A; no backfill/interpolation/synthetic actor score",
-      "absence of separate whale-flow or retail-overheating 0-100 score is not an N/A item and must not create N/A 안내",
+      "absence of separate whale-flow or retail-flow 0-100 score is not an N/A item and must not create N/A 안내",
       "retain compact market breadth and USD->Stablecoin->BTC->ETH->ALT rotation when valid",
       "market summary table columns: signal|Market Positive Score|prior|1D|3D|7D|current judgement",
       "end with compact 💡 핵심 summary"
@@ -182,7 +165,7 @@
       "Polymarket market age <7 full days => 7D NOT_APPLICABLE; omit that row's 7D value/window and do not create N/A 안내 for it",
       "end with compact 💡 핵심 summary"
     ],
-    "consolidated_na_section": "After SCREEN5, if any unavailable value exists, show one consolidated N/A 항목 안내 table with signal|item|reason|automatic recovery yes/no|expected exposure time or required action. Do not repeat per-screen N/A tables. Verified Polymarket market age <7 full days makes 7D NOT_APPLICABLE, not N/A, so it must not appear in this section; old-enough-market 7D failures remain N/A. Absence of a separate whale/retail 0-100 score is not an N/A condition because SCREEN2 uses actual values for those rows.",
+    "consolidated_na_section": "After SCREEN5, if any unavailable value exists, show one consolidated N/A 항목 안내 table with signal|item|reason|automatic recovery yes/no|expected exposure time or required action. Do not repeat per-screen N/A tables. Verified Polymarket market age <7 full days makes 7D NOT_APPLICABLE, not N/A, so it must not appear in this section; old-enough-market 7D failures remain N/A. Absence of a separate whale/retail 0-100 score is not an N/A condition because SCREEN2 uses actual NET values for those rows.",
     "final_verdict": "After N/A section (if any), show ★ 최종 판정 table with signal|Market Positive Score|dominant direction, then one compact 핵심 메시지.",
     "follow_up": "OFFICIAL includes exactly 5 compact follow-up questions/recommendations before footer.",
     "footer": "🕒 MASTER MARKET V1.2 | 실행완료: YYYY-MM-DD HH:mm KST | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST",
@@ -253,19 +236,14 @@
     "trigger_values": ["N/A","확인 실패","확인 제한","equivalent unavailable state"],
     "section_title": "N/A 항목 안내",
     "columns": ["신호","N/A 항목","이유","자동해소 여부","예상 노출시점 / 필요조치"],
-    "reason_classes": {
-      "ACCUMULATION_WAIT": "축적 대기",
-      "SOURCE_UPDATE_WAIT": "원천 갱신 대기",
-      "TEMPORARY_COLLECTION_FAILURE": "일시 수집 실패",
-      "STRUCTURALLY_UNAVAILABLE": "현재 구조상 불가"
-    },
+    "reason_classes": {"ACCUMULATION_WAIT":"축적 대기","SOURCE_UPDATE_WAIT":"원천 갱신 대기","TEMPORARY_COLLECTION_FAILURE":"일시 수집 실패","STRUCTURALLY_UNAVAILABLE":"현재 구조상 불가"},
     "accumulation_rule": "ETA only from known first-valid timestamp + actual required window/cadence; 1D/3D/7D eligibility is 24h/72h/168h. If first-valid timestamp unknown, say 기준점 부족 → 예정시각 계산 불가.",
     "source_update_rule": "Show next confirmed source/release time; otherwise 다음 원천 갱신 후.",
     "temporary_failure_rule": "Say 다음 자동수집/다음 OFFICIAL에서 재시도; never guarantee recovery by that time.",
     "structural_rule": "Explicitly say 시간을 기다려도 자동 노출 안 됨 and name the required new collector/API/source/schema.",
     "grouping_rule": "Same-cause grouping allowed only when every affected unavailable item is explicitly named.",
     "polymarket_7d_exception": "Verified market age <7 full days => 7D NOT_APPLICABLE and excluded from N/A 안내. Genuine 7D failure for a market old enough to support 7D remains N/A.",
-    "actor_score_absence_rule": "Do not create N/A solely because whale-flow or retail-overheating has no separate 0-100 score; SCREEN2 uses actual values for those rows.",
+    "actor_score_absence_rule": "Do not create N/A solely because whale-flow or retail-flow has no separate 0-100 score; SCREEN2 uses actual BTC/ETH NET values for those rows.",
     "anti_fabrication": true,
     "no_na_to_zero": true,
     "no_interpolation_backfill_cross_source_fill": true,
