@@ -1,8 +1,8 @@
 {
-  "schema_version": "1.9",
+  "schema_version": "1.10",
   "master": "MASTER MARKET V1.2",
   "status": "FINAL_CUMULATIVE_LOCK",
-  "updated_kst": "2026-09-08T14:00:00+09:00",
+  "updated_kst": "2026-09-08T15:14:00+09:00",
   "purpose": "Machine-readable cumulative contract for MASTER MARKET. Existing required data, checks, and user-visible output blocks must survive future version upgrades unless the user explicitly orders removal.",
   "no_silent_omission": {
     "enabled": true,
@@ -54,6 +54,7 @@
     "market_breadth_rotation": ["CRYPTO_TOTAL_MCAP","CRYPTO_24H_VOLUME","BTC_DOMINANCE","ETH_DOMINANCE","USD->Stablecoin->BTC->ETH->ALT rotation"],
     "whale": ["BTC core whales","ETH core whales","Hyperliquid same-run same-population positions","Position/Side/Entry/Leverage/Liquidation/Liq Distance","1H/4H/24H actual position-size changes","recent maximum 6 actual observations","$20M WATCH candidate","$50M LEVEL1 candidate"],
     "derivatives": ["Price","OI","Funding","OI 1H/4H/24H change","Funding 1H/4H/24H change when available","CVD","Taker Buy/Sell","Long/Short","Liquidation","Basis","Depth","Volume"],
+    "short_term_whale_profit_taking_risk": ["STH unrealized-profit state proxy (not exact STH Whale)","STH-MVRV","STH-SOPR","Hyperliquid BTC whale NET","BTC CVD"],
     "news_and_calendar": ["Coinness fast news radar","News TOP5","Economic indicator calendar","major unlock/supply events","hack/exploit","policy/macro/oil shock"],
     "secondary_confirmation": ["Sean Farrell latest view - score 0","Stanley Druckenmiller latest view - score 0"],
     "prediction_markets": ["Polymarket market-impact TOP10","YES probability current","probability-point change 1H/4H/1D/7D where applicable","24H and total volume","liquidity","open interest","spread","confidence grade","market impact and easy interpretation","traffic-light judgement for current market impact"]
@@ -68,7 +69,8 @@
     "optional_failure": "Do not loop/retry indefinitely. Mandatory sufficient => continue and expose N/A explicitly.",
     "polymarket": "Public Gamma/CLOB/Data APIs; forward-expectation context only; score weight 0. Same-market/same-YES-outcome deltas only. 7D is required only for verified markets at least 7 full days old; a younger market's 7D is NOT_APPLICABLE and must not create an N/A 안내 item. Genuine 7D failures on old-enough markets remain N/A. Polymarket alone never alerts or flips score/direction/Risk Veto.",
     "stablecoin_window_adapter": "Read market_vault/output/latest_stablecoin_windows.json when fresh for same-source prior/1D/3D/5D/7D/20D Stablecoin comparisons. No interpolation or backfill.",
-    "actor_flow_adapter": "Read market_vault/output/latest_actor_flows.json when fresh for SCREEN2 and SCREEN4 actual-value institution/whale/retail-proxy comparisons. Adapter score weight is 0 and does not alter underlying score engine, Risk Veto, WATCH, or official history."
+    "actor_flow_adapter": "Read market_vault/output/latest_actor_flows.json when fresh for SCREEN2 and SCREEN4 actual-value institution/whale/retail-proxy comparisons. Adapter score weight is 0 and does not alter underlying score engine, Risk Veto, WATCH, or official history.",
+    "short_term_whale_risk_proxy": "Read onchain/output/latest_short_term_whale_risk.json when fresh and engine/schema guards pass. STH metrics come from free public Checkonchain static Plotly HTML; exact CryptoQuant STH Whale is never claimed/reproduced. Hyperliquid NET and BTC CVD reuse existing validated MASTER outputs. No API key, paid source, backfill, interpolation, OCR, or guessed values."
   },
   "required_scores": {
     "BTC_Liquidity_Lead_Index": {"bands":"0-39 Risk-Off | 40-54 Neutral/Weak | 55-64 Early Ignition | 65-74 Uptrend Start | 75-84 Acceleration | 85-100 Euphoria","fixed_thresholds":[55,65,75]},
@@ -144,6 +146,11 @@
       "derivatives mobile table columns: signal|asset|OI|Funding|CVD|current interpretation",
       "all existing derivative engine fields remain preserved for validation/calculation even when compressed in user-visible table",
       "mandatory easy-Korean derivative interpretation",
+      "short-term whale profit-taking risk auxiliary is REQUIRED after whale/derivatives context and before SCREEN4 summary",
+      "short-term whale risk table columns: signal|indicator|current|status",
+      "short-term whale risk rows in exact order: STH unrealized-profit state (Whale substitute)|STH-MVRV|STH-SOPR|Hyperliquid whale NET|BTC CVD",
+      "short-term whale risk is explicitly a FREE PROXY, not exact CryptoQuant STH Whale; overall levels low|medium|high|very high are display-only and score weight 0",
+      "old full on-chain synthesis remains removed; only STH unrealized proxy, STH-MVRV and STH-SOPR are restored for this specific SCREEN4 auxiliary",
       "end with compact 💡 핵심 summary",
       "institution BTC/ETH actual value = spot ETF net-flow USD; use actual 1D/3D/7D cumulative flow",
       "BTC/ETH whale actual value = Hyperliquid >=$20M position LONG USD|SHORT USD|NET USD using stored signed-position history; compare actual 1D/3D/7D snapshots",
@@ -159,13 +166,13 @@
       "expert table columns: signal|expert|comment date/time|latest view|BTC/risk-asset direction",
       "expert badges remain 🟢 상승우호/🔴 하락압력/🟡 중립·혼합/⚪ 최신관점 N/A; score0",
       "immediately below expert table add exactly one easy-Korean core-view sentence for Sean Farrell and one for Stanley Druckenmiller",
-      "on-chain secondary block remains explicitly removed unless user restores it",
+      "old general on-chain secondary block remains removed; the explicit limited STH proxy restoration exists only in SCREEN4 short-term whale risk auxiliary",
       "Polymarket underlying TOP10/quality/same-market delta/confidence/score0/WATCH confirmation rules remain unchanged",
       "Polymarket preferred mobile visible columns: signal|market expectation|current probability|1D|7D|easy interpretation; include 1H/4H when materially important; 7D is shown only when the verified market age is at least 7 full days",
       "Polymarket market age <7 full days => 7D NOT_APPLICABLE; omit that row's 7D value/window and do not create N/A 안내 for it",
       "end with compact 💡 핵심 summary"
     ],
-    "consolidated_na_section": "After SCREEN5, if any unavailable value exists, show one consolidated N/A 항목 안내 table with signal|item|reason|automatic recovery yes/no|expected exposure time or required action. Do not repeat per-screen N/A tables. Verified Polymarket market age <7 full days makes 7D NOT_APPLICABLE, not N/A, so it must not appear in this section; old-enough-market 7D failures remain N/A. Absence of a separate whale/retail 0-100 score is not an N/A condition because SCREEN2 uses actual NET values for those rows.",
+    "consolidated_na_section": "After SCREEN5, if any unavailable value exists, show one consolidated N/A 항목 안내 table with signal|item|reason|automatic recovery yes/no|expected exposure time or required action. Do not repeat per-screen N/A tables. Verified Polymarket market age <7 full days makes 7D NOT_APPLICABLE, not N/A, so it must not appear in this section; old-enough-market 7D failures remain N/A. Absence of a separate whale/retail 0-100 score is not an N/A condition because SCREEN2 uses actual NET values for those rows. Missing required rows in the short-term whale risk auxiliary are N/A and must be explained.",
     "final_verdict": "After N/A section (if any), show ★ 최종 판정 table with signal|Market Positive Score|dominant direction, then one compact 핵심 메시지.",
     "follow_up": "OFFICIAL includes exactly 5 compact follow-up questions/recommendations before footer.",
     "footer": "🕒 MASTER MARKET V1.2 | 실행완료: YYYY-MM-DD HH:mm KST | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST",
@@ -201,6 +208,7 @@
     "cannot_directly_change": ["Market Positive Score","BTC Liquidity Lead","Crypto Money Inflow","ALT Money Inflow","direction","Risk Veto"],
     "missing_behavior": "Keep SCREEN5 Polymarket block visible and mark true unavailable values N/A/CONFIRMATION_FAILED. Never guess probability. A verified market younger than 7 full days has 7D NOT_APPLICABLE rather than missing/N/A.",
     "onchain_output_remains_removed": true,
+    "onchain_exception": "Only the dedicated SCREEN4 short-term whale profit-taking risk proxy is restored; this does not restore the old general on-chain block.",
     "judgement_display": {
       "enabled": true,
       "column_name": "판정",
@@ -212,6 +220,51 @@
       "direction_effect": "NONE",
       "risk_veto_effect": "NONE",
       "watch_threshold_effect": "NONE"
+    }
+  },
+  "short_term_whale_profit_taking_risk": {
+    "enabled": true,
+    "authorized_by_user": true,
+    "display_name": "단기 고래 차익실현 위험",
+    "display_location": "SCREEN4_AFTER_WHALE_DERIVATIVES_BEFORE_SCREEN4_SUMMARY",
+    "role": "AUXILIARY_RISK_ONLY",
+    "score_weight": 0,
+    "exact_cryptoquant_sth_whale": false,
+    "collector": "onchain/short_term_whale_risk.py",
+    "workflow": ".github/workflows/short_term_whale_risk_hourly.yml",
+    "output": "onchain/output/latest_short_term_whale_risk.json",
+    "history": "onchain/data/short_term_whale_risk_history.csv",
+    "required_engine": "MASTER_ST_WHALE_PROFIT_TAKING_RISK_PROXY_V1",
+    "table_columns": ["신호","지표","현재","상태"],
+    "rows_in_order": ["STH 미실현 수익상태 (Whale 대체)","STH-MVRV","STH-SOPR","Hyperliquid 고래 NET","BTC CVD"],
+    "sources": {
+      "sth_unrealized_proxy": "Checkonchain public static Plotly HTML STH cohort NUPL/unrealized-profit state; no key",
+      "sth_mvrv": "Checkonchain public static Plotly HTML STH-MVRV; no key",
+      "sth_sopr": "Checkonchain public static Plotly HTML STH-SOPR; no key",
+      "hyperliquid_whale_net": "existing market_vault/output/latest_actor_flows.json BTC >=$20M whale aggregate",
+      "btc_cvd": "existing derivatives/output/latest_microstructure.json Bitget BTC 1H CVD"
+    },
+    "risk_logic": {
+      "row_points": {"red":1.0,"yellow":0.5,"green":0.0},
+      "minimum_available_rows": 3,
+      "levels": {"very_high":">=0.80 intensity","high":">=0.60 intensity","medium":">=0.35 intensity","low":"<0.35 intensity"},
+      "display_only": true,
+      "not_official_master_score": true
+    },
+    "guards": {
+      "free_no_key_only": true,
+      "no_paid_cryptoquant_api": true,
+      "no_exact_sth_whale_reconstruction": true,
+      "no_backfill": true,
+      "no_interpolation": true,
+      "no_ocr": true,
+      "no_guessing": true,
+      "missing_component": "KEEP_ROW_NA_AND_EXPLAIN_IN_CONSOLIDATED_NA"
+    },
+    "cannot_alone_change": ["Market Positive Score","BTC Liquidity Lead","Crypto Money Inflow","ALT Money Inflow","direction","Risk Veto","WATCH"],
+    "limited_restoration": {
+      "restored_only_for_this_auxiliary": ["STH unrealized-profit state proxy","STH-MVRV","STH-SOPR"],
+      "still_removed": ["STH Realized Price","Exchange Netflow","old general on-chain synthesis block"]
     }
   },
   "whale_display_policy": {
@@ -244,10 +297,11 @@
     "grouping_rule": "Same-cause grouping allowed only when every affected unavailable item is explicitly named.",
     "polymarket_7d_exception": "Verified market age <7 full days => 7D NOT_APPLICABLE and excluded from N/A 안내. Genuine 7D failure for a market old enough to support 7D remains N/A.",
     "actor_score_absence_rule": "Do not create N/A solely because whale-flow or retail-flow has no separate 0-100 score; SCREEN2 uses actual BTC/ETH NET values for those rows.",
+    "short_term_whale_risk_rule": "If any required row in the SCREEN4 short-term whale profit-taking auxiliary is unavailable, keep that row N/A and explain the cause here; never fabricate it.",
     "anti_fabrication": true,
     "no_na_to_zero": true,
     "no_interpolation_backfill_cross_source_fill": true,
-    "removed_field_behavior": "Explicitly removed fields are outside required output and must not be displayed as N/A or included in N/A 안내."
+    "removed_field_behavior": "Explicitly removed fields are outside required output and must not be displayed as N/A or included in N/A 안내, except explicitly restored rows inside the dedicated short-term whale auxiliary."
   },
   "expert_badge_policy": {
     "enabled": true,
@@ -293,6 +347,13 @@
       "output": "market_vault/output/latest_summary.json",
       "metrics": ["USDT_SUPPLY","USDC_SUPPLY","STABLECOIN_TOTAL_SUPPLY"],
       "role": "potential dry powder only; not confirmed actual spot buying"
+    },
+    "short_term_whale_risk": {
+      "output": "onchain/output/latest_short_term_whale_risk.json",
+      "required_engine": "MASTER_ST_WHALE_PROFIT_TAKING_RISK_PROXY_V1",
+      "source_type": "free Checkonchain static HTML + existing Hyperliquid/Bitget outputs; no key",
+      "score_weight": 0,
+      "failure_behavior": "Keep affected auxiliary row N/A; do not restore old on-chain fields or infer missing values."
     }
   },
   "explicitly_removed_fields": {
