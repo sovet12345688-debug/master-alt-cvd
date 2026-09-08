@@ -16,7 +16,7 @@
   "transport": {
     "inbox": "official_state/inbox/btc_trend/",
     "accepted_file_patterns": [
-      "MBTC-V26-YYYYMMDD-HH10-KST.json",
+      "MBTC-V26-YYYYMMDD-HH00-KST.json",
       "MBTC-V26-YYYYMMDD-MANUAL-HHMM-KST.json"
     ],
     "processor": "official_state/process_btc_trend_inbox.py",
@@ -58,9 +58,9 @@
     "public_repository_safe": true
   },
   "run_id_policy": {
-    "scheduled_format": "MBTC-V26-YYYYMMDD-HH10-KST",
+    "scheduled_format": "MBTC-V26-YYYYMMDD-HH00-KST",
     "manual_explicit_format": "MBTC-V26-YYYYMMDD-MANUAL-HHMM-KST",
-    "official_slots_kst": ["09:10", "17:10", "21:10"],
+    "official_slots_kst": ["05:00", "08:00", "13:00", "17:00", "21:00"],
     "manual_explicit_user_request_required": true,
     "duplicate_run_id_forbidden": true,
     "newer_than_latest_required": true
