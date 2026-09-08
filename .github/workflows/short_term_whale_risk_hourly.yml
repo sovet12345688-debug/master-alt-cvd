@@ -1,0 +1,75 @@
+name: MASTER MARKET Short-Term Whale Risk
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '35 * * * *'
+  push:
+    paths:
+      - 'onchain/short_term_whale_risk.py'
+      - '.github/workflows/short_term_whale_risk_hourly.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: master-market-short-term-whale-risk
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Syntax check
+        run: python -m py_compile onchain/short_term_whale_risk.py
+
+      - name: Build free proxy
+        run: python onchain/short_term_whale_risk.py
+
+      - name: Validate output contract
+        run: |
+          python - <<'PY'
+          import json, sys
+          p=json.load(open('onchain/output/latest_short_term_whale_risk.json', encoding='utf-8'))
+          if p.get('engine') != 'MASTER_ST_WHALE_PROFIT_TAKING_RISK_PROXY_V1':
+              sys.exit('wrong engine')
+          if p.get('score_weight') != 0:
+              sys.exit('score weight must remain 0')
+          if p.get('exact_cryptoquant_sth_whale') is not False:
+              sys.exit('must declare proxy, not exact CryptoQuant STH Whale')
+          rows=p.get('rows') or []
+          if len(rows) != 5:
+              sys.exit(f'expected 5 rows, got {len(rows)}')
+          required=['STH 미실현 수익상태 (Whale 대체)','STH-MVRV','STH-SOPR','Hyperliquid 고래 NET','BTC CVD']
+          names=[x.get('indicator') for x in rows]
+          if names != required:
+              sys.exit(f'row mismatch: {names}')
+          print('SHORT_TERM_WHALE_RISK_PROXY=PASS')
+          print(json.dumps(p.get('overall'), ensure_ascii=False))
+          PY
+
+      - name: Commit generated output and history
+        if: always()
+        run: |
+          git config user.name "short-term-whale-risk-bot"
+          git config user.email "short-term-whale-risk-bot@users.noreply.github.com"
+          git add onchain/output/latest_short_term_whale_risk.json onchain/data/short_term_whale_risk_history.csv || true
+          if git diff --cached --quiet; then
+            echo "No generated data changes"
+          else
+            git commit -m "data: refresh short-term whale profit-taking risk proxy"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
