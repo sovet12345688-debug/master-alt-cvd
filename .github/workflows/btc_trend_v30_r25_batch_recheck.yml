@@ -1,0 +1,77 @@
+name: BTC TREND V3 R2.5 ROBUSTNESS + STATE RECHECK
+
+on:
+  push:
+    branches: [btc-trend-v30-r25-full-risk-governor]
+    paths:
+      - 'btc_trend_v30/r25/validation/**'
+      - '.github/workflows/btc_trend_v30_r25_batch_recheck.yml'
+  workflow_dispatch:
+
+jobs:
+  r25-batch-recheck:
+    runs-on: ubuntu-24.04
+    env:
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/btc_trend_v30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Frozen identity PIT contracts
+        run: |
+          set -euo pipefail
+          (cd btc_trend_v30/r20 && python test_r20_engine_pit.py)
+          python btc_trend_v30/r21/test_r21_contract.py
+          python btc_trend_v30/r24/test_r24_contract.py
+          python btc_trend_v30/r25/test_r25_contract.py
+          python btc_trend_v30/r25/r25_freeze_guard.py
+      - name: Download canonical validated Step1-10 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: btc-trend-v30-validation-v1-step1-10
+          repository: sovet12345688-debug/master-alt-cvd
+          run-id: 34084074525
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: btc_trend_v30/output/validation_v1
+      - name: Canonical SHA guard
+        run: |
+          python - <<'PY'
+          import hashlib,sys
+          from pathlib import Path
+          root=Path('btc_trend_v30/output/validation_v1')
+          expected={
+            'data_integrity/btc_usdt_1d_matrix.csv':'0618a36ffa0f98a3a3318927f0602bb288ff231fe9d10299b5f8013015a8964a',
+            'step3_episode_dedupe/independent_episodes.csv':'aa4c9cc2f5c6bccfca71e65de4d7a81a64d9f0b8146fe06f416d9755f3ea467f',
+            'step4_outcome_labels/episode_medium_long_truth_labels.csv':'5b8116fc14ef2e66ab48d67f132ead2881f363192d5ad6325902a3e8c7f4a9ce',
+            'step6_state_machine_replay/btc_usdt_1h_matrix.csv':'259ba60e0b65df87591baa38628d1126b465342ff0a3848a9dabe348ad9fd729',
+            'step6_state_machine_replay/btc_usdt_complete_4h_matrix.csv':'22bdc9bf33d54b8ebb850d209046365a326324059d48d3aac2afa33a0c366a26',
+            'step7_metrics/audit.json':'1ab46eb52bb170cd1bc12bce3da8eabbc5478e83f3b358dc08e0a4b3604b323d'}
+          ok=True
+          for rel,want in expected.items():
+              got=hashlib.sha256((root/rel).read_bytes()).hexdigest(); print(rel,got,'PASS' if got==want else 'FAIL'); ok &= got==want
+          if not ok: sys.exit(1)
+          PY
+      - name: Run frozen R2.5 batch recheck
+        run: python btc_trend_v30/r25/validation/r25_batch_recheck.py
+      - name: Report batch verdict
+        run: |
+          python - <<'PY'
+          import json
+          p='btc_trend_v30/r25/validation/output/r25_batch_recheck_audit.json'
+          d=json.load(open(p))
+          print('ROBUSTNESS=',d['robustness']['classification'],d['robustness']['variants_preserving_all_six_checks'],'/10')
+          print('FAILED_VARIANTS=',d['robustness']['failed_variants'])
+          print('BEAR_SHORT_FLOOR_PASS=',d['robustness']['variants_with_bear_short_floor_pass'],'/10')
+          print('STATE_MONOTONICITY=',d['state_monotonicity']['result'])
+          print('STATE_COMPARISONS=',d['state_monotonicity']['adjacent_comparisons'])
+          print('EXCLUSIVE=',d['state_monotonicity']['exclusive_bins'])
+          PY
+      - name: Upload batch evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v30-r25-robustness-state-recheck
+          path: btc_trend_v30/r25/validation/output/
+          retention-days: 14
