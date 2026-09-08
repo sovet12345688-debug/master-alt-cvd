@@ -1,0 +1,73 @@
+name: BTC TREND V3 R2.6 FORWARD OOS
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '20 */4 * * *'
+  push:
+    branches: [btc-trend-v30-r26-final-integration]
+    paths:
+      - 'btc_trend_v30/r26/forward_oos/forward_tracker.py'
+      - '.github/workflows/btc_trend_v30_r26_forward_oos.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: btc-trend-v30-r26-forward-oos
+  cancel-in-progress: false
+
+jobs:
+  forward-oos:
+    runs-on: ubuntu-24.04
+    env:
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/btc_trend_v30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: btc-trend-v30-r26-final-integration
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check numpy pandas
+
+      - name: Frozen identity and PIT contract
+        run: |
+          set -euo pipefail
+          (cd btc_trend_v30/r20 && python test_r20_engine_pit.py)
+          python btc_trend_v30/r25/test_r25_contract.py
+          python btc_trend_v30/r26/r26_freeze_guard.py
+          python btc_trend_v30/r26/test_r26_contract.py
+
+      - name: Run official Forward OOS tracker
+        run: |
+          set -euo pipefail
+          python btc_trend_v30/r26/forward_oos/forward_tracker.py
+
+      - name: Commit tracker ledger
+        run: |
+          set -euo pipefail
+          git config user.name 'r26-forward-oos-bot'
+          git config user.email 'r26-forward-oos-bot@users.noreply.github.com'
+          git add btc_trend_v30/r26/forward_oos/detections.csv \
+                  btc_trend_v30/r26/forward_oos/events.csv \
+                  btc_trend_v30/r26/forward_oos/seeds.csv \
+                  btc_trend_v30/r26/forward_oos/positions.csv \
+                  btc_trend_v30/r26/forward_oos/transactions.csv \
+                  btc_trend_v30/r26/forward_oos/state.json \
+                  btc_trend_v30/r26/forward_oos/latest.md \
+                  btc_trend_v30/r26/forward_oos/runs.jsonl
+          if git diff --cached --quiet; then
+            echo 'NO_FORWARD_LEDGER_CHANGE'
+          else
+            git commit -m "R2.6 Forward OOS: update $(date -u +'%Y-%m-%dT%H:%MZ')"
+            git push origin HEAD:btc-trend-v30-r26-final-integration
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: r26-forward-oos-${{ github.run_id }}
+          path: btc_trend_v30/r26/forward_oos/
+          retention-days: 90
