@@ -1,0 +1,190 @@
+from pathlib import Path
+import json
+
+PROMPT = Path('master_prompts/master_btc_trend_v2_6_current.md')
+UI = Path('master_prompts/master_btc_trend_v2_6_ui_final.md')
+CONTRACT = Path('state/master_btc_trend_v2_6_contract.json')
+MANIFEST = Path('money_master_os/masters/btc_trend/manifest.json')
+
+STAGE_LINE = '신호 없음 → 조기신호 → 집중관찰 → 진입준비 → 1차 진입 → 방향확인 → 본진입 → 청산'
+TABLE_COLS = '선행 방향 | 현재 단계 | 조기 움직임 | 1차 진입 | 방향 확인 | 손절 기준 | 지금 행동'
+
+ENGINE_BLOCK = '''BTC 선행신호 엔진 READ ONLY — MANDATORY: 사용자 표시명은 정확히 `BTC 선행신호 엔진`. 내부 기술/검증명 `MASTER BTC TREND V3.0 R2.6`은 GitHub·감사용으로만 유지하고 기본 사용자 화면에서는 숨긴다. 목적은 가격이 크게 움직이기 전 조기 변화→집중관찰→실제 Frozen 진입단계 진행을 보여주는 것이다. Source repo=sovet12345688-debug/master-alt-cvd, source branch=btc-trend-v30-r26-final-integration. 우선 읽기 파일=`btc_trend_v30/r26/forward_oos/latest.md`, `events.csv`, `detections.csv`, `seeds.csv`, `positions.csv`, `transactions.csv`, `ledger_integrity_report.json`, `scorecard.json`. STRICT_FORWARD만 현재 사용자 신호로 인정하고 BRIDGE_HELDOUT_PRE_FREEZE/과거진단은 현재 신호·진입으로 표시 금지. 최신 successful Forward OOS run의 completed-candle 결과만 사용한다. 소스 확인 불가/무결성 FAIL/Freeze identity drift/최신 successful run 미확인이면 추정 복원 금지하고 `확인 불가 · 대기`로 표시한다. STRICT Detection/Seed/Position이 0이면 실패가 아니라 `신호 없음/아직/대기`로 정상 표시한다. 이 레이어는 0점/0가중치 READ ONLY이며 TREND/IGNITION/MATURITY/BOTTOM/TOP/ACCUMULATION/LONG:SHORT/Execution Gate/LIVE PLAN/Fractal/SR/schedule/history를 변경하지 않는다. 반대로 MASTER BTC TREND의 점수·차트판독·행동결론이 선행신호 엔진의 EARLY/PRIORITY/Seed/Confirm/Core/Exit를 생성·승격·변경할 수 없다. Execution/Capital authority는 Frozen R2.5 ONLY를 유지한다.
+
+BTC 선행신호 사용자 단계: 화면에는 항상 `신호 없음 → 조기신호 → 집중관찰 → 진입준비 → 1차 진입 → 방향확인 → 본진입 → 청산` 순서를 한 줄로 표시하고 현재 단계만 강조한다. 내부 매핑은 NONE=`신호 없음`, EARLY_DETECT=`조기신호`, PRIORITY_WATCH=`집중관찰`, EXECUTION_READY=`진입준비`, SEED=`1차 진입`, CONFIRMED=`방향확인`, CORE=`본진입`, DERISK=`비중축소`, EXIT=`청산`, INVALIDATED=`시나리오 무효`. `진입준비`는 주문허가가 아니며 실제 `1차 진입` 표시는 Frozen Seed가 실제 기록된 경우에만 허용한다.
+
+BTC 선행신호 사용자 테이블: BASIC OFFICIAL과 Precision 모두 열 순서를 정확히 `선행 방향 | 현재 단계 | 조기 움직임 | 1차 진입 | 방향 확인 | 손절 기준 | 지금 행동`으로 사용한다. 값 표현은 한국어 우선. 선행 방향=`롱/숏/없음`; 조기 움직임=`없음/약하게 감지/감지됨/강화 중/강하게 감지`; 1차 진입=`아직/가까움/발생`; 방향 확인=`미확인/확인 중/확인`; 손절 기준은 Frozen source 실제 값만, 없으면 `미확정`; 지금 행동=`대기/타점 준비/소규모 진입 검토/유지/진입·추가진입 검토/비중축소/청산/진입 금지/확인 불가`. 이 행동은 상태 설명이며 기존 MASTER BTC TREND 공식 실행결정을 대체하지 않는다. 블록은 신호 0건이어도 절대 생략 금지.'''
+
+BASIC_BLOCK = '''E) `BTC 선행신호 엔진` — SCREEN 1 필수 고정 블록
+열 = `선행 방향 | 현재 단계 | 조기 움직임 | 1차 진입 | 방향 확인 | 손절 기준 | 지금 행동`
+정확히 1행만 표시한다. 그 바로 아래 반드시 `신호 없음 → 조기신호 → 집중관찰 → 진입준비 → 1차 진입 → 방향확인 → 본진입 → 청산` 단계 진행줄을 표시하고 현재 단계만 강조한다. 그 바로 아래 `한줄 해석:`을 정확히 1줄 표시한다. STRICT 신호가 0건이어도 이 블록을 생략하지 않고 `선행 방향=없음 | 현재 단계=신호 없음 | 조기 움직임=없음 | 1차 진입=아직 | 방향 확인=미확인 | 손절 기준=미확정 | 지금 행동=대기`로 정상 표시한다. Source 확인 불가 시에는 임의 복원하지 않고 `확인 불가 · 대기` 중심으로 표시한다.
+'''
+
+PRECISION_BLOCK = '''### 1-A) BTC 선행신호 엔진 — 필수
+열 = `선행 방향 | 현재 단계 | 조기 움직임 | 1차 진입 | 방향 확인 | 손절 기준 | 지금 행동`
+정확히 1행 테이블을 표시한다. 바로 아래 `신호 없음 → 조기신호 → 집중관찰 → 진입준비 → 1차 진입 → 방향확인 → 본진입 → 청산` 단계 진행줄에서 현재 단계만 강조하고, 그 바로 아래 `한줄 해석:`을 정확히 1줄 표시한다. STRICT 신호 0건이어도 생략 금지. 이 블록은 0점/0가중치 READ ONLY이며 Precision의 최종 우세·LONG:SHORT·Entry Gate를 변경하지 않는다.
+'''
+
+
+def patch_prompt():
+    p = PROMPT.read_text(encoding='utf-8')
+    if 'BTC 선행신호 READ ONLY' not in p.split('\n', 1)[0]:
+        p = p.replace('· LONG A+ PROSPECTIVE · NO WATCH]', '· LONG A+ PROSPECTIVE · BTC 선행신호 READ ONLY · NO WATCH]', 1)
+    p = p.replace(
+        '공식명: MASTER BTC TREND V2.6 [6-OBJECTIVE 3-SCREEN BASIC · PRECISION OVERRIDE · FRACTAL+S/R STRENGTH+HORIZON+PROSPECTIVE]',
+        '공식명: MASTER BTC TREND V2.6 [6-OBJECTIVE 3-SCREEN BASIC · PRECISION OVERRIDE · FRACTAL+S/R STRENGTH+HORIZON+PROSPECTIVE+BTC 선행신호 READ ONLY]'
+    )
+    old_ind = '독립성: ExternalMasterDependency=NONE. 다른 MASTER의 score/state/history/RUN_ID/Permission/Entry/SL/TP/결론 사용 금지. 같은 raw fact는 한 composite 안에서 1회만 점수화. Bitget/OKX 동일 timeframe 확인은 confidence/checksum 보조만.'
+    if '동일 저장소의 독립 Frozen Forward OOS 결과' not in p:
+        p = p.replace(old_ind, old_ind + ' 단, `BTC 선행신호 엔진`은 동일 저장소의 독립 Frozen Forward OOS 결과를 사용자에게 읽기전용으로 표시하는 별도 관찰 레이어이며 기존 점수·LONG:SHORT·Entry Gate·plan·schedule·Fractal·S/R 계산에 0점/0가중치로 둔다.', 1)
+
+    anchor = 'TREND/TRAJECTORY: 항상 현재 추세, 추세 강도 XX/100, 최근 추이 ↑ 개선 중 | → 유지 | ↓ 악화 중, 필요 시 dominant IGNITION 점수 1개.\n'
+    if 'BTC 선행신호 엔진 READ ONLY — MANDATORY:' not in p:
+        if anchor not in p:
+            raise RuntimeError('prompt TREND anchor missing')
+        p = p.replace(anchor, anchor + '\n' + ENGINE_BLOCK + '\n', 1)
+
+    screen_anchor = 'D) `단·중·장기 S/R` = `구분 | 신호 | 핵심 S/R`\n필수 행: 단기 / 중기 / 장기. `핵심 S/R` 셀에 지지/저항/강도를 줄바꿈으로 세로 배치. S/R Strength 기존 검증 규칙 유지.\n'
+    if 'E) `BTC 선행신호 엔진` — SCREEN 1 필수 고정 블록' not in p:
+        if screen_anchor not in p:
+            raise RuntimeError('prompt BASIC screen anchor missing')
+        p = p.replace(screen_anchor, screen_anchor + BASIC_BLOCK, 1)
+
+    prec_anchor = '필수 행=장기 구조 / 중기 구조 / 단기 구조 / 현재 우세 / 핵심 지지 / 핵심 저항 / 상승전환 기준 / 하락가속 기준.\n'
+    if '### 1-A) BTC 선행신호 엔진 — 필수' not in p:
+        if prec_anchor not in p:
+            raise RuntimeError('prompt precision anchor missing')
+        p = p.replace(prec_anchor, prec_anchor + '\n' + PRECISION_BLOCK, 1)
+
+    if 'BTC 선행신호 엔진 자체 Forward Ledger/history는' not in p:
+        old_history = 'HISTORY: Precision은 직전 실제 수동 Precision과만 비교. checkpoint 생성 금지. Plan change label ONLY 유지/가격구간수정/기간수정/비중수정/상태변경/무효화. Reason ONLY 시장구조 변화/데이터 변경/방법론 변경.'
+        p = p.replace(old_history, old_history + ' BTC 선행신호 엔진 자체 Forward Ledger/history는 기존 독립 source branch에서만 누적하며 MASTER BTC TREND history에 복사·재작성·backfill하지 않는다.', 1)
+
+    if 'BTC 선행신호 엔진의 GitHub 내부명/R2.6 raw field' not in p:
+        old_hidden = 'DETAILS HIDDEN: BASIC 기본화면에 모든 MA/EMA/RSI/KDJ, OI raw windows, CVD raw timeframes, derivative point breakdown, full delta table, fractal 개발로그, S/R feature dump, 평단/TP 수익 전체표 금지.'
+        p = p.replace(old_hidden, old_hidden + ' BTC 선행신호 엔진의 GitHub 내부명/R2.6 raw field/Hash/Generation/Scorecard 세부 gate도 기본화면에서 숨긴다.', 1)
+
+    PROMPT.write_text(p, encoding='utf-8')
+
+
+def patch_ui():
+    u = UI.read_text(encoding='utf-8')
+    common_anchor = '- 인포그래픽/이미지는 자동 생성 금지. 사용자가 명시적으로 요청한 경우에만 생성한다.\n'
+    if 'BTC 선행신호 엔진 READ ONLY — MANDATORY:' not in u:
+        if common_anchor not in u:
+            raise RuntimeError('UI common anchor missing')
+        u = u.replace(common_anchor, common_anchor + '\n' + ENGINE_BLOCK + '\n', 1)
+
+    ui_screen_anchor = 'D) 단·중·장기 S/R\n열 = `구분 | 신호 | 핵심 S/R`\n행 = 단기 / 중기 / 장기\n`핵심 S/R` 셀 내부를 세로로 `지지 ...` / `저항 ...` / `강도 ...` 순서로 표시한다.\n'
+    if 'E) `BTC 선행신호 엔진` — SCREEN 1 필수 고정 블록' not in u:
+        if ui_screen_anchor not in u:
+            raise RuntimeError('UI BASIC screen anchor missing')
+        u = u.replace(ui_screen_anchor, ui_screen_anchor + '\n' + BASIC_BLOCK, 1)
+
+    ui_prec_anchor = '필수 행 = 장기 구조 / 중기 구조 / 단기 구조 / 현재 우세 / 핵심 지지 / 핵심 저항 / 상승전환 기준 / 하락가속 기준\n'
+    if '### 1-A) BTC 선행신호 엔진 — 필수' not in u:
+        if ui_prec_anchor not in u:
+            raise RuntimeError('UI precision anchor missing')
+        u = u.replace(ui_prec_anchor, ui_prec_anchor + '\n' + PRECISION_BLOCK, 1)
+
+    UI.write_text(u, encoding='utf-8')
+
+
+def patch_contract():
+    c = json.loads(CONTRACT.read_text(encoding='utf-8'))
+    c['btc_leading_signal_engine'] = {
+        'user_display_name': 'BTC 선행신호 엔진',
+        'internal_validation_name': 'MASTER BTC TREND V3.0 R2.6',
+        'mode': 'READ_ONLY_AUXILIARY',
+        'production_score_weight': 0,
+        'long_short_weight': 0,
+        'entry_gate_weight': 0,
+        'live_plan_weight': 0,
+        'source_repo': 'sovet12345688-debug/master-alt-cvd',
+        'source_branch': 'btc-trend-v30-r26-final-integration',
+        'strict_forward_only': True,
+        'bridge_or_historical_as_current_signal_forbidden': True,
+        'completed_candle_only': True,
+        'mandatory_visible_in': ['BASIC_OFFICIAL', 'PRECISION'],
+        'never_omit_when_zero_signals': True,
+        'zero_signal_semantics': 'NORMAL_SIGNAL_NONE_NOT_FAILURE',
+        'source_failure_fallback': '확인 불가 · 대기',
+        'execution_capital_authority': 'FROZEN_R2_5_ONLY',
+        'stages_user': ['신호 없음','조기신호','집중관찰','진입준비','1차 진입','방향확인','본진입','청산'],
+        'table_columns': ['선행 방향','현재 단계','조기 움직임','1차 진입','방향 확인','손절 기준','지금 행동'],
+        'stage_line_required': True,
+        'one_line_interpretation_required': True,
+    }
+    c.setdefault('output', {})['btc_leading_signal_block_mandatory'] = True
+    c['output']['btc_leading_signal_visible_in'] = ['BASIC_OFFICIAL', 'PRECISION']
+    po = c.setdefault('presentation_override', {})
+    po['btc_leading_signal_read_only'] = True
+    po['btc_leading_signal_screen1_basic'] = True
+    prec = po.setdefault('precision', {})
+    secs = prec.setdefault('sections_in_order', [])
+    if 'BTC 선행신호 엔진' not in secs:
+        if '최종 상태판' in secs:
+            secs.insert(secs.index('최종 상태판') + 1, 'BTC 선행신호 엔진')
+        else:
+            secs.insert(0, 'BTC 선행신호 엔진')
+    CONTRACT.write_text(json.dumps(c, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+
+def patch_manifest():
+    m = json.loads(MANIFEST.read_text(encoding='utf-8'))
+    m['btc_leading_signal_engine'] = {
+        'user_display_name': 'BTC 선행신호 엔진',
+        'mode': 'READ_ONLY_ZERO_WEIGHT',
+        'source_repo': 'sovet12345688-debug/master-alt-cvd',
+        'source_branch': 'btc-trend-v30-r26-final-integration',
+        'strict_forward_only': True,
+        'mandatory_visible_in': ['BASIC_OFFICIAL', 'PRECISION'],
+        'must_not_change_v26_production_decision': True,
+        'must_not_modify_r26_frozen_forward_assets': True,
+    }
+    m.setdefault('ui_policy', {})['btc_leading_signal_block'] = {
+        'mandatory': True,
+        'screen1_basic': True,
+        'precision_after_final_status': True,
+        'zero_signal_still_visible': True,
+    }
+    m.setdefault('ownership', {})['btc_leading_signal_engine'] = 'btc-trend-v30-r26-final-integration READ_ONLY; Frozen R2.5 execution authority only'
+    if m.get('production_version') != 'V2.6' or m.get('research_version') != 'V3.0':
+        raise RuntimeError('production/research identity drift')
+    MANIFEST.write_text(json.dumps(m, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+
+def validate():
+    p = PROMPT.read_text(encoding='utf-8')
+    u = UI.read_text(encoding='utf-8')
+    c = json.loads(CONTRACT.read_text(encoding='utf-8'))
+    m = json.loads(MANIFEST.read_text(encoding='utf-8'))
+    for name, text in [('prompt', p), ('ui', u)]:
+        assert 'BTC 선행신호 엔진 READ ONLY — MANDATORY:' in text, name
+        assert TABLE_COLS in text, name
+        assert STAGE_LINE in text, name
+        assert 'STRICT 신호가 0건이어도' in text or 'STRICT 신호 0건이어도' in text, name
+    e = c['btc_leading_signal_engine']
+    assert e['production_score_weight'] == 0
+    assert e['long_short_weight'] == 0
+    assert e['entry_gate_weight'] == 0
+    assert e['live_plan_weight'] == 0
+    assert e['execution_capital_authority'] == 'FROZEN_R2_5_ONLY'
+    assert c['output']['btc_leading_signal_block_mandatory'] is True
+    assert m['production_version'] == 'V2.6'
+    assert m['research_version'] == 'V3.0'
+    assert m['btc_leading_signal_engine']['mode'] == 'READ_ONLY_ZERO_WEIGHT'
+    assert m['ui_policy']['btc_leading_signal_block']['zero_signal_still_visible'] is True
+
+
+def main():
+    patch_prompt()
+    patch_ui()
+    patch_contract()
+    patch_manifest()
+    validate()
+    print('BTC_TREND_R26_READ_ONLY_MAIN_SYNC=PASS')
+
+
+if __name__ == '__main__':
+    main()
