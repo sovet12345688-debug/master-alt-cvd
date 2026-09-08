@@ -1,0 +1,23 @@
+name: BTC TREND V3 R2.6 FREEZE PROBE
+
+on:
+  push:
+    branches: [btc-trend-v30-r26-final-integration]
+    paths:
+      - '.github/workflows/btc_trend_v30_r26_freeze_probe.yml'
+
+jobs:
+  freeze-probe:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Print immutable candidate identity
+        run: |
+          set -euo pipefail
+          echo "R26_CANDIDATE_CONFIG_SHA256=$(sha256sum btc_trend_v30/r26/r26_candidate_config.json | awk '{print $1}')"
+          echo "R26_CANDIDATE_CONFIG_BLOB=$(git hash-object btc_trend_v30/r26/r26_candidate_config.json)"
+          echo "R26_ENGINE_SHA256=$(sha256sum btc_trend_v30/r26/r26_engine.py | awk '{print $1}')"
+          echo "R26_ENGINE_BLOB=$(git hash-object btc_trend_v30/r26/r26_engine.py)"
+          echo "R26_CONTRACT_SHA256=$(sha256sum btc_trend_v30/r26/test_r26_contract.py | awk '{print $1}')"
+          echo "R26_CONTRACT_BLOB=$(git hash-object btc_trend_v30/r26/test_r26_contract.py)"
+          echo "R26_HISTORICAL_REPLAY_BEFORE_FREEZE=false"
