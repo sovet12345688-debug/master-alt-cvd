@@ -1,8 +1,8 @@
 {
   "engine": "MASTER_MARKET_FREE_MACRO_LIQUIDITY_V2",
   "schema_version": "2.0",
-  "last_run_utc": "2026-09-08T14:58:54.054187Z",
-  "snapshot_hour_utc": "2026-09-08T14:00:00Z",
+  "last_run_utc": "2026-09-08T15:58:11.512364Z",
+  "snapshot_hour_utc": "2026-09-08T15:00:00Z",
   "collected_metrics": [
     "FED_RESERVE_BALANCES",
     "FED_RRP_TOTAL",
@@ -13,10 +13,10 @@
     "QRA_NET_MARKETABLE_BORROWING_CURRENT_Q",
     "QRA_NET_MARKETABLE_BORROWING_NEXT_Q",
     "TGA_CLOSING_BALANCE",
-    "TREASURY_BUYBACK_ACTUAL_ACCEPTED",
-    "TREASURY_BUYBACK_ACTUAL_OFFERED",
     "US_NET_LIQUIDITY_PROXY"
   ],
-  "failures": {},
-  "history_rows": 396
+  "failures": {
+    "BUYBACK_ACTUAL": "RuntimeError: buyback accepted amount field not found; labels=['Operation Date', 'Operation Start Time (EST)', 'Operation Closing Time (EST)', 'Settlement Date', 'Preliminary Announcement PDF', 'Preliminary Announcement XML', 'Final Announcement PDF', 'Final Announcement XML', 'Results PDF', 'Results XML', 'Special Announcement PDF', 'Operation Type', 'Security Type', 'Maturity Bucket', 'Number of Issues Accepted', 'Total Par Amount Offered', 'Par Amount Per O"
+  },
+  "history_rows": 406
 }
