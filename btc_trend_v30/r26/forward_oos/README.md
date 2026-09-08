@@ -28,20 +28,57 @@ Every tracker run verifies these identities before reading market data.
 - Weekly context is causally rebuilt from completed Daily candles by the Frozen engine.
 - Warm-up data before OOS is allowed only to form causal indicators; outcomes before OOS are not Forward evidence.
 
+## Automatic Forward Scorecard
+Every official run performs this chain:
+
+`Frozen/PIT contract -> Forward tracker -> Frozen evaluator guard -> Automatic scorecard -> Ledger commit -> Artifact`
+
+The scorecard is evaluation-only. It never changes R2.6 and never promotes Production automatically.
+
+Predeclared Production rules are frozen in `R26_FORWARD_PROMOTION_SPEC_V1.json`. The evaluator implementation and every reused metric-formula source are locked by `R26_FORWARD_SCORECARD_FREEZE_MANIFEST_V1.json` and checked by `scorecard_freeze_guard.py` before each scorecard run.
+
+The automatic scorecard tracks:
+- strict Forward calendar/sample eligibility,
+- LONG / SHORT expectancy,
+- Capture-to-Loss,
+- MCR90 / MCR365 only after the corresponding truth windows mature,
+- episode-order MDD,
+- Seed -> Confirmed -> Core state monotonicity,
+- direction x regime cycle safety,
+- MATURE_BEAR SHORT safety,
+- EARLY lead/conversion/noise diagnostics,
+- Frozen/PIT/closed-candle/phase-firewall/execution-authority integrity.
+
+Insufficient or censored evidence remains `N/A_NOT_MATURE`; it is never converted to zero or treated as failure.
+
+Automated assessment may be `HOLD_COLLECTING`, `EXTEND_CANDIDATE`, `FAIL_CANDIDATE_FOR_FORMAL_REVIEW`, or `PASS_READY_FOR_FORMAL_REVIEW`. The actual `production_decision` remains `HOLD` until a separate formal promotion review is performed under the predeclared specification.
+
 ## Files
 - `detections.csv` — all R2.6 awareness rows since policy OOS start.
 - `events.csv` — awareness streak starts and state changes.
 - `seeds.csv` — exact R2.5/R2.6 execution seeds plus Detection Lead.
 - `positions.csv` — reconstructed Frozen R2.5 risk/state episodes as-of each run.
 - `transactions.csv` — episode leg closes.
-- `state.json` — latest audit state and strict-forward metrics.
-- `latest.md` — mobile-readable latest snapshot.
-- `runs.jsonl` — append-only run summary history.
+- `state.json` — latest tracker audit state and strict-forward metrics.
+- `latest.md` — mobile-readable latest tracker snapshot.
+- `runs.jsonl` — append-only tracker run summary history.
+- `R26_FORWARD_PROMOTION_SPEC_V1.json` — predeclared Production-promotion rules.
+- `forward_scorecard.py` — automatic Forward evaluator.
+- `R26_FORWARD_SCORECARD_FREEZE_MANIFEST_V1.json` — frozen evaluator/formula identities.
+- `scorecard_freeze_guard.py` — evaluator/formula identity guard.
+- `scorecard.json` — latest machine-readable scorecard.
+- `scorecard.md` — latest human-readable scorecard.
+- `scorecard_runs.jsonl` — append-only scorecard run summaries.
+- `forward_truth_episodes.csv` — strict prospective truth episodes when available.
+- `forward_truth_mcr.csv` — matured truth-window Capture/MCR diagnostics.
+- `state_monotonicity.csv` — state cohort/comparison detail.
+- `cycle_buckets.csv` — direction x regime cycle detail.
 
 ## Governance
 1. `EARLY_DETECT` and `PRIORITY_WATCH` have zero order authority.
 2. `EXECUTION_READY` exists only when the exact Frozen R2.5 Seed exists.
-3. Tracker output may not modify Frozen R2.6.
+3. Tracker and Scorecard outputs may not modify Frozen R2.6.
 4. No threshold tuning from Forward outcomes.
-5. No automatic Production promotion. Tracker status remains `COLLECTING / HOLD` until a separately predeclared production-promotion review is completed.
+5. No automatic Production promotion. Tracker/Scorecard remain `COLLECTING / HOLD` until a separately predeclared formal promotion review is completed.
 6. Bridge-heldout data and historical diagnostics are never mixed into strict-forward metrics.
+7. Scorecard formulas may not drift silently. Any prospective evaluator/formula change requires a new versioned freeze manifest and may not retroactively reinterpret prior strict-forward evidence.
