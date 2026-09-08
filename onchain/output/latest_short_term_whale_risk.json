@@ -1,7 +1,7 @@
 {
   "engine": "MASTER_ST_WHALE_PROFIT_TAKING_RISK_PROXY_V1",
   "schema_version": "1.0",
-  "generated_at_utc": "2026-09-08T06:37:18.883717Z",
+  "generated_at_utc": "2026-09-08T06:43:59.030161Z",
   "name_ko": "단기 고래 차익실현 위험",
   "role": "AUXILIARY_RISK_ONLY",
   "score_weight": 0,
@@ -9,48 +9,54 @@
   "proxy_note": "Exact CryptoQuant STH Whale P&L is not reproduced. STH cohort profit-state proxies + current whale futures NET + BTC CVD are combined.",
   "rows": [
     {
-      "signal": "⚪",
+      "signal": "🟢",
       "indicator": "STH 미실현 수익상태 (Whale 대체)",
-      "display_value": "N/A",
-      "state": "N/A",
+      "display_value": "-0.333 / 4Y 2.9%ile",
+      "state": "차익실현 잠재압력 낮음",
       "raw": {
-        "status": "N/A",
-        "value": null,
-        "percentile_4y": null,
-        "avg_7d": null,
+        "status": "OK",
+        "trace_name": "STH-NUPL",
+        "source_time_utc": "2026-02-19T00:00:00Z",
+        "value": -0.3334050542162605,
+        "percentile_4y": 2.9411764705882355,
+        "avg_7d": -0.32442948178451747,
+        "history_points_4y": 1462,
         "source": "Checkonchain public static Plotly HTML",
-        "source_url": "https://raw.githubusercontent.com/checkmatey/checkonchain.com/main/btconchain/unrealised/nupl_bycohort/nupl_bycohort_light.html",
-        "error": "ValueError: target trace ambiguous/not found; traces=['Max Pain', 'Enthusiasm (1-of-3)', 'Excitement (2-of-3)', 'Euphoria (3-of-3)', 'Price', 'NUPL', 'STH-NUPL', 'LTH-NUPL']"
+        "source_url": "https://raw.githubusercontent.com/checkmatey/checkonchain.com/main/btconchain/unrealised/nupl_bycohort/nupl_bycohort_light.html"
       }
     },
     {
-      "signal": "⚪",
+      "signal": "🟢",
       "indicator": "STH-MVRV",
-      "display_value": "N/A",
-      "state": "N/A",
+      "display_value": "0.750 / 4Y 2.9%ile",
+      "state": "손익분기 이하/과열 아님",
       "raw": {
-        "status": "N/A",
-        "value": null,
-        "percentile_4y": null,
-        "avg_7d": null,
+        "status": "OK",
+        "trace_name": "STH-MVRV",
+        "source_time_utc": "2026-02-19T00:00:00Z",
+        "value": 0.74995965,
+        "percentile_4y": 2.9411764705882355,
+        "avg_7d": 0.7552719625,
+        "history_points_4y": 1462,
         "source": "Checkonchain public static Plotly HTML",
-        "source_url": "https://raw.githubusercontent.com/checkmatey/checkonchain.com/main/btconchain/unrealised/mvrv_sth/mvrv_sth_light.html",
-        "error": "ValueError: target trace ambiguous/not found; traces=['Price', 'STH Realised Price', 'STH-MVRV', '+2.0sd', '+1.0sd', 'Mean', '-0.8sd', '-1.2sd']"
+        "source_url": "https://raw.githubusercontent.com/checkmatey/checkonchain.com/main/btconchain/unrealised/mvrv_sth/mvrv_sth_light.html"
       }
     },
     {
-      "signal": "⚪",
+      "signal": "🟢",
       "indicator": "STH-SOPR",
-      "display_value": "N/A",
-      "state": "N/A",
+      "display_value": "1.000 / 7D평균 1.000",
+      "state": "이익실현 압력 낮음",
       "raw": {
-        "status": "N/A",
-        "value": null,
-        "percentile_4y": null,
-        "avg_7d": null,
+        "status": "OK",
+        "trace_name": "STH-SOPR",
+        "source_time_utc": "2026-02-19T00:00:00Z",
+        "value": 1.0,
+        "percentile_4y": 48.29001367989056,
+        "avg_7d": 1.0,
+        "history_points_4y": 1462,
         "source": "Checkonchain public static Plotly HTML",
-        "source_url": "https://raw.githubusercontent.com/checkmatey/checkonchain.com/main/btconchain/realised/sthsopr_indicator/sthsopr_indicator_light.html",
-        "error": "ValueError: target trace ambiguous/not found; traces=['Price', 'STH Realised Price', 'STH-SOPR > 1', 'STH-SOPR < 1', '0.94', '0.96', '0.98', '1.02', '1.04', '1.06']"
+        "source_url": "https://raw.githubusercontent.com/checkmatey/checkonchain.com/main/btconchain/realised/sthsopr_indicator/sthsopr_indicator_light.html"
       }
     },
     {
@@ -61,12 +67,11 @@
       "raw": {
         "status": "OK",
         "value": -196729617.62377,
-        "unit": "USD",
         "net_ratio": -0.23183125141700595,
         "long_usd": 325930053.12177,
         "short_usd": 522659670.74554,
         "source_time_utc": "2026-09-08T04:00:00Z",
-        "source": "market_vault/output/latest_actor_flows.json (Hyperliquid >=$20M aggregate)"
+        "source": "market_vault/output/latest_actor_flows.json"
       }
     },
     {
@@ -77,21 +82,20 @@
       "raw": {
         "status": "OK",
         "value": -34165729.16059999,
-        "unit": "USDT notional",
         "cvd_to_volume_ratio": -0.2696298212266269,
         "trade_notional_1h_usdt": 126713465.91104,
         "source_time_utc": "2026-09-08T06:23:58.166030Z",
-        "source": "derivatives/output/latest_microstructure.json (Bitget USDT Futures, 1H)"
+        "source": "derivatives/output/latest_microstructure.json"
       }
     }
   ],
   "overall": {
-    "signal": "⚪",
-    "level": "확인 제한",
+    "signal": "🟡",
+    "level": "중간",
     "risk_points": 2.0,
-    "available_rows": 2,
+    "available_rows": 5,
     "total_rows": 5,
-    "coverage": 0.4,
+    "coverage": 1.0,
     "method": "red=1, yellow=0.5, green=0; equal-weight auxiliary. <3 available rows => 확인 제한."
   },
   "guards": {
@@ -110,18 +114,5 @@
       "WATCH"
     ]
   },
-  "failures": [
-    {
-      "indicator": "STH 미실현 수익상태 (Whale 대체)",
-      "error": "ValueError: target trace ambiguous/not found; traces=['Max Pain', 'Enthusiasm (1-of-3)', 'Excitement (2-of-3)', 'Euphoria (3-of-3)', 'Price', 'NUPL', 'STH-NUPL', 'LTH-NUPL']"
-    },
-    {
-      "indicator": "STH-MVRV",
-      "error": "ValueError: target trace ambiguous/not found; traces=['Price', 'STH Realised Price', 'STH-MVRV', '+2.0sd', '+1.0sd', 'Mean', '-0.8sd', '-1.2sd']"
-    },
-    {
-      "indicator": "STH-SOPR",
-      "error": "ValueError: target trace ambiguous/not found; traces=['Price', 'STH Realised Price', 'STH-SOPR > 1', 'STH-SOPR < 1', '0.94', '0.96', '0.98', '1.02', '1.04', '1.06']"
-    }
-  ]
+  "failures": []
 }
