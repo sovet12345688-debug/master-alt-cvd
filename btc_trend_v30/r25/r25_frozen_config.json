@@ -1,0 +1,51 @@
+{
+  "model": "MASTER_BTC_TREND_V3_R2_5",
+  "status": "FINAL_FROZEN_NO_REPLAY",
+  "freeze_metadata": {
+    "candidate_config_sha256": "75f1ece4d57ef1c133ce58dda09309937e8f72965548bdfc498540e03e307c92",
+    "candidate_config_git_blob_sha1": "faf99f2178d84c7b40c505f61b721c4c85f4fbd6",
+    "prefreeze_run_id": 34178442624,
+    "prefreeze_status": "PASS",
+    "historical_replay_performed_before_freeze": false
+  },
+  "parent": {
+    "model": "MASTER_BTC_TREND_V3_R2_4",
+    "branch": "btc-trend-v30-r24-mature-bear-risk",
+    "frozen_config_sha256": "6358572604f79b4e376509b74fc977871e956175a3fba959aab7a583fa1a6a91",
+    "r24_engine_git_blob_sha1": "a5a5d30d06bc4d99603e0fc92834f9a372794702",
+    "r24_contract_git_blob_sha1": "402644f0f8e3fb43b866c6ee0b053fa32c4b5cb8"
+  },
+  "single_change": {
+    "id": "CAPITAL_AUTHORIZATION_ONLY_AT_CORE",
+    "applies_to": "RISK_ALLOCATION_ONLY",
+    "signal_rules_changed": false,
+    "state_transition_rules_changed": false,
+    "stop_rules_changed": false,
+    "holding_exit_rules_changed": false,
+    "reset_rules_changed": false,
+    "pit_rules_changed": false
+  },
+  "risk_schedule": {
+    "long": {"seed_risk_R": 0.35, "confirm_risk_add_R": 0.0, "core_risk_add_R": 0.65, "max_episode_risk_R": 1.0},
+    "short_not_mature_bear": {"seed_risk_R": 0.30, "confirm_risk_add_R": 0.0, "core_risk_add_R": 0.55, "max_episode_risk_R": 0.85},
+    "short_mature_bear": {"inherit_r24_seed_only_cap": true, "seed_risk_R": 0.30, "confirm_risk_add_R": 0.0, "core_risk_add_R": 0.0, "max_episode_risk_R": 0.30}
+  },
+  "governor_invariants": {
+    "confirmed_state_has_no_incremental_capital_authority": true,
+    "only_core_may_authorize_incremental_risk": true,
+    "stop_may_widen": false,
+    "risk_increase_after_derisk": false,
+    "episode_cap_must_hold": true,
+    "mature_bear_r24_cap_dominates": true,
+    "leverage_does_not_define_risk": true,
+    "structural_stop_and_external_1R_define_runtime_size": true,
+    "closed_candle_pit_required": true
+  },
+  "explicitly_not_used": ["CONFIRMED_NO_CORE_LOSS_THRESHOLD","MFE_THRESHOLD","MAE_THRESHOLD","DURATION_THRESHOLD","NEW_VOLUME_THRESHOLD","NEW_PRICE_EXTENSION_THRESHOLD","CONSECUTIVE_LOSS_THRESHOLD","DAILY_DRAWDOWN_THRESHOLD","WINNER_LOSER_CUTOFF"],
+  "evidence_firewall": {
+    "historical_2021_2026_can_only_diagnose": true,
+    "historical_results_may_not_modify_frozen_r25": true,
+    "forward_untouched_oos_required_for_production": true,
+    "pre_freeze_r25_historical_replay_count": 0
+  }
+}
