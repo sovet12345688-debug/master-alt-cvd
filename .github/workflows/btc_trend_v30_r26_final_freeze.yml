@@ -1,0 +1,62 @@
+name: BTC TREND V3 R2.6 FINAL FREEZE
+
+on:
+  push:
+    branches: [btc-trend-v30-r26-final-integration]
+    paths:
+      - '.github/workflows/btc_trend_v30_r26_final_freeze.yml'
+
+jobs:
+  final-freeze:
+    runs-on: ubuntu-24.04
+    env:
+      PYTHONUNBUFFERED: '1'
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/btc_trend_v30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Parent PIT and contracts
+        run: |
+          set -euo pipefail
+          (cd btc_trend_v30/r20 && python test_r20_engine_pit.py)
+          python btc_trend_v30/r21/test_r21_contract.py
+          python btc_trend_v30/r24/test_r24_contract.py
+          python btc_trend_v30/r25/test_r25_contract.py
+          python btc_trend_v30/r25/r25_freeze_guard.py
+      - name: R2.3 frozen detector lineage
+        run: |
+          set -euo pipefail
+          git fetch origin btc-trend-v30-r23-detection-execution-separation
+          test "$(git rev-parse FETCH_HEAD:btc_trend_v30/r23/r23_frozen_config.json)" = "19f3b48e92ea237ddc54c30a83468304d507d52c"
+          test "$(git rev-parse FETCH_HEAD:btc_trend_v30/r23/r23_detector.py)" = "ba6cfd98fb88970558002189ddae994e0e6c5c19"
+          test "$(git rev-parse FETCH_HEAD:btc_trend_v30/r23/test_r23_contract.py)" = "450957d0eace09af1e518d05d37fa61ddfaead39"
+          git show FETCH_HEAD:btc_trend_v30/r23/r23_frozen_config.json > /tmp/r23_frozen.json
+          test "$(sha256sum /tmp/r23_frozen.json | awk '{print $1}')" = "ab9984b655edc109332edd23de6f04a75252fd993360d9d92146d51da53d9356"
+      - name: R2.6 final guard and contract
+        run: |
+          set -euo pipefail
+          python btc_trend_v30/r26/r26_freeze_guard.py
+          python btc_trend_v30/r26/test_r26_contract.py
+          python btc_trend_v30/r26/r26_engine.py
+      - name: Explicit immutable identity
+        run: |
+          set -euo pipefail
+          test "$(sha256sum btc_trend_v30/r26/r26_frozen_config.json | awk '{print $1}')" = "bbdbbe173e8f16bb6d57d6ed5bdff52d616c42fead5b59b39c5b3d7188a64a61"
+          test "$(git hash-object btc_trend_v30/r26/r26_frozen_config.json)" = "09d6d6689f46c16f3a40b16c58495a999e4f9e75"
+          test "$(git hash-object btc_trend_v30/r26/r26_engine.py)" = "c511b99205314d351bacb441cc88d70d9a4947ee"
+          test "$(git hash-object btc_trend_v30/r26/test_r26_contract.py)" = "ae6e8bd3cbafdc8b8a2c9672db5ee16e324850b3"
+          test "$(git hash-object btc_trend_v30/r25/r25_engine.py)" = "b5efe7378de839b338057826e0a7cb29926ec3a6"
+      - name: Compile and replay firewall
+        run: |
+          set -euo pipefail
+          python -m py_compile btc_trend_v30/r26/r26_engine.py btc_trend_v30/r26/test_r26_contract.py btc_trend_v30/r26/r26_freeze_guard.py
+          test ! -e btc_trend_v30/r26/output
+          echo 'R26_FINAL_FREEZE=PASS'
+          echo 'R26_EXECUTION_ENGINE_CHANGED=false'
+          echo 'R26_HISTORICAL_REPLAY_PERFORMED_BEFORE_FREEZE=false'
+          echo 'NEXT_PROMOTION_BLOCKER=FORWARD_UNTOUCHED_OOS'
