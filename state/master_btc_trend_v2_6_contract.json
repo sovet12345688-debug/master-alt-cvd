@@ -27,7 +27,11 @@
     "cross_master_blocking_dependency": false
   },
   "schedule": {
-    "official_kst": ["09:10", "17:10", "21:10"],
+    "official_kst": [
+      "09:10",
+      "17:10",
+      "21:10"
+    ],
     "hourly_watch": false,
     "four_hour_watch": false,
     "plan_watch": false,
@@ -66,15 +70,29 @@
   "derivatives": {
     "primary_oi_source": "Bitget USDT Futures BTC same venue/contract family",
     "freshness_minutes_max": 90,
-    "oi_windows": ["1H", "4H", "24H"],
-    "funding": ["current", "change"],
+    "oi_windows": [
+      "1H",
+      "4H",
+      "24H"
+    ],
+    "funding": [
+      "current",
+      "change"
+    ],
     "na_is_zero": false,
     "backfill_forbidden": true,
     "interpolation_forbidden": true,
     "cross_venue_repair_forbidden": true,
     "okx_visible_oi_role": "CHECKSUM_CONFIDENCE_ONLY",
     "derivatives_alone_can_pass_entry_gate": false,
-    "precision_visible_auxiliary_indicators": ["OI", "CVD", "Taker Buy/Sell", "RSI", "KDJ", "거래량"],
+    "precision_visible_auxiliary_indicators": [
+      "OI",
+      "CVD",
+      "Taker Buy/Sell",
+      "RSI",
+      "KDJ",
+      "거래량"
+    ],
     "precision_exchange_price_difference_analysis": "FORBIDDEN",
     "precision_indicator_missing_policy": "N/A_NO_CROSS_VENUE_FILL"
   },
@@ -131,7 +149,11 @@
     "1D_support": "PASS",
     "1D_resistance": "PASS",
     "1W": "NOT_APPROVED_INSUFFICIENT_SAMPLE",
-    "bands": {"weak":"0-49","normal":"50-79","strong":"80-100"}
+    "bands": {
+      "weak": "0-49",
+      "normal": "50-79",
+      "strong": "80-100"
+    }
   },
   "output": {
     "basic_official_semantic_screens": 3,
@@ -139,13 +161,26 @@
     "later_user_refinement_allowed": true,
     "ui_only_change_must_not_rebuild_logic": true,
     "details_hidden_by_default_in_basic": true,
-    "precision_table_first": true
+    "precision_table_first": true,
+    "btc_leading_signal_block_mandatory": true,
+    "btc_leading_signal_visible_in": [
+      "BASIC_OFFICIAL",
+      "PRECISION"
+    ]
   },
   "today_direction": {
-    "must_choose_one": ["롱", "숏"],
+    "must_choose_one": [
+      "롱",
+      "숏"
+    ],
     "neutral_wait_forbidden_in_this_line": true,
     "entry_signal": false,
-    "tie_breaker": ["1D", "4H", "previous_OFFICIAL", "current_price_structure"]
+    "tie_breaker": [
+      "1D",
+      "4H",
+      "previous_OFFICIAL",
+      "current_price_structure"
+    ]
   },
   "history": {
     "precision_compare_only_previous_actual_precision_run": true,
@@ -159,11 +194,23 @@
     "fail_closed_on_no_stored_official_run": false,
     "current_official_execution_allowed_if_identity_and_current_data_valid": true,
     "prior_comparison_when_missing": "N/A_NO_RECONSTRUCTION",
-    "forbidden_reconstruction_sources": ["chat_memory", "legacy_handoff", "V3.0_research"],
-    "fail_closed_conditions": ["VERSION_DRIFT", "SOURCE_MISSING", "CANONICAL_OR_CONTRACT_UNREADABLE", "VALIDATOR_FAIL"],
+    "forbidden_reconstruction_sources": [
+      "chat_memory",
+      "legacy_handoff",
+      "V3.0_research"
+    ],
+    "fail_closed_conditions": [
+      "VERSION_DRIFT",
+      "SOURCE_MISSING",
+      "CANONICAL_OR_CONTRACT_UNREADABLE",
+      "VALIDATOR_FAIL"
+    ],
     "persist_successful_basic_official": true,
     "publisher_contract": "official_state/publish_official_state.py",
-    "persistence_targets": ["official_state/latest/btc_trend.json", "official_state/history/btc_trend/YYYY-MM.jsonl"],
+    "persistence_targets": [
+      "official_state/latest/btc_trend.json",
+      "official_state/history/btc_trend/YYYY-MM.jsonl"
+    ],
     "persistence_failure_invalidates_current_visible_report": false,
     "persistence_failure_status": "PERSISTENCE_PENDING"
   },
@@ -191,10 +238,17 @@
         "image_attachment_alone_auto_runs": false,
         "explicit_precision_request_also_allowed": true
       },
-      "accepted_timeframes": ["1M", "1W", "1D", "4H", "1H"],
+      "accepted_timeframes": [
+        "1M",
+        "1W",
+        "1D",
+        "4H",
+        "1H"
+      ],
       "missing_timeframe_policy": "N/A_OR_OMIT_OPTIONAL_1M_NO_INVENTION",
       "sections_in_order": [
         "최종 상태판",
+        "BTC 선행신호 엔진",
         "타임프레임 통합 분석",
         "거래소 보조지표 통합 분석",
         "엘리엇파동 관점",
@@ -204,15 +258,40 @@
       ],
       "timeframe_table": {
         "single_table_required": true,
-        "columns": ["TF", "구조", "모멘텀", "핵심 지지", "핵심 저항", "현재판정"],
-        "rows_in_order": ["1M", "1W", "1D", "4H", "1H"],
+        "columns": [
+          "TF",
+          "구조",
+          "모멘텀",
+          "핵심 지지",
+          "핵심 저항",
+          "현재판정"
+        ],
+        "rows_in_order": [
+          "1M",
+          "1W",
+          "1D",
+          "4H",
+          "1H"
+        ],
         "repetitive_long_form_timeframe_sections_forbidden": true
       },
       "exchange_auxiliary_table": {
         "single_table_required": true,
         "orientation": "ROWS_INDICATORS_UNIFIED_NO_EXCHANGE_COLUMNS",
-        "columns": ["지표", "신호", "핵심값·상태", "정밀 해석"],
-        "required_rows": ["OI", "CVD", "Taker Buy/Sell", "RSI", "KDJ", "거래량"],
+        "columns": [
+          "지표",
+          "신호",
+          "핵심값·상태",
+          "정밀 해석"
+        ],
+        "required_rows": [
+          "OI",
+          "CVD",
+          "Taker Buy/Sell",
+          "RSI",
+          "KDJ",
+          "거래량"
+        ],
         "exchange_columns_forbidden": true,
         "source_label_policy": "OPTIONAL_INLINE_SOURCE_LABEL_ONLY_BITGET_OR_OKX",
         "cell_analysis_depth": "CURRENT_VALUE_OR_DIRECTION_TO_RECENT_CHANGE_TO_PRICE_STRUCTURE_MEANING",
@@ -220,7 +299,10 @@
         "missing_indicator": "N/A_NO_ESTIMATE_NO_CROSS_FILL",
         "volume_analysis": {
           "detail_level": "ENHANCED_REQUIRED",
-          "compare_current_to_visible_moving_average": ["MA5", "MA10"],
+          "compare_current_to_visible_moving_average": [
+            "MA5",
+            "MA10"
+          ],
           "compare_to_prior_breakout_or_impulse_volume": true,
           "compare_up_candle_vs_down_candle_volume": true,
           "price_volume_divergence_or_pressure_exhaustion_check": true,
@@ -237,19 +319,52 @@
         "summary_content": "현재 매수/매도 수급 우세 + 가장 중요한 확인 지표"
       },
       "elliott_table": {
-        "columns": ["구분", "현재 판단"],
-        "required_rows": ["큰 파동 위치", "현재 세부파동", "가장 가능성 높은 카운팅", "대안 카운팅", "상승 확인선", "하락 확인선", "파동 무효화", "신뢰도"],
+        "columns": [
+          "구분",
+          "현재 판단"
+        ],
+        "required_rows": [
+          "큰 파동 위치",
+          "현재 세부파동",
+          "가장 가능성 높은 카운팅",
+          "대안 카운팅",
+          "상승 확인선",
+          "하락 확인선",
+          "파동 무효화",
+          "신뢰도"
+        ],
         "main_and_alternative_required": true,
         "unconfirmed_numeric_wave_count_must_not_be_asserted_as_fact": true,
         "confidence_is_market_probability": false
       },
       "scenario_table": {
-        "columns": ["시나리오", "확인 조건", "예상 경로", "무효화"],
-        "required_rows": ["🟢 상승", "🔴 하락"]
+        "columns": [
+          "시나리오",
+          "확인 조건",
+          "예상 경로",
+          "무효화"
+        ],
+        "required_rows": [
+          "🟢 상승",
+          "🔴 하락"
+        ]
       },
       "final_verdict_table": {
-        "columns": ["항목", "결과"],
-        "required_rows": ["1M(첨부 시)", "1W", "1D", "4H", "1H", "OI·CVD 수급", "엘리엇파동", "최종 우세", "신뢰도"],
+        "columns": [
+          "항목",
+          "결과"
+        ],
+        "required_rows": [
+          "1M(첨부 시)",
+          "1W",
+          "1D",
+          "4H",
+          "1H",
+          "OI·CVD 수급",
+          "엘리엇파동",
+          "최종 우세",
+          "신뢰도"
+        ],
         "one_price_line_required": true,
         "one_price_prefix": "지금 딱 하나만 볼 가격:"
       }
@@ -261,15 +376,72 @@
       "required_follow_up_4_if_github_change_needed": "변경 사항 발생. github 변경 패치 작업 진행 도와줄까?",
       "forbid_follow_up_4_phrase_if_no_github_change_needed": true,
       "auto_image_generation": false
-    }
+    },
+    "btc_leading_signal_read_only": true,
+    "btc_leading_signal_screen1_basic": true
   },
   "change_management": {
     "github_patch_necessity_check_required_on_every_change_request": true,
     "question": "이 변경이 GitHub canonical/contract/collector/schema/authoritative prompt에 남아야 하는가?",
-    "github_patch_needed_examples": ["출력 UI", "규칙", "필수 항목", "점수/엔진", "데이터 구조", "MASTER 동작", "authoritative prompt"],
-    "github_patch_not_needed_examples": ["단순 분석", "수동 실행", "데이터 확인"],
+    "github_patch_needed_examples": [
+      "출력 UI",
+      "규칙",
+      "필수 항목",
+      "점수/엔진",
+      "데이터 구조",
+      "MASTER 동작",
+      "authoritative prompt"
+    ],
+    "github_patch_not_needed_examples": [
+      "단순 분석",
+      "수동 실행",
+      "데이터 확인"
+    ],
     "write_requires_explicit_user_request": true,
     "follow_up_4_exact_if_needed": "변경 사항 발생. github 변경 패치 작업 진행 도와줄까?",
     "follow_up_4_phrase_forbidden_if_not_needed": true
+  },
+  "btc_leading_signal_engine": {
+    "user_display_name": "BTC 선행신호 엔진",
+    "internal_validation_name": "MASTER BTC TREND V3.0 R2.6",
+    "mode": "READ_ONLY_AUXILIARY",
+    "production_score_weight": 0,
+    "long_short_weight": 0,
+    "entry_gate_weight": 0,
+    "live_plan_weight": 0,
+    "source_repo": "sovet12345688-debug/master-alt-cvd",
+    "source_branch": "btc-trend-v30-r26-final-integration",
+    "strict_forward_only": true,
+    "bridge_or_historical_as_current_signal_forbidden": true,
+    "completed_candle_only": true,
+    "mandatory_visible_in": [
+      "BASIC_OFFICIAL",
+      "PRECISION"
+    ],
+    "never_omit_when_zero_signals": true,
+    "zero_signal_semantics": "NORMAL_SIGNAL_NONE_NOT_FAILURE",
+    "source_failure_fallback": "확인 불가 · 대기",
+    "execution_capital_authority": "FROZEN_R2_5_ONLY",
+    "stages_user": [
+      "신호 없음",
+      "조기신호",
+      "집중관찰",
+      "진입준비",
+      "1차 진입",
+      "방향확인",
+      "본진입",
+      "청산"
+    ],
+    "table_columns": [
+      "선행 방향",
+      "현재 단계",
+      "조기 움직임",
+      "1차 진입",
+      "방향 확인",
+      "손절 기준",
+      "지금 행동"
+    ],
+    "stage_line_required": true,
+    "one_line_interpretation_required": true
   }
 }

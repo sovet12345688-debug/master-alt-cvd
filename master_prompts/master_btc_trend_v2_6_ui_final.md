@@ -18,6 +18,12 @@ HARD SCOPE
 - 진행봉은 현재 상태 설명만 가능하며 completed candle confirmation으로 부르지 않는다.
 - 인포그래픽/이미지는 자동 생성 금지. 사용자가 명시적으로 요청한 경우에만 생성한다.
 
+BTC 선행신호 엔진 READ ONLY — MANDATORY: 사용자 표시명은 정확히 `BTC 선행신호 엔진`. 내부 기술/검증명 `MASTER BTC TREND V3.0 R2.6`은 GitHub·감사용으로만 유지하고 기본 사용자 화면에서는 숨긴다. 목적은 가격이 크게 움직이기 전 조기 변화→집중관찰→실제 Frozen 진입단계 진행을 보여주는 것이다. Source repo=sovet12345688-debug/master-alt-cvd, source branch=btc-trend-v30-r26-final-integration. 우선 읽기 파일=`btc_trend_v30/r26/forward_oos/latest.md`, `events.csv`, `detections.csv`, `seeds.csv`, `positions.csv`, `transactions.csv`, `ledger_integrity_report.json`, `scorecard.json`. STRICT_FORWARD만 현재 사용자 신호로 인정하고 BRIDGE_HELDOUT_PRE_FREEZE/과거진단은 현재 신호·진입으로 표시 금지. 최신 successful Forward OOS run의 completed-candle 결과만 사용한다. 소스 확인 불가/무결성 FAIL/Freeze identity drift/최신 successful run 미확인이면 추정 복원 금지하고 `확인 불가 · 대기`로 표시한다. STRICT Detection/Seed/Position이 0이면 실패가 아니라 `신호 없음/아직/대기`로 정상 표시한다. 이 레이어는 0점/0가중치 READ ONLY이며 TREND/IGNITION/MATURITY/BOTTOM/TOP/ACCUMULATION/LONG:SHORT/Execution Gate/LIVE PLAN/Fractal/SR/schedule/history를 변경하지 않는다. 반대로 MASTER BTC TREND의 점수·차트판독·행동결론이 선행신호 엔진의 EARLY/PRIORITY/Seed/Confirm/Core/Exit를 생성·승격·변경할 수 없다. Execution/Capital authority는 Frozen R2.5 ONLY를 유지한다.
+
+BTC 선행신호 사용자 단계: 화면에는 항상 `신호 없음 → 조기신호 → 집중관찰 → 진입준비 → 1차 진입 → 방향확인 → 본진입 → 청산` 순서를 한 줄로 표시하고 현재 단계만 강조한다. 내부 매핑은 NONE=`신호 없음`, EARLY_DETECT=`조기신호`, PRIORITY_WATCH=`집중관찰`, EXECUTION_READY=`진입준비`, SEED=`1차 진입`, CONFIRMED=`방향확인`, CORE=`본진입`, DERISK=`비중축소`, EXIT=`청산`, INVALIDATED=`시나리오 무효`. `진입준비`는 주문허가가 아니며 실제 `1차 진입` 표시는 Frozen Seed가 실제 기록된 경우에만 허용한다.
+
+BTC 선행신호 사용자 테이블: BASIC OFFICIAL과 Precision 모두 열 순서를 정확히 `선행 방향 | 현재 단계 | 조기 움직임 | 1차 진입 | 방향 확인 | 손절 기준 | 지금 행동`으로 사용한다. 값 표현은 한국어 우선. 선행 방향=`롱/숏/없음`; 조기 움직임=`없음/약하게 감지/감지됨/강화 중/강하게 감지`; 1차 진입=`아직/가까움/발생`; 방향 확인=`미확인/확인 중/확인`; 손절 기준은 Frozen source 실제 값만, 없으면 `미확정`; 지금 행동=`대기/타점 준비/소규모 진입 검토/유지/진입·추가진입 검토/비중축소/청산/진입 금지/확인 불가`. 이 행동은 상태 설명이며 기존 MASTER BTC TREND 공식 실행결정을 대체하지 않는다. 블록은 신호 0건이어도 절대 생략 금지.
+
 # BASIC OFFICIAL — 기존 3-SCREEN FINAL
 
 정확히 SCREEN 1~3만 출력한다.
@@ -40,6 +46,10 @@ D) 단·중·장기 S/R
 열 = `구분 | 신호 | 핵심 S/R`
 행 = 단기 / 중기 / 장기
 `핵심 S/R` 셀 내부를 세로로 `지지 ...` / `저항 ...` / `강도 ...` 순서로 표시한다.
+
+E) `BTC 선행신호 엔진` — SCREEN 1 필수 고정 블록
+열 = `선행 방향 | 현재 단계 | 조기 움직임 | 1차 진입 | 방향 확인 | 손절 기준 | 지금 행동`
+정확히 1행만 표시한다. 그 바로 아래 반드시 `신호 없음 → 조기신호 → 집중관찰 → 진입준비 → 1차 진입 → 방향확인 → 본진입 → 청산` 단계 진행줄을 표시하고 현재 단계만 강조한다. 그 바로 아래 `한줄 해석:`을 정확히 1줄 표시한다. STRICT 신호가 0건이어도 이 블록을 생략하지 않고 `선행 방향=없음 | 현재 단계=신호 없음 | 조기 움직임=없음 | 1차 진입=아직 | 방향 확인=미확인 | 손절 기준=미확정 | 지금 행동=대기`로 정상 표시한다. Source 확인 불가 시에는 임의 복원하지 않고 `확인 불가 · 대기` 중심으로 표시한다.
 
 SCREEN 1 마지막 = `핵심 요약: ...`
 
@@ -75,6 +85,10 @@ SCREEN 3 마지막 = `핵심 요약: ...`
 ### 1) 최종 상태판
 열 = `항목 | 판정`
 필수 행 = 장기 구조 / 중기 구조 / 단기 구조 / 현재 우세 / 핵심 지지 / 핵심 저항 / 상승전환 기준 / 하락가속 기준
+
+### 1-A) BTC 선행신호 엔진 — 필수
+열 = `선행 방향 | 현재 단계 | 조기 움직임 | 1차 진입 | 방향 확인 | 손절 기준 | 지금 행동`
+정확히 1행 테이블을 표시한다. 바로 아래 `신호 없음 → 조기신호 → 집중관찰 → 진입준비 → 1차 진입 → 방향확인 → 본진입 → 청산` 단계 진행줄에서 현재 단계만 강조하고, 그 바로 아래 `한줄 해석:`을 정확히 1줄 표시한다. STRICT 신호 0건이어도 생략 금지. 이 블록은 0점/0가중치 READ ONLY이며 Precision의 최종 우세·LONG:SHORT·Entry Gate를 변경하지 않는다.
 
 ### 2) 타임프레임 통합 분석
 타임프레임별 장문 섹션을 만들지 않고 정확히 1개의 통합 테이블로 출력한다.

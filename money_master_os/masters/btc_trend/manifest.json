@@ -66,7 +66,13 @@
     "basic_official_and_precision_same_layout": true,
     "screen1_mobile_compression": "3-column-first",
     "signal_column_position": 2,
-    "status": "FINAL_LOCK"
+    "status": "FINAL_LOCK",
+    "btc_leading_signal_block": {
+      "mandatory": true,
+      "screen1_basic": true,
+      "precision_after_final_status": true,
+      "zero_signal_still_visible": true
+    }
   },
   "ownership": {
     "logic": "canonical_source",
@@ -74,6 +80,20 @@
     "official_decision_state": "official_state",
     "official_state_transport": "official_state_bridge",
     "research_assets": "btc_backtest + btc-fractal-v26-build",
-    "chat_memory": "NON_CANONICAL"
+    "chat_memory": "NON_CANONICAL",
+    "btc_leading_signal_engine": "btc-trend-v30-r26-final-integration READ_ONLY; Frozen R2.5 execution authority only"
+  },
+  "btc_leading_signal_engine": {
+    "user_display_name": "BTC 선행신호 엔진",
+    "mode": "READ_ONLY_ZERO_WEIGHT",
+    "source_repo": "sovet12345688-debug/master-alt-cvd",
+    "source_branch": "btc-trend-v30-r26-final-integration",
+    "strict_forward_only": true,
+    "mandatory_visible_in": [
+      "BASIC_OFFICIAL",
+      "PRECISION"
+    ],
+    "must_not_change_v26_production_decision": true,
+    "must_not_modify_r26_frozen_forward_assets": true
   }
 }
