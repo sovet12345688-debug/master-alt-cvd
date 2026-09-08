@@ -1,0 +1,22 @@
+name: BTC TREND V3 R2.6 FINAL IDENTITY PROBE
+
+on:
+  push:
+    branches: [btc-trend-v30-r26-final-integration]
+    paths:
+      - '.github/workflows/btc_trend_v30_r26_final_identity_probe.yml'
+
+jobs:
+  identity:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Print final immutable identity
+        run: |
+          set -euo pipefail
+          echo "R26_FROZEN_CONFIG_SHA256=$(sha256sum btc_trend_v30/r26/r26_frozen_config.json | awk '{print $1}')"
+          echo "R26_FROZEN_CONFIG_BLOB=$(git hash-object btc_trend_v30/r26/r26_frozen_config.json)"
+          echo "R26_ENGINE_SHA256=$(sha256sum btc_trend_v30/r26/r26_engine.py | awk '{print $1}')"
+          echo "R26_ENGINE_BLOB=$(git hash-object btc_trend_v30/r26/r26_engine.py)"
+          echo "R26_CONTRACT_SHA256=$(sha256sum btc_trend_v30/r26/test_r26_contract.py | awk '{print $1}')"
+          echo "R26_CONTRACT_BLOB=$(git hash-object btc_trend_v30/r26/test_r26_contract.py)"
