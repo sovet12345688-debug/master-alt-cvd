@@ -1,62 +1,50 @@
 {
   "engine": "MASTER_ST_WHALE_PROFIT_TAKING_RISK_PROXY_V1",
-  "schema_version": "1.0",
-  "generated_at_utc": "2026-09-08T06:43:59.030161Z",
+  "schema_version": "1.1",
+  "generated_at_utc": "2026-09-08T06:51:26.502733Z",
   "name_ko": "단기 고래 차익실현 위험",
   "role": "AUXILIARY_RISK_ONLY",
   "score_weight": 0,
   "exact_cryptoquant_sth_whale": false,
-  "proxy_note": "Exact CryptoQuant STH Whale P&L is not reproduced. STH cohort profit-state proxies + current whale futures NET + BTC CVD are combined.",
+  "proxy_note": "Exact CryptoQuant STH Whale P&L is not reproduced. Public STH-NUPL/MVRV/SOPR plus current Hyperliquid whale NET and BTC CVD are combined.",
   "rows": [
     {
-      "signal": "🟢",
+      "signal": "⚪",
       "indicator": "STH 미실현 수익상태 (Whale 대체)",
-      "display_value": "-0.333 / 4Y 2.9%ile",
-      "state": "차익실현 잠재압력 낮음",
+      "display_value": "N/A",
+      "state": "N/A",
       "raw": {
-        "status": "OK",
-        "trace_name": "STH-NUPL",
-        "source_time_utc": "2026-02-19T00:00:00Z",
-        "value": -0.3334050542162605,
-        "percentile_4y": 2.9411764705882355,
-        "avg_7d": -0.32442948178451747,
-        "history_points_4y": 1462,
-        "source": "Checkonchain public static Plotly HTML",
-        "source_url": "https://raw.githubusercontent.com/checkmatey/checkonchain.com/main/btconchain/unrealised/nupl_bycohort/nupl_bycohort_light.html"
+        "status": "N/A",
+        "value": null,
+        "source": "Glassnode Studio public chart page (visible Latest Values; no login/API key)",
+        "source_url": "https://studio.glassnode.com/charts/indicators.NuplLess155?a=BTC&category=&zoom=all",
+        "error": "HTTPError: HTTP Error 403: Forbidden"
       }
     },
     {
-      "signal": "🟢",
+      "signal": "⚪",
       "indicator": "STH-MVRV",
-      "display_value": "0.750 / 4Y 2.9%ile",
-      "state": "손익분기 이하/과열 아님",
+      "display_value": "N/A",
+      "state": "N/A",
       "raw": {
-        "status": "OK",
-        "trace_name": "STH-MVRV",
-        "source_time_utc": "2026-02-19T00:00:00Z",
-        "value": 0.74995965,
-        "percentile_4y": 2.9411764705882355,
-        "avg_7d": 0.7552719625,
-        "history_points_4y": 1462,
-        "source": "Checkonchain public static Plotly HTML",
-        "source_url": "https://raw.githubusercontent.com/checkmatey/checkonchain.com/main/btconchain/unrealised/mvrv_sth/mvrv_sth_light.html"
+        "status": "N/A",
+        "value": null,
+        "source": "Glassnode Studio public chart page (visible Latest Values; no login/API key)",
+        "source_url": "https://studio.glassnode.com/charts/market.MvrvLess155?a=BTC&chartStyle=line&ema=0&resolution=24h",
+        "error": "HTTPError: HTTP Error 403: Forbidden"
       }
     },
     {
-      "signal": "🟢",
+      "signal": "⚪",
       "indicator": "STH-SOPR",
-      "display_value": "1.000 / 7D평균 1.000",
-      "state": "이익실현 압력 낮음",
+      "display_value": "N/A",
+      "state": "N/A",
       "raw": {
-        "status": "OK",
-        "trace_name": "STH-SOPR",
-        "source_time_utc": "2026-02-19T00:00:00Z",
-        "value": 1.0,
-        "percentile_4y": 48.29001367989056,
-        "avg_7d": 1.0,
-        "history_points_4y": 1462,
-        "source": "Checkonchain public static Plotly HTML",
-        "source_url": "https://raw.githubusercontent.com/checkmatey/checkonchain.com/main/btconchain/realised/sthsopr_indicator/sthsopr_indicator_light.html"
+        "status": "N/A",
+        "value": null,
+        "source": "Glassnode Studio public chart page (visible Latest Values; no login/API key)",
+        "source_url": "https://studio.glassnode.com/charts/indicators.SoprLess155?a=BTC&mAvg=",
+        "error": "HTTPError: HTTP Error 403: Forbidden"
       }
     },
     {
@@ -71,7 +59,7 @@
         "long_usd": 325930053.12177,
         "short_usd": 522659670.74554,
         "source_time_utc": "2026-09-08T04:00:00Z",
-        "source": "market_vault/output/latest_actor_flows.json"
+        "source": "market_vault/output/latest_actor_flows.json (Hyperliquid >=$20M BTC aggregate)"
       }
     },
     {
@@ -85,25 +73,28 @@
         "cvd_to_volume_ratio": -0.2696298212266269,
         "trade_notional_1h_usdt": 126713465.91104,
         "source_time_utc": "2026-09-08T06:23:58.166030Z",
-        "source": "derivatives/output/latest_microstructure.json"
+        "source": "derivatives/output/latest_microstructure.json (Bitget BTC 1H)"
       }
     }
   ],
   "overall": {
-    "signal": "🟡",
-    "level": "중간",
+    "signal": "⚪",
+    "level": "확인 제한",
     "risk_points": 2.0,
-    "available_rows": 5,
+    "available_rows": 2,
     "total_rows": 5,
-    "coverage": 1.0,
-    "method": "red=1, yellow=0.5, green=0; equal-weight auxiliary. <3 available rows => 확인 제한."
+    "coverage": 0.4,
+    "method": "red=1, yellow=0.5, green=0; equal-weight display-only auxiliary. <3 available rows => 확인 제한."
   },
   "guards": {
+    "free_public_pages_only_for_sth": true,
     "no_api_key": true,
-    "no_paid_source": true,
+    "no_paid_api": true,
     "no_backfill": true,
     "no_interpolation": true,
+    "no_ocr": true,
     "no_guessing": true,
+    "sth_page_freshness_max_hours": 72,
     "cannot_alone_change": [
       "Market Positive Score",
       "BTC Liquidity Lead",
@@ -114,5 +105,18 @@
       "WATCH"
     ]
   },
-  "failures": []
+  "failures": [
+    {
+      "indicator": "STH 미실현 수익상태 (Whale 대체)",
+      "error": "HTTPError: HTTP Error 403: Forbidden"
+    },
+    {
+      "indicator": "STH-MVRV",
+      "error": "HTTPError: HTTP Error 403: Forbidden"
+    },
+    {
+      "indicator": "STH-SOPR",
+      "error": "HTTPError: HTTP Error 403: Forbidden"
+    }
+  ]
 }
