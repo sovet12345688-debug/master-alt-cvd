@@ -8,6 +8,9 @@ on:
       - '.github/workflows/btc_trend_v30_r25_pre_freeze.yml'
   workflow_dispatch:
 
+env:
+  PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/btc_trend_v30
+
 jobs:
   r25-pre-freeze:
     runs-on: ubuntu-24.04
