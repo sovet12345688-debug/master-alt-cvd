@@ -1,0 +1,76 @@
+name: BTC TREND V3 R2.5 HISTORICAL DIAGNOSTIC
+
+on:
+  push:
+    branches: [btc-trend-v30-r25-full-risk-governor]
+    paths:
+      - 'btc_trend_v30/r25/r25_historical_diagnostic_replay_runner.py'
+      - '.github/workflows/btc_trend_v30_r25_historical_diagnostic.yml'
+  workflow_dispatch:
+
+env:
+  PYTHONUNBUFFERED: 1
+  PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/btc_trend_v30
+
+jobs:
+  r25-historical-diagnostic:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Frozen identity, PIT and contracts
+        run: |
+          set -euo pipefail
+          (cd btc_trend_v30/r20 && python test_r20_engine_pit.py)
+          python btc_trend_v30/r21/test_r21_contract.py
+          python btc_trend_v30/r24/test_r24_contract.py
+          python btc_trend_v30/r25/test_r25_contract.py
+          python btc_trend_v30/r25/r25_freeze_guard.py
+      - name: Download canonical validated Step1-10 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: btc-trend-v30-validation-v1-step1-10
+          repository: sovet12345688-debug/master-alt-cvd
+          run-id: 34084074525
+          github-token: ${{ github.token }}
+          path: btc_trend_v30/output/validation_v1
+      - name: Canonical input SHA guard
+        run: |
+          python - <<'PY'
+          import hashlib,sys
+          from pathlib import Path
+          root=Path('btc_trend_v30/output/validation_v1')
+          expected={
+            'data_integrity/btc_usdt_1d_matrix.csv':'0618a36ffa0f98a3a3318927f0602bb288ff231fe9d10299b5f8013015a8964a',
+            'step3_episode_dedupe/independent_episodes.csv':'aa4c9cc2f5c6bccfca71e65de4d7a81a64d9f0b8146fe06f416d9755f3ea467f',
+            'step4_outcome_labels/episode_medium_long_truth_labels.csv':'5b8116fc14ef2e66ab48d67f132ead2881f363192d5ad6325902a3e8c7f4a9ce',
+            'step6_state_machine_replay/btc_usdt_1h_matrix.csv':'259ba60e0b65df87591baa38628d1126b465342ff0a3848a9dabe348ad9fd729',
+            'step6_state_machine_replay/btc_usdt_complete_4h_matrix.csv':'22bdc9bf33d54b8ebb850d209046365a326324059d48d3aac2afa33a0c366a26',
+            'step7_metrics/audit.json':'1ab46eb52bb170cd1bc12bce3da8eabbc5478e83f3b358dc08e0a4b3604b323d'}
+          ok=True
+          for rel,want in expected.items():
+              got=hashlib.sha256((root/rel).read_bytes()).hexdigest(); print(rel,got,'PASS' if got==want else 'FAIL'); ok &= got==want
+          if not ok: sys.exit(1)
+          PY
+      - name: Frozen R2.5 diagnostic replay
+        run: python btc_trend_v30/r25/r25_historical_diagnostic_replay_runner.py
+      - name: Audit integrity and report
+        run: |
+          python - <<'PY'
+          import json,sys
+          p='btc_trend_v30/r25/output/historical_replay/audit.json'; d=json.load(open(p))
+          c=d['counts']; s=d['summary']; g=d['risk_governor_evaluation']; cy=d['cycle_recheck']
+          checks=[d['model']=='MASTER_BTC_TREND_V3_R2_5', d['production_promotion_evidence'] is False,
+                  c.get('raw_seed_candidates')==997, c.get('long_episodes')==48, c.get('short_episodes')==21,
+                  c.get('confirmed')==59, c.get('core')==47]
+          print('R25_SUMMARY=',s); print('R25_GOVERNOR=',g); print('R25_CYCLE=',cy); print('R25_INTEGRITY=',checks)
+          if not all(checks): sys.exit(1)
+          PY
+      - name: Upload diagnostic evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v30-r25-historical-diagnostic
+          path: btc_trend_v30/r25/output/historical_replay/
+          retention-days: 14
