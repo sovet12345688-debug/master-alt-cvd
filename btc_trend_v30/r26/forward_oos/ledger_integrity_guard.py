@@ -36,10 +36,7 @@ def read_rows(path: Path) -> list[dict[str, str]]:
         reader = csv.DictReader(f)
         if not reader.fieldnames:
             return []
-        rows = []
-        for raw in reader:
-            rows.append({str(k): "" if v is None else str(v) for k, v in raw.items()})
-        return rows
+        return [{str(k): "" if v is None else str(v) for k, v in raw.items()} for raw in reader]
 
 
 def strict_rows(filename: str) -> list[dict[str, str]]:
@@ -105,8 +102,7 @@ def verify_prior_chain(state: dict, log_rows: list[dict]) -> None:
         core = {k: v for k, v in rec.items() if k != "chain_sha256"}
         if str(core.get("prev_chain_sha256", "")) != prev:
             raise RuntimeError(f"AUDIT_CHAIN_PREV_MISMATCH:{i}")
-        expected_chain = sha256_obj(core)
-        if actual_chain != expected_chain:
+        if actual_chain != sha256_obj(core):
             raise RuntimeError(f"AUDIT_CHAIN_HASH_MISMATCH:{i}")
         prev = actual_chain
     if str(state.get("last_chain_sha256", "")) != prev:
@@ -114,8 +110,7 @@ def verify_prior_chain(state: dict, log_rows: list[dict]) -> None:
     if int(state.get("generation", -1)) != int(log_rows[-1].get("generation", -2)):
         raise RuntimeError("STATE_GENERATION_MISMATCH")
     core_state = {k: v for k, v in state.items() if k != "last_chain_sha256"}
-    state_hash = sha256_obj(core_state)
-    if state_hash != str(log_rows[-1].get("state_sha256", "")):
+    if sha256_obj(core_state) != str(log_rows[-1].get("state_sha256", "")):
         raise RuntimeError("STATE_HASH_MISMATCH")
 
 
@@ -137,15 +132,15 @@ def write_report(payload: dict) -> None:
     REPORT.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
-def main() -> None:
+def run_guard() -> dict:
     spec_blob = git_blob(SPEC)
     if spec_blob != EXPECTED_SPEC_BLOB:
-        raise SystemExit(f"LEDGER_SPEC_IDENTITY_FAIL:{spec_blob}")
+        raise RuntimeError(f"LEDGER_SPEC_IDENTITY_FAIL:{spec_blob}")
     spec = json.loads(SPEC.read_text(encoding="utf-8"))
     tracker = json.loads(TRACKER_STATE.read_text(encoding="utf-8"))
     asof = str(tracker["asof_utc"])
     if str(tracker.get("strict_forward_start", "")).replace("+00:00", "Z") != str(spec["strict_forward_start"]):
-        raise SystemExit("LEDGER_STRICT_START_MISMATCH")
+        raise RuntimeError("LEDGER_STRICT_START_MISMATCH")
 
     p = spec["protected_ledgers"]
     det = build_map(strict_rows(p["detections"]["file"]), p["detections"]["key_fields"], "detections")
@@ -154,12 +149,7 @@ def main() -> None:
     tx = build_map(strict_rows(p["transactions"]["file"]), p["transactions"]["key_fields"], "transactions")
 
     position_rows = strict_rows(p["position_identity"]["file"])
-    pos_identity = build_map(
-        position_rows,
-        p["position_identity"]["key_fields"],
-        "position_identity",
-        p["position_identity"]["hash_fields"],
-    )
+    pos_identity = build_map(position_rows, p["position_identity"]["key_fields"], "position_identity", p["position_identity"]["hash_fields"])
     resolved_rows = [r for r in position_rows if bool_true(r.get(p["resolved_positions"]["resolved_field"], ""))]
     resolved = build_map(resolved_rows, p["resolved_positions"]["key_fields"], "resolved_positions")
 
@@ -176,18 +166,14 @@ def main() -> None:
     state_exists = STATE.exists()
     log_exists = RUNS.exists()
     if state_exists != log_exists:
-        raise SystemExit("LEDGER_BASELINE_PARTIAL_FILES")
+        raise RuntimeError("LEDGER_BASELINE_PARTIAL_FILES")
 
     bootstrap = not state_exists
     deltas = {}
     previous_chain = ""
     if bootstrap:
         if any(counts.values()):
-            write_report({
-                "spec": spec["spec"], "asof_utc": asof, "pass": False,
-                "error": "BOOTSTRAP_FORBIDDEN_AFTER_STRICT_EVIDENCE", "counts": counts,
-            })
-            raise SystemExit("BOOTSTRAP_FORBIDDEN_AFTER_STRICT_EVIDENCE")
+            raise RuntimeError(f"BOOTSTRAP_FORBIDDEN_AFTER_STRICT_EVIDENCE:{counts}")
         generation = 1
         initialized_at = asof
         for name, mapping in current.items():
@@ -197,7 +183,7 @@ def main() -> None:
         log_rows = load_log()
         verify_prior_chain(previous_state, log_rows)
         if previous_state.get("spec") != spec["spec"] or previous_state.get("spec_blob") != EXPECTED_SPEC_BLOB:
-            raise SystemExit("LEDGER_PREVIOUS_SPEC_IDENTITY_FAIL")
+            raise RuntimeError("LEDGER_PREVIOUS_SPEC_IDENTITY_FAIL")
         generation = int(previous_state["generation"]) + 1
         initialized_at = str(previous_state["initialized_at_utc"])
         previous_chain = str(previous_state["last_chain_sha256"])
@@ -254,6 +240,26 @@ def main() -> None:
         },
     }
     write_report(report)
+    return report
+
+
+def main() -> None:
+    try:
+        report = run_guard()
+    except BaseException as exc:
+        failure = {
+            "pass": False,
+            "error_type": type(exc).__name__,
+            "error": str(exc),
+            "spec_expected_blob": EXPECTED_SPEC_BLOB,
+        }
+        try:
+            if TRACKER_STATE.exists():
+                failure["asof_utc"] = json.loads(TRACKER_STATE.read_text(encoding="utf-8")).get("asof_utc")
+            write_report(failure)
+        finally:
+            print(json.dumps(failure, indent=2, sort_keys=True))
+        raise
     print(json.dumps(report, indent=2, sort_keys=True))
     print("R26_FORWARD_LEDGER_INTEGRITY_GUARD_PASS")
 
