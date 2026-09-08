@@ -1,7 +1,7 @@
 {
   "engine": "MASTER_ST_WHALE_PROFIT_TAKING_RISK_PROXY_V1",
   "schema_version": "1.2",
-  "generated_at_utc": "2026-09-08T07:15:48.349513Z",
+  "generated_at_utc": "2026-09-08T07:16:55.998545Z",
   "name_ko": "단기 고래 차익실현 위험",
   "role": "AUXILIARY_RISK_ONLY",
   "score_weight": 0,
@@ -9,48 +9,60 @@
   "proxy_note": "Exact CryptoQuant STH Whale P&L is not reproduced. Fresh public Checkonchain STH-NUPL/MVRV/SOPR plus current Hyperliquid whale NET and BTC CVD are combined.",
   "rows": [
     {
-      "signal": "⚪",
+      "signal": "🟡",
       "indicator": "STH 미실현 수익상태 (Whale 대체)",
-      "display_value": "N/A",
-      "state": "N/A",
+      "display_value": "STH-NUPL 0.099 / 4Y 72.2%ile",
+      "state": "단기보유 미실현 수익권",
       "raw": {
-        "status": "N/A",
-        "value": null,
-        "percentile_4y": null,
-        "avg_7d": null,
-        "source": "Checkonchain public Plotly HTML (live/CDN first; fresh GitHub fallback)",
-        "source_url": null,
-        "error": "Checkonchain live https://charts.checkonchain.com/btconchain/unrealised/nupl_bycohort/nupl_bycohort_light.html: ValueError: Plotly.newPlot not found and no Checkonchain CDN handoff found | Checkonchain live https://charts.checkonchain.com/btconchain/unrealised/nupl_sth/nupl_sth_light.html: ValueError: Plotly.newPlot not found and no Checkonchain CDN handoff found | Checkonchain GitHub fallback https://raw.githubusercontent.com/checkmatey/checkonchain.com/main/btconchain/unrealised/nupl_bycohort/nupl_bycohort_light.html: ValueError: stale Checkonchain trace age_hours=4831.3 source_time=2026-02-19T00:00:00Z"
+        "status": "OK",
+        "trace_name": "STH-NUPL",
+        "source_time_utc": "2026-09-08T00:00:00Z",
+        "source_age_hours": 7.28,
+        "value": 0.0986374458046141,
+        "percentile_4y": 72.16142270861833,
+        "avg_7d": 0.10587412193484456,
+        "history_points_4y": 1462,
+        "source": "Checkonchain live public static Plotly HTML (no API key)",
+        "source_url": "https://charts-cdn.checkonchain.com/btconchain/unrealised/nupl_bycohort/nupl_bycohort_light.html",
+        "entry_url": "https://charts.checkonchain.com/btconchain/unrealised/nupl_bycohort/nupl_bycohort_light.html"
       }
     },
     {
-      "signal": "⚪",
+      "signal": "🟡",
       "indicator": "STH-MVRV",
-      "display_value": "N/A",
-      "state": "N/A",
+      "display_value": "1.109 / 4Y 72.2%ile",
+      "state": "단기보유자 수익권",
       "raw": {
-        "status": "N/A",
-        "value": null,
-        "percentile_4y": null,
-        "avg_7d": null,
-        "source": "Checkonchain public Plotly HTML (live/CDN first; fresh GitHub fallback)",
-        "source_url": null,
-        "error": "Checkonchain live https://charts.checkonchain.com/btconchain/unrealised/mvrv_sth/mvrv_sth_light.html: ValueError: Plotly.newPlot not found and no Checkonchain CDN handoff found | Checkonchain live https://charts.checkonchain.com/btconchain/unrealised/sthmvrv_indicator/sthmvrv_indicator_light.html: ValueError: Plotly.newPlot not found and no Checkonchain CDN handoff found | Checkonchain GitHub fallback https://raw.githubusercontent.com/checkmatey/checkonchain.com/main/btconchain/unrealised/mvrv_sth/mvrv_sth_light.html: ValueError: stale Checkonchain trace age_hours=4831.3 source_time=2026-02-19T00:00:00Z | Checkonchain GitHub fallback https://raw.githubusercontent.com/checkmatey/checkonchain.com/main/btconchain/unrealised/sthmvrv_indicator/sthmvrv_indicator_light.html: ValueError: stale Checkonchain trace age_hours=4823.3 source_time=2026-02-19T08:00:00Z"
+        "status": "OK",
+        "trace_name": "STH-MVRV",
+        "source_time_utc": "2026-09-08T00:00:00Z",
+        "source_age_hours": 7.28,
+        "value": 1.1094,
+        "percentile_4y": 72.16142270861833,
+        "avg_7d": 1.1186875,
+        "history_points_4y": 1462,
+        "source": "Checkonchain live public static Plotly HTML (no API key)",
+        "source_url": "https://charts-cdn.checkonchain.com/btconchain/unrealised/mvrv_sth/mvrv_sth_light.html",
+        "entry_url": "https://charts.checkonchain.com/btconchain/unrealised/mvrv_sth/mvrv_sth_light.html"
       }
     },
     {
-      "signal": "⚪",
+      "signal": "🟢",
       "indicator": "STH-SOPR",
-      "display_value": "N/A",
-      "state": "N/A",
+      "display_value": "1.000 / 7D평균 1.000",
+      "state": "이익실현 압력 낮음/손실실현",
       "raw": {
-        "status": "N/A",
-        "value": null,
-        "percentile_4y": null,
-        "avg_7d": null,
-        "source": "Checkonchain public Plotly HTML (live/CDN first; fresh GitHub fallback)",
-        "source_url": null,
-        "error": "Checkonchain live https://charts.checkonchain.com/btconchain/realised/sopr_sth/sopr_sth_light.html: HTTPError: HTTP Error 404: Not Found | Checkonchain live https://charts.checkonchain.com/btconchain/realised/sthsopr_indicator/sthsopr_indicator_light.html: ValueError: Plotly.newPlot not found and no Checkonchain CDN handoff found | Checkonchain GitHub fallback https://raw.githubusercontent.com/checkmatey/checkonchain.com/main/btconchain/realised/sopr_sth/sopr_sth_light.html: HTTPError: HTTP Error 404: Not Found | Checkonchain GitHub fallback https://raw.githubusercontent.com/checkmatey/checkonchain.com/main/btconchain/realised/sthsopr_indicator/sthsopr_indicator_light.html: ValueError: stale Checkonchain trace age_hours=4831.3 source_time=2026-02-19T00:00:00Z"
+        "status": "OK",
+        "trace_name": "STH-SOPR",
+        "source_time_utc": "2026-09-08T00:00:00Z",
+        "source_age_hours": 7.28,
+        "value": 1.0,
+        "percentile_4y": 100.0,
+        "avg_7d": 1.0,
+        "history_points_4y": 1462,
+        "source": "Checkonchain live public static Plotly HTML (no API key)",
+        "source_url": "https://charts-cdn.checkonchain.com/btconchain/realised/sthsopr_indicator/sthsopr_indicator_light.html",
+        "entry_url": "https://charts.checkonchain.com/btconchain/realised/sthsopr_indicator/sthsopr_indicator_light.html"
       }
     },
     {
@@ -84,12 +96,12 @@
     }
   ],
   "overall": {
-    "signal": "⚪",
-    "level": "확인 제한",
-    "risk_points": 2.0,
-    "available_rows": 2,
+    "signal": "🔴",
+    "level": "높음",
+    "risk_points": 3.0,
+    "available_rows": 5,
     "total_rows": 5,
-    "coverage": 0.4,
+    "coverage": 1.0,
     "method": "red=1, yellow=0.5, green=0; equal-weight display-only auxiliary. <3 available rows => 확인 제한."
   },
   "guards": {
@@ -113,18 +125,5 @@
       "WATCH"
     ]
   },
-  "failures": [
-    {
-      "indicator": "STH 미실현 수익상태 (Whale 대체)",
-      "error": "Checkonchain live https://charts.checkonchain.com/btconchain/unrealised/nupl_bycohort/nupl_bycohort_light.html: ValueError: Plotly.newPlot not found and no Checkonchain CDN handoff found | Checkonchain live https://charts.checkonchain.com/btconchain/unrealised/nupl_sth/nupl_sth_light.html: ValueError: Plotly.newPlot not found and no Checkonchain CDN handoff found | Checkonchain GitHub fallback https://raw.githubusercontent.com/checkmatey/checkonchain.com/main/btconchain/unrealised/nupl_bycohort/nupl_bycohort_light.html: ValueError: stale Checkonchain trace age_hours=4831.3 source_time=2026-02-19T00:00:00Z"
-    },
-    {
-      "indicator": "STH-MVRV",
-      "error": "Checkonchain live https://charts.checkonchain.com/btconchain/unrealised/mvrv_sth/mvrv_sth_light.html: ValueError: Plotly.newPlot not found and no Checkonchain CDN handoff found | Checkonchain live https://charts.checkonchain.com/btconchain/unrealised/sthmvrv_indicator/sthmvrv_indicator_light.html: ValueError: Plotly.newPlot not found and no Checkonchain CDN handoff found | Checkonchain GitHub fallback https://raw.githubusercontent.com/checkmatey/checkonchain.com/main/btconchain/unrealised/mvrv_sth/mvrv_sth_light.html: ValueError: stale Checkonchain trace age_hours=4831.3 source_time=2026-02-19T00:00:00Z | Checkonchain GitHub fallback https://raw.githubusercontent.com/checkmatey/checkonchain.com/main/btconchain/unrealised/sthmvrv_indicator/sthmvrv_indicator_light.html: ValueError: stale Checkonchain trace age_hours=4823.3 source_time=2026-02-19T08:00:00Z"
-    },
-    {
-      "indicator": "STH-SOPR",
-      "error": "Checkonchain live https://charts.checkonchain.com/btconchain/realised/sopr_sth/sopr_sth_light.html: HTTPError: HTTP Error 404: Not Found | Checkonchain live https://charts.checkonchain.com/btconchain/realised/sthsopr_indicator/sthsopr_indicator_light.html: ValueError: Plotly.newPlot not found and no Checkonchain CDN handoff found | Checkonchain GitHub fallback https://raw.githubusercontent.com/checkmatey/checkonchain.com/main/btconchain/realised/sopr_sth/sopr_sth_light.html: HTTPError: HTTP Error 404: Not Found | Checkonchain GitHub fallback https://raw.githubusercontent.com/checkmatey/checkonchain.com/main/btconchain/realised/sthsopr_indicator/sthsopr_indicator_light.html: ValueError: stale Checkonchain trace age_hours=4831.3 source_time=2026-02-19T00:00:00Z"
-    }
-  ]
+  "failures": []
 }
