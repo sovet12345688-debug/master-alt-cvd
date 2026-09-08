@@ -1,0 +1,73 @@
+{
+  "model": "MASTER_BTC_TREND_V3_R2_5",
+  "status": "HISTORICAL_DIAGNOSTIC_ONLY_SAME_R24_FORMULAS",
+  "execution_engine": "FROZEN_R2_5_FULL_RISK_GOVERNOR_UNCHANGED",
+  "historical_window": ["2021-01-01T00:00:00Z", "2026-09-05T00:00:00Z"],
+  "frozen_identity": {
+    "r25_frozen_config_sha256": "de19afb53a87c78418d2a9c7545f4ecdddc1b6867cc76e3ce56f348fa0e8a841",
+    "r25_engine_git_blob_sha1": "b5efe7378de839b338057826e0a7cb29926ec3a6",
+    "r25_contract_git_blob_sha1": "c249b50cdf8d30b5c938b8f28d421ca08ac42965"
+  },
+  "baseline_expected": {
+    "executed_episodes": 69,
+    "mcr90_mean": 0.2415756322541797,
+    "mcr365_mean": 0.384219992871691,
+    "long_expectancy_mean_R": 0.8180363530013132,
+    "short_expectancy_mean_R": 0.25868942216511226,
+    "confirmed_false_start_rate": 0.0,
+    "capture_to_loss_ratio": 2.8156989182161647,
+    "median_seed_lag_days": 10.166666666666668,
+    "episode_order_mdd_R": -4.0
+  },
+  "robustness": {
+    "variants": [
+      {"id":"VOL_STRICT","changes":{"volume_thresholds_multiplier":1.10}},
+      {"id":"VOL_LOOSE","changes":{"volume_thresholds_multiplier":0.90}},
+      {"id":"WATCH_TIGHT","changes":{"watch_distance_atr_multiplier":0.80}},
+      {"id":"WATCH_WIDE","changes":{"watch_distance_atr_multiplier":1.20}},
+      {"id":"STOP_TIGHT","changes":{"seed_stop_atr_multiplier":0.90}},
+      {"id":"STOP_WIDE","changes":{"seed_stop_atr_multiplier":1.10}},
+      {"id":"EXIT_TIGHT","changes":{"chandelier_atr_multiplier":0.90}},
+      {"id":"EXIT_WIDE","changes":{"chandelier_atr_multiplier":1.10}},
+      {"id":"CONFIRM_SHORTER","changes":{"long_confirm_window_days":4,"short_confirm_window_days":3}},
+      {"id":"CONFIRM_LONGER","changes":{"long_confirm_window_days":6,"short_confirm_window_days":5}}
+    ],
+    "edge_preservation_checks": {
+      "mcr90_ge": 0.20,
+      "mcr365_ge": 0.20,
+      "long_expectancy_gt": 0.0,
+      "short_expectancy_gt": 0.0,
+      "confirmed_false_start_rate_le": 0.45,
+      "capture_to_loss_gt": 1.10
+    },
+    "classification": {
+      "STRONG": "8-10 of 10 variants preserve all six checks",
+      "MODERATE": "6-7 of 10 variants preserve all six checks",
+      "FRAGILE": "0-5 of 10 variants preserve all six checks"
+    },
+    "secondary_audit": {
+      "bear_short_floor_R": -0.15,
+      "minimum_bucket_n": 10,
+      "seed_lag_not_used_for_classification": true
+    }
+  },
+  "state_monotonicity": {
+    "state_order": ["SEED_REACHED", "CONFIRMED_REACHED", "CORE_REACHED"],
+    "segments": ["ALL", "LONG", "SHORT"],
+    "outcome_metric": "marked_R_at_end",
+    "primary_metric": "mean_terminal_R",
+    "minimum_n_per_cohort": 10,
+    "minimum_n_source": "Same R2.4 rule: reuse cycle minimum n=10",
+    "rule": "Every eligible adjacent reached-state mean_terminal_R must be non-decreasing.",
+    "overall_pass_rule": "Both ALL comparisons must be eligible and pass; every eligible LONG/SHORT comparison must also pass.",
+    "secondary_only": ["positive_outcome_rate", "structural_stop_rate", "exclusive_max_state_bins"]
+  },
+  "evidence_firewall": {
+    "same_2021_2026_history_cannot_promote_production": true,
+    "results_may_not_modify_frozen_r25": true,
+    "no_best_variant_adoption": true,
+    "no_post_result_formula_selection": true,
+    "no_threshold_tuning": true,
+    "forward_untouched_oos_required": true
+  }
+}
