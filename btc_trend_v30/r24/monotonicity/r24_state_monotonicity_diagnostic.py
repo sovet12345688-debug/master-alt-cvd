@@ -9,7 +9,7 @@ import pandas as pd
 HERE = Path(__file__).resolve().parent
 R24 = HERE.parent
 SPEC = json.loads((HERE / "r24_state_monotonicity_spec.json").read_text(encoding="utf-8"))
-POS = R24 / "output/historical_replay/r20_positions.csv"
+POS = R24 / "output/historical_replay/r24_positions.csv"
 OUT = HERE / "output"
 OUT.mkdir(parents=True, exist_ok=True)
 
@@ -127,7 +127,6 @@ def main() -> None:
                 "delta_structural_stop_rate": None if not eligible else float(rb["structural_stop_rate"] - ra["structural_stop_rate"]),
             })
 
-    # Exclusive max-state bins are secondary/report-only.
     resolved = df[df.resolved.astype(str).str.lower().isin(["true", "1"])].copy()
     conf = present(resolved["confirmed_time"])
     core = present(resolved["core_time"])
