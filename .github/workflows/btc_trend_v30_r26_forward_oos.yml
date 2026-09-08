@@ -8,6 +8,8 @@ on:
     branches: [btc-trend-v30-r26-final-integration]
     paths:
       - 'btc_trend_v30/r26/forward_oos/forward_tracker.py'
+      - 'btc_trend_v30/r26/forward_oos/forward_scorecard.py'
+      - 'btc_trend_v30/r26/forward_oos/R26_FORWARD_PROMOTION_SPEC_V1.json'
       - '.github/workflows/btc_trend_v30_r26_forward_oos.yml'
 
 permissions:
@@ -40,13 +42,19 @@ jobs:
           python btc_trend_v30/r25/test_r25_contract.py
           python btc_trend_v30/r26/r26_freeze_guard.py
           python btc_trend_v30/r26/test_r26_contract.py
+          echo 'R26_FORWARD_PRECHECK_PASS=1' >> "$GITHUB_ENV"
 
       - name: Run official Forward OOS tracker
         run: |
           set -euo pipefail
           python btc_trend_v30/r26/forward_oos/forward_tracker.py
 
-      - name: Commit tracker ledger
+      - name: Build automatic Forward scorecard
+        run: |
+          set -euo pipefail
+          python btc_trend_v30/r26/forward_oos/forward_scorecard.py
+
+      - name: Commit tracker and scorecard ledger
         run: |
           set -euo pipefail
           git config user.name 'r26-forward-oos-bot'
@@ -58,7 +66,14 @@ jobs:
                   btc_trend_v30/r26/forward_oos/transactions.csv \
                   btc_trend_v30/r26/forward_oos/state.json \
                   btc_trend_v30/r26/forward_oos/latest.md \
-                  btc_trend_v30/r26/forward_oos/runs.jsonl
+                  btc_trend_v30/r26/forward_oos/runs.jsonl \
+                  btc_trend_v30/r26/forward_oos/scorecard.json \
+                  btc_trend_v30/r26/forward_oos/scorecard.md \
+                  btc_trend_v30/r26/forward_oos/scorecard_runs.jsonl \
+                  btc_trend_v30/r26/forward_oos/forward_truth_episodes.csv \
+                  btc_trend_v30/r26/forward_oos/forward_truth_mcr.csv \
+                  btc_trend_v30/r26/forward_oos/state_monotonicity.csv \
+                  btc_trend_v30/r26/forward_oos/cycle_buckets.csv
           if git diff --cached --quiet; then
             echo 'NO_FORWARD_LEDGER_CHANGE'
           else
