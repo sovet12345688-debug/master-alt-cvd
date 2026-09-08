@@ -1,7 +1,7 @@
 {
   "engine": "MASTER_ST_WHALE_PROFIT_TAKING_RISK_PROXY_V1",
   "schema_version": "1.2",
-  "generated_at_utc": "2026-09-08T13:44:11.240341Z",
+  "generated_at_utc": "2026-09-08T14:44:03.847882Z",
   "name_ko": "단기 고래 차익실현 위험",
   "role": "AUXILIARY_RISK_ONLY",
   "score_weight": 0,
@@ -17,7 +17,7 @@
         "status": "OK",
         "trace_name": "STH-NUPL",
         "source_time_utc": "2026-09-08T00:00:00Z",
-        "source_age_hours": 13.74,
+        "source_age_hours": 14.73,
         "value": 0.0964314824547227,
         "percentile_4y": 71.40902872777018,
         "avg_7d": 0.10559837651610814,
@@ -36,7 +36,7 @@
         "status": "OK",
         "trace_name": "STH-MVRV",
         "source_time_utc": "2026-09-08T00:00:00Z",
-        "source_age_hours": 13.74,
+        "source_age_hours": 14.73,
         "value": 1.1067,
         "percentile_4y": 71.40902872777018,
         "avg_7d": 1.11835,
@@ -55,7 +55,7 @@
         "status": "OK",
         "trace_name": "STH-SOPR",
         "source_time_utc": "2026-09-08T00:00:00Z",
-        "source_age_hours": 13.74,
+        "source_age_hours": 14.73,
         "value": 1.0,
         "percentile_4y": 100.0,
         "avg_7d": 1.0,
@@ -73,28 +73,28 @@
       "raw": {
         "status": "N/A",
         "value": null,
-        "error": "ValueError: stale actor flow age_hours=9.736455605"
+        "error": "ValueError: stale actor flow age_hours=10.734402145833334"
       }
     },
     {
-      "signal": "🟢",
+      "signal": "🔴",
       "indicator": "BTC CVD",
-      "display_value": "+$5.0M",
-      "state": "적극매수 우세",
+      "display_value": "-$38.4M",
+      "state": "적극매도 우세",
       "raw": {
         "status": "OK",
-        "value": 5011373.9661,
-        "cvd_to_volume_ratio": 0.08084552514702706,
-        "trade_notional_1h_usdt": 61987029.67154,
-        "source_time_utc": "2026-09-08T13:20:58.300759Z",
+        "value": -38398074.34763998,
+        "cvd_to_volume_ratio": -0.09883909665203008,
+        "trade_notional_1h_usdt": 388490745.54802,
+        "source_time_utc": "2026-09-08T14:21:10.941132Z",
         "source": "derivatives/output/latest_microstructure.json (Bitget BTC 1H)"
       }
     }
   ],
   "overall": {
-    "signal": "🟢",
-    "level": "낮음",
-    "risk_points": 1.0,
+    "signal": "🟡",
+    "level": "주의",
+    "risk_points": 2.0,
     "available_rows": 4,
     "total_rows": 5,
     "coverage": 0.8,
@@ -124,7 +124,7 @@
   "failures": [
     {
       "indicator": "Hyperliquid 고래 NET",
-      "error": "ValueError: stale actor flow age_hours=9.736455605"
+      "error": "ValueError: stale actor flow age_hours=10.734402145833334"
     }
   ]
 }
