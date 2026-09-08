@@ -7,7 +7,7 @@ from pathlib import Path
 from btc_trend_v30.r24.r24_engine import R24Engine
 
 HERE = Path(__file__).resolve().parent
-CFG_PATH = HERE / "r25_candidate_config.json"
+CFG_PATH = HERE / "r25_frozen_config.json"
 
 
 @dataclass(frozen=True)
@@ -38,8 +38,8 @@ class R25Engine(R24Engine):
         self.r25_cfg = json.loads((cfg_path or CFG_PATH).read_text(encoding="utf-8"))
         if self.r25_cfg.get("model") != "MASTER_BTC_TREND_V3_R2_5":
             raise RuntimeError("R25_MODEL_IDENTITY_MISMATCH")
-        if self.r25_cfg.get("status") not in {"CANDIDATE_PRE_FREEZE_NO_REPLAY", "FINAL_FROZEN_NO_REPLAY"}:
-            raise RuntimeError("R25_BAD_STATUS")
+        if self.r25_cfg.get("status") != "FINAL_FROZEN_NO_REPLAY":
+            raise RuntimeError("R25_NOT_FROZEN")
 
     def risk_plan(self, direction: str, maturity_class: str = "NOT_MATURE_BEAR") -> R25RiskPlan:
         direction = str(direction)
