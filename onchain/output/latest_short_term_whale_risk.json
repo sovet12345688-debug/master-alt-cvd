@@ -1,7 +1,7 @@
 {
   "engine": "MASTER_ST_WHALE_PROFIT_TAKING_RISK_PROXY_V1",
   "schema_version": "1.2",
-  "generated_at_utc": "2026-09-08T17:40:20.161254Z",
+  "generated_at_utc": "2026-09-08T18:44:48.988919Z",
   "name_ko": "단기 고래 차익실현 위험",
   "role": "AUXILIARY_RISK_ONLY",
   "score_weight": 0,
@@ -11,16 +11,16 @@
     {
       "signal": "🟡",
       "indicator": "STH 미실현 수익상태 (Whale 대체)",
-      "display_value": "STH-NUPL 0.096 / 4Y 71.4%ile",
+      "display_value": "STH-NUPL 0.098 / 4Y 71.6%ile",
       "state": "단기보유 미실현 수익권",
       "raw": {
         "status": "OK",
         "trace_name": "STH-NUPL",
         "source_time_utc": "2026-09-08T00:00:00Z",
-        "source_age_hours": 17.67,
-        "value": 0.0964314824547227,
-        "percentile_4y": 71.40902872777018,
-        "avg_7d": 0.10559837651610814,
+        "source_age_hours": 18.75,
+        "value": 0.0975664753977784,
+        "percentile_4y": 71.6142270861833,
+        "avg_7d": 0.1057402506339901,
         "history_points_4y": 1462,
         "source": "Checkonchain live public static Plotly HTML (no API key)",
         "source_url": "https://charts-cdn.checkonchain.com/btconchain/unrealised/nupl_bycohort/nupl_bycohort_light.html",
@@ -30,16 +30,16 @@
     {
       "signal": "🟡",
       "indicator": "STH-MVRV",
-      "display_value": "1.107 / 4Y 71.4%ile",
+      "display_value": "1.108 / 4Y 71.6%ile",
       "state": "단기보유자 수익권",
       "raw": {
         "status": "OK",
         "trace_name": "STH-MVRV",
         "source_time_utc": "2026-09-08T00:00:00Z",
-        "source_age_hours": 17.67,
-        "value": 1.1067,
-        "percentile_4y": 71.40902872777018,
-        "avg_7d": 1.11835,
+        "source_age_hours": 18.75,
+        "value": 1.1081,
+        "percentile_4y": 71.6142270861833,
+        "avg_7d": 1.118525,
         "history_points_4y": 1462,
         "source": "Checkonchain live public static Plotly HTML (no API key)",
         "source_url": "https://charts-cdn.checkonchain.com/btconchain/unrealised/mvrv_sth/mvrv_sth_light.html",
@@ -55,7 +55,7 @@
         "status": "OK",
         "trace_name": "STH-SOPR",
         "source_time_utc": "2026-09-08T00:00:00Z",
-        "source_age_hours": 17.67,
+        "source_age_hours": 18.75,
         "value": 1.0,
         "percentile_4y": 100.0,
         "avg_7d": 1.0,
@@ -73,28 +73,28 @@
       "raw": {
         "status": "N/A",
         "value": null,
-        "error": "ValueError: stale actor flow age_hours=13.672266975"
+        "error": "ValueError: stale actor flow age_hours=14.746941316666668"
       }
     },
     {
-      "signal": "🔴",
+      "signal": "🟢",
       "indicator": "BTC CVD",
-      "display_value": "-$5.8M",
-      "state": "적극매도 우세",
+      "display_value": "+$7.2M",
+      "state": "적극매수 우세",
       "raw": {
         "status": "OK",
-        "value": -5816071.977899995,
-        "cvd_to_volume_ratio": -0.08059654486018787,
-        "trade_notional_1h_usdt": 72162795.41498,
-        "source_time_utc": "2026-09-08T17:18:38.036227Z",
+        "value": 7202334.135150004,
+        "cvd_to_volume_ratio": 0.11871986866354638,
+        "trade_notional_1h_usdt": 60666628.225150004,
+        "source_time_utc": "2026-09-08T18:22:05.349741Z",
         "source": "derivatives/output/latest_microstructure.json (Bitget BTC 1H)"
       }
     }
   ],
   "overall": {
-    "signal": "🟡",
-    "level": "주의",
-    "risk_points": 2.0,
+    "signal": "🟢",
+    "level": "낮음",
+    "risk_points": 1.0,
     "available_rows": 4,
     "total_rows": 5,
     "coverage": 0.8,
@@ -124,7 +124,7 @@
   "failures": [
     {
       "indicator": "Hyperliquid 고래 NET",
-      "error": "ValueError: stale actor flow age_hours=13.672266975"
+      "error": "ValueError: stale actor flow age_hours=14.746941316666668"
     }
   ]
 }
