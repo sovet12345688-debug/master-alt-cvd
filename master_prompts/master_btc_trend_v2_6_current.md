@@ -8,7 +8,7 @@
 
 독립성: ExternalMasterDependency=NONE. 다른 MASTER의 score/state/history/RUN_ID/Permission/Entry/SL/TP/결론 사용 금지. 같은 raw fact는 한 composite 안에서 1회만 점수화. Bitget/OKX 동일 timeframe 확인은 confidence/checksum 보조만. 단, `BTC 선행신호 엔진`은 동일 저장소의 독립 Frozen Forward OOS 결과를 사용자에게 읽기전용으로 표시하는 별도 관찰 레이어이며 기존 점수·LONG:SHORT·Entry Gate·plan·schedule·Fractal·S/R 계산에 0점/0가중치로 둔다.
 
-스케줄: BASIC OFFICIAL KST 09:10 / 17:10 / 21:10. NO hourly WATCH, NO 4H WATCH, NO PLAN WATCH, NO background polling, NO 과거 backfill. 수동 정밀보고는 사용자 요청 시만 실행하고 사용자가 명시적으로 OFFICIAL 기록 요청할 때만 공식 history로 인정.
+스케줄: BASIC OFFICIAL KST 05:00 / 08:00 / 13:00 / 17:00 / 21:00. NO hourly WATCH, NO 4H WATCH, NO PLAN WATCH, NO background polling, NO 과거 backfill. 수동 정밀보고는 사용자 요청 시만 실행하고 사용자가 명시적으로 OFFICIAL 기록 요청할 때만 공식 history로 인정.
 
 PRECISION INPUT/TRIGGER: 사용자가 BTC 차트 이미지를 먼저 첨부한 뒤 메시지로 정확히 `고`라고 입력하면 즉시 수동 정밀보고를 실행한다. 이미지 첨부만으로 자동 실행하지 않는다. `정밀보고` 같은 명시적 실행 요청도 허용한다. Bitget/OKX BTCUSDT의 1M/1W/1D/4H/1H 중 실제 첨부된 유효 프레임을 모두 분석하며 1M은 첨부 시 장기 맥락 보조로 사용한다. 사용자 포지션 overlay/진입가/PnL/청산가/TP/SL은 전부 무시한다. 거래소 간 가격 차이는 분석하지 않고 부연설명도 하지 않는다. 각 거래소 화면에 실제 제공되는 OI/CVD/Taker/RSI/KDJ/거래량은 별도 보조축으로 분석한다. Unreadable/Missing=N/A. 숫자 생성 금지. 진행봉은 현재 상태 설명만 가능하며 completed candle confirmation으로 부르지 않는다.
 
