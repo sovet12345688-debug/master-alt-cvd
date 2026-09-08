@@ -42,6 +42,13 @@ jobs:
           set -euo pipefail
           python btc_trend_v30/r26/forward_oos/forward_tracker.py
 
+      - name: Frozen Forward scorecard evaluator guard
+        run: |
+          set -euo pipefail
+          test "$(git hash-object btc_trend_v30/r26/forward_oos/R26_FORWARD_SCORECARD_FREEZE_MANIFEST_V1.json)" = "325a18ded37cef92be8b4054813c9d59ccfccb60"
+          test "$(git hash-object btc_trend_v30/r26/forward_oos/scorecard_freeze_guard.py)" = "bdde48842e5851f6b58b22d7d3b4893e0459d70d"
+          python btc_trend_v30/r26/forward_oos/scorecard_freeze_guard.py
+
       - name: Build automatic Forward scorecard
         run: |
           set -euo pipefail
