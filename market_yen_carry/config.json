@@ -1,0 +1,27 @@
+{
+  "engine": "YEN_CARRY_RISK_LITE_V1",
+  "schema_version": "1.0",
+  "score_weight": 0,
+  "max_source_age_days": 7,
+  "weights": {
+    "yen_strength": 50,
+    "yield_spread": 30,
+    "vix": 20
+  },
+  "levels": {
+    "low_max": 24,
+    "watch_max": 44,
+    "caution_max": 64,
+    "high_min": 65
+  },
+  "gate": {
+    "yen_score_required_for_high": 20,
+    "max_score_without_yen_trigger": 44
+  },
+  "notes": [
+    "Standalone auxiliary engine only; no MASTER MARKET score impact.",
+    "Uses free public data only: ECB USDJPY cross, FRED/Fed H.15 US10Y, Japan MOF JP10Y, Cboe VIX.",
+    "If any required source is unavailable, final_score is null and the parent MASTER must continue without this auxiliary block.",
+    "No interpolation, no synthetic backfill, no reuse of stale values beyond max_source_age_days."
+  ]
+}
