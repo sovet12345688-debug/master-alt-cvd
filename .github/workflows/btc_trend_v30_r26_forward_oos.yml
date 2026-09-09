@@ -3,7 +3,7 @@ name: BTC TREND V3 R2.6 FORWARD OOS
 on:
   workflow_dispatch:
   schedule:
-    - cron: '20 */4 * * *'
+    - cron: '20 4,8,12,20,23 * * *'
   push:
     branches: [btc-trend-v30-r26-final-integration]
     paths:
