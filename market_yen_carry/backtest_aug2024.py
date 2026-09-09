@@ -6,7 +6,7 @@ from datetime import date, datetime, timedelta, timezone
 from io import StringIO
 from pathlib import Path
 
-from market_yen_carry import collector as yc
+import collector as yc
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = ROOT / "market_yen_carry"
