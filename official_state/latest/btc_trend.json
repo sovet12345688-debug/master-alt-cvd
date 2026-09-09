@@ -9,14 +9,14 @@
   "contract_path": "state/master_btc_trend_v2_6_contract.json",
   "run": {
     "run_type": "OFFICIAL",
-    "run_id": "MBTC-V26-20260909-1700-KST",
-    "executed_kst": "2026-09-09T17:00:00+09:00",
-    "updated_kst": "2026-09-09T17:00:00+09:00",
-    "prior_official_run_id": "MBTC-V26-20260909-1300-KST"
+    "run_id": "MBTC-V26-20260909-2100-KST",
+    "executed_kst": "2026-09-09T21:00:00+09:00",
+    "updated_kst": "2026-09-09T21:00:00+09:00",
+    "prior_official_run_id": "MBTC-V26-20260909-1700-KST"
   },
   "validity": {
     "valid_until_kst": null,
-    "next_official_run_kst": "2026-09-09T21:00:00+09:00",
+    "next_official_run_kst": "2026-09-10T05:00:00+09:00",
     "freshness_status": "CURRENT"
   },
   "data_quality": {
@@ -26,11 +26,10 @@
       "FRACTAL_CURRENT_ARTIFACT_UNAVAILABLE",
       "SR_STRENGTH_CURRENT_REACTION_MODEL_UNAVAILABLE",
       "FRESH_BITGET_DERIVATIVES_UNAVAILABLE_AT_RUN",
-      "FRESH_GITHUB_MICROSTRUCTURE_UNAVAILABLE_AT_RUN"
+      "FRESH_GITHUB_MICROSTRUCTURE_UNAVAILABLE_AT_RUN",
+      "BTC_LEADING_SIGNAL_PROVENANCE_MANIFEST_MISSING"
     ],
-    "stale_sources": [
-      "BTC_LEADING_SIGNAL_EXPECTED_1320_WORKFLOW_SUCCESS_PROVENANCE_UNVERIFIABLE_USED_STALE_FALLBACK_0929_KST"
-    ],
+    "stale_sources": [],
     "time_mismatch_warnings": [],
     "source_health_snapshot_pointer": null
   },
@@ -46,10 +45,10 @@
   },
   "core_state": {
     "market_snapshot": {
-      "current_price_usdt": 79329.99,
+      "current_price_usdt": 79369.31,
       "price_source": "Binance Spot BTCUSDT",
-      "price_change_24h_pct": 1.309,
-      "high_24h_usdt": 79400.0,
+      "price_change_24h_pct": 1.247,
+      "high_24h_usdt": 79760.0,
       "low_24h_usdt": 77620.01,
       "latest_completed_4h_close_usdt": 79277.43
     },
@@ -63,14 +62,14 @@
     "bottom_score": 56,
     "top_score": 44,
     "trend": {
-      "state": "장기 회복 구조 유지 · 중기 조정 후 반등 진행 · 단기 79.3K 저항 시험",
+      "state": "장기 회복 구조 유지 · 중기 반등 진행 · 단기 79.5~79.76K 저항 재시험",
       "strength": 50,
-      "trajectory": "↑ 개선 중"
+      "trajectory": "↑ 개선 유지"
     },
     "support_resistance": {
       "short_term": {
         "support": "77.62~78.0K",
-        "resistance": "78.9~79.5K",
+        "resistance": "79.5~79.76K",
         "strength": "강도 대기"
       },
       "mid_term": {
@@ -94,20 +93,11 @@
     },
     "btc_leading_signal_engine": {
       "mode": "READ_ONLY_AUXILIARY",
-      "selection_status": "STALE_FALLBACK",
-      "expected_source_slot_kst": "2026-09-09T13:20:00+09:00",
-      "selected_workflow_run_id": 34295208475,
-      "selected_workflow_conclusion": "success",
-      "selected_source_time_kst": "2026-09-09T09:29:27+09:00",
-      "strict_detection_rows": 0,
-      "seeds": 0,
-      "positions": 0,
-      "ledger_integrity": "PASS",
-      "frozen_identity": "PASS",
-      "closed_candles_only": true,
-      "current_user_state": "신호 없음",
-      "production_weight": 0,
-      "note": "13:20-linked branch snapshot exists as of 13:30 KST, but workflow-success provenance for that expected slot was not independently verifiable before report; fallback used per HARD LOCK"
+      "selection_status": "UNVERIFIABLE_WAIT",
+      "expected_source_slot_kst": "2026-09-09T17:20:00+09:00",
+      "current_user_state": "확인 불가 · 대기",
+      "reason": "Required R26_SAME_RUN_PROVENANCE_V1 provenance manifest is absent on the integration branch and the available prior artifact also lacks provenance.json, so neither CURRENT nor STALE_FALLBACK can pass the HARD LOCK provenance verification sequence",
+      "production_weight": 0
     },
     "fractal": {
       "current_status": "N/A_CURRENT_ARTIFACT_UNAVAILABLE",
@@ -134,7 +124,7 @@
   },
   "lineage": {
     "state_origin": "ACTUAL_STORED_RUN",
-    "run_record_source": "BASIC_OFFICIAL_AUTOMATION_2026-09-09T17:00:00+09:00",
+    "run_record_source": "BASIC_OFFICIAL_AUTOMATION_2026-09-09T21:00:00+09:00",
     "history_pointer": "official_state/history/btc_trend/2026-09.jsonl",
     "canonical_identity_verified": true,
     "cross_master_decision_dependency": false
@@ -146,7 +136,8 @@
   "do_not_reconstruct": [
     "missing historical values",
     "unavailable current fractal artifact",
-    "unverified 13:20 Forward workflow provenance",
+    "unavailable S/R strength artifact",
+    "unverifiable BTC leading-signal provenance",
     "private user account or position data"
   ]
 }
