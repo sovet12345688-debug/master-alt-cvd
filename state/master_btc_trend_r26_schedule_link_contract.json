@@ -1,0 +1,72 @@
+{
+  "schema_version": "1.0",
+  "contract_id": "BTC_TREND_R26_SCHEDULE_LINK_V1",
+  "status": "FINAL_LOCK",
+  "scope": "MASTER_BTC_TREND_USER_VISIBLE_READ_ONLY_LINKAGE_ONLY",
+  "master": {
+    "name": "MASTER BTC TREND V2.6",
+    "official_kst": ["05:00", "08:00", "13:00", "17:00", "21:00"]
+  },
+  "forward_engine": {
+    "user_display_name": "BTC 선행신호 엔진",
+    "internal_name": "MASTER BTC TREND V3.0 R2.6 Forward OOS",
+    "workflow_name": "BTC TREND V3 R2.6 FORWARD OOS",
+    "workflow_path": ".github/workflows/btc_trend_v30_r26_forward_oos.yml",
+    "source_branch": "btc-trend-v30-r26-final-integration",
+    "scheduled_kst": ["05:20", "08:20", "13:20", "17:20", "21:20"],
+    "cron_utc": "20 4,8,12,20,23 * * *",
+    "mode": "READ_ONLY_ZERO_WEIGHT"
+  },
+  "official_to_forward_mapping_kst": {
+    "05:00": "PREVIOUS_DAY_21:20",
+    "08:00": "05:20",
+    "13:00": "08:20",
+    "17:00": "13:20",
+    "21:00": "17:20"
+  },
+  "selection_rule": {
+    "primary": "USE_EXPECTED_PRECEDING_SLOT_IF_WORKFLOW_RUN_CONCLUSION_SUCCESS_AND_COMPLETED_BEFORE_OFFICIAL_REPORT_START",
+    "fallback": "IF_EXPECTED_SLOT_IS_MISSING_RUNNING_FAILED_OR_UNVERIFIABLE_USE_IMMEDIATELY_PREVIOUS_VERIFIABLE_SUCCESSFUL_FORWARD_OOS_RUN_COMPLETED_BEFORE_OFFICIAL_REPORT_START",
+    "fallback_label": "STALE_FALLBACK",
+    "fallback_must_show_actual_source_time": true,
+    "future_run_forbidden": true,
+    "in_progress_run_forbidden": true,
+    "failed_run_forbidden": true,
+    "historical_or_bridge_as_current_forbidden": true,
+    "strict_forward_only": true,
+    "completed_candle_only": true
+  },
+  "provenance_and_integrity": {
+    "workflow_run_success_required": true,
+    "ledger_integrity_pass_required": true,
+    "frozen_identity_drift_forbidden": true,
+    "preferred_snapshot_proof": "SAME_RUN_ARTIFACT_R26_FORWARD_OOS_RUN_ID",
+    "branch_snapshot_allowed_only_when_lineage_is_consistent_with_selected_run": true,
+    "if_lineage_unverifiable": "확인 불가 · 대기",
+    "zero_detection_seed_position_is_failure": false
+  },
+  "display_rule": {
+    "zero_signal": {
+      "direction": "없음",
+      "stage": "신호 없음",
+      "early_move": "없음",
+      "seed": "아직",
+      "confirmation": "미확인",
+      "stop": "미확정",
+      "action": "대기"
+    },
+    "stages": ["신호 없음", "조기신호", "집중관찰", "진입준비", "1차 진입", "방향확인", "본진입", "청산"],
+    "stage_line_required": true,
+    "one_line_interpretation_required": true
+  },
+  "authority_lock": {
+    "changes_v26_scores": false,
+    "changes_long_short_ratio": false,
+    "changes_entry_gate": false,
+    "changes_live_plan": false,
+    "changes_fractal_or_sr": false,
+    "changes_r26_frozen_engine": false,
+    "execution_capital_authority": "FROZEN_R2.5_ONLY"
+  },
+  "change_policy": "Any future schedule change must update MASTER official schedule, Forward cron, this linkage contract, manifest reference, and active automation together before FINAL LOCK."
+}
