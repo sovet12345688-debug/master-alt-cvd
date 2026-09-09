@@ -1,0 +1,38 @@
+name: TEMP Patch BTC Validator Schedule Link
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'money_master_os/tools/patch_btc_validator_schedule.py'
+      - '.github/workflows/patch_btc_validator_schedule.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-validator:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Patch validator to current BTC/R2.6 schedule contract
+        run: python money_master_os/tools/patch_btc_validator_schedule.py
+      - name: Validate patched MASTER OS
+        run: python money_master_os/tools/validate_master_os.py
+      - name: Commit validated patch
+        run: |
+          set -euo pipefail
+          git config user.name 'btc-schedule-link-patcher'
+          git config user.email 'btc-schedule-link-patcher@users.noreply.github.com'
+          git add money_master_os/tools/validate_master_os.py
+          if git diff --cached --quiet; then
+            echo 'NO_VALIDATOR_CHANGE'
+          else
+            git commit -m 'BTC TREND: align central guard with official schedule and R2.6 linkage'
+            git push origin HEAD:main
+          fi
