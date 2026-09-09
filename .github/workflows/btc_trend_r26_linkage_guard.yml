@@ -1,0 +1,38 @@
+name: BTC TREND R2.6 Linkage Guard
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'money_master_os/registry/MASTER_REGISTRY.json'
+      - 'money_master_os/masters/btc_trend/manifest.json'
+      - 'master_prompts/master_btc_trend_v2_6_current.md'
+      - 'master_prompts/master_btc_trend_v2_6_ui_final.md'
+      - 'state/master_btc_trend_v2_6_contract.json'
+      - 'state/master_btc_trend_r26_schedule_link_contract.json'
+      - 'official_state/btc_trend_bridge_contract.json'
+      - 'money_master_os/tools/validate_btc_r26_linkage.py'
+      - '.github/workflows/btc_trend_v30_r26_forward_oos.yml'
+      - '.github/workflows/btc_trend_r26_linkage_guard.yml'
+  schedule:
+    - cron: '7 0 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-linkage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch frozen R2.6 integration branch
+        run: git fetch origin btc-trend-v30-r26-final-integration:refs/remotes/origin/btc-trend-v30-r26-final-integration
+      - name: Validate GitHub + MASTER BTC + R2.6 linkage
+        run: python money_master_os/tools/validate_btc_r26_linkage.py
