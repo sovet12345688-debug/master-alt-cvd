@@ -1,0 +1,75 @@
+name: MARKET Yen Carry Backtest Aug 2024
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'market_yen_carry/backtest_aug2024.py'
+      - '.github/workflows/market_yen_carry_backtest_aug2024.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-yen-carry-backtest-aug2024
+  cancel-in-progress: true
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run isolated backtest
+        run: |
+          python -m py_compile market_yen_carry/collector.py market_yen_carry/backtest_aug2024.py
+          python market_yen_carry/backtest_aug2024.py
+
+      - name: Validate report
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          p = Path('market_yen_carry/backtest_output/aug2024.json')
+          if not p.exists():
+              raise SystemExit('backtest output missing')
+          d = json.loads(p.read_text(encoding='utf-8'))
+          if d.get('source_engine') != 'YEN_CARRY_RISK_LITE_V1':
+              raise SystemExit('wrong source engine')
+          if d.get('score_weight') != 0:
+              raise SystemExit('score_weight must stay 0')
+          summary = d.get('summary') or {}
+          if summary.get('verdict') not in ('PASS','REVIEW'):
+              raise SystemExit('invalid verdict')
+          print('YEN_CARRY_AUG2024_BACKTEST=PASS', summary)
+          PY
+
+      - name: Commit backtest report only
+        run: |
+          git config user.name "market-yen-carry-bot"
+          git config user.email "market-yen-carry-bot@users.noreply.github.com"
+          git add market_yen_carry/backtest_output/aug2024.json market_yen_carry/backtest_output/aug2024.md
+          if git diff --cached --quiet; then
+            echo "No backtest report changes"
+            exit 0
+          fi
+          git commit -m "test: record Aug 2024 yen carry backtest"
+          for n in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "push retry $n"
+            sleep $((n*5))
+          done
+          exit 1
