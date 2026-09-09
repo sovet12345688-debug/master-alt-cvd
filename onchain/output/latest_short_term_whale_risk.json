@@ -1,7 +1,7 @@
 {
   "engine": "MASTER_ST_WHALE_PROFIT_TAKING_RISK_PROXY_V1",
   "schema_version": "1.2",
-  "generated_at_utc": "2026-09-09T19:39:06.225555Z",
+  "generated_at_utc": "2026-09-09T20:41:29.797600Z",
   "name_ko": "단기 고래 차익실현 위험",
   "role": "AUXILIARY_RISK_ONLY",
   "score_weight": 0,
@@ -17,7 +17,7 @@
         "status": "OK",
         "trace_name": "STH-NUPL",
         "source_time_utc": "2026-09-09T00:00:00Z",
-        "source_age_hours": 19.65,
+        "source_age_hours": 20.69,
         "value": 0.0961539660598629,
         "percentile_4y": 71.27222982216142,
         "avg_7d": 0.10641541933261302,
@@ -36,7 +36,7 @@
         "status": "OK",
         "trace_name": "STH-MVRV",
         "source_time_utc": "2026-09-09T00:00:00Z",
-        "source_age_hours": 19.65,
+        "source_age_hours": 20.69,
         "value": 1.1064,
         "percentile_4y": 71.27222982216142,
         "avg_7d": 1.11935,
@@ -55,7 +55,7 @@
         "status": "OK",
         "trace_name": "STH-SOPR",
         "source_time_utc": "2026-09-09T00:00:00Z",
-        "source_age_hours": 19.65,
+        "source_age_hours": 20.69,
         "value": 1.0,
         "percentile_4y": 100.0,
         "avg_7d": 1.0,
@@ -68,15 +68,15 @@
     {
       "signal": "🔴",
       "indicator": "Hyperliquid 고래 NET",
-      "display_value": "-$136.5M",
+      "display_value": "-$121.0M",
       "state": "고래 순포지션 숏 우세",
       "raw": {
         "status": "OK",
-        "value": -136509874.50470608,
-        "net_ratio": -0.1466880777931278,
-        "long_usd": 397051707.15409994,
-        "short_usd": 533561581.658806,
-        "source_time_utc": "2026-09-09T18:00:00Z",
+        "value": -120992890.21156788,
+        "net_ratio": -0.12854960782593117,
+        "long_usd": 410111331.36991006,
+        "short_usd": 531104221.58147794,
+        "source_time_utc": "2026-09-09T19:00:00Z",
         "source": "market_vault/output/latest_actor_flows.json (Hyperliquid >=$20M BTC aggregate)"
       }
     },
@@ -88,7 +88,7 @@
       "raw": {
         "status": "N/A",
         "value": null,
-        "error": "ValueError: stale CVD age_hours=8.351099945277777"
+        "error": "ValueError: stale CVD age_hours=9.390981069444445"
       }
     }
   ],
@@ -125,7 +125,7 @@
   "failures": [
     {
       "indicator": "BTC CVD",
-      "error": "ValueError: stale CVD age_hours=8.351099945277777"
+      "error": "ValueError: stale CVD age_hours=9.390981069444445"
     }
   ]
 }
