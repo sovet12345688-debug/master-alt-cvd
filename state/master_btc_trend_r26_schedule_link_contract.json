@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "contract_id": "BTC_TREND_R26_SCHEDULE_LINK_V1",
   "status": "FINAL_LOCK",
   "scope": "MASTER_BTC_TREND_USER_VISIBLE_READ_ONLY_LINKAGE_ONLY",
@@ -29,6 +29,9 @@
     "fallback": "IF_EXPECTED_SLOT_IS_MISSING_RUNNING_FAILED_OR_UNVERIFIABLE_USE_IMMEDIATELY_PREVIOUS_VERIFIABLE_SUCCESSFUL_FORWARD_OOS_RUN_COMPLETED_BEFORE_OFFICIAL_REPORT_START",
     "fallback_label": "STALE_FALLBACK",
     "fallback_must_show_actual_source_time": true,
+    "scheduled_slot_is_logical_target_not_exact_start_timestamp": true,
+    "actual_run_may_start_after_cron_slot": true,
+    "accept_actual_run_time_if_same_logical_slot_and_completed_before_official_report": true,
     "future_run_forbidden": true,
     "in_progress_run_forbidden": true,
     "failed_run_forbidden": true,
@@ -40,8 +43,34 @@
     "workflow_run_success_required": true,
     "ledger_integrity_pass_required": true,
     "frozen_identity_drift_forbidden": true,
-    "preferred_snapshot_proof": "SAME_RUN_ARTIFACT_R26_FORWARD_OOS_RUN_ID",
+    "provenance_manifest_path": "btc_trend_v30/r26/forward_oos/provenance.json",
+    "provenance_contract": "R26_SAME_RUN_PROVENANCE_V1",
+    "join_key": "WORKFLOW_RUN_ID_PLUS_SNAPSHOT_HASH_SHA256",
+    "snapshot_hash_basis": ["latest.md", "state.json"],
+    "required_manifest_fields": [
+      "workflow_run_id",
+      "workflow_run_attempt",
+      "snapshot_hash_sha256",
+      "snapshot_hash_basis",
+      "file_sha256",
+      "expected_artifact_name"
+    ],
+    "preferred_snapshot_proof": "SAME_RUN_PROVENANCE_MANIFEST_PLUS_ARTIFACT_RUN_ID",
+    "same_run_artifact_required": true,
+    "artifact_name_template": "r26-forward-oos-{workflow_run_id}",
     "branch_snapshot_allowed_only_when_lineage_is_consistent_with_selected_run": true,
+    "verification_sequence": [
+      "LOAD_PROVENANCE_MANIFEST_FROM_SELECTED_FORWARD_SNAPSHOT",
+      "MATCH_PROVENANCE_WORKFLOW_RUN_ID_TO_GITHUB_ACTIONS_RUN",
+      "REQUIRE_WORKFLOW_STATUS_COMPLETED_AND_CONCLUSION_SUCCESS",
+      "REQUIRE_WORKFLOW_COMPLETED_BEFORE_OFFICIAL_REPORT_START",
+      "MATCH_EXPECTED_ARTIFACT_NAME_TO_SAME_RUN_ARTIFACT",
+      "RECOMPUTE_LATEST_MD_AND_STATE_JSON_SHA256",
+      "RECOMPUTE_SNAPSHOT_HASH_SHA256_AND_MATCH_MANIFEST",
+      "REQUIRE_LEDGER_INTEGRITY_PASS",
+      "REQUIRE_FROZEN_IDENTITY_NO_DRIFT",
+      "ONLY_THEN_MARK_CURRENT"
+    ],
     "if_lineage_unverifiable": "확인 불가 · 대기",
     "zero_detection_seed_position_is_failure": false
   },
@@ -68,5 +97,5 @@
     "changes_r26_frozen_engine": false,
     "execution_capital_authority": "FROZEN_R2.5_ONLY"
   },
-  "change_policy": "Any future schedule change must update MASTER official schedule, Forward cron, this linkage contract, manifest reference, and active automation together before FINAL LOCK."
+  "change_policy": "Any future schedule or provenance change must update MASTER official schedule, Forward cron/provenance writer, this linkage contract, manifest reference, validator, and active automation together before FINAL LOCK."
 }
