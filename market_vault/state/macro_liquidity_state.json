@@ -1,8 +1,8 @@
 {
   "engine": "MASTER_MARKET_FREE_MACRO_LIQUIDITY_V2",
   "schema_version": "2.0",
-  "last_run_utc": "2026-09-09T04:57:11.639359Z",
-  "snapshot_hour_utc": "2026-09-09T04:00:00Z",
+  "last_run_utc": "2026-09-09T05:56:25.346090Z",
+  "snapshot_hour_utc": "2026-09-09T05:00:00Z",
   "collected_metrics": [
     "FED_RESERVE_BALANCES",
     "FED_RRP_TOTAL",
@@ -12,11 +12,11 @@
     "QRA_END_CASH_BALANCE_NEXT_Q",
     "QRA_NET_MARKETABLE_BORROWING_CURRENT_Q",
     "QRA_NET_MARKETABLE_BORROWING_NEXT_Q",
-    "TGA_CLOSING_BALANCE",
     "US_NET_LIQUIDITY_PROXY"
   ],
   "failures": {
-    "BUYBACK_ACTUAL": "RuntimeError: buyback accepted amount field not found; labels=['Operation Date', 'Operation Start Time (EST)', 'Operation Closing Time (EST)', 'Settlement Date', 'Preliminary Announcement PDF', 'Preliminary Announcement XML', 'Final Announcement PDF', 'Final Announcement XML', 'Results PDF', 'Results XML', 'Special Announcement PDF', 'Operation Type', 'Security Type', 'Maturity Bucket', 'Number of Issues Accepted', 'Total Par Amount Offered', 'Par Amount Per O"
+    "TGA": "ConnectionError: HTTPSConnectionPool(host='api.fiscaldata.treasury.gov', port=443): Max retries exceeded with url: /services/api/fiscal_service/v1/accounting/dts/operating_cash_balance?sort=-record_date&page%5Bsize%5D=100&fields=record_date%2Caccount_type%2Cclose_today_bal%2Copen_today_bal&format=json (Caused by NewConnectionError(\"HTTPSConnection(host='api.fiscaldata.treasury.gov', port=443): Failed to establish a new connection: [Errno 101] Network is unreachab",
+    "BUYBACK_ACTUAL": "ConnectionError: HTTPSConnectionPool(host='api.fiscaldata.treasury.gov', port=443): Max retries exceeded with url: /services/api/fiscal_service/v1/accounting/od/buybacks_operations?sort=-operation_date&page%5Bsize%5D=100&filter=operation_date%3Agte%3A2026-01-01 (Caused by NewConnectionError(\"HTTPSConnection(host='api.fiscaldata.treasury.gov', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))"
   },
-  "history_rows": 536
+  "history_rows": 545
 }
