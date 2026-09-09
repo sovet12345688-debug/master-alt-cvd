@@ -1,8 +1,8 @@
 {
   "engine": "MASTER_MARKET_FREE_MACRO_LIQUIDITY_V2",
   "schema_version": "2.0",
-  "generated_at_utc": "2026-09-09T05:57:35.786981Z",
-  "snapshot_hour_utc": "2026-09-09T05:00:00Z",
+  "generated_at_utc": "2026-09-09T06:59:41.525723Z",
+  "snapshot_hour_utc": "2026-09-09T06:00:00Z",
   "score_weight": 0,
   "role": "Free official-source evidence for existing MASTER MARKET macro/liquidity axes; not a standalone direction engine.",
   "net_liquidity_formula": "H.4.1 Fed total assets - H.4.1 TGA - H.4.1 total reverse repurchase agreements, USD millions. Weekly official-source proxy.",
@@ -160,6 +160,25 @@
       "vs_7d": null
     },
     {
+      "metric": "TGA_CLOSING_BALANCE",
+      "value": 903928.0,
+      "unit": "USD millions",
+      "source": "US Treasury FiscalData DTS",
+      "source_url": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/dts/operating_cash_balance",
+      "source_observation_time": "2026-09-04T00:00:00Z",
+      "source_frequency": "business_daily",
+      "note": "Daily Treasury General Account closing balance.",
+      "vs_1d": {
+        "previous_value": 944364.0,
+        "delta": -40436.0,
+        "delta_pct": -4.281823534145731,
+        "previous_snapshot_hour_utc": "2026-09-08T05:00:00Z",
+        "previous_source_observation_time": "2026-09-03T00:00:00Z"
+      },
+      "vs_3d": null,
+      "vs_7d": null
+    },
+    {
       "metric": "US_NET_LIQUIDITY_PROXY",
       "value": 5435098.0,
       "unit": "USD millions",
@@ -180,7 +199,6 @@
     }
   ],
   "failures": {
-    "TGA": "ConnectionError: HTTPSConnectionPool(host='api.fiscaldata.treasury.gov', port=443): Max retries exceeded with url: /services/api/fiscal_service/v1/accounting/dts/operating_cash_balance?sort=-record_date&page%5Bsize%5D=100&fields=record_date%2Caccount_type%2Cclose_today_bal%2Copen_today_bal&format=json (Caused by NewConnectionError(\"HTTPSConnection(host='api.fiscaldata.treasury.gov', port=443): Failed to establish a new connection: [Errno 101] Network is unreachab",
-    "BUYBACK_ACTUAL": "ConnectionError: HTTPSConnectionPool(host='api.fiscaldata.treasury.gov', port=443): Max retries exceeded with url: /services/api/fiscal_service/v1/accounting/od/buybacks_operations?sort=-operation_date&page%5Bsize%5D=100&filter=operation_date%3Agte%3A2026-01-01 (Caused by NewConnectionError(\"HTTPSConnection(host='api.fiscaldata.treasury.gov', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))"
+    "BUYBACK_ACTUAL": "RuntimeError: buyback accepted amount field not found; labels=['Operation Date', 'Operation Start Time (EST)', 'Operation Closing Time (EST)', 'Settlement Date', 'Preliminary Announcement PDF', 'Preliminary Announcement XML', 'Final Announcement PDF', 'Final Announcement XML', 'Results PDF', 'Results XML', 'Special Announcement PDF', 'Operation Type', 'Security Type', 'Maturity Bucket', 'Number of Issues Accepted', 'Total Par Amount Offered', 'Par Amount Per O"
   }
 }
