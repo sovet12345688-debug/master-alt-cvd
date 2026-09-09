@@ -10,6 +10,7 @@
   "canonical_source": "master_prompts/master_btc_trend_v2_6_current.md",
   "ui_canonical_source": "master_prompts/master_btc_trend_v2_6_ui_final.md",
   "machine_contract": "state/master_btc_trend_v2_6_contract.json",
+  "btc_leading_signal_schedule_contract": "state/master_btc_trend_r26_schedule_link_contract.json",
   "official_state": "official_state/latest/btc_trend.json",
   "official_state_bridge": {
     "status": "READY",
@@ -88,6 +89,7 @@
     "mode": "READ_ONLY_ZERO_WEIGHT",
     "source_repo": "sovet12345688-debug/master-alt-cvd",
     "source_branch": "btc-trend-v30-r26-final-integration",
+    "schedule_link_contract": "state/master_btc_trend_r26_schedule_link_contract.json",
     "strict_forward_only": true,
     "mandatory_visible_in": [
       "BASIC_OFFICIAL",
