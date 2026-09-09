@@ -1,0 +1,98 @@
+name: MARKET Actor Flows Hourly
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '50 * * * *'
+  push:
+    paths:
+      - 'market_vault/output_adapter.py'
+      - '.github/workflows/market_actor_flows_hourly.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-actor-flows-hourly
+  cancel-in-progress: true
+
+jobs:
+  refresh-actor-flows:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build actor flow adapter
+        run: |
+          python -m py_compile market_vault/output_adapter.py
+          python market_vault/output_adapter.py
+
+      - name: Validate actor flow freshness and schema
+        run: |
+          python - <<'PY'
+          import csv, json, sys
+          from datetime import datetime, timezone
+
+          with open('market_vault/output/latest_actor_flows.json', encoding='utf-8') as f:
+              ac = json.load(f)
+          if ac.get('engine') != 'MASTER_MARKET_ACTOR_FLOW_ADAPTER_V1':
+              sys.exit('wrong actor adapter engine')
+          if ac.get('score_weight') != 0:
+              sys.exit('actor adapter score_weight must remain 0')
+
+          generated = datetime.fromisoformat(ac['generated_at_utc'].replace('Z','+00:00'))
+          age_min = (datetime.now(timezone.utc) - generated).total_seconds()/60
+          if age_min > 15:
+              sys.exit(f'actor adapter output too old: {age_min:.1f}m')
+
+          for coin in ('BTC','ETH'):
+              wh = ac.get('whale',{}).get(coin,{})
+              rp = ac.get('retail_proxy',{}).get(coin,{})
+              if wh.get('current') is None:
+                  sys.exit(f'{coin} current whale NET missing')
+              if rp.get('current') is None:
+                  sys.exit(f'{coin} current retail proxy missing')
+              if wh['current'].get('net_usd') is None:
+                  sys.exit(f'{coin} whale net_usd missing')
+
+          # Ensure the actor current whale snapshot follows the latest stored whale history.
+          with open('market_whales/data/positions_history.csv', newline='', encoding='utf-8') as f:
+              rows = list(csv.DictReader(f))
+          for coin in ('BTC','ETH'):
+              times = [r.get('time_utc') for r in rows if r.get('coin') == coin and r.get('time_utc')]
+              if not times:
+                  sys.exit(f'{coin} whale history empty')
+              latest = max(times)
+              actor_time = ac['whale'][coin]['current'].get('snapshot_time_utc')
+              if actor_time != latest:
+                  sys.exit(f'{coin} actor whale snapshot stale: actor={actor_time} latest={latest}')
+
+          print('MARKET_ACTOR_FLOW_REFRESH=PASS')
+          PY
+
+      - name: Commit actor adapter output
+        run: |
+          git config user.name "market-actor-flow-bot"
+          git config user.email "market-actor-flow-bot@users.noreply.github.com"
+          git add market_vault/output/latest_actor_flows.json
+          if git diff --cached --quiet; then
+            echo "No actor-flow changes"
+          else
+            git commit -m "data: refresh MARKET actor flow adapter"
+            for n in 1 2 3; do
+              git pull --rebase origin main && git push origin HEAD:main && exit 0
+              echo "push retry $n"
+              sleep $((n*5))
+            done
+            exit 1
+          fi
