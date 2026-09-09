@@ -42,6 +42,69 @@ jobs:
           set -euo pipefail
           python btc_trend_v30/r26/forward_oos/forward_tracker.py
 
+      - name: Build same-run provenance manifest
+        env:
+          R26_WORKFLOW_RUN_ID: ${{ github.run_id }}
+          R26_WORKFLOW_RUN_ATTEMPT: ${{ github.run_attempt }}
+          R26_WORKFLOW_SHA: ${{ github.sha }}
+          R26_WORKFLOW_REF: ${{ github.ref }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          base = Path('btc_trend_v30/r26/forward_oos')
+          tracked = [
+              'latest.md', 'state.json', 'detections.csv', 'events.csv',
+              'seeds.csv', 'positions.csv', 'transactions.csv',
+              'ledger_integrity_report.json', 'scorecard.json'
+          ]
+
+          def sha256_file(path: Path):
+              if not path.exists():
+                  return None
+              h = hashlib.sha256()
+              with path.open('rb') as f:
+                  for chunk in iter(lambda: f.read(1024 * 1024), b''):
+                      h.update(chunk)
+              return h.hexdigest()
+
+          hashes = {name: sha256_file(base / name) for name in tracked}
+          # The user-visible snapshot identity is anchored to latest.md + state.json.
+          anchor = json.dumps({
+              'latest.md': hashes['latest.md'],
+              'state.json': hashes['state.json'],
+          }, sort_keys=True, separators=(',', ':')).encode()
+          snapshot_hash = hashlib.sha256(anchor).hexdigest()
+
+          manifest = {
+              'schema_version': '1.0',
+              'provenance_contract': 'R26_SAME_RUN_PROVENANCE_V1',
+              'workflow_name': 'BTC TREND V3 R2.6 FORWARD OOS',
+              'workflow_run_id': int(os.environ['R26_WORKFLOW_RUN_ID']),
+              'workflow_run_attempt': int(os.environ['R26_WORKFLOW_RUN_ATTEMPT']),
+              'workflow_trigger_sha': os.environ.get('R26_WORKFLOW_SHA'),
+              'workflow_ref': os.environ.get('R26_WORKFLOW_REF'),
+              'source_branch': 'btc-trend-v30-r26-final-integration',
+              'generated_at_utc': datetime.now(timezone.utc).isoformat(),
+              'snapshot_hash_sha256': snapshot_hash,
+              'snapshot_hash_basis': ['latest.md', 'state.json'],
+              'file_sha256': hashes,
+              'expected_artifact_name': f"r26-forward-oos-{os.environ['R26_WORKFLOW_RUN_ID']}",
+              'verification_rule': 'MATCH_RUN_ID_AND_RECOMPUTED_SNAPSHOT_HASH_THEN_REQUIRE_WORKFLOW_COMPLETED_SUCCESS',
+          }
+          (base / 'provenance.json').write_text(
+              json.dumps(manifest, indent=2, sort_keys=True) + '\n', encoding='utf-8'
+          )
+          print(json.dumps({
+              'workflow_run_id': manifest['workflow_run_id'],
+              'snapshot_hash_sha256': snapshot_hash,
+              'expected_artifact_name': manifest['expected_artifact_name'],
+          }, sort_keys=True))
+          PY
+
       - name: Frozen Forward ledger integrity guard
         run: |
           set -euo pipefail
@@ -64,7 +127,47 @@ jobs:
           set -euo pipefail
           python btc_trend_v30/r26/forward_oos/forward_scorecard.py
 
-      - name: Commit tracker, integrity and scorecard ledger
+      - name: Refresh provenance after guards and scorecard
+        env:
+          R26_WORKFLOW_RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          base = Path('btc_trend_v30/r26/forward_oos')
+          p = base / 'provenance.json'
+          manifest = json.loads(p.read_text(encoding='utf-8'))
+          for name in ['ledger_integrity_report.json', 'scorecard.json']:
+              path = base / name
+              if path.exists():
+                  manifest['file_sha256'][name] = hashlib.sha256(path.read_bytes()).hexdigest()
+          manifest['workflow_run_id'] = int(os.environ['R26_WORKFLOW_RUN_ID'])
+          p.write_text(json.dumps(manifest, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          PY
+
+      - name: Verify provenance join before commit
+        env:
+          R26_WORKFLOW_RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          base = Path('btc_trend_v30/r26/forward_oos')
+          manifest = json.loads((base / 'provenance.json').read_text(encoding='utf-8'))
+          assert manifest['workflow_run_id'] == int(os.environ['R26_WORKFLOW_RUN_ID'])
+          assert manifest['expected_artifact_name'] == f"r26-forward-oos-{os.environ['R26_WORKFLOW_RUN_ID']}"
+          hashes = {}
+          for name in ['latest.md', 'state.json']:
+              hashes[name] = hashlib.sha256((base / name).read_bytes()).hexdigest()
+              assert manifest['file_sha256'][name] == hashes[name]
+          anchor = json.dumps(hashes, sort_keys=True, separators=(',', ':')).encode()
+          assert hashlib.sha256(anchor).hexdigest() == manifest['snapshot_hash_sha256']
+          print('R26_PROVENANCE_JOIN_PRECOMMIT_PASS=1')
+          PY
+
+      - name: Commit tracker, integrity, scorecard and provenance ledger
         run: |
           set -euo pipefail
           git config user.name 'r26-forward-oos-bot'
@@ -86,7 +189,8 @@ jobs:
                   btc_trend_v30/r26/forward_oos/forward_truth_episodes.csv \
                   btc_trend_v30/r26/forward_oos/forward_truth_mcr.csv \
                   btc_trend_v30/r26/forward_oos/state_monotonicity.csv \
-                  btc_trend_v30/r26/forward_oos/cycle_buckets.csv
+                  btc_trend_v30/r26/forward_oos/cycle_buckets.csv \
+                  btc_trend_v30/r26/forward_oos/provenance.json
           if git diff --cached --quiet; then
             echo 'NO_FORWARD_LEDGER_CHANGE'
           else
