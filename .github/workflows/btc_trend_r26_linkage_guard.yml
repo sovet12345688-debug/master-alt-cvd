@@ -13,6 +13,7 @@ on:
       - 'state/master_btc_trend_r26_schedule_link_contract.json'
       - 'official_state/btc_trend_bridge_contract.json'
       - 'money_master_os/tools/validate_btc_r26_linkage.py'
+      - 'money_master_os/tools/validate_btc_r26_provenance_contract.py'
       - '.github/workflows/btc_trend_v30_r26_forward_oos.yml'
       - '.github/workflows/btc_trend_r26_linkage_guard.yml'
   schedule:
@@ -36,3 +37,5 @@ jobs:
         run: git fetch origin btc-trend-v30-r26-final-integration:refs/remotes/origin/btc-trend-v30-r26-final-integration
       - name: Validate GitHub + MASTER BTC + R2.6 linkage
         run: python money_master_os/tools/validate_btc_r26_linkage.py
+      - name: Validate R2.6 run-id + snapshot-hash provenance contract
+        run: python money_master_os/tools/validate_btc_r26_provenance_contract.py
