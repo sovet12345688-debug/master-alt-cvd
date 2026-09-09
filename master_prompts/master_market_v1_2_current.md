@@ -427,3 +427,31 @@ Read `onchain/output/latest_short_term_whale_risk.json` when fresh and `engine=M
 - User explicitly restored only the STH cohort proxy rows needed for this new auxiliary: `STH 미실현 수익상태(Whale 대체)`, `STH-MVRV`, `STH-SOPR`.
 - `STH Realized Price`, `Exchange Netflow`, and the old general on-chain synthesis block remain REMOVED and must not reappear unless separately restored by explicit user command.
 - SCREEN5 remains unchanged; this auxiliary belongs in SCREEN4 after the derivatives/whale context and before SCREEN4 `💡 핵심:`. SCREEN4 core data/score logic remains unchanged.
+
+## YEN CARRY RISK LITE — SCREEN1 READ-ONLY ADDITIVE LOCK 2026-09-09
+
+### Purpose / isolation
+- Add one compact SCREEN1 auxiliary named `엔 캐리 청산 위험` using the already-validated standalone engine output `market_yen_carry/output/latest_yen_carry.json`.
+- This is READ-ONLY integration. MASTER MARKET must not recalculate the Yen Carry score, call its external sources directly for this block, or modify the standalone collector/config/workflow during a normal MASTER run.
+- Required guards: `engine=YEN_CARRY_RISK_LITE_V1`, `schema_version=1.0`, `score_weight=0`, and status/coverage fields must be present.
+- Role = auxiliary macro-risk context only. It cannot by itself change Market Positive Score, BTC Liquidity Lead, Crypto Money Inflow, ALT Money Inflow, final 롱/숏, Risk Veto, WATCH thresholds, official score history, DXY logic, BTC/whale/derivatives logic, or any existing score weight/threshold.
+
+### SCREEN1 display
+- Display after the main global macro table and before `BTC Liquidity Lead`.
+- Compact table columns = `신호 | 항목 | 현재 | 1D | 3D | 7D | 상태`.
+- Required visible rows:
+  1. `엔화 강세` — current USD/JPY plus actual 1D/3D/7D change from the standalone output.
+  2. `미·일 10년 금리차` — current spread and actual 3D change; unsupported comparison cells may be `—` rather than fabricated values.
+  3. `시장 공포` — current VIX and actual 1D change; unsupported comparison cells may be `—` rather than fabricated values.
+- Immediately below the table show `엔 캐리 청산 위험: XX/100 [상태]` and one short `쉬운 해석:` sentence from the output.
+- User-visible level mapping follows the standalone output: `낮음 / 주의 / 경계 / 높음`.
+
+### Failure / N/A behavior
+- If the output is missing, stale beyond its own source guard, schema/engine-incompatible, `status=partial`, or `final_score=null`, keep the auxiliary visible as `⚪ 엔 캐리 청산 위험: N/A` and continue MASTER MARKET normally.
+- A Yen Carry auxiliary failure must never fail-close the whole MASTER MARKET run because it is a non-scoring additive block; only canonical/contract read failure retains the existing MASTER fail-closed behavior.
+- If user-visible N/A occurs, include the cause in the single consolidated `N/A 항목 안내` section. Do not cross-fill, interpolate, backfill, reuse stale values, or infer a score.
+
+### Production lock
+- `score_weight=0` remains fixed until explicit user approval after observation/validation.
+- Existing MASTER MARKET collectors, DXY interpretation, Market Positive Score, BTC Liquidity Lead, WATCH logic, and all other SCREEN1~5 blocks remain unchanged.
+

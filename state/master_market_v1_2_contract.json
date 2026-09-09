@@ -1,8 +1,8 @@
 {
-  "schema_version": "1.10",
+  "schema_version": "1.11",
   "master": "MASTER MARKET V1.2",
   "status": "FINAL_CUMULATIVE_LOCK",
-  "updated_kst": "2026-09-08T15:14:00+09:00",
+  "updated_kst": "2026-09-09T12:49:00+09:00",
   "purpose": "Machine-readable cumulative contract for MASTER MARKET. Existing required data, checks, and user-visible output blocks must survive future version upgrades unless the user explicitly orders removal.",
   "no_silent_omission": {
     "enabled": true,
@@ -55,6 +55,7 @@
     "whale": ["BTC core whales","ETH core whales","Hyperliquid same-run same-population positions","Position/Side/Entry/Leverage/Liquidation/Liq Distance","1H/4H/24H actual position-size changes","recent maximum 6 actual observations","$20M WATCH candidate","$50M LEVEL1 candidate"],
     "derivatives": ["Price","OI","Funding","OI 1H/4H/24H change","Funding 1H/4H/24H change when available","CVD","Taker Buy/Sell","Long/Short","Liquidation","Basis","Depth","Volume"],
     "short_term_whale_profit_taking_risk": ["STH unrealized-profit state proxy (not exact STH Whale)","STH-MVRV","STH-SOPR","Hyperliquid BTC whale NET","BTC CVD"],
+    "yen_carry_risk_lite": ["USDJPY current/1D/3D/7D","US-JP 10Y spread current/3D change","VIX current/1D change","Yen Carry Risk final score/level/easy_read - score weight 0"],
     "news_and_calendar": ["Coinness fast news radar","News TOP5","Economic indicator calendar","major unlock/supply events","hack/exploit","policy/macro/oil shock"],
     "secondary_confirmation": ["Sean Farrell latest view - score 0","Stanley Druckenmiller latest view - score 0"],
     "prediction_markets": ["Polymarket market-impact TOP10","YES probability current","probability-point change 1H/4H/1D/7D where applicable","24H and total volume","liquidity","open interest","spread","confidence grade","market impact and easy interpretation","traffic-light judgement for current market impact"]
@@ -70,7 +71,8 @@
     "polymarket": "Public Gamma/CLOB/Data APIs; forward-expectation context only; score weight 0. Same-market/same-YES-outcome deltas only. 7D is required only for verified markets at least 7 full days old; a younger market's 7D is NOT_APPLICABLE and must not create an N/A 안내 item. Genuine 7D failures on old-enough markets remain N/A. Polymarket alone never alerts or flips score/direction/Risk Veto.",
     "stablecoin_window_adapter": "Read market_vault/output/latest_stablecoin_windows.json when fresh for same-source prior/1D/3D/5D/7D/20D Stablecoin comparisons. No interpolation or backfill.",
     "actor_flow_adapter": "Read market_vault/output/latest_actor_flows.json when fresh for SCREEN2 and SCREEN4 actual-value institution/whale/retail-proxy comparisons. Adapter score weight is 0 and does not alter underlying score engine, Risk Veto, WATCH, or official history.",
-    "short_term_whale_risk_proxy": "Read onchain/output/latest_short_term_whale_risk.json when fresh and engine/schema guards pass. STH metrics come from free public Checkonchain static Plotly HTML; exact CryptoQuant STH Whale is never claimed/reproduced. Hyperliquid NET and BTC CVD reuse existing validated MASTER outputs. No API key, paid source, backfill, interpolation, OCR, or guessed values."
+    "short_term_whale_risk_proxy": "Read onchain/output/latest_short_term_whale_risk.json when fresh and engine/schema guards pass. STH metrics come from free public Checkonchain static Plotly HTML; exact CryptoQuant STH Whale is never claimed/reproduced. Hyperliquid NET and BTC CVD reuse existing validated MASTER outputs. No API key, paid source, backfill, interpolation, OCR, or guessed values.",
+    "yen_carry_risk_lite": "Read market_yen_carry/output/latest_yen_carry.json only when engine=YEN_CARRY_RISK_LITE_V1, schema_version=1.0, score_weight=0 and status/coverage guards pass. READ-ONLY SCREEN1 auxiliary; no MASTER recalculation, no cross-fill, no score/direction/Risk Veto/WATCH/DXY/BTC/whale/derivatives effect. Partial/null/stale/incompatible output => visible N/A and parent MASTER continues."
   },
   "required_scores": {
     "BTC_Liquidity_Lead_Index": {"bands":"0-39 Risk-Off | 40-54 Neutral/Weak | 55-64 Early Ignition | 65-74 Uptrend Start | 75-84 Acceleration | 85-100 Euphoria","fixed_thresholds":[55,65,75]},
@@ -100,6 +102,7 @@
       "BTC Liquidity Lead table columns: signal|current score|prior|1D|3D|7D|current stage",
       "BTC Liquidity Lead visibly emphasizes 55 as 상승 초입 기준; thresholds 55/65/75 unchanged",
       "oil remains mandatory and underlying Oil Hard Importance logic unchanged",
+      "Yen Carry Risk Lite read-only auxiliary: after main macro table and before BTC Liquidity Lead, read market_yen_carry/output/latest_yen_carry.json and show signal|item|current|1D|3D|7D|status plus final score/100 and easy Korean interpretation; score weight 0; failure stays visible N/A and does not block parent MASTER",
       "end with compact 💡 핵심 summary"
     ],
     "screen2": [
@@ -265,6 +268,30 @@
     "limited_restoration": {
       "restored_only_for_this_auxiliary": ["STH unrealized-profit state proxy","STH-MVRV","STH-SOPR"],
       "still_removed": ["STH Realized Price","Exchange Netflow","old general on-chain synthesis block"]
+    }
+  },
+  "yen_carry_risk_lite": {
+    "enabled": true,
+    "authorized_by_user": true,
+    "display_name": "엔 캐리 청산 위험",
+    "display_location": "SCREEN1_AFTER_GLOBAL_MACRO_BEFORE_BTC_LIQUIDITY_LEAD",
+    "role": "AUXILIARY_MACRO_RISK_READ_ONLY",
+    "score_weight": 0,
+    "output": "market_yen_carry/output/latest_yen_carry.json",
+    "required_engine": "YEN_CARRY_RISK_LITE_V1",
+    "required_schema_version": "1.0",
+    "required_fields": ["status","coverage_pct","metrics.usd_jpy","metrics.us_jp_10y_spread","metrics.vix","risk.final_score","risk.level","risk.label_ko","easy_read"],
+    "table_columns": ["신호","항목","현재","1D","3D","7D","상태"],
+    "rows_in_order": ["엔화 강세","미·일 10년 금리차","시장 공포"],
+    "failure_behavior": "KEEP_BLOCK_VISIBLE_AS_NA_AND_CONTINUE_PARENT_MASTER",
+    "cannot_alone_change": ["Market Positive Score","BTC Liquidity Lead","Crypto Money Inflow","ALT Money Inflow","direction","Risk Veto","WATCH","official score history","DXY logic","BTC logic","whale logic","derivatives logic"],
+    "guards": {
+      "read_only": true,
+      "no_master_recalculation": true,
+      "no_cross_fill": true,
+      "no_backfill": true,
+      "no_interpolation": true,
+      "partial_or_null_score_is_na": true
     }
   },
   "whale_display_policy": {
