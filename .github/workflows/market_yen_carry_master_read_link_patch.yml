@@ -1,0 +1,179 @@
+name: MARKET Yen Carry Read-Link Patch
+
+on:
+  push:
+    paths:
+      - '.github/workflows/market_yen_carry_master_read_link_patch.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-yen-carry-read-link-patch
+  cancel-in-progress: true
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Validate existing Yen Carry output
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('market_yen_carry/output/latest_yen_carry.json')
+          d = json.loads(p.read_text(encoding='utf-8'))
+          assert d.get('engine') == 'YEN_CARRY_RISK_LITE_V1'
+          assert d.get('schema_version') == '1.0'
+          assert d.get('score_weight') == 0
+          assert d.get('status') in ('ok', 'partial')
+          print('YEN_CARRY_SOURCE_VALIDATION=PASS')
+          PY
+
+      - name: Patch canonical and contract additively
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          canonical_path = Path('master_prompts/master_market_v1_2_current.md')
+          contract_path = Path('state/master_market_v1_2_contract.json')
+
+          canonical = canonical_path.read_text(encoding='utf-8')
+          contract = contract_path.read_text(encoding='utf-8')
+
+          block = r'''
+
+## YEN CARRY RISK LITE — SCREEN1 READ-ONLY ADDITIVE LOCK 2026-09-09
+
+### Purpose / isolation
+- Add one compact SCREEN1 auxiliary named `엔 캐리 청산 위험` using the already-validated standalone engine output `market_yen_carry/output/latest_yen_carry.json`.
+- This is READ-ONLY integration. MASTER MARKET must not recalculate the Yen Carry score, call its external sources directly for this block, or modify the standalone collector/config/workflow during a normal MASTER run.
+- Required guards: `engine=YEN_CARRY_RISK_LITE_V1`, `schema_version=1.0`, `score_weight=0`, and status/coverage fields must be present.
+- Role = auxiliary macro-risk context only. It cannot by itself change Market Positive Score, BTC Liquidity Lead, Crypto Money Inflow, ALT Money Inflow, final 롱/숏, Risk Veto, WATCH thresholds, official score history, DXY logic, BTC/whale/derivatives logic, or any existing score weight/threshold.
+
+### SCREEN1 display
+- Display after the main global macro table and before `BTC Liquidity Lead`.
+- Compact table columns = `신호 | 항목 | 현재 | 1D | 3D | 7D | 상태`.
+- Required visible rows:
+  1. `엔화 강세` — current USD/JPY plus actual 1D/3D/7D change from the standalone output.
+  2. `미·일 10년 금리차` — current spread and actual 3D change; unsupported comparison cells may be `—` rather than fabricated values.
+  3. `시장 공포` — current VIX and actual 1D change; unsupported comparison cells may be `—` rather than fabricated values.
+- Immediately below the table show `엔 캐리 청산 위험: XX/100 [상태]` and one short `쉬운 해석:` sentence from the output.
+- User-visible level mapping follows the standalone output: `낮음 / 주의 / 경계 / 높음`.
+
+### Failure / N/A behavior
+- If the output is missing, stale beyond its own source guard, schema/engine-incompatible, `status=partial`, or `final_score=null`, keep the auxiliary visible as `⚪ 엔 캐리 청산 위험: N/A` and continue MASTER MARKET normally.
+- A Yen Carry auxiliary failure must never fail-close the whole MASTER MARKET run because it is a non-scoring additive block; only canonical/contract read failure retains the existing MASTER fail-closed behavior.
+- If user-visible N/A occurs, include the cause in the single consolidated `N/A 항목 안내` section. Do not cross-fill, interpolate, backfill, reuse stale values, or infer a score.
+
+### Production lock
+- `score_weight=0` remains fixed until explicit user approval after observation/validation.
+- Existing MASTER MARKET collectors, DXY interpretation, Market Positive Score, BTC Liquidity Lead, WATCH logic, and all other SCREEN1~5 blocks remain unchanged.
+'''
+
+          if '## YEN CARRY RISK LITE — SCREEN1 READ-ONLY ADDITIVE LOCK 2026-09-09' not in canonical:
+              canonical = canonical.rstrip() + block + '\n'
+
+          # Minimal text edits to preserve the existing JSON layout and avoid reserializing the whole contract.
+          if '"schema_version": "1.10"' in contract:
+              contract = contract.replace('"schema_version": "1.10"', '"schema_version": "1.11"', 1)
+          elif '"schema_version": "1.11"' not in contract:
+              raise SystemExit('Unexpected contract schema version')
+
+          if '"updated_kst": "2026-09-08T15:14:00+09:00"' in contract:
+              contract = contract.replace('"updated_kst": "2026-09-08T15:14:00+09:00"', '"updated_kst": "2026-09-09T12:49:00+09:00"', 1)
+
+          required_marker = '    "short_term_whale_profit_taking_risk": ["STH unrealized-profit state proxy (not exact STH Whale)","STH-MVRV","STH-SOPR","Hyperliquid BTC whale NET","BTC CVD"],\n'
+          required_add = required_marker + '    "yen_carry_risk_lite": ["USDJPY current/1D/3D/7D","US-JP 10Y spread current/3D change","VIX current/1D change","Yen Carry Risk final score/level/easy_read - score weight 0"],\n'
+          if '"yen_carry_risk_lite": [' not in contract:
+              if required_marker not in contract:
+                  raise SystemExit('required_data insertion marker missing')
+              contract = contract.replace(required_marker, required_add, 1)
+
+          source_marker = '    "short_term_whale_risk_proxy": "Read onchain/output/latest_short_term_whale_risk.json when fresh and engine/schema guards pass. STH metrics come from free public Checkonchain static Plotly HTML; exact CryptoQuant STH Whale is never claimed/reproduced. Hyperliquid NET and BTC CVD reuse existing validated MASTER outputs. No API key, paid source, backfill, interpolation, OCR, or guessed values."\n'
+          source_add = '    "short_term_whale_risk_proxy": "Read onchain/output/latest_short_term_whale_risk.json when fresh and engine/schema guards pass. STH metrics come from free public Checkonchain static Plotly HTML; exact CryptoQuant STH Whale is never claimed/reproduced. Hyperliquid NET and BTC CVD reuse existing validated MASTER outputs. No API key, paid source, backfill, interpolation, OCR, or guessed values.",\n    "yen_carry_risk_lite": "Read market_yen_carry/output/latest_yen_carry.json only when engine=YEN_CARRY_RISK_LITE_V1, schema_version=1.0, score_weight=0 and status/coverage guards pass. READ-ONLY SCREEN1 auxiliary; no MASTER recalculation, no cross-fill, no score/direction/Risk Veto/WATCH/DXY/BTC/whale/derivatives effect. Partial/null/stale/incompatible output => visible N/A and parent MASTER continues."\n'
+          if '"yen_carry_risk_lite": "Read market_yen_carry/output/latest_yen_carry.json' not in contract:
+              if source_marker not in contract:
+                  raise SystemExit('source_policy insertion marker missing')
+              contract = contract.replace(source_marker, source_add, 1)
+
+          screen1_marker = '      "oil remains mandatory and underlying Oil Hard Importance logic unchanged",\n'
+          screen1_line = '      "Yen Carry Risk Lite read-only auxiliary: after main macro table and before BTC Liquidity Lead, read market_yen_carry/output/latest_yen_carry.json and show signal|item|current|1D|3D|7D|status plus final score/100 and easy Korean interpretation; score weight 0; failure stays visible N/A and does not block parent MASTER",\n'
+          if 'Yen Carry Risk Lite read-only auxiliary:' not in contract:
+              if screen1_marker not in contract:
+                  raise SystemExit('SCREEN1 insertion marker missing')
+              contract = contract.replace(screen1_marker, screen1_marker + screen1_line, 1)
+
+          top_marker = '  "whale_display_policy": {\n'
+          top_block = r'''  "yen_carry_risk_lite": {
+    "enabled": true,
+    "authorized_by_user": true,
+    "display_name": "엔 캐리 청산 위험",
+    "display_location": "SCREEN1_AFTER_GLOBAL_MACRO_BEFORE_BTC_LIQUIDITY_LEAD",
+    "role": "AUXILIARY_MACRO_RISK_READ_ONLY",
+    "score_weight": 0,
+    "output": "market_yen_carry/output/latest_yen_carry.json",
+    "required_engine": "YEN_CARRY_RISK_LITE_V1",
+    "required_schema_version": "1.0",
+    "required_fields": ["status","coverage_pct","metrics.usd_jpy","metrics.us_jp_10y_spread","metrics.vix","risk.final_score","risk.level","risk.label_ko","easy_read"],
+    "table_columns": ["신호","항목","현재","1D","3D","7D","상태"],
+    "rows_in_order": ["엔화 강세","미·일 10년 금리차","시장 공포"],
+    "failure_behavior": "KEEP_BLOCK_VISIBLE_AS_NA_AND_CONTINUE_PARENT_MASTER",
+    "cannot_alone_change": ["Market Positive Score","BTC Liquidity Lead","Crypto Money Inflow","ALT Money Inflow","direction","Risk Veto","WATCH","official score history","DXY logic","BTC logic","whale logic","derivatives logic"],
+    "guards": {
+      "read_only": true,
+      "no_master_recalculation": true,
+      "no_cross_fill": true,
+      "no_backfill": true,
+      "no_interpolation": true,
+      "partial_or_null_score_is_na": true
+    }
+  },
+'''
+          if '  "yen_carry_risk_lite": {\n' not in contract:
+              if top_marker not in contract:
+                  raise SystemExit('top-level insertion marker missing')
+              contract = contract.replace(top_marker, top_block + top_marker, 1)
+
+          # Validate JSON and all additive locks before writing.
+          parsed = json.loads(contract)
+          assert parsed['schema_version'] == '1.11'
+          yc = parsed['yen_carry_risk_lite']
+          assert yc['score_weight'] == 0
+          assert yc['output'] == 'market_yen_carry/output/latest_yen_carry.json'
+          assert yc['guards']['read_only'] is True
+          assert any('Yen Carry Risk Lite read-only auxiliary:' in x for x in parsed['required_output']['screen1'])
+          assert 'yen_carry_risk_lite' in parsed['required_data']
+          assert 'yen_carry_risk_lite' in parsed['source_policy']
+
+          canonical_path.write_text(canonical, encoding='utf-8')
+          contract_path.write_text(contract, encoding='utf-8')
+          print('MASTER_YEN_CARRY_READ_LINK_PATCH=PASS')
+          PY
+
+      - name: Commit canonical and contract only
+        run: |
+          git config user.name "market-contract-bot"
+          git config user.email "market-contract-bot@users.noreply.github.com"
+          git add master_prompts/master_market_v1_2_current.md state/master_market_v1_2_contract.json
+          if git diff --cached --quiet; then
+            echo "No patch changes"
+            exit 0
+          fi
+          git commit -m "feat: connect Yen Carry Risk Lite read-only to MASTER MARKET"
+          for n in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "push retry $n"
+            sleep $((n*5))
+          done
+          exit 1
