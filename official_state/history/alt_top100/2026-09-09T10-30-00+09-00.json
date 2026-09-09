@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0",
+  "state_status": "STORED",
+  "master_id": "alt_top100",
+  "display_name": "MASTER ALT 1 · TOP100",
+  "master_version": "V4.8 FINAL",
+  "source_path": "master_prompts/master_alt_top100_v4_8_current.md",
+  "current_canonical_source_sha": "27af5ac7f9acf4250f08ce06b601459e644da726",
+  "contract_path": null,
+  "run": {
+    "run_type": "OFFICIAL",
+    "run_id": "ALT_TOP100_20260909_1030",
+    "executed_kst": "2026-09-09T10:30:10+09:00",
+    "updated_kst": "2026-09-09T10:30:10+09:00",
+    "prior_official_run_id": null
+  },
+  "validity": {
+    "valid_until_kst": "2026-09-10T10:30:00+09:00",
+    "next_official_run_kst": "2026-09-10T10:30:00+09:00",
+    "freshness_status": "CURRENT"
+  },
+  "data_quality": {
+    "coverage_pct": 82,
+    "confidence": "B+",
+    "known_na": ["TOTAL3_DIRECT_SR_NOT_CONFIRMED_THIS_RUN", "NO_PRIOR_STORED_V4_8_OFFICIAL_FOR_DELTA"],
+    "stale_sources": [],
+    "time_mismatch_warnings": [],
+    "source_health_snapshot_pointer": "source_health/output/latest.json"
+  },
+  "decision": {
+    "direction": "SELECTIVE_LONG",
+    "permission_or_environment": "ALT_MARKET_73_100_SELECTIVE_LONG",
+    "action": "WAIT_FOR_NONCHASE_TRIGGER",
+    "risk_veto": ["EXTENDED_ALT_CLUSTER_VVV_VET_DOT_INJ"],
+    "invalidations": ["BROAD_MARKET_PARTICIPATION_WEAKENS", "BTC_DOMINANCE_REACCELERATES_WITH_ALT_RS_DETERIORATION"]
+  },
+  "core_state": {
+    "alt_market_score": 73,
+    "delta_score": null,
+    "delta_reason": "NO_PRIOR_STORED_OFFICIAL_RUN",
+    "market_snapshot": {
+      "global_market_cap_usd": 2775394327104,
+      "global_24h_volume_usd": 91392015889,
+      "btc_dominance_pct": 57.0,
+      "eth_dominance_pct": 11.0
+    },
+    "best3": [
+      {"ticker":"AVAX","direction":"LONG","trend_score":81,"hunter_score":83,"accum_score":75,"early_score":82,"trend_flip_score":80,"breakout_ready_score":86,"absorption_score":71,"non_chase":true,"status":"WAIT","trigger":"8.20 above completed 30m close then retest hold"},
+      {"ticker":"HBAR","direction":"LONG","trend_score":78,"hunter_score":79,"accum_score":76,"early_score":77,"trend_flip_score":74,"breakout_ready_score":80,"absorption_score":70,"non_chase":true,"status":"WAIT","trigger":"0.08320 reclaim on completed 30m candle then hold"},
+      {"ticker":"ONDO","direction":"LONG","trend_score":76,"hunter_score":77,"accum_score":74,"early_score":75,"trend_flip_score":72,"breakout_ready_score":77,"absorption_score":68,"non_chase":true,"status":"WAIT","trigger":"0.3974 reclaim on completed 30m candle then retest hold"}
+    ],
+    "pre_runner_confirmed": [],
+    "actual_enter_count": 0,
+    "overextended_watch": ["VVV","VET","DOT","INJ","CRO"]
+  },
+  "lineage": {
+    "state_origin": "ACTUAL_STORED_RUN",
+    "run_record_source": "official_state/history/alt_top100/2026-09-09T10-30-00+09-00.json",
+    "history_pointer": "official_state/history/alt_top100/",
+    "canonical_identity_verified": true,
+    "cross_master_decision_dependency": false
+  },
+  "privacy": {
+    "contains_personal_account_data": false,
+    "public_repository_safe": true
+  },
+  "do_not_reconstruct": ["Prior V4.8 OFFICIAL scores before this stored run", "WATCH/provisional outputs as OFFICIAL history", "Other MASTER decisions as ALT TOP100 input"]
+}
