@@ -1,0 +1,104 @@
+name: MARKET Yen Carry Risk Lite Daily
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '5 1 * * 1-5'
+  push:
+    paths:
+      - 'market_yen_carry/collector.py'
+      - 'market_yen_carry/config.json'
+      - '.github/workflows/market_yen_carry_daily.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-yen-carry-risk-lite-daily
+  cancel-in-progress: true
+
+jobs:
+  refresh-yen-carry-risk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build yen carry risk lite output
+        run: |
+          python -m py_compile market_yen_carry/collector.py
+          python market_yen_carry/collector.py
+
+      - name: Validate output contract
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path('market_yen_carry/output/latest_yen_carry.json')
+          if not path.exists():
+              raise SystemExit('latest_yen_carry.json missing')
+
+          data = json.loads(path.read_text(encoding='utf-8'))
+          if data.get('engine') != 'YEN_CARRY_RISK_LITE_V1':
+              raise SystemExit('wrong engine')
+          if data.get('schema_version') != '1.0':
+              raise SystemExit('wrong schema_version')
+          if data.get('score_weight') != 0:
+              raise SystemExit('score_weight must remain 0')
+          if data.get('status') not in ('ok', 'partial'):
+              raise SystemExit('invalid status')
+
+          coverage = data.get('coverage_pct')
+          if not isinstance(coverage, int) or not 0 <= coverage <= 100:
+              raise SystemExit('invalid coverage_pct')
+
+          final_score = (data.get('risk') or {}).get('final_score')
+          if data['status'] == 'ok':
+              if coverage != 100:
+                  raise SystemExit('ok status requires 100% coverage')
+              if not isinstance(final_score, int) or not 0 <= final_score <= 100:
+                  raise SystemExit('ok status requires integer final_score 0..100')
+          else:
+              if final_score is not None:
+                  raise SystemExit('partial status must not publish final_score')
+
+          print(
+              'YEN_CARRY_RISK_LITE_VALIDATION=PASS',
+              f"status={data['status']}",
+              f"coverage={coverage}",
+              f"score={final_score}",
+          )
+          PY
+
+      - name: Commit yen carry output only
+        run: |
+          git config user.name "market-yen-carry-bot"
+          git config user.email "market-yen-carry-bot@users.noreply.github.com"
+          git add market_yen_carry/output/latest_yen_carry.json
+
+          if git diff --cached --quiet; then
+            echo "No yen-carry output changes"
+            exit 0
+          fi
+
+          git commit -m "data: refresh MARKET yen carry risk lite"
+
+          for n in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "push retry $n"
+            sleep $((n*5))
+          done
+          exit 1
