@@ -85,7 +85,13 @@ jobs:
         run: |
           git config user.name "market-actor-flow-bot"
           git config user.email "market-actor-flow-bot@users.noreply.github.com"
+
+          # output_adapter.py also regenerates stablecoin windows. This dedicated
+          # workflow owns only actor-flow output, so leave stablecoin output to
+          # the MARKET Data Vault workflow and keep the worktree clean for rebase.
+          git restore -- market_vault/output/latest_stablecoin_windows.json
           git add market_vault/output/latest_actor_flows.json
+
           if git diff --cached --quiet; then
             echo "No actor-flow changes"
           else
