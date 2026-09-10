@@ -1,7 +1,7 @@
 {
   "engine": "YEN_CARRY_RISK_LITE_V1",
   "schema_version": "1.0",
-  "generated_at_utc": "2026-09-10T01:07:12.295666Z",
+  "generated_at_utc": "2026-09-10T23:37:50.316423Z",
   "score_weight": 0,
   "status": "ok",
   "coverage_pct": 100,
@@ -15,20 +15,20 @@
   "sources": {
     "usd_jpy": {
       "provider": "ECB",
-      "asof_date": "2026-09-09",
-      "value": 153.26982492276005,
+      "asof_date": "2026-09-10",
+      "value": 154.17527548209367,
       "source_url": "https://data-api.ecb.europa.eu/service/data/EXR/D.USD+JPY.EUR.SP00.A?format=csvdata&lastNObservations=20",
       "method": "JPY per EUR divided by USD per EUR",
-      "source_age_days": 1,
+      "source_age_days": 0,
       "freshness_max_age_days": 3
     },
     "us10y": {
       "provider": "FRED_H15",
       "series_id": "DGS10",
-      "asof_date": "2026-09-08",
-      "value_pct": 4.8,
+      "asof_date": "2026-09-09",
+      "value_pct": 4.83,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-07-27&coed=2026-09-10",
-      "source_age_days": 2,
+      "source_age_days": 1,
       "freshness_max_age_days": 4
     },
     "jp10y": {
@@ -51,18 +51,18 @@
   },
   "metrics": {
     "usd_jpy": {
-      "current": 153.269825,
-      "asof_date": "2026-09-09",
-      "change_1d_pct": -0.6654,
-      "change_3d_pct": -1.9053,
-      "change_7d_pct": -3.9637,
-      "score": 25
+      "current": 154.175275,
+      "asof_date": "2026-09-10",
+      "change_1d_pct": 0.5908,
+      "change_3d_pct": -0.3711,
+      "change_7d_pct": -1.1784,
+      "score": 0
     },
     "us_jp_10y_spread": {
-      "current_pct_point": 1.904,
-      "asof_date": "2026-09-08",
+      "current_pct_point": 1.939,
+      "asof_date": "2026-09-09",
       "prior_3d_date": "2026-09-04",
-      "change_3d_bp": 3.4,
+      "change_3d_bp": 6.9,
       "score": 0
     },
     "vix": {
@@ -73,16 +73,16 @@
     }
   },
   "risk": {
-    "yen_score": 25,
+    "yen_score": 0,
     "spread_score": 0,
     "vix_score": 0,
-    "raw_score": 25,
-    "gate_applied": false,
-    "final_score": 25,
-    "level": "watch",
-    "label_ko": "주의"
+    "raw_score": 0,
+    "gate_applied": true,
+    "final_score": 0,
+    "level": "low",
+    "label_ko": "낮음"
   },
   "calculation_rule": "1D/3D/7D use the latest available observation on or before the target calendar day; no interpolation or synthetic backfill. score_weight remains 0.",
   "errors": [],
-  "easy_read": "엔화 또는 금리차에 주의 신호가 있지만 아직 엔 캐리 청산 위험이 높은 단계는 아닙니다."
+  "easy_read": "엔화·금리차·시장 공포를 함께 보면 현재 엔 캐리 청산 위험은 낮습니다."
 }
