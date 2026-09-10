@@ -8,6 +8,7 @@ on:
   push:
     paths:
       - 'market_vault/output_adapter.py'
+      - 'market_vault/actor_freshness_guard.py'
       - '.github/workflows/market_actor_flows_hourly.yml'
 
 permissions:
@@ -36,7 +37,9 @@ jobs:
       - name: Build actor flow adapter
         run: |
           python -m py_compile market_vault/output_adapter.py
+          python -m py_compile market_vault/actor_freshness_guard.py
           python market_vault/output_adapter.py
+          python market_vault/actor_freshness_guard.py
 
       - name: Validate actor flow freshness and schema
         run: |
@@ -44,12 +47,16 @@ jobs:
           import csv, json, sys
           from datetime import datetime, timezone
 
+          MAX_AGE_MIN = 90.0
+
           with open('market_vault/output/latest_actor_flows.json', encoding='utf-8') as f:
               ac = json.load(f)
           if ac.get('engine') != 'MASTER_MARKET_ACTOR_FLOW_ADAPTER_V1':
               sys.exit('wrong actor adapter engine')
           if ac.get('score_weight') != 0:
               sys.exit('actor adapter score_weight must remain 0')
+          if float(ac.get('retail_freshness_max_age_minutes', -1)) != MAX_AGE_MIN:
+              sys.exit('actor retail freshness threshold mismatch')
 
           generated = datetime.fromisoformat(ac['generated_at_utc'].replace('Z','+00:00'))
           age_min = (datetime.now(timezone.utc) - generated).total_seconds()/60
@@ -61,10 +68,34 @@ jobs:
               rp = ac.get('retail_proxy',{}).get(coin,{})
               if wh.get('current') is None:
                   sys.exit(f'{coin} current whale NET missing')
-              if rp.get('current') is None:
-                  sys.exit(f'{coin} current retail proxy missing')
               if wh['current'].get('net_usd') is None:
                   sys.exit(f'{coin} whale net_usd missing')
+
+              status = rp.get('current_status')
+              if status not in ('OK','STALE_UPSTREAM','MISSING_UPSTREAM'):
+                  sys.exit(f'{coin} invalid retail freshness status: {status}')
+              if status == 'OK':
+                  if rp.get('current') is None:
+                      sys.exit(f'{coin} retail status OK but current missing')
+                  source_age = rp.get('source_age_minutes')
+                  if source_age is None or float(source_age) > MAX_AGE_MIN:
+                      sys.exit(f'{coin} retail freshness violation age={source_age}')
+              else:
+                  if rp.get('current') is not None:
+                      sys.exit(f'{coin} stale retail current must be N/A')
+                  for key in ('1d','3d','7d'):
+                      if rp.get(key) is not None:
+                          sys.exit(f'{coin} stale retail comparison must be N/A: {key}')
+
+              funding_status = rp.get('funding_status')
+              if funding_status not in ('OK','STALE_UPSTREAM','MISSING_UPSTREAM'):
+                  sys.exit(f'{coin} invalid funding freshness status: {funding_status}')
+              if funding_status == 'OK':
+                  f_age = rp.get('funding_age_minutes')
+                  if rp.get('funding') is None or f_age is None or float(f_age) > MAX_AGE_MIN:
+                      sys.exit(f'{coin} funding freshness violation age={f_age}')
+              elif rp.get('funding') is not None:
+                  sys.exit(f'{coin} stale funding must be N/A')
 
           # Ensure the actor current whale snapshot follows the latest stored whale history.
           with open('market_whales/data/positions_history.csv', newline='', encoding='utf-8') as f:
@@ -79,6 +110,7 @@ jobs:
                   sys.exit(f'{coin} actor whale snapshot stale: actor={actor_time} latest={latest}')
 
           print('MARKET_ACTOR_FLOW_REFRESH=PASS')
+          print('MARKET_ACTOR_RETAIL_STATUS='+str(ac.get('retail_proxy_status')))
           PY
 
       - name: Commit actor adapter output
