@@ -3,6 +3,12 @@
   "schema_version": "1.0",
   "score_weight": 0,
   "max_source_age_days": 7,
+  "source_freshness_days": {
+    "usd_jpy": 3,
+    "us10y": 4,
+    "jp10y": 4,
+    "vix": 4
+  },
   "weights": {
     "yen_strength": 50,
     "yield_spread": 30,
@@ -22,6 +28,7 @@
     "Standalone auxiliary engine only; no MASTER MARKET score impact.",
     "Uses free public data only: ECB USDJPY cross, FRED/Fed H.15 US10Y, Japan MOF JP10Y, Cboe VIX.",
     "If any required source is unavailable, final_score is null and the parent MASTER must continue without this auxiliary block.",
-    "No interpolation, no synthetic backfill, no reuse of stale values beyond max_source_age_days."
+    "No interpolation, no synthetic backfill, no reuse of stale values beyond each source-specific freshness threshold.",
+    "source_freshness_days uses calendar-day guards with weekend/holiday buffer; max_source_age_days is retained only as a backward-compatible fallback."
   ]
 }
