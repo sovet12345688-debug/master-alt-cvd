@@ -42,6 +42,56 @@ jobs:
       - name: Collect live derivatives OI and funding
         run: python derivatives/collector.py
 
+      - name: Normalize exact derivatives windows after history gaps
+        run: |
+          python - <<'PY'
+          import csv,json
+          from datetime import datetime,timedelta
+          hist_path='derivatives/data/hourly_derivatives.csv'
+          json_path='derivatives/output/latest_summary.json'
+          csv_path='derivatives/output/latest_summary.csv'
+          with open(hist_path,newline='',encoding='utf-8') as fh:
+              rows=list(csv.DictReader(fh))
+          with open(json_path,encoding='utf-8') as fh:
+              payload=json.load(fh)
+          latest_s=payload.get('snapshot_time_utc')
+          venue=payload.get('venue')
+          latest=datetime.fromisoformat(latest_s.replace('Z','+00:00'))
+          idx={(r.get('time_utc'),r.get('venue'),r.get('symbol')):r for r in rows}
+          for a in payload.get('assets',[]):
+              missing4=False
+              for h in (1,4,24):
+                  target=(latest-timedelta(hours=h)).isoformat().replace('+00:00','Z')
+                  prior=idx.get((target,venue,a.get('symbol')))
+                  exact_ok=bool(prior and prior.get('status')=='OK' and prior.get('open_interest_usdt'))
+                  if not exact_ok:
+                      a[f'price_change_{h}h_pct']=None
+                      a[f'oi_change_{h}h_pct']=None
+                      a[f'funding_change_{h}h']=None
+                      if h==4:
+                          missing4=True
+              if a.get('status')=='OK' and missing4:
+                  label='BUILDING_HISTORY'
+                  fr=a.get('last_funding_rate')
+                  if fr is not None and abs(fr) >= 0.001:
+                      label += '|FUNDING_EXTREME'
+                  a['derivatives_state']=label
+          with open(json_path,'w',encoding='utf-8') as fh:
+              json.dump(payload,fh,ensure_ascii=False,indent=2)
+          fields=[
+              'symbol','venue','time_utc','status','mark_price','open_interest_usdt','last_funding_rate',
+              'price_change_1h_pct','oi_change_1h_pct','funding_change_1h',
+              'price_change_4h_pct','oi_change_4h_pct','funding_change_4h',
+              'price_change_24h_pct','oi_change_24h_pct','funding_change_24h','derivatives_state'
+          ]
+          with open(csv_path,'w',newline='',encoding='utf-8') as fh:
+              w=csv.DictWriter(fh,fieldnames=fields)
+              w.writeheader()
+              for a in payload.get('assets',[]):
+                  w.writerow({k:'' if a.get(k) is None else a.get(k,'') for k in fields})
+          print('DERIVATIVES_EXACT_WINDOW_NORMALIZATION=PASS')
+          PY
+
       - name: Collect Bitget free microstructure 7-field pack
         run: python derivatives/microstructure_collector_v2.py
 
