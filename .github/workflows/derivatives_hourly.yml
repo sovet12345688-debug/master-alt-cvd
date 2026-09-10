@@ -127,6 +127,23 @@ jobs:
             echo "No data changes"
           else
             git commit -m "data: hourly derivatives snapshot"
-            git pull --rebase origin main
-            git push origin HEAD:main
+            max_attempts=5
+            for attempt in $(seq 1 "$max_attempts"); do
+              echo "Push attempt ${attempt}/${max_attempts}"
+              git fetch origin main
+              if ! git rebase origin/main; then
+                echo "Rebase conflict detected; aborting fail-closed."
+                git rebase --abort || true
+                exit 1
+              fi
+              if git push origin HEAD:main; then
+                echo "Derivatives snapshot published successfully."
+                exit 0
+              fi
+              if [ "$attempt" -eq "$max_attempts" ]; then
+                echo "Push failed after ${max_attempts} attempts."
+                exit 1
+              fi
+              sleep $((attempt * 5))
+            done
           fi
