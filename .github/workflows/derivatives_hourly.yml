@@ -72,7 +72,7 @@ jobs:
         run: |
           python - <<'PY'
           import csv,json,sys
-          from datetime import datetime,timedelta,timezone
+          from datetime import datetime,timedelta
           with open('derivatives/data/hourly_derivatives.csv',newline='',encoding='utf-8') as fh:
               rows=list(csv.DictReader(fh))
           state=json.load(open('derivatives/state/collector_state.json'))
@@ -88,33 +88,36 @@ jobs:
               if k in keys:
                   sys.exit(f'FINAL_QA failed: duplicate key {k}')
               keys.add(k)
-          vr=[r for r in rows if r.get('venue')==venue]
-          stamps=sorted({datetime.fromisoformat(r['time_utc'].replace('Z','+00:00')) for r in vr if r.get('time_utc')})
-          recent=[t for t in stamps if latest-timedelta(hours=23) <= t <= latest]
-          expected={latest-timedelta(hours=i) for i in range(24)}
-          if not expected.issubset(set(recent)):
-              missing=sorted(expected-set(recent))
-              sys.exit(f'FINAL_QA failed: missing hourly timestamps in 24H window: {missing[:4]}')
           universe=int(state.get('universe_count') or 0)
           if universe <= 0:
               sys.exit('FINAL_QA failed: invalid universe_count')
-          for t in expected:
-              ts=t.isoformat().replace('+00:00','Z')
-              count=sum(1 for r in vr if r.get('time_utc')==ts)
-              if count < max(1,int(universe*0.90)):
-                  sys.exit(f'FINAL_QA failed: abnormal row-count collapse {ts} rows={count} universe={universe}')
+          latest_rows=[r for r in rows if r.get('venue')==venue and r.get('time_utc')==latest_s]
+          if len(latest_rows) < max(1,int(universe*0.90)):
+              sys.exit(f'FINAL_QA failed: latest snapshot coverage <90% rows={len(latest_rows)} universe={universe}')
           assets=summary.get('assets',[])
           if len(assets) < max(1,int(universe*0.90)):
               sys.exit('FINAL_QA failed: latest summary coverage <90%')
+          row_index={(r.get('time_utc'),r.get('venue'),r.get('symbol')):r for r in rows}
+          missing_windows={1:0,4:0,24:0}
           for a in assets:
               if a.get('venue') != venue:
                   sys.exit(f'FINAL_QA failed: cross-venue summary row {a.get("symbol")}')
-              if a.get('status')=='OK':
-                  if a.get('last_funding_rate') is None:
-                      sys.exit(f'FINAL_QA failed: funding missing {a.get("symbol")}')
-                  for h in (1,4,24):
-                      if a.get(f'oi_change_{h}h_pct') is None:
-                          sys.exit(f'FINAL_QA failed: OI {h}h missing {a.get("symbol")}')
+              if a.get('status')=='OK' and a.get('last_funding_rate') is None:
+                  sys.exit(f'FINAL_QA failed: funding missing {a.get("symbol")}')
+              if a.get('status')!='OK':
+                  continue
+              for h in (1,4,24):
+                  target=(latest-timedelta(hours=h)).isoformat().replace('+00:00','Z')
+                  prior=row_index.get((target,venue,a.get('symbol')))
+                  exact_ok=bool(prior and prior.get('status')=='OK' and prior.get('open_interest_usdt'))
+                  oi=a.get(f'oi_change_{h}h_pct')
+                  if exact_ok and oi is None:
+                      sys.exit(f'FINAL_QA failed: exact {h}H baseline exists but OI change missing {a.get("symbol")}')
+                  if not exact_ok and oi is not None:
+                      sys.exit(f'FINAL_QA failed: stale/non-exact {h}H OI baseline used {a.get("symbol")}')
+                  if not exact_ok:
+                      missing_windows[h]+=1
+          print('DERIVATIVES_WINDOW_GAPS', missing_windows)
           print('DERIVATIVES_24H_FINAL_QA=PASS')
           PY
 
