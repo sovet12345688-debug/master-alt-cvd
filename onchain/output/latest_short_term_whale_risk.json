@@ -1,7 +1,7 @@
 {
   "engine": "MASTER_ST_WHALE_PROFIT_TAKING_RISK_PROXY_V1",
   "schema_version": "1.2",
-  "generated_at_utc": "2026-09-10T01:41:55.682078Z",
+  "generated_at_utc": "2026-09-10T02:42:27.586901Z",
   "name_ko": "단기 고래 차익실현 위험",
   "role": "AUXILIARY_RISK_ONLY",
   "score_weight": 0,
@@ -17,7 +17,7 @@
         "status": "OK",
         "trace_name": "STH-NUPL",
         "source_time_utc": "2026-09-09T00:00:00Z",
-        "source_age_hours": 25.7,
+        "source_age_hours": 26.71,
         "value": 0.0890925533359413,
         "percentile_4y": 69.42544459644323,
         "avg_7d": 0.1055327427421228,
@@ -36,7 +36,7 @@
         "status": "OK",
         "trace_name": "STH-MVRV",
         "source_time_utc": "2026-09-09T00:00:00Z",
-        "source_age_hours": 25.7,
+        "source_age_hours": 26.71,
         "value": 1.0978,
         "percentile_4y": 69.42544459644323,
         "avg_7d": 1.1182750000000001,
@@ -55,7 +55,7 @@
         "status": "OK",
         "trace_name": "STH-SOPR",
         "source_time_utc": "2026-09-09T00:00:00Z",
-        "source_age_hours": 25.7,
+        "source_age_hours": 26.71,
         "value": 1.0,
         "percentile_4y": 100.0,
         "avg_7d": 1.0,
@@ -68,29 +68,29 @@
     {
       "signal": "🔴",
       "indicator": "Hyperliquid 고래 NET",
-      "display_value": "-$222.0M",
+      "display_value": "-$241.3M",
       "state": "고래 순포지션 숏 우세",
       "raw": {
         "status": "OK",
-        "value": -221966365.28813803,
-        "net_ratio": -0.25241852601319553,
-        "long_usd": 328696045.33093,
-        "short_usd": 550662410.619068,
-        "source_time_utc": "2026-09-10T00:00:00Z",
+        "value": -241309910.818155,
+        "net_ratio": -0.2676696328427171,
+        "long_usd": 330105760.805505,
+        "short_usd": 571415671.62366,
+        "source_time_utc": "2026-09-10T01:00:00Z",
         "source": "market_vault/output/latest_actor_flows.json (Hyperliquid >=$20M BTC aggregate)"
       }
     },
     {
       "signal": "🟡",
       "indicator": "BTC CVD",
-      "display_value": "+$2.7M",
+      "display_value": "-$1.7M",
       "state": "매수·매도 혼조",
       "raw": {
         "status": "OK",
-        "value": 2693680.110999994,
-        "cvd_to_volume_ratio": 0.03327799708058101,
-        "trade_notional_1h_usdt": 80944778.75208,
-        "source_time_utc": "2026-09-10T01:17:18.169557Z",
+        "value": -1651870.9859900028,
+        "cvd_to_volume_ratio": -0.0235477029819363,
+        "trade_notional_1h_usdt": 70149983.93929,
+        "source_time_utc": "2026-09-10T02:18:38.323048Z",
         "source": "derivatives/output/latest_microstructure.json (Bitget BTC 1H)"
       }
     }
