@@ -1,7 +1,7 @@
 {
   "engine": "MASTER_ST_WHALE_PROFIT_TAKING_RISK_PROXY_V1",
   "schema_version": "1.2",
-  "generated_at_utc": "2026-09-09T23:39:57.667903Z",
+  "generated_at_utc": "2026-09-10T00:45:36.735530Z",
   "name_ko": "단기 고래 차익실현 위험",
   "role": "AUXILIARY_RISK_ONLY",
   "score_weight": 0,
@@ -11,16 +11,16 @@
     {
       "signal": "🟡",
       "indicator": "STH 미실현 수익상태 (Whale 대체)",
-      "display_value": "STH-NUPL 0.096 / 4Y 71.3%ile",
+      "display_value": "STH-NUPL 0.089 / 4Y 69.4%ile",
       "state": "단기보유 미실현 수익권",
       "raw": {
         "status": "OK",
         "trace_name": "STH-NUPL",
         "source_time_utc": "2026-09-09T00:00:00Z",
-        "source_age_hours": 23.67,
-        "value": 0.0961539660598629,
-        "percentile_4y": 71.27222982216142,
-        "avg_7d": 0.10641541933261302,
+        "source_age_hours": 24.76,
+        "value": 0.0890925533359413,
+        "percentile_4y": 69.42544459644323,
+        "avg_7d": 0.1055327427421228,
         "history_points_4y": 1462,
         "source": "Checkonchain live public static Plotly HTML (no API key)",
         "source_url": "https://charts-cdn.checkonchain.com/btconchain/unrealised/nupl_bycohort/nupl_bycohort_light.html",
@@ -30,16 +30,16 @@
     {
       "signal": "🟡",
       "indicator": "STH-MVRV",
-      "display_value": "1.106 / 4Y 71.3%ile",
+      "display_value": "1.098 / 4Y 69.4%ile",
       "state": "단기보유자 수익권",
       "raw": {
         "status": "OK",
         "trace_name": "STH-MVRV",
         "source_time_utc": "2026-09-09T00:00:00Z",
-        "source_age_hours": 23.67,
-        "value": 1.1064,
-        "percentile_4y": 71.27222982216142,
-        "avg_7d": 1.11935,
+        "source_age_hours": 24.76,
+        "value": 1.0978,
+        "percentile_4y": 69.42544459644323,
+        "avg_7d": 1.1182750000000001,
         "history_points_4y": 1462,
         "source": "Checkonchain live public static Plotly HTML (no API key)",
         "source_url": "https://charts-cdn.checkonchain.com/btconchain/unrealised/mvrv_sth/mvrv_sth_light.html",
@@ -55,7 +55,7 @@
         "status": "OK",
         "trace_name": "STH-SOPR",
         "source_time_utc": "2026-09-09T00:00:00Z",
-        "source_age_hours": 23.67,
+        "source_age_hours": 24.76,
         "value": 1.0,
         "percentile_4y": 100.0,
         "avg_7d": 1.0,
@@ -68,37 +68,40 @@
     {
       "signal": "🔴",
       "indicator": "Hyperliquid 고래 NET",
-      "display_value": "-$213.2M",
+      "display_value": "-$219.9M",
       "state": "고래 순포지션 숏 우세",
       "raw": {
         "status": "OK",
-        "value": -213223196.73098302,
-        "net_ratio": -0.2345682667315297,
-        "long_usd": 347889770.685897,
-        "short_usd": 561112967.41688,
-        "source_time_utc": "2026-09-09T22:00:00Z",
+        "value": -219866179.85644,
+        "net_ratio": -0.24726512248941437,
+        "long_usd": 334662932.43610007,
+        "short_usd": 554529112.2925401,
+        "source_time_utc": "2026-09-09T23:00:00Z",
         "source": "market_vault/output/latest_actor_flows.json (Hyperliquid >=$20M BTC aggregate)"
       }
     },
     {
-      "signal": "⚪",
+      "signal": "🔴",
       "indicator": "BTC CVD",
-      "display_value": "N/A",
-      "state": "N/A",
+      "display_value": "-$6.2M",
+      "state": "적극매도 우세",
       "raw": {
-        "status": "N/A",
-        "value": null,
-        "error": "ValueError: stale CVD age_hours=12.365389487500002"
+        "status": "OK",
+        "value": -6211232.047659997,
+        "cvd_to_volume_ratio": -0.12067754104314707,
+        "trade_notional_1h_usdt": 51469660.33588,
+        "source_time_utc": "2026-09-10T00:34:37.126600Z",
+        "source": "derivatives/output/latest_microstructure.json (Bitget BTC 1H)"
       }
     }
   ],
   "overall": {
-    "signal": "🟡",
-    "level": "주의",
-    "risk_points": 2.0,
-    "available_rows": 4,
+    "signal": "🔴",
+    "level": "높음",
+    "risk_points": 3.0,
+    "available_rows": 5,
     "total_rows": 5,
-    "coverage": 0.8,
+    "coverage": 1.0,
     "method": "red=1, yellow=0.5, green=0; equal-weight display-only auxiliary. <3 available rows => 확인 제한."
   },
   "guards": {
@@ -122,10 +125,5 @@
       "WATCH"
     ]
   },
-  "failures": [
-    {
-      "indicator": "BTC CVD",
-      "error": "ValueError: stale CVD age_hours=12.365389487500002"
-    }
-  ]
+  "failures": []
 }
