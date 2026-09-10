@@ -1,37 +1,52 @@
 {
   "engine": "YEN_CARRY_RISK_LITE_V1",
   "schema_version": "1.0",
-  "generated_at_utc": "2026-09-10T01:05:49.155124Z",
+  "generated_at_utc": "2026-09-10T01:06:51.377720Z",
   "score_weight": 0,
   "status": "ok",
   "coverage_pct": 100,
+  "freshness_policy": "source-specific calendar-day guards with weekend/holiday buffer; stale required source makes this auxiliary block partial",
+  "source_freshness_days": {
+    "usd_jpy": 3,
+    "us10y": 4,
+    "jp10y": 4,
+    "vix": 4
+  },
   "sources": {
     "usd_jpy": {
       "provider": "ECB",
       "asof_date": "2026-09-09",
       "value": 153.26982492276005,
       "source_url": "https://data-api.ecb.europa.eu/service/data/EXR/D.USD+JPY.EUR.SP00.A?format=csvdata&lastNObservations=20",
-      "method": "JPY per EUR divided by USD per EUR"
+      "method": "JPY per EUR divided by USD per EUR",
+      "source_age_days": 1,
+      "freshness_max_age_days": 3
     },
     "us10y": {
       "provider": "FRED_H15",
       "series_id": "DGS10",
       "asof_date": "2026-09-08",
       "value_pct": 4.8,
-      "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-07-27&coed=2026-09-10"
+      "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-07-27&coed=2026-09-10",
+      "source_age_days": 2,
+      "freshness_max_age_days": 4
     },
     "jp10y": {
       "provider": "MOF_JAPAN",
       "asof_date": "2026-09-09",
       "value_pct": 2.891,
       "source_url": "https://www.mof.go.jp/english/policy/jgbs/reference/interest_rate/jgbcme.csv",
-      "retrieval_mode": "current"
+      "retrieval_mode": "current",
+      "source_age_days": 1,
+      "freshness_max_age_days": 4
     },
     "vix": {
       "provider": "CBOE",
       "asof_date": "2026-09-09",
       "value": 16.46,
-      "source_url": "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv"
+      "source_url": "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv",
+      "source_age_days": 1,
+      "freshness_max_age_days": 4
     }
   },
   "metrics": {
