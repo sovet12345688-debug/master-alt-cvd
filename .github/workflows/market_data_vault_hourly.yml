@@ -8,6 +8,7 @@ on:
     paths:
       - 'market_vault/collector_official.py'
       - 'market_vault/output_adapter.py'
+      - 'market_vault/actor_freshness_guard.py'
       - 'market_vault/config.json'
       - '.github/workflows/market_data_vault_hourly.yml'
 
@@ -41,13 +42,16 @@ jobs:
         run: |
           python -m py_compile market_vault/collector_official.py
           python -m py_compile market_vault/output_adapter.py
+          python -m py_compile market_vault/actor_freshness_guard.py
           python market_vault/collector_official.py --mode self-test
 
       - name: Collect same-source market history snapshot
         run: python market_vault/collector_official.py --mode collect
 
       - name: Build Stablecoin and actor actual-value adapters
-        run: python market_vault/output_adapter.py
+        run: |
+          python market_vault/output_adapter.py
+          python market_vault/actor_freshness_guard.py
 
       - name: Validate current official-source coverage
         run: python market_vault/collector_official.py --mode validate
@@ -74,6 +78,7 @@ jobs:
         run: |
           python - <<'PY'
           import json,sys
+          MAX_AGE_MIN=90.0
           st=json.load(open('market_vault/output/latest_stablecoin_windows.json'))
           ac=json.load(open('market_vault/output/latest_actor_flows.json'))
           if st.get('engine')!='MASTER_MARKET_STABLECOIN_WINDOWS_V1':
@@ -87,6 +92,8 @@ jobs:
               sys.exit('wrong actor adapter engine')
           if ac.get('score_weight')!=0:
               sys.exit('actor adapter must have score_weight 0')
+          if float(ac.get('retail_freshness_max_age_minutes',-1))!=MAX_AGE_MIN:
+              sys.exit('actor retail freshness threshold mismatch')
           for coin in ('BTC','ETH'):
               inst=ac.get('institution',{}).get(coin,{})
               if 'flow_7d_usd_m' not in inst:
@@ -96,7 +103,21 @@ jobs:
               for k in ('current','1d','3d','7d'):
                   if k not in wh or k not in rp:
                       sys.exit(f'{coin} actor comparison key missing {k}')
+              status=rp.get('current_status')
+              if status not in ('OK','STALE_UPSTREAM','MISSING_UPSTREAM'):
+                  sys.exit(f'{coin} invalid retail freshness status {status}')
+              if status=='OK':
+                  age=rp.get('source_age_minutes')
+                  if rp.get('current') is None or age is None or float(age)>MAX_AGE_MIN:
+                      sys.exit(f'{coin} retail freshness contract violated age={age}')
+              else:
+                  if rp.get('current') is not None:
+                      sys.exit(f'{coin} stale retail current must be N/A')
+                  for k in ('1d','3d','7d'):
+                      if rp.get(k) is not None:
+                          sys.exit(f'{coin} stale retail comparison must be N/A: {k}')
           print('MARKET_ACTUAL_FLOW_ADAPTERS=PASS')
+          print('MARKET_ACTOR_RETAIL_STATUS='+str(ac.get('retail_proxy_status')))
           PY
 
       - name: Assess MARKET vault history health without blocking current recovery
