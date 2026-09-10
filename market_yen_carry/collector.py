@@ -129,10 +129,21 @@ def change_over_calendar_days(series: dict[date, float], days: int) -> dict[str,
     }
 
 
+def source_age_days(asof: date) -> int:
+    return (now_utc().date() - asof).days
+
+
 def ensure_fresh(name: str, asof: date, max_age_days: int) -> None:
-    age_days = (now_utc().date() - asof).days
+    age_days = source_age_days(asof)
     if age_days > max_age_days:
-        raise RuntimeError(f"{name} stale: {age_days} days old")
+        raise RuntimeError(f"{name} stale: {age_days} days old; max={max_age_days}")
+
+
+def freshness_meta(asof: date, max_age_days: int) -> dict[str, int]:
+    return {
+        "source_age_days": source_age_days(asof),
+        "freshness_max_age_days": max_age_days,
+    }
 
 
 def fetch_usdjpy_series(max_age_days: int) -> tuple[dict[date, float], dict[str, Any]]:
@@ -167,6 +178,7 @@ def fetch_usdjpy_series(max_age_days: int) -> tuple[dict[date, float], dict[str,
         "value": value,
         "source_url": ECB_FX_URL,
         "method": "JPY per EUR divided by USD per EUR",
+        **freshness_meta(asof, max_age_days),
     }
 
 
@@ -200,6 +212,7 @@ def fetch_us10y_series(max_age_days: int) -> tuple[dict[date, float], dict[str, 
         "asof_date": asof.isoformat(),
         "value_pct": value,
         "source_url": url,
+        **freshness_meta(asof, max_age_days),
     }
 
 
@@ -257,6 +270,7 @@ def fetch_jp10y_series(max_age_days: int) -> tuple[dict[date, float], dict[str, 
                 "value_pct": value,
                 "source_url": url,
                 "retrieval_mode": mode,
+                **freshness_meta(asof, max_age_days),
             }
         except Exception as exc:
             errors.append(f"{mode}:{type(exc).__name__}:{str(exc)[:220]}")
@@ -284,6 +298,7 @@ def fetch_vix_series(max_age_days: int) -> tuple[dict[date, float], dict[str, An
         "asof_date": asof.isoformat(),
         "value": value,
         "source_url": CBOE_VIX_URL,
+        **freshness_meta(asof, max_age_days),
     }
 
 
@@ -364,7 +379,10 @@ def main() -> None:
     config = load_config()
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     generated = now_utc()
-    max_age_days = int(config.get("max_source_age_days", 7))
+    fallback_max_age_days = int(config.get("max_source_age_days", 7))
+    freshness = config.get("source_freshness_days", {})
+    if not isinstance(freshness, dict):
+        raise SystemExit("source_freshness_days must be an object")
 
     errors: list[str] = []
     sources: dict[str, Any] = {}
@@ -376,14 +394,23 @@ def main() -> None:
         "jp10y": fetch_jp10y_series,
         "vix": fetch_vix_series,
     }
+    effective_freshness_days: dict[str, int] = {}
     for name, fn in fetchers.items():
+        max_age_days = int(freshness.get(name, fallback_max_age_days))
+        if max_age_days < 0:
+            raise SystemExit(f"invalid freshness threshold for {name}: {max_age_days}")
+        effective_freshness_days[name] = max_age_days
         try:
             series, source = fn(max_age_days)
             datasets[name] = series
             sources[name] = source
         except Exception as exc:
             errors.append(f"{name}:{type(exc).__name__}:{str(exc)[:500]}")
-            sources[name] = {"status": "error", "error": str(exc)[:500]}
+            sources[name] = {
+                "status": "error",
+                "freshness_max_age_days": max_age_days,
+                "error": str(exc)[:500],
+            }
 
     coverage_pct = int(round(100 * len(datasets) / len(fetchers)))
     payload: dict[str, Any] = {
@@ -393,6 +420,8 @@ def main() -> None:
         "score_weight": int(config["score_weight"]),
         "status": "partial",
         "coverage_pct": coverage_pct,
+        "freshness_policy": "source-specific calendar-day guards with weekend/holiday buffer; stale required source makes this auxiliary block partial",
+        "source_freshness_days": effective_freshness_days,
         "sources": sources,
         "metrics": {},
         "risk": {
@@ -470,13 +499,14 @@ def main() -> None:
             payload["errors"].append(f"calculation:{type(exc).__name__}:{str(exc)[:500]}")
             payload["easy_read"] = "필수 계산 기준값이 부족해 이번 회차 엔 캐리 청산 위험을 산출하지 못했습니다."
     else:
-        payload["easy_read"] = "필수 공개데이터 일부를 가져오지 못해 이번 회차 엔 캐리 청산 위험을 산출하지 못했습니다."
+        payload["easy_read"] = "필수 공개데이터 일부가 원천별 freshness 기준을 통과하지 못했거나 수집되지 않아 이번 회차 엔 캐리 청산 위험을 산출하지 못했습니다."
 
     OUTPUT_PATH.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps({
         "engine": payload["engine"],
         "status": payload["status"],
         "coverage_pct": payload["coverage_pct"],
+        "source_freshness_days": payload["source_freshness_days"],
         "final_score": payload["risk"].get("final_score"),
         "errors": payload["errors"],
     }, ensure_ascii=False))
