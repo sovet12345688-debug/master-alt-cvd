@@ -2,13 +2,9 @@ from __future__ import annotations
 
 import csv
 import json
-import time
 from datetime import datetime, timezone, timedelta
-from io import StringIO
 from pathlib import Path
 from typing import Any
-
-import requests
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = ROOT / "net_liquidity"
@@ -18,10 +14,9 @@ STATE_DIR = BASE / "state"
 HISTORY_PATH = DATA_DIR / "history.csv"
 SUMMARY_JSON = OUT_DIR / "latest_summary.json"
 STATE_PATH = STATE_DIR / "collector_state.json"
-MARKET_VAULT_PATH = ROOT / "market_vault" / "output" / "latest_summary.json"
+MACRO_PATH = ROOT / "market_vault" / "output" / "latest_macro_liquidity.json"
 
-SESSION = requests.Session()
-SESSION.headers.update({"User-Agent": "MASTER-US-NET-LIQUIDITY/1.1"})
+MAX_UPSTREAM_AGE_MINUTES = 180
 
 
 def now_utc() -> datetime:
@@ -29,58 +24,73 @@ def now_utc() -> datetime:
 
 
 def iso(dt: datetime | None) -> str | None:
-    return dt.isoformat().replace("+00:00", "Z") if dt else None
+    return dt.astimezone(timezone.utc).isoformat().replace("+00:00", "Z") if dt else None
 
 
-def fetch_fred_latest(series_id: str) -> dict[str, Any]:
-    """Fetch only a recent FRED CSV slice with bounded retries.
-
-    The prior implementation downloaded the full series and occasionally timed out in
-    GitHub Actions. A recent date window is sufficient because this collector needs
-    only the latest valid observation. No value is guessed if all attempts fail.
-    """
-    today = now_utc().date()
-    start = today - timedelta(days=45)
-    params = {"id": series_id, "cosd": start.isoformat(), "coed": today.isoformat()}
-    errors: list[str] = []
-    for attempt in range(1, 5):
-        try:
-            r = SESSION.get(
-                "https://fred.stlouisfed.org/graph/fredgraph.csv",
-                params=params,
-                timeout=(10, 60),
-            )
-            r.raise_for_status()
-            rows = list(csv.DictReader(StringIO(r.text)))
-            for row in reversed(rows):
-                raw = row.get(series_id)
-                if raw not in (None, "", "."):
-                    return {
-                        "series_id": series_id,
-                        "observation_date": row.get("DATE") or row.get("observation_date"),
-                        "value": float(raw),
-                        "source": "Federal Reserve Bank of St. Louis FRED",
-                        "retrieval_mode": "recent_range_csv",
-                    }
-            raise RuntimeError(f"No valid recent observation for {series_id}")
-        except Exception as e:
-            errors.append(f"attempt{attempt}:{type(e).__name__}:{str(e)[:150]}")
-            if attempt < 4:
-                time.sleep(2 ** (attempt - 1))
-    raise RuntimeError(" | ".join(errors))
+def parse_dt(value: Any) -> datetime | None:
+    if not isinstance(value, str) or not value.strip():
+        return None
+    s = value.strip()
+    if s.endswith("Z"):
+        s = s[:-1] + "+00:00"
+    try:
+        dt = datetime.fromisoformat(s)
+    except ValueError:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
 
 
-def load_tga_from_market_vault() -> dict[str, Any]:
-    raw = json.loads(MARKET_VAULT_PATH.read_text(encoding="utf-8"))
-    for m in raw.get("metrics") or []:
-        if m.get("metric") == "TGA_CLOSING_BALANCE":
-            return {
-                "value": float(m["value"]),
-                "unit": m.get("unit"),
-                "observation_time": m.get("source_observation_time"),
-                "source": m.get("source"),
-            }
-    raise RuntimeError("TGA_CLOSING_BALANCE missing from market_vault latest_summary")
+def load_macro_proxy(now: datetime) -> dict[str, Any]:
+    if not MACRO_PATH.exists():
+        raise RuntimeError("market_vault/output/latest_macro_liquidity.json missing")
+    raw = json.loads(MACRO_PATH.read_text(encoding="utf-8"))
+    if raw.get("engine") != "MASTER_MARKET_FREE_MACRO_LIQUIDITY_V2":
+        raise RuntimeError(f"unexpected macro engine: {raw.get('engine')}")
+
+    generated = parse_dt(raw.get("generated_at_utc"))
+    if generated is None:
+        raise RuntimeError("macro generated_at_utc missing/invalid")
+    age_minutes = max(0.0, (now - generated).total_seconds() / 60.0)
+    if age_minutes > MAX_UPSTREAM_AGE_MINUTES:
+        raise RuntimeError(f"macro upstream stale: {age_minutes:.1f}m > {MAX_UPSTREAM_AGE_MINUTES}m")
+
+    metrics = {
+        str(m.get("metric")): m
+        for m in (raw.get("metrics") or [])
+        if isinstance(m, dict) and m.get("metric")
+    }
+    required = ["US_NET_LIQUIDITY_PROXY", "FED_TOTAL_ASSETS", "FED_TGA_H41", "FED_RRP_TOTAL"]
+    missing = [name for name in required if name not in metrics or metrics[name].get("value") is None]
+    if missing:
+        raise RuntimeError(f"macro upstream missing required metrics: {missing}")
+
+    proxy = metrics["US_NET_LIQUIDITY_PROXY"]
+    assets = metrics["FED_TOTAL_ASSETS"]
+    tga = metrics["FED_TGA_H41"]
+    rrp = metrics["FED_RRP_TOTAL"]
+
+    # Canonical macro-vault values are USD millions; preserve that exact same-source formula.
+    net_usd = float(proxy["value"]) * 1_000_000.0
+    walcl_usd = float(assets["value"]) * 1_000_000.0
+    tga_usd = float(tga["value"]) * 1_000_000.0
+    rrp_usd = float(rrp["value"]) * 1_000_000.0
+
+    return {
+        "generated_at_utc": iso(generated),
+        "age_minutes": age_minutes,
+        "net_liquidity_usd": net_usd,
+        "walcl_usd": walcl_usd,
+        "tga_usd": tga_usd,
+        "rrp_usd": rrp_usd,
+        "walcl_observation_date": assets.get("source_observation_time"),
+        "tga_observation_time": tga.get("source_observation_time"),
+        "rrp_observation_date": rrp.get("source_observation_time"),
+        "source": "market_vault/output/latest_macro_liquidity.json",
+        "source_engine": raw.get("engine"),
+        "source_formula": raw.get("net_liquidity_formula"),
+    }
 
 
 def read_history() -> list[dict[str, str]]:
@@ -117,8 +127,17 @@ def nearest_prior(rows: list[dict[str, str]], target: datetime) -> dict[str, str
     return best
 
 
-def pct_change(cur: float, past: float | None) -> float | None:
-    if past in (None, 0):
+def prior_value(row: dict[str, str] | None) -> float | None:
+    if not row:
+        return None
+    try:
+        return float(row.get("net_liquidity_usd") or "")
+    except Exception:
+        return None
+
+
+def pct_change(cur: float | None, past: float | None) -> float | None:
+    if cur is None or past in (None, 0):
         return None
     return (cur / past - 1.0) * 100.0
 
@@ -128,114 +147,81 @@ def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     STATE_DIR.mkdir(parents=True, exist_ok=True)
 
-    errors: list[str] = []
     retrieved = now_utc()
+    errors: list[str] = []
+    upstream = None
+    try:
+        upstream = load_macro_proxy(retrieved)
+    except Exception as e:
+        errors.append(f"MACRO_UPSTREAM:{type(e).__name__}:{str(e)[:600]}")
 
-    walcl = None
-    rrp = None
-    tga = None
-    try:
-        walcl = fetch_fred_latest("WALCL")
-    except Exception as e:
-        errors.append(f"WALCL:{type(e).__name__}:{str(e)[:600]}")
-    try:
-        rrp = fetch_fred_latest("RRPONTSYD")
-    except Exception as e:
-        errors.append(f"RRPONTSYD:{type(e).__name__}:{str(e)[:600]}")
-    try:
-        tga = load_tga_from_market_vault()
-    except Exception as e:
-        errors.append(f"TGA:{type(e).__name__}:{str(e)[:300]}")
-
-    status = "OK" if walcl and rrp and tga else "N/A"
-    net = None
-    components: dict[str, float] = {}
-    if status == "OK":
-        # WALCL is USD millions; RRPONTSYD is USD billions; TGA vault is USD millions.
-        walcl_usd = float(walcl["value"]) * 1_000_000.0
-        rrp_usd = float(rrp["value"]) * 1_000_000_000.0
-        tga_usd = float(tga["value"]) * 1_000_000.0
-        net = walcl_usd - tga_usd - rrp_usd
-        components = {
-            "walcl_usd": walcl_usd,
-            "tga_usd": tga_usd,
-            "rrp_usd": rrp_usd,
-        }
+    status = "OK" if upstream else "N/A"
+    net = float(upstream["net_liquidity_usd"]) if upstream else None
 
     old = read_history()
     prior_1d = nearest_prior(old, retrieved - timedelta(days=1))
     prior_3d = nearest_prior(old, retrieved - timedelta(days=3))
     prior_7d = nearest_prior(old, retrieved - timedelta(days=7))
 
-    def prior_value(r: dict[str, str] | None) -> float | None:
-        if not r:
-            return None
-        try:
-            return float(r.get("net_liquidity_usd") or "")
-        except Exception:
-            return None
-
     payload = {
-        "engine": "MASTER_US_NET_LIQUIDITY_V1_1",
+        "engine": "MASTER_US_NET_LIQUIDITY_V1_2",
         "generated_at_utc": iso(retrieved),
         "status": status,
-        "formula": "Fed Total Assets (WALCL) - Treasury General Account (TGA) - Overnight Reverse Repo (RRPONTSYD)",
+        "formula": "Fed H.4.1 Total Assets - H.4.1 Treasury General Account - H.4.1 Reverse Repurchase Agreements",
         "formula_type": "market liquidity proxy; not an official Federal Reserve metric",
+        "source_mode": "canonical_macro_vault_adapter",
         "net_liquidity_usd": net,
-        "components": {
-            "WALCL": walcl,
-            "TGA": tga,
-            "RRPONTSYD": rrp,
-            **components,
-        },
+        "upstream": upstream,
         "change": {
-            "1D_pct": pct_change(net, prior_value(prior_1d)) if net is not None else None,
-            "3D_pct": pct_change(net, prior_value(prior_3d)) if net is not None else None,
-            "7D_pct": pct_change(net, prior_value(prior_7d)) if net is not None else None,
-            "rule": "Only stored prior collector observations are used; no interpolation/backfill.",
+            "1D_pct": pct_change(net, prior_value(prior_1d)),
+            "3D_pct": pct_change(net, prior_value(prior_3d)),
+            "7D_pct": pct_change(net, prior_value(prior_7d)),
+            "rule": "Only stored same-source collector observations are used; no interpolation/backfill/cross-source fill.",
         },
         "errors": errors,
     }
-    SUMMARY_JSON.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    SUMMARY_JSON.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-    if status == "OK" and net is not None:
-        row = {
+    if upstream and net is not None:
+        old.append({
             "retrieved_at_utc": iso(retrieved),
             "net_liquidity_usd": net,
-            "walcl_usd": components["walcl_usd"],
-            "tga_usd": components["tga_usd"],
-            "rrp_usd": components["rrp_usd"],
-            "walcl_observation_date": walcl.get("observation_date"),
-            "tga_observation_time": tga.get("observation_time"),
-            "rrp_observation_date": rrp.get("observation_date"),
-            "status": status,
-        }
-        old.append(row)
+            "walcl_usd": upstream["walcl_usd"],
+            "tga_usd": upstream["tga_usd"],
+            "rrp_usd": upstream["rrp_usd"],
+            "walcl_observation_date": upstream.get("walcl_observation_date"),
+            "tga_observation_time": upstream.get("tga_observation_time"),
+            "rrp_observation_date": upstream.get("rrp_observation_date"),
+            "status": "OK",
+        })
         cutoff = retrieved - timedelta(days=120)
         kept: list[dict[str, Any]] = []
         seen: set[tuple[str, str]] = set()
-        for r in old:
+        for row in old:
             try:
-                dt = datetime.fromisoformat(str(r.get("retrieved_at_utc", "")).replace("Z", "+00:00"))
+                dt = datetime.fromisoformat(str(row.get("retrieved_at_utc", "")).replace("Z", "+00:00"))
             except Exception:
                 continue
             if dt < cutoff:
                 continue
-            key = (str(r.get("retrieved_at_utc", "")), str(r.get("net_liquidity_usd", "")))
+            key = (str(row.get("retrieved_at_utc", "")), str(row.get("net_liquidity_usd", "")))
             if key in seen:
                 continue
             seen.add(key)
-            kept.append(r)
-        kept.sort(key=lambda r: str(r.get("retrieved_at_utc", "")))
+            kept.append(row)
+        kept.sort(key=lambda row: str(row.get("retrieved_at_utc", "")))
         write_history(kept)
 
     state = {
         "last_run_utc": iso(now_utc()),
         "status": status,
+        "source_mode": "canonical_macro_vault_adapter",
+        "upstream_generated_at_utc": upstream.get("generated_at_utc") if upstream else None,
+        "upstream_age_minutes": round(float(upstream["age_minutes"]), 1) if upstream else None,
         "history_rows": len(read_history()),
         "errors": errors,
     }
-    STATE_PATH.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
+    STATE_PATH.write_text(json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(state, ensure_ascii=False))
 
 
