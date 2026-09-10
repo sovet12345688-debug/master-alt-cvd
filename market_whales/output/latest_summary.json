@@ -3,8 +3,8 @@
   "schema_version": "1.1",
   "change_basis": "POSITION_SIZE_SZI",
   "source": "Hyperliquid public leaderboard + official info API",
-  "snapshot_time_utc": "2026-09-10T21:00:00Z",
-  "leaderboard_rows": 45004,
+  "snapshot_time_utc": "2026-09-10T22:00:00Z",
+  "leaderboard_rows": 45001,
   "candidate_wallets": 384,
   "queried_wallets": 384,
   "query_failures": 0,
@@ -12,1027 +12,26 @@
   "market_watch_threshold_usd": 20000000.0,
   "level1_change_threshold_usd": 50000000.0,
   "window_tolerance_minutes": 45,
-  "size_baselines_created": 1,
+  "size_baselines_created": 0,
   "top_positions": {
-    "ETH": [
-      {
-        "time_utc": "2026-09-10T21:00:00Z",
-        "address": "0x5b5d51203a0f9079f8aeb098a6523a13f298c060",
-        "display_name": "",
-        "coin": "ETH",
-        "side": "SHORT",
-        "position_size": -93785.7129,
-        "position_value_usd": 230731610.87658,
-        "signed_position_value_usd": -230731610.87658,
-        "entry_px": 2263.11,
-        "leverage_type": "cross",
-        "leverage_value": 5.0,
-        "liquidation_px": 3639.1225021814,
-        "mark_price": 2460.15,
-        "liquidation_distance_pct": 47.922789349486806,
-        "unrealized_pnl": -18483939.591657,
-        "account_value": 106844250.50712,
-        "status": "ACTIVE",
-        "size_schema": "SZI_V1_1",
-        "change_1h": {
-          "event": "INCREASE",
-          "severity": "NONE",
-          "prev_side": "SHORT",
-          "current_side": "SHORT",
-          "prev_position_size": -93777.7131,
-          "current_position_size": -93785.7129,
-          "size_change_units": -7.999800000005052,
-          "action_notional_usd": 19680.70797001243,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "change_4h": {
-          "event": "INCREASE",
-          "severity": "NONE",
-          "prev_side": "SHORT",
-          "current_side": "SHORT",
-          "prev_position_size": -93777.7131,
-          "current_position_size": -93785.7129,
-          "size_change_units": -7.999800000005052,
-          "action_notional_usd": 19680.70797001243,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "change_24h": {
-          "event": "REDUCE",
-          "severity": "NONE",
-          "prev_side": "SHORT",
-          "current_side": "SHORT",
-          "prev_position_size": -95267.9067,
-          "current_position_size": -93785.7129,
-          "size_change_units": 1482.1938000000082,
-          "action_notional_usd": 3646419.07707002,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "recent_series": [
-          {
-            "time_utc": "2026-09-10T21:00:00Z",
-            "side": "SHORT",
-            "position_size": -93785.7129,
-            "position_value_usd": 230731610.87658,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T20:00:00Z",
-            "side": "SHORT",
-            "position_size": -93777.7131,
-            "position_value_usd": 231049529.53578,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T19:00:00Z",
-            "side": "SHORT",
-            "position_size": -93777.7131,
-            "position_value_usd": 231340240.44639,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T18:00:00Z",
-            "side": "SHORT",
-            "position_size": -93777.7131,
-            "position_value_usd": 230796329.71041,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T17:00:00Z",
-            "side": "SHORT",
-            "position_size": -93777.7131,
-            "position_value_usd": 231246462.73329,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "SHORT",
-            "position_size": -93777.7131,
-            "position_value_usd": 229736641.55238,
-            "size_schema": "SZI_V1_1"
-          }
-        ],
-        "address_short": "0x5b5d51…98c060"
-      },
-      {
-        "time_utc": "2026-09-10T21:00:00Z",
-        "address": "0x0392a716dbee1661ea781881826b928daeb5d7d9",
-        "display_name": "",
-        "coin": "ETH",
-        "side": "LONG",
-        "position_size": 45087.3479,
-        "position_value_usd": 110932910.77316,
-        "signed_position_value_usd": 110932910.77316,
-        "entry_px": 2486.37,
-        "leverage_type": "cross",
-        "leverage_value": 8.0,
-        "liquidation_px": 2178.9924309158,
-        "mark_price": 2460.15,
-        "liquidation_distance_pct": 11.428472616881088,
-        "unrealized_pnl": -1171238.59946,
-        "account_value": 14636053.33693,
-        "status": "ACTIVE",
-        "size_schema": "SZI_V1_1",
-        "change_1h": {
-          "event": "UNCHANGED",
-          "severity": "NONE",
-          "prev_side": "LONG",
-          "current_side": "LONG",
-          "prev_position_size": 45087.3479,
-          "current_position_size": 45087.3479,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "change_4h": {
-          "event": "UNCHANGED",
-          "severity": "NONE",
-          "prev_side": "LONG",
-          "current_side": "LONG",
-          "prev_position_size": 45087.3479,
-          "current_position_size": 45087.3479,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "change_24h": {
-          "event": "UNCHANGED",
-          "severity": "NONE",
-          "prev_side": "LONG",
-          "current_side": "LONG",
-          "prev_position_size": 45087.3479,
-          "current_position_size": 45087.3479,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "recent_series": [
-          {
-            "time_utc": "2026-09-10T21:00:00Z",
-            "side": "LONG",
-            "position_size": 45087.3479,
-            "position_value_usd": 110932910.77316,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T20:00:00Z",
-            "side": "LONG",
-            "position_size": 45087.3479,
-            "position_value_usd": 111023085.46896,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T19:00:00Z",
-            "side": "LONG",
-            "position_size": 45087.3479,
-            "position_value_usd": 111153838.77787,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T18:00:00Z",
-            "side": "LONG",
-            "position_size": 45087.3479,
-            "position_value_usd": 110955454.44711,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T17:00:00Z",
-            "side": "LONG",
-            "position_size": 45087.3479,
-            "position_value_usd": 111063664.08207,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "LONG",
-            "position_size": 45087.3479,
-            "position_value_usd": 110296277.420812,
-            "size_schema": "SZI_V1_1"
-          }
-        ],
-        "address_short": "0x0392a7…b5d7d9"
-      },
-      {
-        "time_utc": "2026-09-10T21:00:00Z",
-        "address": "0xb83de012dba672c76a7dbbbf3e459cb59d7d6e36",
-        "display_name": "",
-        "coin": "ETH",
-        "side": "SHORT",
-        "position_size": -44581.5716,
-        "position_value_usd": 109679582.45032,
-        "signed_position_value_usd": -109679582.45032,
-        "entry_px": 2157.45,
-        "leverage_type": "cross",
-        "leverage_value": 5.0,
-        "liquidation_px": 3890.7646554871,
-        "mark_price": 2460.15,
-        "liquidation_distance_pct": 58.151521471743585,
-        "unrealized_pnl": -13496672.977135,
-        "account_value": 59140955.490986,
-        "status": "ACTIVE",
-        "size_schema": "SZI_V1_1",
-        "change_1h": {
-          "event": "UNCHANGED",
-          "severity": "NONE",
-          "prev_side": "SHORT",
-          "current_side": "SHORT",
-          "prev_position_size": -44581.5716,
-          "current_position_size": -44581.5716,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "change_4h": {
-          "event": "INCREASE",
-          "severity": "NONE",
-          "prev_side": "SHORT",
-          "current_side": "SHORT",
-          "prev_position_size": -44575.5716,
-          "current_position_size": -44581.5716,
-          "size_change_units": -6.0,
-          "action_notional_usd": 14760.900000000001,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "change_24h": {
-          "event": "REDUCE",
-          "severity": "NONE",
-          "prev_side": "SHORT",
-          "current_side": "SHORT",
-          "prev_position_size": -45770.2736,
-          "current_position_size": -44581.5716,
-          "size_change_units": 1188.7019999999975,
-          "action_notional_usd": 2924385.225299994,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "recent_series": [
-          {
-            "time_utc": "2026-09-10T21:00:00Z",
-            "side": "SHORT",
-            "position_size": -44581.5716,
-            "position_value_usd": 109679582.45032,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T20:00:00Z",
-            "side": "SHORT",
-            "position_size": -44581.5716,
-            "position_value_usd": 109840076.10808,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T19:00:00Z",
-            "side": "SHORT",
-            "position_size": -44581.5716,
-            "position_value_usd": 109978278.98004,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T18:00:00Z",
-            "side": "SHORT",
-            "position_size": -44575.5716,
-            "position_value_usd": 109704939.26476,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T17:00:00Z",
-            "side": "SHORT",
-            "position_size": -44575.5716,
-            "position_value_usd": 109918902.00844,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "SHORT",
-            "position_size": -44575.5716,
-            "position_value_usd": 109201235.30568,
-            "size_schema": "SZI_V1_1"
-          }
-        ],
-        "address_short": "0xb83de0…7d6e36"
-      },
-      {
-        "time_utc": "2026-09-10T21:00:00Z",
-        "address": "0x020ca66c30bec2c4fe3861a94e4db4a498a35872",
-        "display_name": "MachiBigBrother",
-        "coin": "ETH",
-        "side": "LONG",
-        "position_size": 40575.0,
-        "position_value_usd": 99818557.5,
-        "signed_position_value_usd": 99818557.5,
-        "entry_px": 2456.45,
-        "leverage_type": "cross",
-        "leverage_value": 25.0,
-        "liquidation_px": 2389.4021547675,
-        "mark_price": 2460.15,
-        "liquidation_distance_pct": 2.8757533171757785,
-        "unrealized_pnl": 147878.889079,
-        "account_value": 5002987.818904,
-        "status": "ACTIVE",
-        "size_schema": "SZI_V1_1",
-        "change_1h": {
-          "event": "UNCHANGED",
-          "severity": "NONE",
-          "prev_side": "LONG",
-          "current_side": "LONG",
-          "prev_position_size": 40575.0,
-          "current_position_size": 40575.0,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "change_4h": {
-          "event": "REDUCE",
-          "severity": "NONE",
-          "prev_side": "LONG",
-          "current_side": "LONG",
-          "prev_position_size": 40625.0,
-          "current_position_size": 40575.0,
-          "size_change_units": -50.0,
-          "action_notional_usd": 123007.5,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "change_24h": {
-          "event": "INCREASE",
-          "severity": "NONE",
-          "prev_side": "LONG",
-          "current_side": "LONG",
-          "prev_position_size": 40500.0,
-          "current_position_size": 40575.0,
-          "size_change_units": 75.0,
-          "action_notional_usd": 184511.25,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "recent_series": [
-          {
-            "time_utc": "2026-09-10T21:00:00Z",
-            "side": "LONG",
-            "position_size": 40575.0,
-            "position_value_usd": 99818557.5,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T20:00:00Z",
-            "side": "LONG",
-            "position_size": 40575.0,
-            "position_value_usd": 99932167.5,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T19:00:00Z",
-            "side": "LONG",
-            "position_size": 40575.0,
-            "position_value_usd": 100062007.5,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T18:00:00Z",
-            "side": "LONG",
-            "position_size": 40635.5398,
-            "position_value_usd": 99953269.02305,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T17:00:00Z",
-            "side": "LONG",
-            "position_size": 40625.0,
-            "position_value_usd": 100177187.5,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "LONG",
-            "position_size": 41025.0,
-            "position_value_usd": 100392277.5,
-            "size_schema": "SZI_V1_1"
-          }
-        ],
-        "address_short": "0x020ca6…a35872"
-      },
-      {
-        "time_utc": "2026-09-10T21:00:00Z",
-        "address": "0xde8d9e530b0528ffa7b1190f862536c055dd9524",
-        "display_name": "",
-        "coin": "ETH",
-        "side": "LONG",
-        "position_size": 30282.4035,
-        "position_value_usd": 74506825.5714,
-        "signed_position_value_usd": 74506825.5714,
-        "entry_px": 2134.45,
-        "leverage_type": "cross",
-        "leverage_value": 20.0,
-        "liquidation_px": 1756.6189897792,
-        "mark_price": 2460.15,
-        "liquidation_distance_pct": 28.597077829433164,
-        "unrealized_pnl": 9870494.995288,
-        "account_value": 5991003.218827,
-        "status": "ACTIVE",
-        "size_schema": "SZI_V1_1",
-        "change_1h": {
-          "event": "UNCHANGED",
-          "severity": "NONE",
-          "prev_side": "LONG",
-          "current_side": "LONG",
-          "prev_position_size": 30282.4035,
-          "current_position_size": 30282.4035,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "change_4h": {
-          "event": "UNCHANGED",
-          "severity": "NONE",
-          "prev_side": "LONG",
-          "current_side": "LONG",
-          "prev_position_size": 30282.4035,
-          "current_position_size": 30282.4035,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "change_24h": {
-          "event": "UNCHANGED",
-          "severity": "NONE",
-          "prev_side": "LONG",
-          "current_side": "LONG",
-          "prev_position_size": 30282.4035,
-          "current_position_size": 30282.4035,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "recent_series": [
-          {
-            "time_utc": "2026-09-10T21:00:00Z",
-            "side": "LONG",
-            "position_size": 30282.4035,
-            "position_value_usd": 74506825.5714,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T20:00:00Z",
-            "side": "LONG",
-            "position_size": 30282.4035,
-            "position_value_usd": 74567390.3784,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T19:00:00Z",
-            "side": "LONG",
-            "position_size": 30282.4035,
-            "position_value_usd": 74655209.34855,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T18:00:00Z",
-            "side": "LONG",
-            "position_size": 30282.4035,
-            "position_value_usd": 74521966.77315,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T17:00:00Z",
-            "side": "LONG",
-            "position_size": 30282.4035,
-            "position_value_usd": 74594644.54155,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "LONG",
-            "position_size": 30282.4035,
-            "position_value_usd": 74079238.03398,
-            "size_schema": "SZI_V1_1"
-          }
-        ],
-        "address_short": "0xde8d9e…dd9524"
-      },
-      {
-        "time_utc": "2026-09-10T21:00:00Z",
-        "address": "0x7fdafde5cfb5465924316eced2d3715494c517d1",
-        "display_name": "BobbyBigSize",
-        "coin": "ETH",
-        "side": "SHORT",
-        "position_size": -23649.7557,
-        "position_value_usd": 58183128.97314,
-        "signed_position_value_usd": -58183128.97314,
-        "entry_px": 2200.61,
-        "leverage_type": "cross",
-        "leverage_value": 15.0,
-        "liquidation_px": 3384.1444379867,
-        "mark_price": 2460.15,
-        "liquidation_distance_pct": 37.55845936169338,
-        "unrealized_pnl": -6139138.768671,
-        "account_value": 26483697.142678,
-        "status": "ACTIVE",
-        "size_schema": "SZI_V1_1",
-        "change_1h": {
-          "event": "INCREASE",
-          "severity": "NONE",
-          "prev_side": "SHORT",
-          "current_side": "SHORT",
-          "prev_position_size": -23649.2256,
-          "current_position_size": -23649.7557,
-          "size_change_units": -0.5300999999999476,
-          "action_notional_usd": 1304.1255149998713,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "change_4h": {
-          "event": "INCREASE",
-          "severity": "NONE",
-          "prev_side": "SHORT",
-          "current_side": "SHORT",
-          "prev_position_size": -23556.6175,
-          "current_position_size": -23649.7557,
-          "size_change_units": -93.13820000000123,
-          "action_notional_usd": 229133.94273000304,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "change_24h": {
-          "event": "REDUCE",
-          "severity": "LARGE_CHANGE_CANDIDATE",
-          "prev_side": "SHORT",
-          "current_side": "SHORT",
-          "prev_position_size": -34746.7182,
-          "current_position_size": -23649.7557,
-          "size_change_units": 11096.962500000001,
-          "action_notional_usd": 27300192.294375006,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "recent_series": [
-          {
-            "time_utc": "2026-09-10T21:00:00Z",
-            "side": "SHORT",
-            "position_size": -23649.7557,
-            "position_value_usd": 58183128.97314,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T20:00:00Z",
-            "side": "SHORT",
-            "position_size": -23649.2256,
-            "position_value_usd": 58266962.03328,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T19:00:00Z",
-            "side": "SHORT",
-            "position_size": -23668.022,
-            "position_value_usd": 58386643.4718,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T18:00:00Z",
-            "side": "SHORT",
-            "position_size": -23667.3889,
-            "position_value_usd": 58247810.82179,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T17:00:00Z",
-            "side": "SHORT",
-            "position_size": -23556.6175,
-            "position_value_usd": 58088263.09325,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "SHORT",
-            "position_size": -23564.1924,
-            "position_value_usd": 57727558.54152,
-            "size_schema": "SZI_V1_1"
-          }
-        ],
-        "address_short": "0x7fdafd…c517d1"
-      },
-      {
-        "time_utc": "2026-09-10T21:00:00Z",
-        "address": "0xedcdcaa1f18350c50c10bef860e64daa9785d05a",
-        "display_name": "",
-        "coin": "ETH",
-        "side": "LONG",
-        "position_size": 20000.0,
-        "position_value_usd": 49194000.0,
-        "signed_position_value_usd": 49194000.0,
-        "entry_px": 1936.0,
-        "leverage_type": "cross",
-        "leverage_value": 4.0,
-        "liquidation_px": 1043.0588878465,
-        "mark_price": 2460.15,
-        "liquidation_distance_pct": 57.60181745639493,
-        "unrealized_pnl": 10474000.0,
-        "account_value": 11841578.969088,
-        "status": "ACTIVE",
-        "size_schema": "SZI_V1_1",
-        "change_1h": {
-          "event": "UNCHANGED",
-          "severity": "NONE",
-          "prev_side": "LONG",
-          "current_side": "LONG",
-          "prev_position_size": 20000.0,
-          "current_position_size": 20000.0,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "change_4h": {
-          "event": "UNCHANGED",
-          "severity": "NONE",
-          "prev_side": "LONG",
-          "current_side": "LONG",
-          "prev_position_size": 20000.0,
-          "current_position_size": 20000.0,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "change_24h": {
-          "event": "UNCHANGED",
-          "severity": "NONE",
-          "prev_side": "LONG",
-          "current_side": "LONG",
-          "prev_position_size": 20000.0,
-          "current_position_size": 20000.0,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "recent_series": [
-          {
-            "time_utc": "2026-09-10T21:00:00Z",
-            "side": "LONG",
-            "position_size": 20000.0,
-            "position_value_usd": 49194000.0,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T20:00:00Z",
-            "side": "LONG",
-            "position_size": 20000.0,
-            "position_value_usd": 49268000.0,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T19:00:00Z",
-            "side": "LONG",
-            "position_size": 20000.0,
-            "position_value_usd": 49328000.0,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T18:00:00Z",
-            "side": "LONG",
-            "position_size": 20000.0,
-            "position_value_usd": 49216000.0,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T17:00:00Z",
-            "side": "LONG",
-            "position_size": 20000.0,
-            "position_value_usd": 49330000.0,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "LONG",
-            "position_size": 20000.0,
-            "position_value_usd": 48946000.0,
-            "size_schema": "SZI_V1_1"
-          }
-        ],
-        "address_short": "0xedcdca…85d05a"
-      },
-      {
-        "time_utc": "2026-09-10T21:00:00Z",
-        "address": "0x77ddcc4b6440b3a32b7802f053105c2fad3ae0e9",
-        "display_name": "",
-        "coin": "ETH",
-        "side": "LONG",
-        "position_size": 14948.8937,
-        "position_value_usd": 36780258.05948,
-        "signed_position_value_usd": 36780258.05948,
-        "entry_px": 2463.98,
-        "leverage_type": "cross",
-        "leverage_value": 12.0,
-        "liquidation_px": 2175.0986917578,
-        "mark_price": 2460.15,
-        "liquidation_distance_pct": 11.58674504571672,
-        "unrealized_pnl": -53610.99854,
-        "account_value": 5317062.47019,
-        "status": "ACTIVE",
-        "size_schema": "SZI_V1_1",
-        "change_1h": {
-          "event": "UNCHANGED",
-          "severity": "NONE",
-          "prev_side": "LONG",
-          "current_side": "LONG",
-          "prev_position_size": 14948.8937,
-          "current_position_size": 14948.8937,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "change_4h": {
-          "event": "UNCHANGED",
-          "severity": "NONE",
-          "prev_side": "LONG",
-          "current_side": "LONG",
-          "prev_position_size": 14948.8937,
-          "current_position_size": 14948.8937,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "change_24h": {
-          "event": "UNCHANGED",
-          "severity": "NONE",
-          "prev_side": "LONG",
-          "current_side": "LONG",
-          "prev_position_size": 14948.8937,
-          "current_position_size": 14948.8937,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "recent_series": [
-          {
-            "time_utc": "2026-09-10T21:00:00Z",
-            "side": "LONG",
-            "position_size": 14948.8937,
-            "position_value_usd": 36780258.05948,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T20:00:00Z",
-            "side": "LONG",
-            "position_size": 14948.8937,
-            "position_value_usd": 36810155.84688,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T19:00:00Z",
-            "side": "LONG",
-            "position_size": 14948.8937,
-            "position_value_usd": 36853507.63861,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T18:00:00Z",
-            "side": "LONG",
-            "position_size": 14948.8937,
-            "position_value_usd": 36787732.50633,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T17:00:00Z",
-            "side": "LONG",
-            "position_size": 14948.8937,
-            "position_value_usd": 36823609.85121,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "LONG",
-            "position_size": 14948.8937,
-            "position_value_usd": 36569179.680436,
-            "size_schema": "SZI_V1_1"
-          }
-        ],
-        "address_short": "0x77ddcc…3ae0e9"
-      },
-      {
-        "time_utc": "2026-09-10T21:00:00Z",
-        "address": "0x89da4baec446f35a1cbe17a9d1ee5c70b05ee43f",
-        "display_name": "Machi is ugly dog",
-        "coin": "ETH",
-        "side": "LONG",
-        "position_size": 14893.7573,
-        "position_value_usd": 36644600.46092,
-        "signed_position_value_usd": 36644600.46092,
-        "entry_px": 2418.22,
-        "leverage_type": "cross",
-        "leverage_value": 25.0,
-        "liquidation_px": 1590.2058757957,
-        "mark_price": 2460.15,
-        "liquidation_distance_pct": 35.36142610020934,
-        "unrealized_pnl": 628148.647,
-        "account_value": 6247548.881388,
-        "status": "ACTIVE",
-        "size_schema": "SZI_V1_1",
-        "change_1h": {
-          "event": "UNCHANGED",
-          "severity": "NONE",
-          "prev_side": "LONG",
-          "current_side": "LONG",
-          "prev_position_size": 14893.7573,
-          "current_position_size": 14893.7573,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "change_4h": {
-          "event": "UNCHANGED",
-          "severity": "NONE",
-          "prev_side": "LONG",
-          "current_side": "LONG",
-          "prev_position_size": 14893.7573,
-          "current_position_size": 14893.7573,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "change_24h": null,
-        "recent_series": [
-          {
-            "time_utc": "2026-09-10T21:00:00Z",
-            "side": "LONG",
-            "position_size": 14893.7573,
-            "position_value_usd": 36644600.46092,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T20:00:00Z",
-            "side": "LONG",
-            "position_size": 14893.7573,
-            "position_value_usd": 36674387.97552,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T19:00:00Z",
-            "side": "LONG",
-            "position_size": 14893.7573,
-            "position_value_usd": 36717579.87169,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T18:00:00Z",
-            "side": "LONG",
-            "position_size": 14893.7573,
-            "position_value_usd": 36652047.33957,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T17:00:00Z",
-            "side": "LONG",
-            "position_size": 14893.7573,
-            "position_value_usd": 36687792.35709,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "LONG",
-            "position_size": 14893.7573,
-            "position_value_usd": 36434300.607844,
-            "size_schema": "SZI_V1_1"
-          }
-        ],
-        "address_short": "0x89da4b…5ee43f"
-      },
-      {
-        "time_utc": "2026-09-10T21:00:00Z",
-        "address": "0x45d26f28196d226497130c4bac709d808fed4029",
-        "display_name": "",
-        "coin": "ETH",
-        "side": "SHORT",
-        "position_size": -13896.0,
-        "position_value_usd": 34186939.2,
-        "signed_position_value_usd": -34186939.2,
-        "entry_px": 2443.82,
-        "leverage_type": "cross",
-        "leverage_value": 20.0,
-        "liquidation_px": 5094.0985915339,
-        "mark_price": 2460.15,
-        "liquidation_distance_pct": 107.06455263028269,
-        "unrealized_pnl": -227587.135467,
-        "account_value": 27394633.86822,
-        "status": "ACTIVE",
-        "size_schema": "SZI_V1_1",
-        "change_1h": {
-          "event": "UNCHANGED",
-          "severity": "NONE",
-          "prev_side": "SHORT",
-          "current_side": "SHORT",
-          "prev_position_size": -13896.0,
-          "current_position_size": -13896.0,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "change_4h": {
-          "event": "UNCHANGED",
-          "severity": "NONE",
-          "prev_side": "SHORT",
-          "current_side": "SHORT",
-          "prev_position_size": -13896.0,
-          "current_position_size": -13896.0,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "change_24h": {
-          "event": "UNCHANGED",
-          "severity": "NONE",
-          "prev_side": "SHORT",
-          "current_side": "SHORT",
-          "prev_position_size": -13896.0,
-          "current_position_size": -13896.0,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
-          "source_gap_minutes": 0.0
-        },
-        "recent_series": [
-          {
-            "time_utc": "2026-09-10T21:00:00Z",
-            "side": "SHORT",
-            "position_size": -13896.0,
-            "position_value_usd": 34186939.2,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T20:00:00Z",
-            "side": "SHORT",
-            "position_size": -13896.0,
-            "position_value_usd": 34236964.8,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T19:00:00Z",
-            "side": "SHORT",
-            "position_size": -13896.0,
-            "position_value_usd": 34278652.8,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T18:00:00Z",
-            "side": "SHORT",
-            "position_size": -13896.0,
-            "position_value_usd": 34198056.0,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T17:00:00Z",
-            "side": "SHORT",
-            "position_size": -13896.0,
-            "position_value_usd": 34278652.8,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "SHORT",
-            "position_size": -13896.0,
-            "position_value_usd": 34042420.8,
-            "size_schema": "SZI_V1_1"
-          }
-        ],
-        "address_short": "0x45d26f…ed4029"
-      }
-    ],
     "BTC": [
       {
-        "time_utc": "2026-09-10T21:00:00Z",
+        "time_utc": "2026-09-10T22:00:00Z",
         "address": "0x5b5d51203a0f9079f8aeb098a6523a13f298c060",
         "display_name": "",
         "coin": "BTC",
         "side": "SHORT",
         "position_size": -2035.01986,
-        "position_value_usd": 156991607.0997,
-        "signed_position_value_usd": -156991607.0997,
+        "position_value_usd": 156346505.80408,
+        "signed_position_value_usd": -156346505.80408,
         "entry_px": 72282.5,
         "leverage_type": "cross",
         "leverage_value": 5.0,
-        "liquidation_px": 131918.4205404592,
-        "mark_price": 77139.5,
-        "liquidation_distance_pct": 71.01280218365325,
-        "unrealized_pnl": -9895114.498313,
-        "account_value": 106844250.50712,
+        "liquidation_px": 133206.8989474248,
+        "mark_price": 76844.5,
+        "liquidation_distance_pct": 73.3460416131601,
+        "unrealized_pnl": -9250013.202693,
+        "account_value": 109333781.414262,
         "status": "ACTIVE",
         "size_schema": "SZI_V1_1",
         "change_1h": {
@@ -1044,7 +43,7 @@
           "current_position_size": -2035.01986,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_4h": {
@@ -1056,7 +55,7 @@
           "current_position_size": -2035.01986,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_24h": {
@@ -1064,14 +63,21 @@
           "severity": "NONE",
           "prev_side": "SHORT",
           "current_side": "SHORT",
-          "prev_position_size": -2061.30127,
+          "prev_position_size": -2059.31396,
           "current_position_size": -2035.01986,
-          "size_change_units": 26.281409999999823,
-          "action_notional_usd": 2027334.8266949863,
-          "reference_mark_price": 77139.5,
+          "size_change_units": 24.294099999999844,
+          "action_notional_usd": 1866867.967449988,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "SHORT",
+            "position_size": -2035.01986,
+            "position_value_usd": 156346505.80408,
+            "size_schema": "SZI_V1_1"
+          },
           {
             "time_utc": "2026-09-10T21:00:00Z",
             "side": "SHORT",
@@ -1106,135 +112,27 @@
             "position_size": -2035.01986,
             "position_value_usd": 157388435.9724,
             "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "SHORT",
-            "position_size": -2035.01986,
-            "position_value_usd": 157103533.192,
-            "size_schema": "SZI_V1_1"
           }
         ],
         "address_short": "0x5b5d51…98c060"
       },
       {
-        "time_utc": "2026-09-10T21:00:00Z",
-        "address": "0x8ea85cbd59affca28162fc286d5c093dd0f8edbc",
-        "display_name": "",
-        "coin": "BTC",
-        "side": "LONG",
-        "position_size": 1000.0,
-        "position_value_usd": 77162000.0,
-        "signed_position_value_usd": 77162000.0,
-        "entry_px": 72771.2,
-        "leverage_type": "cross",
-        "leverage_value": 3.0,
-        "liquidation_px": 49454.4962254116,
-        "mark_price": 77139.5,
-        "liquidation_distance_pct": 35.88952971511145,
-        "unrealized_pnl": 4390721.68354,
-        "account_value": 25158739.859541,
-        "status": "ACTIVE",
-        "size_schema": "SZI_V1_1",
-        "change_1h": {
-          "event": "UNCHANGED",
-          "severity": "NONE",
-          "prev_side": "LONG",
-          "current_side": "LONG",
-          "prev_position_size": 1000.0,
-          "current_position_size": 1000.0,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
-          "source_gap_minutes": 0.0
-        },
-        "change_4h": {
-          "event": "UNCHANGED",
-          "severity": "NONE",
-          "prev_side": "LONG",
-          "current_side": "LONG",
-          "prev_position_size": 1000.0,
-          "current_position_size": 1000.0,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
-          "source_gap_minutes": 0.0
-        },
-        "change_24h": {
-          "event": "UNCHANGED",
-          "severity": "NONE",
-          "prev_side": "LONG",
-          "current_side": "LONG",
-          "prev_position_size": 1000.0,
-          "current_position_size": 1000.0,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
-          "source_gap_minutes": 0.0
-        },
-        "recent_series": [
-          {
-            "time_utc": "2026-09-10T21:00:00Z",
-            "side": "LONG",
-            "position_size": 1000.0,
-            "position_value_usd": 77162000.0,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T20:00:00Z",
-            "side": "LONG",
-            "position_size": 1000.0,
-            "position_value_usd": 77253200.0,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T19:00:00Z",
-            "side": "LONG",
-            "position_size": 1000.0,
-            "position_value_usd": 77202000.0,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T18:00:00Z",
-            "side": "LONG",
-            "position_size": 1000.0,
-            "position_value_usd": 77094000.0,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T17:00:00Z",
-            "side": "LONG",
-            "position_size": 1000.0,
-            "position_value_usd": 77353000.0,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "LONG",
-            "position_size": 1000.0,
-            "position_value_usd": 77173000.0,
-            "size_schema": "SZI_V1_1"
-          }
-        ],
-        "address_short": "0x8ea85c…f8edbc"
-      },
-      {
-        "time_utc": "2026-09-10T21:00:00Z",
+        "time_utc": "2026-09-10T22:00:00Z",
         "address": "0x15a4f009bb324a3fb9e36137136b201e3fe0dfdb",
         "display_name": "",
         "coin": "BTC",
         "side": "LONG",
         "position_size": 1000.0,
-        "position_value_usd": 77157000.0,
-        "signed_position_value_usd": 77157000.0,
+        "position_value_usd": 76857000.0,
+        "signed_position_value_usd": 76857000.0,
         "entry_px": 62353.6,
         "leverage_type": "cross",
         "leverage_value": 40.0,
-        "liquidation_px": 54084.6849563008,
-        "mark_price": 77139.5,
-        "liquidation_distance_pct": 29.887171998391487,
-        "unrealized_pnl": 14803345.11882,
-        "account_value": 8509133.735021,
+        "liquidation_px": 54217.9627208567,
+        "mark_price": 76844.5,
+        "liquidation_distance_pct": 29.44457609736975,
+        "unrealized_pnl": 14503345.11882,
+        "account_value": 8074861.942522,
         "status": "ACTIVE",
         "size_schema": "SZI_V1_1",
         "change_1h": {
@@ -1246,7 +144,7 @@
           "current_position_size": 1000.0,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_4h": {
@@ -1258,7 +156,7 @@
           "current_position_size": 1000.0,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_24h": {
@@ -1270,10 +168,17 @@
           "current_position_size": 1000.0,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "LONG",
+            "position_size": 1000.0,
+            "position_value_usd": 76857000.0,
+            "size_schema": "SZI_V1_1"
+          },
           {
             "time_utc": "2026-09-10T21:00:00Z",
             "side": "LONG",
@@ -1308,34 +213,128 @@
             "position_size": 1000.0,
             "position_value_usd": 77345000.0,
             "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "LONG",
-            "position_size": 1000.0,
-            "position_value_usd": 77169000.0,
-            "size_schema": "SZI_V1_1"
           }
         ],
         "address_short": "0x15a4f0…e0dfdb"
       },
       {
-        "time_utc": "2026-09-10T21:00:00Z",
+        "time_utc": "2026-09-10T22:00:00Z",
+        "address": "0x8ea85cbd59affca28162fc286d5c093dd0f8edbc",
+        "display_name": "",
+        "coin": "BTC",
+        "side": "LONG",
+        "position_size": 1000.0,
+        "position_value_usd": 76842000.0,
+        "signed_position_value_usd": 76842000.0,
+        "entry_px": 72771.2,
+        "leverage_type": "cross",
+        "leverage_value": 3.0,
+        "liquidation_px": 49455.4727317397,
+        "mark_price": 76844.5,
+        "liquidation_distance_pct": 35.64214389873095,
+        "unrealized_pnl": 4070721.68354,
+        "account_value": 24837775.559542,
+        "status": "ACTIVE",
+        "size_schema": "SZI_V1_1",
+        "change_1h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "LONG",
+          "current_side": "LONG",
+          "prev_position_size": 1000.0,
+          "current_position_size": 1000.0,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 76844.5,
+          "source_gap_minutes": 0.0
+        },
+        "change_4h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "LONG",
+          "current_side": "LONG",
+          "prev_position_size": 1000.0,
+          "current_position_size": 1000.0,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 76844.5,
+          "source_gap_minutes": 0.0
+        },
+        "change_24h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "LONG",
+          "current_side": "LONG",
+          "prev_position_size": 1000.0,
+          "current_position_size": 1000.0,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 76844.5,
+          "source_gap_minutes": 0.0
+        },
+        "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "LONG",
+            "position_size": 1000.0,
+            "position_value_usd": 76842000.0,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T21:00:00Z",
+            "side": "LONG",
+            "position_size": 1000.0,
+            "position_value_usd": 77162000.0,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T20:00:00Z",
+            "side": "LONG",
+            "position_size": 1000.0,
+            "position_value_usd": 77253200.0,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T19:00:00Z",
+            "side": "LONG",
+            "position_size": 1000.0,
+            "position_value_usd": 77202000.0,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T18:00:00Z",
+            "side": "LONG",
+            "position_size": 1000.0,
+            "position_value_usd": 77094000.0,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T17:00:00Z",
+            "side": "LONG",
+            "position_size": 1000.0,
+            "position_value_usd": 77353000.0,
+            "size_schema": "SZI_V1_1"
+          }
+        ],
+        "address_short": "0x8ea85c…f8edbc"
+      },
+      {
+        "time_utc": "2026-09-10T22:00:00Z",
         "address": "0xb83de012dba672c76a7dbbbf3e459cb59d7d6e36",
         "display_name": "",
         "coin": "BTC",
         "side": "SHORT",
         "position_size": -919.871,
-        "position_value_usd": 70963448.295,
-        "signed_position_value_usd": -70963448.295,
+        "position_value_usd": 70671849.188,
+        "signed_position_value_usd": -70671849.188,
         "entry_px": 66683.9,
         "leverage_type": "cross",
         "leverage_value": 5.0,
-        "liquidation_px": 147903.9443265812,
-        "mark_price": 77139.5,
-        "liquidation_distance_pct": 91.73567929087069,
-        "unrealized_pnl": -9622815.927069,
-        "account_value": 59140955.490986,
+        "liquidation_px": 149536.7975333804,
+        "mark_price": 76844.5,
+        "liquidation_distance_pct": 94.59661723790302,
+        "unrealized_pnl": -9331216.820069,
+        "account_value": 60820260.814928,
         "status": "ACTIVE",
         "size_schema": "SZI_V1_1",
         "change_1h": {
@@ -1347,7 +346,7 @@
           "current_position_size": -919.871,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_4h": {
@@ -1359,22 +358,29 @@
           "current_position_size": -919.871,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_24h": {
           "event": "REDUCE",
-          "severity": "INFO",
+          "severity": "NONE",
           "prev_side": "SHORT",
           "current_side": "SHORT",
-          "prev_position_size": -988.89132,
+          "prev_position_size": -980.9384,
           "current_position_size": -919.871,
-          "size_change_units": 69.02031999999997,
-          "action_notional_usd": 5324192.974639998,
-          "reference_mark_price": 77139.5,
+          "size_change_units": 61.06740000000002,
+          "action_notional_usd": 4692693.8193000015,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "SHORT",
+            "position_size": -919.871,
+            "position_value_usd": 70671849.188,
+            "size_schema": "SZI_V1_1"
+          },
           {
             "time_utc": "2026-09-10T21:00:00Z",
             "side": "SHORT",
@@ -1409,34 +415,27 @@
             "position_size": -919.871,
             "position_value_usd": 71142823.14,
             "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "SHORT",
-            "position_size": -919.871,
-            "position_value_usd": 71014041.2,
-            "size_schema": "SZI_V1_1"
           }
         ],
         "address_short": "0xb83de0…7d6e36"
       },
       {
-        "time_utc": "2026-09-10T21:00:00Z",
+        "time_utc": "2026-09-10T22:00:00Z",
         "address": "0x396dc3e4d1051837bb559810d2b1ea7977775899",
         "display_name": "",
         "coin": "BTC",
         "side": "LONG",
         "position_size": 911.54889,
-        "position_value_usd": 70347874.03686,
-        "signed_position_value_usd": 70347874.03686,
+        "position_value_usd": 70069851.62541,
+        "signed_position_value_usd": 70069851.62541,
         "entry_px": 77733.2,
         "leverage_type": "cross",
         "leverage_value": 40.0,
-        "liquidation_px": 76304.8778743401,
-        "mark_price": 77139.5,
-        "liquidation_distance_pct": 1.0819646557987732,
-        "unrealized_pnl": -509739.7503,
-        "account_value": 1661692.643019,
+        "liquidation_px": 76305.8543806685,
+        "mark_price": 76844.5,
+        "liquidation_distance_pct": 0.7009553310015619,
+        "unrealized_pnl": -787762.16175,
+        "account_value": 1382791.224975,
         "status": "ACTIVE",
         "size_schema": "SZI_V1_1",
         "change_1h": {
@@ -1448,7 +447,7 @@
           "current_position_size": 911.54889,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_4h": {
@@ -1460,7 +459,7 @@
           "current_position_size": 911.54889,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_24h": {
@@ -1468,14 +467,21 @@
           "severity": "LEVEL1_CANDIDATE",
           "prev_side": "SHORT",
           "current_side": "LONG",
-          "prev_position_size": -6.00294,
+          "prev_position_size": -5.01821,
           "current_position_size": 911.54889,
-          "size_change_units": 917.55183,
-          "action_notional_usd": 70779489.390285,
-          "reference_mark_price": 77139.5,
+          "size_change_units": 916.5671,
+          "action_notional_usd": 70433140.51595,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "LONG",
+            "position_size": 911.54889,
+            "position_value_usd": 70069851.62541,
+            "size_schema": "SZI_V1_1"
+          },
           {
             "time_utc": "2026-09-10T21:00:00Z",
             "side": "LONG",
@@ -1510,34 +516,27 @@
             "position_size": 911.54889,
             "position_value_usd": 70472756.23479,
             "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "LONG",
-            "position_size": 911.54889,
-            "position_value_usd": 70326908.41239,
-            "size_schema": "SZI_V1_1"
           }
         ],
         "address_short": "0x396dc3…775899"
       },
       {
-        "time_utc": "2026-09-10T21:00:00Z",
+        "time_utc": "2026-09-10T22:00:00Z",
         "address": "0x60468ba27448f88b19f52ed02f1a8c52f7a0b21d",
         "display_name": "",
         "coin": "BTC",
         "side": "LONG",
         "position_size": 702.67899,
-        "position_value_usd": 54221521.58436,
-        "signed_position_value_usd": 54221521.58436,
+        "position_value_usd": 54018868.963644,
+        "signed_position_value_usd": 54018868.963644,
         "entry_px": 80118.4,
         "leverage_type": "cross",
         "leverage_value": 12.0,
-        "liquidation_px": 72575.9524559074,
-        "mark_price": 77139.5,
-        "liquidation_distance_pct": 5.915967233508896,
-        "unrealized_pnl": -2076048.41931,
-        "account_value": 3861394.57648,
+        "liquidation_px": 72576.9289622365,
+        "mark_price": 76844.5,
+        "liquidation_distance_pct": 5.553515264935678,
+        "unrealized_pnl": -2278701.040026,
+        "account_value": 3658064.362414,
         "status": "ACTIVE",
         "size_schema": "SZI_V1_1",
         "change_1h": {
@@ -1549,7 +548,7 @@
           "current_position_size": 702.67899,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_4h": {
@@ -1561,7 +560,7 @@
           "current_position_size": 702.67899,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_24h": {
@@ -1573,10 +572,17 @@
           "current_position_size": 702.67899,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "LONG",
+            "position_size": 702.67899,
+            "position_value_usd": 54018868.963644,
+            "size_schema": "SZI_V1_1"
+          },
           {
             "time_utc": "2026-09-10T21:00:00Z",
             "side": "LONG",
@@ -1611,34 +617,27 @@
             "position_size": 702.67899,
             "position_value_usd": 54318491.28498,
             "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "LONG",
-            "position_size": 702.67899,
-            "position_value_usd": 54218008.18941,
-            "size_schema": "SZI_V1_1"
           }
         ],
         "address_short": "0x60468b…a0b21d"
       },
       {
-        "time_utc": "2026-09-10T21:00:00Z",
+        "time_utc": "2026-09-10T22:00:00Z",
         "address": "0xb695651daa495f59dd2725c6fe98322d8b51a92d",
         "display_name": "",
         "coin": "BTC",
         "side": "SHORT",
         "position_size": -620.0,
-        "position_value_usd": 47849120.0,
-        "signed_position_value_usd": -47849120.0,
+        "position_value_usd": 47653138.0,
+        "signed_position_value_usd": -47653138.0,
         "entry_px": 78863.8,
         "leverage_type": "cross",
         "leverage_value": 20.0,
-        "liquidation_px": 111108.9944521035,
-        "mark_price": 77139.5,
-        "liquidation_distance_pct": 44.03644624622082,
-        "unrealized_pnl": 1046468.70912,
-        "account_value": 22466242.591608,
+        "liquidation_px": 111375.7153566404,
+        "mark_price": 76844.5,
+        "liquidation_distance_pct": 44.936482580588596,
+        "unrealized_pnl": 1242450.70912,
+        "account_value": 22823694.267281,
         "status": "ACTIVE",
         "size_schema": "SZI_V1_1",
         "change_1h": {
@@ -1650,19 +649,19 @@
           "current_position_size": -620.0,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_4h": {
-          "event": "INCREASE",
+          "event": "UNCHANGED",
           "severity": "NONE",
           "prev_side": "SHORT",
           "current_side": "SHORT",
-          "prev_position_size": -609.93876,
+          "prev_position_size": -620.0,
           "current_position_size": -620.0,
-          "size_change_units": -10.061239999999998,
-          "action_notional_usd": 776119.0229799999,
-          "reference_mark_price": 77139.5,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_24h": {
@@ -1673,11 +672,18 @@
           "prev_position_size": -592.0,
           "current_position_size": -620.0,
           "size_change_units": -28.0,
-          "action_notional_usd": 2159906.0,
-          "reference_mark_price": 77139.5,
+          "action_notional_usd": 2151646.0,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "SHORT",
+            "position_size": -620.0,
+            "position_value_usd": 47653138.0,
+            "size_schema": "SZI_V1_1"
+          },
           {
             "time_utc": "2026-09-10T21:00:00Z",
             "side": "SHORT",
@@ -1712,34 +718,27 @@
             "position_size": -609.93876,
             "position_value_usd": 47156195.35188,
             "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "SHORT",
-            "position_size": -592.0,
-            "position_value_usd": 45673392.0,
-            "size_schema": "SZI_V1_1"
           }
         ],
         "address_short": "0xb69565…51a92d"
       },
       {
-        "time_utc": "2026-09-10T21:00:00Z",
+        "time_utc": "2026-09-10T22:00:00Z",
         "address": "0xe2ad376800c2da03d611700ffc1d013090733c8c",
         "display_name": "fluffysnow",
         "coin": "BTC",
         "side": "SHORT",
         "position_size": -571.93735,
-        "position_value_usd": 44131829.8007,
-        "signed_position_value_usd": -44131829.8007,
+        "position_value_usd": 43957960.8463,
+        "signed_position_value_usd": -43957960.8463,
         "entry_px": 78475.3,
         "leverage_type": "cross",
         "leverage_value": 20.0,
-        "liquidation_px": 95709.3264948411,
-        "mark_price": 77139.5,
-        "liquidation_distance_pct": 24.073044931378988,
-        "unrealized_pnl": 751131.925861,
-        "account_value": 5638429.037694,
+        "liquidation_px": 95678.7140259219,
+        "mark_price": 76844.5,
+        "liquidation_distance_pct": 24.509514702967554,
+        "unrealized_pnl": 925000.880261,
+        "account_value": 5782310.347749,
         "status": "ACTIVE",
         "size_schema": "SZI_V1_1",
         "change_1h": {
@@ -1751,19 +750,19 @@
           "current_position_size": -571.93735,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_4h": {
-          "event": "REDUCE",
-          "severity": "INFO",
+          "event": "UNCHANGED",
+          "severity": "NONE",
           "prev_side": "SHORT",
           "current_side": "SHORT",
-          "prev_position_size": -670.13685,
+          "prev_position_size": -571.93735,
           "current_position_size": -571.93735,
-          "size_change_units": 98.19949999999994,
-          "action_notional_usd": 7575060.330249996,
-          "reference_mark_price": 77139.5,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_24h": {
@@ -1774,11 +773,18 @@
           "prev_position_size": -520.89135,
           "current_position_size": -571.93735,
           "size_change_units": -51.04600000000005,
-          "action_notional_usd": 3937662.9170000036,
-          "reference_mark_price": 77139.5,
+          "action_notional_usd": 3922604.347000004,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "SHORT",
+            "position_size": -571.93735,
+            "position_value_usd": 43957960.8463,
+            "size_schema": "SZI_V1_1"
+          },
           {
             "time_utc": "2026-09-10T21:00:00Z",
             "side": "SHORT",
@@ -1813,34 +819,27 @@
             "position_size": -670.13685,
             "position_value_usd": 51829188.14322,
             "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "SHORT",
-            "position_size": -740.27925,
-            "position_value_usd": 57134752.515,
-            "size_schema": "SZI_V1_1"
           }
         ],
         "address_short": "0xe2ad37…733c8c"
       },
       {
-        "time_utc": "2026-09-10T21:00:00Z",
+        "time_utc": "2026-09-10T22:00:00Z",
         "address": "0x218a65e21eddeece7a9df38c6bbdd89f692b7da2",
         "display_name": "",
         "coin": "BTC",
         "side": "SHORT",
         "position_size": -525.44604,
-        "position_value_usd": 40544467.33848,
-        "signed_position_value_usd": -40544467.33848,
+        "position_value_usd": 40376324.60568,
+        "signed_position_value_usd": -40376324.60568,
         "entry_px": 75908.2,
         "leverage_type": "isolated",
         "leverage_value": 8.0,
-        "liquidation_px": 86881.3496002006,
-        "mark_price": 77139.5,
-        "liquidation_distance_pct": 12.62887314566545,
-        "unrealized_pnl": -658777.700957,
-        "account_value": 8184235.786886,
+        "liquidation_px": 86882.3019952616,
+        "mark_price": 76844.5,
+        "liquidation_distance_pct": 13.062485923210643,
+        "unrealized_pnl": -490634.968157,
+        "account_value": 8478342.398867,
         "status": "ACTIVE",
         "size_schema": "SZI_V1_1",
         "change_1h": {
@@ -1852,7 +851,7 @@
           "current_position_size": -525.44604,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_4h": {
@@ -1864,7 +863,7 @@
           "current_position_size": -525.44604,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_24h": {
@@ -1876,10 +875,17 @@
           "current_position_size": -525.44604,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "SHORT",
+            "position_size": -525.44604,
+            "position_value_usd": 40376324.60568,
+            "size_schema": "SZI_V1_1"
+          },
           {
             "time_utc": "2026-09-10T21:00:00Z",
             "side": "SHORT",
@@ -1914,34 +920,27 @@
             "position_size": -525.44604,
             "position_value_usd": 40644827.53212,
             "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "SHORT",
-            "position_size": -525.44604,
-            "position_value_usd": 40550247.24492,
-            "size_schema": "SZI_V1_1"
           }
         ],
         "address_short": "0x218a65…2b7da2"
       },
       {
-        "time_utc": "2026-09-10T21:00:00Z",
+        "time_utc": "2026-09-10T22:00:00Z",
         "address": "0xdd9f274410c8c704bdbb599dce6c4fb34be4f50a",
         "display_name": "",
         "coin": "BTC",
         "side": "SHORT",
         "position_size": -511.00033,
-        "position_value_usd": 39429807.46346,
-        "signed_position_value_usd": -39429807.46346,
+        "position_value_usd": 39274463.36314,
+        "signed_position_value_usd": -39274463.36314,
         "entry_px": 71157.6,
         "leverage_type": "cross",
         "leverage_value": 40.0,
-        "liquidation_px": 98720.3227862814,
-        "mark_price": 77139.5,
-        "liquidation_distance_pct": 27.976358138543024,
-        "unrealized_pnl": -3068219.06468,
-        "account_value": 4400777.616131,
+        "liquidation_px": 98705.8759418679,
+        "mark_price": 76844.5,
+        "liquidation_distance_pct": 28.44884922391049,
+        "unrealized_pnl": -2912874.96436,
+        "account_value": 4399013.451073,
         "status": "ACTIVE",
         "size_schema": "SZI_V1_1",
         "change_1h": {
@@ -1953,7 +952,7 @@
           "current_position_size": -511.00033,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_4h": {
@@ -1965,7 +964,7 @@
           "current_position_size": -511.00033,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_24h": {
@@ -1977,10 +976,17 @@
           "current_position_size": -511.00033,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "SHORT",
+            "position_size": -511.00033,
+            "position_value_usd": 39274463.36314,
+            "size_schema": "SZI_V1_1"
+          },
           {
             "time_utc": "2026-09-10T21:00:00Z",
             "side": "SHORT",
@@ -2015,38 +1021,29 @@
             "position_size": -511.00033,
             "position_value_usd": 39521378.722596,
             "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "SHORT",
-            "position_size": -511.00033,
-            "position_value_usd": 39433895.4661,
-            "size_schema": "SZI_V1_1"
           }
         ],
         "address_short": "0xdd9f27…e4f50a"
       }
-    ]
-  },
-  "scout_5m_to_20m": {
+    ],
     "ETH": [
       {
-        "time_utc": "2026-09-10T21:00:00Z",
-        "address": "0xcf5343ba750a6e30afbb1dadda08bc78f8c8ee11",
+        "time_utc": "2026-09-10T22:00:00Z",
+        "address": "0x5b5d51203a0f9079f8aeb098a6523a13f298c060",
         "display_name": "",
         "coin": "ETH",
         "side": "SHORT",
-        "position_size": -7603.6279,
-        "position_value_usd": 18706445.35958,
-        "signed_position_value_usd": -18706445.35958,
-        "entry_px": 1862.69,
+        "position_size": -93785.7129,
+        "position_value_usd": 229399853.7534,
+        "signed_position_value_usd": -229399853.7534,
+        "entry_px": 2263.11,
         "leverage_type": "cross",
-        "leverage_value": 7.0,
-        "liquidation_px": 3626.6564318531,
-        "mark_price": 2460.15,
-        "liquidation_distance_pct": 47.41606942068979,
-        "unrealized_pnl": -4543181.416639,
-        "account_value": 2981953.608389,
+        "leverage_value": 5.0,
+        "liquidation_px": 3659.4782155559,
+        "mark_price": 2445.95,
+        "liquidation_distance_pct": 49.61377851370226,
+        "unrealized_pnl": -17152182.468477,
+        "account_value": 109333781.414262,
         "status": "ACTIVE",
         "size_schema": "SZI_V1_1",
         "change_1h": {
@@ -2054,100 +1051,100 @@
           "severity": "NONE",
           "prev_side": "SHORT",
           "current_side": "SHORT",
-          "prev_position_size": -7603.6279,
-          "current_position_size": -7603.6279,
+          "prev_position_size": -93785.7129,
+          "current_position_size": -93785.7129,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
+          "reference_mark_price": 2445.95,
           "source_gap_minutes": 0.0
         },
         "change_4h": {
-          "event": "UNCHANGED",
+          "event": "INCREASE",
           "severity": "NONE",
           "prev_side": "SHORT",
           "current_side": "SHORT",
-          "prev_position_size": -7603.6279,
-          "current_position_size": -7603.6279,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
+          "prev_position_size": -93777.7131,
+          "current_position_size": -93785.7129,
+          "size_change_units": -7.999800000005052,
+          "action_notional_usd": 19567.110810012357,
+          "reference_mark_price": 2445.95,
           "source_gap_minutes": 0.0
         },
         "change_24h": {
-          "event": "UNCHANGED",
+          "event": "REDUCE",
           "severity": "NONE",
           "prev_side": "SHORT",
           "current_side": "SHORT",
-          "prev_position_size": -7603.6279,
-          "current_position_size": -7603.6279,
-          "size_change_units": 0.0,
-          "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
+          "prev_position_size": -95154.0101,
+          "current_position_size": -93785.7129,
+          "size_change_units": 1368.2972000000009,
+          "action_notional_usd": 3346786.536340002,
+          "reference_mark_price": 2445.95,
           "source_gap_minutes": 0.0
         },
         "recent_series": [
           {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "SHORT",
+            "position_size": -93785.7129,
+            "position_value_usd": 229399853.7534,
+            "size_schema": "SZI_V1_1"
+          },
+          {
             "time_utc": "2026-09-10T21:00:00Z",
             "side": "SHORT",
-            "position_size": -7603.6279,
-            "position_value_usd": 18706445.35958,
+            "position_size": -93785.7129,
+            "position_value_usd": 230731610.87658,
             "size_schema": "SZI_V1_1"
           },
           {
             "time_utc": "2026-09-10T20:00:00Z",
             "side": "SHORT",
-            "position_size": -7603.6279,
-            "position_value_usd": 18726975.15491,
+            "position_size": -93777.7131,
+            "position_value_usd": 231049529.53578,
             "size_schema": "SZI_V1_1"
           },
           {
             "time_utc": "2026-09-10T19:00:00Z",
             "side": "SHORT",
-            "position_size": -7603.6279,
-            "position_value_usd": 18751306.76419,
+            "position_size": -93777.7131,
+            "position_value_usd": 231340240.44639,
             "size_schema": "SZI_V1_1"
           },
           {
             "time_utc": "2026-09-10T18:00:00Z",
             "side": "SHORT",
-            "position_size": -7603.6279,
-            "position_value_usd": 18703023.727025,
+            "position_size": -93777.7131,
+            "position_value_usd": 230796329.71041,
             "size_schema": "SZI_V1_1"
           },
           {
             "time_utc": "2026-09-10T17:00:00Z",
             "side": "SHORT",
-            "position_size": -7603.6279,
-            "position_value_usd": 18745680.079544,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "SHORT",
-            "position_size": -7603.6279,
-            "position_value_usd": 18603036.02014,
+            "position_size": -93777.7131,
+            "position_value_usd": 231246462.73329,
             "size_schema": "SZI_V1_1"
           }
         ],
-        "address_short": "0xcf5343…c8ee11"
+        "address_short": "0x5b5d51…98c060"
       },
       {
-        "time_utc": "2026-09-10T21:00:00Z",
-        "address": "0xec0b9ebf2a304c99cafe85c548c14dd7783cb078",
+        "time_utc": "2026-09-10T22:00:00Z",
+        "address": "0x0392a716dbee1661ea781881826b928daeb5d7d9",
         "display_name": "",
         "coin": "ETH",
         "side": "LONG",
-        "position_size": 7007.7989,
-        "position_value_usd": 17245492.31301,
-        "signed_position_value_usd": 17245492.31301,
-        "entry_px": 2065.97,
+        "position_size": 45087.3479,
+        "position_value_usd": 110372925.912242,
+        "signed_position_value_usd": 110372925.912242,
+        "entry_px": 2486.37,
         "leverage_type": "cross",
-        "leverage_value": 25.0,
-        "liquidation_px": 765.2392904881,
-        "mark_price": 2460.15,
-        "liquidation_distance_pct": 68.89460843899357,
-        "unrealized_pnl": 2767562.724073,
-        "account_value": 2877799.169409,
+        "leverage_value": 8.0,
+        "liquidation_px": 2179.0238077015,
+        "mark_price": 2445.95,
+        "liquidation_distance_pct": 10.912986459187625,
+        "unrealized_pnl": -1731223.460378,
+        "account_value": 14074682.07388,
         "status": "ACTIVE",
         "size_schema": "SZI_V1_1",
         "change_1h": {
@@ -2155,11 +1152,11 @@
           "severity": "NONE",
           "prev_side": "LONG",
           "current_side": "LONG",
-          "prev_position_size": 7007.7989,
-          "current_position_size": 7007.7989,
+          "prev_position_size": 45087.3479,
+          "current_position_size": 45087.3479,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
+          "reference_mark_price": 2445.95,
           "source_gap_minutes": 0.0
         },
         "change_4h": {
@@ -2167,11 +1164,11 @@
           "severity": "NONE",
           "prev_side": "LONG",
           "current_side": "LONG",
-          "prev_position_size": 7007.7989,
-          "current_position_size": 7007.7989,
+          "prev_position_size": 45087.3479,
+          "current_position_size": 45087.3479,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
+          "reference_mark_price": 2445.95,
           "source_gap_minutes": 0.0
         },
         "change_24h": {
@@ -2179,76 +1176,76 @@
           "severity": "NONE",
           "prev_side": "LONG",
           "current_side": "LONG",
-          "prev_position_size": 7007.7989,
-          "current_position_size": 7007.7989,
+          "prev_position_size": 45087.3479,
+          "current_position_size": 45087.3479,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
+          "reference_mark_price": 2445.95,
           "source_gap_minutes": 0.0
         },
         "recent_series": [
           {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "LONG",
+            "position_size": 45087.3479,
+            "position_value_usd": 110372925.912242,
+            "size_schema": "SZI_V1_1"
+          },
+          {
             "time_utc": "2026-09-10T21:00:00Z",
             "side": "LONG",
-            "position_size": 7007.7989,
-            "position_value_usd": 17245492.31301,
+            "position_size": 45087.3479,
+            "position_value_usd": 110932910.77316,
             "size_schema": "SZI_V1_1"
           },
           {
             "time_utc": "2026-09-10T20:00:00Z",
             "side": "LONG",
-            "position_size": 7007.7989,
-            "position_value_usd": 17253901.67169,
+            "position_size": 45087.3479,
+            "position_value_usd": 111023085.46896,
             "size_schema": "SZI_V1_1"
           },
           {
             "time_utc": "2026-09-10T19:00:00Z",
             "side": "LONG",
-            "position_size": 7007.7989,
-            "position_value_usd": 17275625.84828,
+            "position_size": 45087.3479,
+            "position_value_usd": 111153838.77787,
             "size_schema": "SZI_V1_1"
           },
           {
             "time_utc": "2026-09-10T18:00:00Z",
             "side": "LONG",
-            "position_size": 7007.7989,
-            "position_value_usd": 17267216.4896,
+            "position_size": 45087.3479,
+            "position_value_usd": 110955454.44711,
             "size_schema": "SZI_V1_1"
           },
           {
             "time_utc": "2026-09-10T17:00:00Z",
             "side": "LONG",
-            "position_size": 7007.7989,
-            "position_value_usd": 17275625.84828,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "LONG",
-            "position_size": 7007.7989,
-            "position_value_usd": 17136871.43006,
+            "position_size": 45087.3479,
+            "position_value_usd": 111063664.08207,
             "size_schema": "SZI_V1_1"
           }
         ],
-        "address_short": "0xec0b9e…3cb078"
+        "address_short": "0x0392a7…b5d7d9"
       },
       {
-        "time_utc": "2026-09-10T21:00:00Z",
-        "address": "0xba5d9cc840745aeeeeedac5712e32f13ab8ea352",
+        "time_utc": "2026-09-10T22:00:00Z",
+        "address": "0xb83de012dba672c76a7dbbbf3e459cb59d7d6e36",
         "display_name": "",
         "coin": "ETH",
         "side": "SHORT",
-        "position_size": -6310.3221,
-        "position_value_usd": 15525285.46263,
-        "signed_position_value_usd": -15525285.46263,
-        "entry_px": 2476.13,
+        "position_size": -44581.5716,
+        "position_value_usd": 109046524.1336,
+        "signed_position_value_usd": -109046524.1336,
+        "entry_px": 2157.45,
         "leverage_type": "cross",
-        "leverage_value": 20.0,
-        "liquidation_px": 3027.4057134668,
-        "mark_price": 2460.15,
-        "liquidation_distance_pct": 23.05776938263114,
-        "unrealized_pnl": 99949.53091,
-        "account_value": 3021161.340468,
+        "leverage_value": 5.0,
+        "liquidation_px": 3915.985694164,
+        "mark_price": 2445.95,
+        "liquidation_distance_pct": 60.10080721862673,
+        "unrealized_pnl": -12863614.660415,
+        "account_value": 60820260.814928,
         "status": "ACTIVE",
         "size_schema": "SZI_V1_1",
         "change_1h": {
@@ -2256,102 +1253,800 @@
           "severity": "NONE",
           "prev_side": "SHORT",
           "current_side": "SHORT",
-          "prev_position_size": -6310.3221,
-          "current_position_size": -6310.3221,
+          "prev_position_size": -44581.5716,
+          "current_position_size": -44581.5716,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
+          "reference_mark_price": 2445.95,
           "source_gap_minutes": 0.0
         },
         "change_4h": {
-          "event": "UNCHANGED",
+          "event": "INCREASE",
           "severity": "NONE",
           "prev_side": "SHORT",
           "current_side": "SHORT",
-          "prev_position_size": -6310.3221,
-          "current_position_size": -6310.3221,
+          "prev_position_size": -44575.5716,
+          "current_position_size": -44581.5716,
+          "size_change_units": -6.0,
+          "action_notional_usd": 14675.699999999999,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "change_24h": {
+          "event": "REDUCE",
+          "severity": "NONE",
+          "prev_side": "SHORT",
+          "current_side": "SHORT",
+          "prev_position_size": -45639.9202,
+          "current_position_size": -44581.5716,
+          "size_change_units": 1058.3485999999975,
+          "action_notional_usd": 2588667.7581699938,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "SHORT",
+            "position_size": -44581.5716,
+            "position_value_usd": 109046524.1336,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T21:00:00Z",
+            "side": "SHORT",
+            "position_size": -44581.5716,
+            "position_value_usd": 109679582.45032,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T20:00:00Z",
+            "side": "SHORT",
+            "position_size": -44581.5716,
+            "position_value_usd": 109840076.10808,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T19:00:00Z",
+            "side": "SHORT",
+            "position_size": -44581.5716,
+            "position_value_usd": 109978278.98004,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T18:00:00Z",
+            "side": "SHORT",
+            "position_size": -44575.5716,
+            "position_value_usd": 109704939.26476,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T17:00:00Z",
+            "side": "SHORT",
+            "position_size": -44575.5716,
+            "position_value_usd": 109918902.00844,
+            "size_schema": "SZI_V1_1"
+          }
+        ],
+        "address_short": "0xb83de0…7d6e36"
+      },
+      {
+        "time_utc": "2026-09-10T22:00:00Z",
+        "address": "0x020ca66c30bec2c4fe3861a94e4db4a498a35872",
+        "display_name": "MachiBigBrother",
+        "coin": "ETH",
+        "side": "LONG",
+        "position_size": 40575.0,
+        "position_value_usd": 99278910.0,
+        "signed_position_value_usd": 99278910.0,
+        "entry_px": 2456.45,
+        "leverage_type": "cross",
+        "leverage_value": 25.0,
+        "liquidation_px": 2390.2810303536,
+        "mark_price": 2445.95,
+        "liquidation_distance_pct": 2.2759651524520126,
+        "unrealized_pnl": -391768.610921,
+        "account_value": 4427056.279536,
+        "status": "ACTIVE",
+        "size_schema": "SZI_V1_1",
+        "change_1h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "LONG",
+          "current_side": "LONG",
+          "prev_position_size": 40575.0,
+          "current_position_size": 40575.0,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 2460.15,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "change_4h": {
+          "event": "REDUCE",
+          "severity": "NONE",
+          "prev_side": "LONG",
+          "current_side": "LONG",
+          "prev_position_size": 40635.5398,
+          "current_position_size": 40575.0,
+          "size_change_units": -60.53979999999865,
+          "action_notional_usd": 148077.32380999668,
+          "reference_mark_price": 2445.95,
           "source_gap_minutes": 0.0
         },
         "change_24h": {
           "event": "INCREASE",
           "severity": "INFO",
-          "prev_side": "SHORT",
-          "current_side": "SHORT",
-          "prev_position_size": -4020.8221,
-          "current_position_size": -6310.3221,
-          "size_change_units": -2289.5000000000005,
-          "action_notional_usd": 5632513.425000002,
-          "reference_mark_price": 2460.15,
+          "prev_side": "LONG",
+          "current_side": "LONG",
+          "prev_position_size": 35500.0,
+          "current_position_size": 40575.0,
+          "size_change_units": 5075.0,
+          "action_notional_usd": 12413196.25,
+          "reference_mark_price": 2445.95,
           "source_gap_minutes": 0.0
         },
         "recent_series": [
           {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "LONG",
+            "position_size": 40575.0,
+            "position_value_usd": 99278910.0,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T21:00:00Z",
+            "side": "LONG",
+            "position_size": 40575.0,
+            "position_value_usd": 99818557.5,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T20:00:00Z",
+            "side": "LONG",
+            "position_size": 40575.0,
+            "position_value_usd": 99932167.5,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T19:00:00Z",
+            "side": "LONG",
+            "position_size": 40575.0,
+            "position_value_usd": 100062007.5,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T18:00:00Z",
+            "side": "LONG",
+            "position_size": 40635.5398,
+            "position_value_usd": 99953269.02305,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T17:00:00Z",
+            "side": "LONG",
+            "position_size": 40625.0,
+            "position_value_usd": 100177187.5,
+            "size_schema": "SZI_V1_1"
+          }
+        ],
+        "address_short": "0x020ca6…a35872"
+      },
+      {
+        "time_utc": "2026-09-10T22:00:00Z",
+        "address": "0xde8d9e530b0528ffa7b1190f862536c055dd9524",
+        "display_name": "",
+        "coin": "ETH",
+        "side": "LONG",
+        "position_size": 30282.4035,
+        "position_value_usd": 74113154.3259,
+        "signed_position_value_usd": 74113154.3259,
+        "entry_px": 2134.45,
+        "leverage_type": "cross",
+        "leverage_value": 20.0,
+        "liquidation_px": 1756.6503665649,
+        "mark_price": 2445.95,
+        "liquidation_distance_pct": 28.181264270941757,
+        "unrealized_pnl": 9476823.749788,
+        "account_value": 5596400.812132,
+        "status": "ACTIVE",
+        "size_schema": "SZI_V1_1",
+        "change_1h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "LONG",
+          "current_side": "LONG",
+          "prev_position_size": 30282.4035,
+          "current_position_size": 30282.4035,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "change_4h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "LONG",
+          "current_side": "LONG",
+          "prev_position_size": 30282.4035,
+          "current_position_size": 30282.4035,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "change_24h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "LONG",
+          "current_side": "LONG",
+          "prev_position_size": 30282.4035,
+          "current_position_size": 30282.4035,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "LONG",
+            "position_size": 30282.4035,
+            "position_value_usd": 74113154.3259,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T21:00:00Z",
+            "side": "LONG",
+            "position_size": 30282.4035,
+            "position_value_usd": 74506825.5714,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T20:00:00Z",
+            "side": "LONG",
+            "position_size": 30282.4035,
+            "position_value_usd": 74567390.3784,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T19:00:00Z",
+            "side": "LONG",
+            "position_size": 30282.4035,
+            "position_value_usd": 74655209.34855,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T18:00:00Z",
+            "side": "LONG",
+            "position_size": 30282.4035,
+            "position_value_usd": 74521966.77315,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T17:00:00Z",
+            "side": "LONG",
+            "position_size": 30282.4035,
+            "position_value_usd": 74594644.54155,
+            "size_schema": "SZI_V1_1"
+          }
+        ],
+        "address_short": "0xde8d9e…dd9524"
+      },
+      {
+        "time_utc": "2026-09-10T22:00:00Z",
+        "address": "0x7fdafde5cfb5465924316eced2d3715494c517d1",
+        "display_name": "BobbyBigSize",
+        "coin": "ETH",
+        "side": "SHORT",
+        "position_size": -23679.5333,
+        "position_value_usd": 57920138.4518,
+        "signed_position_value_usd": -57920138.4518,
+        "entry_px": 2201.07,
+        "leverage_type": "cross",
+        "leverage_value": 15.0,
+        "liquidation_px": 3394.113703663,
+        "mark_price": 2445.95,
+        "liquidation_distance_pct": 38.76463965588013,
+        "unrealized_pnl": -5799670.642232,
+        "account_value": 27065018.374647,
+        "status": "ACTIVE",
+        "size_schema": "SZI_V1_1",
+        "change_1h": {
+          "event": "INCREASE",
+          "severity": "NONE",
+          "prev_side": "SHORT",
+          "current_side": "SHORT",
+          "prev_position_size": -23649.7557,
+          "current_position_size": -23679.5333,
+          "size_change_units": -29.77759999999762,
+          "action_notional_usd": 72834.52071999417,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "change_4h": {
+          "event": "INCREASE",
+          "severity": "NONE",
+          "prev_side": "SHORT",
+          "current_side": "SHORT",
+          "prev_position_size": -23667.3889,
+          "current_position_size": -23679.5333,
+          "size_change_units": -12.144399999997404,
+          "action_notional_usd": 29704.59517999365,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "change_24h": {
+          "event": "REDUCE",
+          "severity": "LARGE_CHANGE_CANDIDATE",
+          "prev_side": "SHORT",
+          "current_side": "SHORT",
+          "prev_position_size": -34594.8587,
+          "current_position_size": -23679.5333,
+          "size_change_units": 10915.325399999998,
+          "action_notional_usd": 26698340.162129994,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "SHORT",
+            "position_size": -23679.5333,
+            "position_value_usd": 57920138.4518,
+            "size_schema": "SZI_V1_1"
+          },
+          {
             "time_utc": "2026-09-10T21:00:00Z",
             "side": "SHORT",
-            "position_size": -6310.3221,
-            "position_value_usd": 15525285.46263,
+            "position_size": -23649.7557,
+            "position_value_usd": 58183128.97314,
             "size_schema": "SZI_V1_1"
           },
           {
             "time_utc": "2026-09-10T20:00:00Z",
             "side": "SHORT",
-            "position_size": -6310.3221,
-            "position_value_usd": 15540430.23567,
+            "position_size": -23649.2256,
+            "position_value_usd": 58266962.03328,
             "size_schema": "SZI_V1_1"
           },
           {
             "time_utc": "2026-09-10T19:00:00Z",
             "side": "SHORT",
-            "position_size": -6310.3221,
-            "position_value_usd": 15558730.16976,
+            "position_size": -23668.022,
+            "position_value_usd": 58386643.4718,
             "size_schema": "SZI_V1_1"
           },
           {
             "time_utc": "2026-09-10T18:00:00Z",
             "side": "SHORT",
-            "position_size": -6310.3221,
-            "position_value_usd": 15522130.30158,
+            "position_size": -23667.3889,
+            "position_value_usd": 58247810.82179,
             "size_schema": "SZI_V1_1"
           },
           {
             "time_utc": "2026-09-10T17:00:00Z",
             "side": "SHORT",
-            "position_size": -6310.3221,
-            "position_value_usd": 15543585.39672,
-            "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "SHORT",
-            "position_size": -6310.3221,
-            "position_value_usd": 15442620.24312,
+            "position_size": -23556.6175,
+            "position_value_usd": 58088263.09325,
             "size_schema": "SZI_V1_1"
           }
         ],
-        "address_short": "0xba5d9c…8ea352"
+        "address_short": "0x7fdafd…c517d1"
+      },
+      {
+        "time_utc": "2026-09-10T22:00:00Z",
+        "address": "0xedcdcaa1f18350c50c10bef860e64daa9785d05a",
+        "display_name": "",
+        "coin": "ETH",
+        "side": "LONG",
+        "position_size": 20000.0,
+        "position_value_usd": 48928000.0,
+        "signed_position_value_usd": 48928000.0,
+        "entry_px": 1936.0,
+        "leverage_type": "cross",
+        "leverage_value": 4.0,
+        "liquidation_px": 1043.0902646322,
+        "mark_price": 2445.95,
+        "liquidation_distance_pct": 57.35439135582493,
+        "unrealized_pnl": 10208000.0,
+        "account_value": 11574963.984088,
+        "status": "ACTIVE",
+        "size_schema": "SZI_V1_1",
+        "change_1h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "LONG",
+          "current_side": "LONG",
+          "prev_position_size": 20000.0,
+          "current_position_size": 20000.0,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "change_4h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "LONG",
+          "current_side": "LONG",
+          "prev_position_size": 20000.0,
+          "current_position_size": 20000.0,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "change_24h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "LONG",
+          "current_side": "LONG",
+          "prev_position_size": 20000.0,
+          "current_position_size": 20000.0,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "LONG",
+            "position_size": 20000.0,
+            "position_value_usd": 48928000.0,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T21:00:00Z",
+            "side": "LONG",
+            "position_size": 20000.0,
+            "position_value_usd": 49194000.0,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T20:00:00Z",
+            "side": "LONG",
+            "position_size": 20000.0,
+            "position_value_usd": 49268000.0,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T19:00:00Z",
+            "side": "LONG",
+            "position_size": 20000.0,
+            "position_value_usd": 49328000.0,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T18:00:00Z",
+            "side": "LONG",
+            "position_size": 20000.0,
+            "position_value_usd": 49216000.0,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T17:00:00Z",
+            "side": "LONG",
+            "position_size": 20000.0,
+            "position_value_usd": 49330000.0,
+            "size_schema": "SZI_V1_1"
+          }
+        ],
+        "address_short": "0xedcdca…85d05a"
+      },
+      {
+        "time_utc": "2026-09-10T22:00:00Z",
+        "address": "0x77ddcc4b6440b3a32b7802f053105c2fad3ae0e9",
+        "display_name": "",
+        "coin": "ETH",
+        "side": "LONG",
+        "position_size": 14948.8937,
+        "position_value_usd": 36585922.44138,
+        "signed_position_value_usd": 36585922.44138,
+        "entry_px": 2463.98,
+        "leverage_type": "cross",
+        "leverage_value": 12.0,
+        "liquidation_px": 2183.441253495,
+        "mark_price": 2445.95,
+        "liquidation_distance_pct": 10.732384002330368,
+        "unrealized_pnl": -247946.61664,
+        "account_value": 4998972.86731,
+        "status": "ACTIVE",
+        "size_schema": "SZI_V1_1",
+        "change_1h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "LONG",
+          "current_side": "LONG",
+          "prev_position_size": 14948.8937,
+          "current_position_size": 14948.8937,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "change_4h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "LONG",
+          "current_side": "LONG",
+          "prev_position_size": 14948.8937,
+          "current_position_size": 14948.8937,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "change_24h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "LONG",
+          "current_side": "LONG",
+          "prev_position_size": 14948.8937,
+          "current_position_size": 14948.8937,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "LONG",
+            "position_size": 14948.8937,
+            "position_value_usd": 36585922.44138,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T21:00:00Z",
+            "side": "LONG",
+            "position_size": 14948.8937,
+            "position_value_usd": 36780258.05948,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T20:00:00Z",
+            "side": "LONG",
+            "position_size": 14948.8937,
+            "position_value_usd": 36810155.84688,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T19:00:00Z",
+            "side": "LONG",
+            "position_size": 14948.8937,
+            "position_value_usd": 36853507.63861,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T18:00:00Z",
+            "side": "LONG",
+            "position_size": 14948.8937,
+            "position_value_usd": 36787732.50633,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T17:00:00Z",
+            "side": "LONG",
+            "position_size": 14948.8937,
+            "position_value_usd": 36823609.85121,
+            "size_schema": "SZI_V1_1"
+          }
+        ],
+        "address_short": "0x77ddcc…3ae0e9"
+      },
+      {
+        "time_utc": "2026-09-10T22:00:00Z",
+        "address": "0x89da4baec446f35a1cbe17a9d1ee5c70b05ee43f",
+        "display_name": "Machi is ugly dog",
+        "coin": "ETH",
+        "side": "LONG",
+        "position_size": 14893.7573,
+        "position_value_usd": 36450981.61602,
+        "signed_position_value_usd": 36450981.61602,
+        "entry_px": 2418.22,
+        "leverage_type": "cross",
+        "leverage_value": 25.0,
+        "liquidation_px": 1590.9612689138,
+        "mark_price": 2445.95,
+        "liquidation_distance_pct": 34.955282450017364,
+        "unrealized_pnl": 434529.8021,
+        "account_value": 6042349.445022,
+        "status": "ACTIVE",
+        "size_schema": "SZI_V1_1",
+        "change_1h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "LONG",
+          "current_side": "LONG",
+          "prev_position_size": 14893.7573,
+          "current_position_size": 14893.7573,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "change_4h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "LONG",
+          "current_side": "LONG",
+          "prev_position_size": 14893.7573,
+          "current_position_size": 14893.7573,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "change_24h": null,
+        "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "LONG",
+            "position_size": 14893.7573,
+            "position_value_usd": 36450981.61602,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T21:00:00Z",
+            "side": "LONG",
+            "position_size": 14893.7573,
+            "position_value_usd": 36644600.46092,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T20:00:00Z",
+            "side": "LONG",
+            "position_size": 14893.7573,
+            "position_value_usd": 36674387.97552,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T19:00:00Z",
+            "side": "LONG",
+            "position_size": 14893.7573,
+            "position_value_usd": 36717579.87169,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T18:00:00Z",
+            "side": "LONG",
+            "position_size": 14893.7573,
+            "position_value_usd": 36652047.33957,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T17:00:00Z",
+            "side": "LONG",
+            "position_size": 14893.7573,
+            "position_value_usd": 36687792.35709,
+            "size_schema": "SZI_V1_1"
+          }
+        ],
+        "address_short": "0x89da4b…5ee43f"
+      },
+      {
+        "time_utc": "2026-09-10T22:00:00Z",
+        "address": "0x45d26f28196d226497130c4bac709d808fed4029",
+        "display_name": "",
+        "coin": "ETH",
+        "side": "SHORT",
+        "position_size": -13896.0,
+        "position_value_usd": 33989616.0,
+        "signed_position_value_usd": -33989616.0,
+        "entry_px": 2443.82,
+        "leverage_type": "cross",
+        "leverage_value": 20.0,
+        "liquidation_px": 5148.4516926106,
+        "mark_price": 2445.95,
+        "liquidation_distance_pct": 110.48883634622948,
+        "unrealized_pnl": -30263.935467,
+        "account_value": 28308311.400035,
+        "status": "ACTIVE",
+        "size_schema": "SZI_V1_1",
+        "change_1h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "SHORT",
+          "current_side": "SHORT",
+          "prev_position_size": -13896.0,
+          "current_position_size": -13896.0,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "change_4h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "SHORT",
+          "current_side": "SHORT",
+          "prev_position_size": -13896.0,
+          "current_position_size": -13896.0,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "change_24h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "SHORT",
+          "current_side": "SHORT",
+          "prev_position_size": -13896.0,
+          "current_position_size": -13896.0,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "SHORT",
+            "position_size": -13896.0,
+            "position_value_usd": 33989616.0,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T21:00:00Z",
+            "side": "SHORT",
+            "position_size": -13896.0,
+            "position_value_usd": 34186939.2,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T20:00:00Z",
+            "side": "SHORT",
+            "position_size": -13896.0,
+            "position_value_usd": 34236964.8,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T19:00:00Z",
+            "side": "SHORT",
+            "position_size": -13896.0,
+            "position_value_usd": 34278652.8,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T18:00:00Z",
+            "side": "SHORT",
+            "position_size": -13896.0,
+            "position_value_usd": 34198056.0,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T17:00:00Z",
+            "side": "SHORT",
+            "position_size": -13896.0,
+            "position_value_usd": 34278652.8,
+            "size_schema": "SZI_V1_1"
+          }
+        ],
+        "address_short": "0x45d26f…ed4029"
       }
-    ],
+    ]
+  },
+  "scout_5m_to_20m": {
     "BTC": [
       {
-        "time_utc": "2026-09-10T21:00:00Z",
+        "time_utc": "2026-09-10T22:00:00Z",
         "address": "0x3ed4033676d0bdb3938728ca4ac673d00e74bd06",
         "display_name": "",
         "coin": "BTC",
         "side": "SHORT",
         "position_size": -220.0,
-        "position_value_usd": 16978280.0,
-        "signed_position_value_usd": -16978280.0,
+        "position_value_usd": 16911180.0,
+        "signed_position_value_usd": -16911180.0,
         "entry_px": 76787.1,
         "leverage_type": "cross",
         "leverage_value": 40.0,
-        "liquidation_px": 110049.8096062806,
-        "mark_price": 77139.5,
-        "liquidation_distance_pct": 42.66336909920417,
-        "unrealized_pnl": -85099.56197,
-        "account_value": 2533933.699372,
+        "liquidation_px": 110050.830086541,
+        "mark_price": 76844.5,
+        "liquidation_distance_pct": 43.21237054901912,
+        "unrealized_pnl": -17999.56197,
+        "account_value": 2601245.845371,
         "status": "ACTIVE",
         "size_schema": "SZI_V1_1",
         "change_1h": {
@@ -2363,7 +2058,7 @@
           "current_position_size": -220.0,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_4h": {
@@ -2375,11 +2070,18 @@
           "current_position_size": -220.0,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_24h": null,
         "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "SHORT",
+            "position_size": -220.0,
+            "position_value_usd": 16911180.0,
+            "size_schema": "SZI_V1_1"
+          },
           {
             "time_utc": "2026-09-10T21:00:00Z",
             "side": "SHORT",
@@ -2414,37 +2116,42 @@
             "position_size": -220.0,
             "position_value_usd": 17008420.0,
             "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "SHORT",
-            "position_size": -220.0,
-            "position_value_usd": 16974980.0,
-            "size_schema": "SZI_V1_1"
           }
         ],
         "address_short": "0x3ed403…74bd06"
       },
       {
-        "time_utc": "2026-09-10T21:00:00Z",
+        "time_utc": "2026-09-10T22:00:00Z",
         "address": "0xb1ec7febea4f841d525785955b7fe0e812d6e86a",
         "display_name": "",
         "coin": "BTC",
         "side": "LONG",
         "position_size": 184.84948,
-        "position_value_usd": 14263725.27472,
-        "signed_position_value_usd": 14263725.27472,
+        "position_value_usd": 14209194.67812,
+        "signed_position_value_usd": 14209194.67812,
         "entry_px": 77346.1,
         "leverage_type": "cross",
         "leverage_value": 40.0,
-        "liquidation_px": 58921.5297997079,
-        "mark_price": 77139.5,
-        "liquidation_distance_pct": 23.616915069830757,
-        "unrealized_pnl": -33668.127283,
-        "account_value": 2551324.10363,
+        "liquidation_px": 59195.9217302448,
+        "mark_price": 76844.5,
+        "liquidation_distance_pct": 22.966612144987863,
+        "unrealized_pnl": -88198.723883,
+        "account_value": 2480094.385627,
         "status": "ACTIVE",
         "size_schema": "SZI_V1_1",
         "change_1h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "LONG",
+          "current_side": "LONG",
+          "prev_position_size": 184.84948,
+          "current_position_size": 184.84948,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 76844.5,
+          "source_gap_minutes": 0.0
+        },
+        "change_4h": {
           "event": "REDUCE",
           "severity": "NONE",
           "prev_side": "LONG",
@@ -2452,35 +2159,30 @@
           "prev_position_size": 246.46597,
           "current_position_size": 184.84948,
           "size_change_units": -61.61649,
-          "action_notional_usd": 4753065.230355,
-          "reference_mark_price": 77139.5,
-          "source_gap_minutes": 0.0
-        },
-        "change_4h": {
-          "event": "REDUCE",
-          "severity": "INFO",
-          "prev_side": "LONG",
-          "current_side": "LONG",
-          "prev_position_size": 251.51918,
-          "current_position_size": 184.84948,
-          "size_change_units": -66.6697,
-          "action_notional_usd": 5142867.323150001,
-          "reference_mark_price": 77139.5,
+          "action_notional_usd": 4734888.365805,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_24h": {
-          "event": "INCREASE",
+          "event": "REDUCE",
           "severity": "NONE",
           "prev_side": "LONG",
           "current_side": "LONG",
-          "prev_position_size": 172.29294,
+          "prev_position_size": 223.01188,
           "current_position_size": 184.84948,
-          "size_change_units": 12.556540000000012,
-          "action_notional_usd": 968605.217330001,
-          "reference_mark_price": 77139.5,
+          "size_change_units": -38.16239999999999,
+          "action_notional_usd": 2932570.546799999,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "LONG",
+            "position_size": 184.84948,
+            "position_value_usd": 14209194.67812,
+            "size_schema": "SZI_V1_1"
+          },
           {
             "time_utc": "2026-09-10T21:00:00Z",
             "side": "LONG",
@@ -2515,34 +2217,27 @@
             "position_size": 251.51918,
             "position_value_usd": 19442935.65236,
             "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "LONG",
-            "position_size": 307.38659,
-            "position_value_usd": 23717641.89781,
-            "size_schema": "SZI_V1_1"
           }
         ],
         "address_short": "0xb1ec7f…d6e86a"
       },
       {
-        "time_utc": "2026-09-10T21:00:00Z",
+        "time_utc": "2026-09-10T22:00:00Z",
         "address": "0x970ca5d7a03bc0ba304997ea709464bbfb662a93",
         "display_name": "",
         "coin": "BTC",
         "side": "SHORT",
         "position_size": -160.0,
-        "position_value_usd": 12348160.0,
-        "signed_position_value_usd": -12348160.0,
+        "position_value_usd": 12297584.0,
+        "signed_position_value_usd": -12297584.0,
         "entry_px": 78964.0,
         "leverage_type": "cross",
         "leverage_value": 40.0,
-        "liquidation_px": 105277.622605679,
-        "mark_price": 77139.5,
-        "liquidation_distance_pct": 36.47693154049353,
-        "unrealized_pnl": 286080.9008,
-        "account_value": 4414650.413159,
+        "liquidation_px": 106704.1677311173,
+        "mark_price": 76844.5,
+        "liquidation_distance_pct": 38.857260742300745,
+        "unrealized_pnl": 336656.9008,
+        "account_value": 4686215.365185,
         "status": "ACTIVE",
         "size_schema": "SZI_V1_1",
         "change_1h": {
@@ -2554,7 +2249,7 @@
           "current_position_size": -160.0,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_4h": {
@@ -2566,7 +2261,7 @@
           "current_position_size": -160.0,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "change_24h": {
@@ -2578,10 +2273,17 @@
           "current_position_size": -160.0,
           "size_change_units": 0.0,
           "action_notional_usd": 0.0,
-          "reference_mark_price": 77139.5,
+          "reference_mark_price": 76844.5,
           "source_gap_minutes": 0.0
         },
         "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "SHORT",
+            "position_size": -160.0,
+            "position_value_usd": 12297584.0,
+            "size_schema": "SZI_V1_1"
+          },
           {
             "time_utc": "2026-09-10T21:00:00Z",
             "side": "SHORT",
@@ -2616,16 +2318,314 @@
             "position_size": -160.0,
             "position_value_usd": 12370080.0,
             "size_schema": "SZI_V1_1"
-          },
-          {
-            "time_utc": "2026-09-10T16:00:00Z",
-            "side": "SHORT",
-            "position_size": -160.0,
-            "position_value_usd": 12344320.0,
-            "size_schema": "SZI_V1_1"
           }
         ],
         "address_short": "0x970ca5…662a93"
+      }
+    ],
+    "ETH": [
+      {
+        "time_utc": "2026-09-10T22:00:00Z",
+        "address": "0xcf5343ba750a6e30afbb1dadda08bc78f8c8ee11",
+        "display_name": "",
+        "coin": "ETH",
+        "side": "SHORT",
+        "position_size": -7603.6279,
+        "position_value_usd": 18606837.83409,
+        "signed_position_value_usd": -18606837.83409,
+        "entry_px": 1862.69,
+        "leverage_type": "cross",
+        "leverage_value": 7.0,
+        "liquidation_px": 3627.5029344195,
+        "mark_price": 2445.95,
+        "liquidation_distance_pct": 48.30650399311107,
+        "unrealized_pnl": -4443573.891149,
+        "account_value": 3083288.311218,
+        "status": "ACTIVE",
+        "size_schema": "SZI_V1_1",
+        "change_1h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "SHORT",
+          "current_side": "SHORT",
+          "prev_position_size": -7603.6279,
+          "current_position_size": -7603.6279,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "change_4h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "SHORT",
+          "current_side": "SHORT",
+          "prev_position_size": -7603.6279,
+          "current_position_size": -7603.6279,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "change_24h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "SHORT",
+          "current_side": "SHORT",
+          "prev_position_size": -7603.6279,
+          "current_position_size": -7603.6279,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "SHORT",
+            "position_size": -7603.6279,
+            "position_value_usd": 18606837.83409,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T21:00:00Z",
+            "side": "SHORT",
+            "position_size": -7603.6279,
+            "position_value_usd": 18706445.35958,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T20:00:00Z",
+            "side": "SHORT",
+            "position_size": -7603.6279,
+            "position_value_usd": 18726975.15491,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T19:00:00Z",
+            "side": "SHORT",
+            "position_size": -7603.6279,
+            "position_value_usd": 18751306.76419,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T18:00:00Z",
+            "side": "SHORT",
+            "position_size": -7603.6279,
+            "position_value_usd": 18703023.727025,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T17:00:00Z",
+            "side": "SHORT",
+            "position_size": -7603.6279,
+            "position_value_usd": 18745680.079544,
+            "size_schema": "SZI_V1_1"
+          }
+        ],
+        "address_short": "0xcf5343…c8ee11"
+      },
+      {
+        "time_utc": "2026-09-10T22:00:00Z",
+        "address": "0xec0b9ebf2a304c99cafe85c548c14dd7783cb078",
+        "display_name": "",
+        "coin": "ETH",
+        "side": "LONG",
+        "position_size": 7007.7989,
+        "position_value_usd": 17149485.46808,
+        "signed_position_value_usd": 17149485.46808,
+        "entry_px": 2065.97,
+        "leverage_type": "cross",
+        "leverage_value": 25.0,
+        "liquidation_px": 769.6360223913,
+        "mark_price": 2445.95,
+        "liquidation_distance_pct": 68.53427002222858,
+        "unrealized_pnl": 2671555.879143,
+        "account_value": 2789135.217566,
+        "status": "ACTIVE",
+        "size_schema": "SZI_V1_1",
+        "change_1h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "LONG",
+          "current_side": "LONG",
+          "prev_position_size": 7007.7989,
+          "current_position_size": 7007.7989,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "change_4h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "LONG",
+          "current_side": "LONG",
+          "prev_position_size": 7007.7989,
+          "current_position_size": 7007.7989,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "change_24h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "LONG",
+          "current_side": "LONG",
+          "prev_position_size": 7007.7989,
+          "current_position_size": 7007.7989,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "LONG",
+            "position_size": 7007.7989,
+            "position_value_usd": 17149485.46808,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T21:00:00Z",
+            "side": "LONG",
+            "position_size": 7007.7989,
+            "position_value_usd": 17245492.31301,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T20:00:00Z",
+            "side": "LONG",
+            "position_size": 7007.7989,
+            "position_value_usd": 17253901.67169,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T19:00:00Z",
+            "side": "LONG",
+            "position_size": 7007.7989,
+            "position_value_usd": 17275625.84828,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T18:00:00Z",
+            "side": "LONG",
+            "position_size": 7007.7989,
+            "position_value_usd": 17267216.4896,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T17:00:00Z",
+            "side": "LONG",
+            "position_size": 7007.7989,
+            "position_value_usd": 17275625.84828,
+            "size_schema": "SZI_V1_1"
+          }
+        ],
+        "address_short": "0xec0b9e…3cb078"
+      },
+      {
+        "time_utc": "2026-09-10T22:00:00Z",
+        "address": "0xba5d9cc840745aeeeeedac5712e32f13ab8ea352",
+        "display_name": "",
+        "coin": "ETH",
+        "side": "SHORT",
+        "position_size": -6310.3221,
+        "position_value_usd": 15446406.43638,
+        "signed_position_value_usd": -15446406.43638,
+        "entry_px": 2476.13,
+        "leverage_type": "cross",
+        "leverage_value": 20.0,
+        "liquidation_px": 3043.0579680307,
+        "mark_price": 2445.95,
+        "liquidation_distance_pct": 24.412108507152652,
+        "unrealized_pnl": 178828.55716,
+        "account_value": 3187022.167764,
+        "status": "ACTIVE",
+        "size_schema": "SZI_V1_1",
+        "change_1h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "SHORT",
+          "current_side": "SHORT",
+          "prev_position_size": -6310.3221,
+          "current_position_size": -6310.3221,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "change_4h": {
+          "event": "UNCHANGED",
+          "severity": "NONE",
+          "prev_side": "SHORT",
+          "current_side": "SHORT",
+          "prev_position_size": -6310.3221,
+          "current_position_size": -6310.3221,
+          "size_change_units": 0.0,
+          "action_notional_usd": 0.0,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "change_24h": {
+          "event": "INCREASE",
+          "severity": "INFO",
+          "prev_side": "SHORT",
+          "current_side": "SHORT",
+          "prev_position_size": -4020.8221,
+          "current_position_size": -6310.3221,
+          "size_change_units": -2289.5000000000005,
+          "action_notional_usd": 5600002.525,
+          "reference_mark_price": 2445.95,
+          "source_gap_minutes": 0.0
+        },
+        "recent_series": [
+          {
+            "time_utc": "2026-09-10T22:00:00Z",
+            "side": "SHORT",
+            "position_size": -6310.3221,
+            "position_value_usd": 15446406.43638,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T21:00:00Z",
+            "side": "SHORT",
+            "position_size": -6310.3221,
+            "position_value_usd": 15525285.46263,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T20:00:00Z",
+            "side": "SHORT",
+            "position_size": -6310.3221,
+            "position_value_usd": 15540430.23567,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T19:00:00Z",
+            "side": "SHORT",
+            "position_size": -6310.3221,
+            "position_value_usd": 15558730.16976,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T18:00:00Z",
+            "side": "SHORT",
+            "position_size": -6310.3221,
+            "position_value_usd": 15522130.30158,
+            "size_schema": "SZI_V1_1"
+          },
+          {
+            "time_utc": "2026-09-10T17:00:00Z",
+            "side": "SHORT",
+            "position_size": -6310.3221,
+            "position_value_usd": 15543585.39672,
+            "size_schema": "SZI_V1_1"
+          }
+        ],
+        "address_short": "0xba5d9c…8ea352"
       }
     ]
   },
