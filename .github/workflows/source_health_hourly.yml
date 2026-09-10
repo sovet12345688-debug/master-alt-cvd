@@ -15,6 +15,7 @@ on:
     paths:
       - 'source_health/registry.json'
       - 'source_health/collector.py'
+      - 'source_health/market_integrated_health.py'
       - 'source_health/README.md'
       - 'money_master_os/registry/MASTER_REGISTRY.json'
       - 'money_master_os/shared/DATA_POLICY.md'
@@ -45,7 +46,9 @@ jobs:
           python-version: '3.12'
 
       - name: Source Health self-test
-        run: python source_health/collector.py --mode self-test
+        run: |
+          python source_health/collector.py --mode self-test
+          python source_health/market_integrated_health.py --mode self-test
 
       - name: Pull-request dry run
         if: github.event_name == 'pull_request'
@@ -62,6 +65,12 @@ jobs:
       - name: Validate generated Source Health
         if: github.event_name != 'pull_request'
         run: python source_health/collector.py --mode validate
+
+      - name: Build MASTER MARKET integrated health board
+        if: github.event_name != 'pull_request'
+        run: |
+          python source_health/market_integrated_health.py --mode build
+          python source_health/market_integrated_health.py --mode validate
 
       - name: Commit compact Source Health state
         if: github.event_name != 'pull_request'
