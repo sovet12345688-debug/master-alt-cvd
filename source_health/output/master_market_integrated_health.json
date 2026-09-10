@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "system": "MASTER_MARKET_INTEGRATED_HEALTH",
-  "evaluated_at_utc": "2026-09-10T12:24:49.167091Z",
+  "evaluated_at_utc": "2026-09-10T13:19:07.167582Z",
   "overall_status": "HISTORY RECOVERING",
   "overall_icon": "🟡",
   "status_order": [
@@ -11,8 +11,8 @@
     "FAILED"
   ],
   "counts": {
-    "CURRENT OK": 2,
-    "HISTORY RECOVERING": 3,
+    "CURRENT OK": 1,
+    "HISTORY RECOVERING": 4,
     "STALE": 0,
     "FAILED": 0
   },
@@ -22,8 +22,8 @@
       "display_name": "Data Vault",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-10T11:58:06.769913Z",
-      "age_minutes": 26.7,
+      "timestamp_utc": "2026-09-10T13:00:01.173212Z",
+      "age_minutes": 19.1,
       "history_status": "DEGRADED_HISTORY",
       "reason_codes": [
         "CURRENT_OK_HISTORY_INCOMPLETE"
@@ -33,10 +33,10 @@
       "source_path": "market_vault/state/vault_state.json",
       "details": {
         "history_issues": [
-          "production timestamps <20 in ~26H (11)",
+          "production timestamps <20 in ~26H (12)",
           "mandatory actual 24H comparisons <5 (0); missing=['EFFR', 'TGA_CLOSING_BALANCE', 'US10Y', 'US10Y_REAL', 'US2Y', 'US30Y']"
         ],
-        "recent_timestamp_count_26h": 11,
+        "recent_timestamp_count_26h": 12,
         "history_24h_comparison_count": 0
       }
     },
@@ -45,8 +45,8 @@
       "display_name": "Stablecoin Windows",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-10T11:58:08.976001Z",
-      "age_minutes": 26.7,
+      "timestamp_utc": "2026-09-10T13:00:19.755478Z",
+      "age_minutes": 18.8,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -68,26 +68,34 @@
     {
       "component_id": "derivatives",
       "display_name": "Derivatives",
-      "status": "CURRENT OK",
-      "icon": "🟢",
-      "timestamp_utc": "2026-09-10T11:18:01.030080Z",
-      "age_minutes": 66.8,
-      "history_status": "OK",
+      "status": "HISTORY RECOVERING",
+      "icon": "🟡",
+      "timestamp_utc": "2026-09-10T12:24:26.841982Z",
+      "age_minutes": 54.7,
+      "history_status": "RECOVERING",
       "reason_codes": [
-        "OK"
+        "CURRENT_OK_EXACT_WINDOWS_INCOMPLETE"
       ],
-      "next_action": "조치 없음",
+      "next_action": "현재 파생값은 사용; exact 1H/4H/24H history 자동 축적 대기",
       "auto_recovery_expected": true,
       "source_path": "derivatives/state/collector_state.json",
-      "details": {}
+      "details": {
+        "missing_exact_windows": {
+          "1H": 0,
+          "4H": 0,
+          "24H": 21
+        },
+        "universe_count": 21,
+        "ok_count": 21
+      }
     },
     {
       "component_id": "actor_retail",
       "display_name": "Actor Retail",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-10T11:58:09.128764Z",
-      "age_minutes": 26.7,
+      "timestamp_utc": "2026-09-10T13:00:19.932968Z",
+      "age_minutes": 18.8,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -109,7 +117,7 @@
       "status": "CURRENT OK",
       "icon": "🟢",
       "timestamp_utc": "2026-09-10T01:07:12.295666Z",
-      "age_minutes": 677.6,
+      "age_minutes": 731.9,
       "history_status": "OK",
       "reason_codes": [
         "OK"
