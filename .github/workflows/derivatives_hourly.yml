@@ -95,80 +95,107 @@ jobs:
       - name: Collect Bitget free microstructure 7-field pack
         run: python derivatives/microstructure_collector_v2.py
 
-      - name: Validate collection
+      - name: Validate current collection
         run: |
           python - <<'PY'
           import json, sys
+          from datetime import datetime, timezone
           d=json.load(open('derivatives/state/collector_state.json'))
           m=json.load(open('derivatives/state/microstructure_state.json'))
           p=json.load(open('derivatives/output/latest_microstructure.json'))
           print('derivatives', d)
           print('microstructure', m)
           if d.get('ok_count', 0) < 1:
-              sys.exit('No successful derivatives snapshots')
+              sys.exit('CURRENT_QA failed: no successful derivatives snapshots')
           if (m.get('ok_count', 0) + m.get('partial_count', 0)) < 1:
-              sys.exit('No usable microstructure snapshots')
+              sys.exit('CURRENT_QA failed: no usable microstructure snapshots')
           if p.get('engine') != 'MASTER_DERIVATIVES_MICROSTRUCTURE_V2':
-              sys.exit('Microstructure V2 output missing')
+              sys.exit('CURRENT_QA failed: Microstructure V2 output missing')
           required={'CVD','Taker Buy/Sell','Long/Short','Liquidation','Basis','Depth','Volume'}
           if set(p.get('free_public_fields') or []) != required:
-              sys.exit('Microstructure 7-field contract mismatch')
+              sys.exit('CURRENT_QA failed: Microstructure 7-field contract mismatch')
+          generated_s=p.get('generated_at_utc')
+          if not generated_s:
+              sys.exit('CURRENT_QA failed: microstructure generated_at_utc missing')
+          generated=datetime.fromisoformat(generated_s.replace('Z','+00:00'))
+          age_min=(datetime.now(timezone.utc)-generated).total_seconds()/60
+          if age_min > 30:
+              sys.exit(f'CURRENT_QA failed: microstructure output stale age={age_min:.1f}m')
           for a in p.get('assets',[]):
               if a.get('field_coverage',0) < 5:
-                  sys.exit(f"Microstructure field coverage <5/7 for {a.get('symbol')}: {a.get('field_coverage')}")
+                  sys.exit(f"CURRENT_QA failed: Microstructure field coverage <5/7 for {a.get('symbol')}: {a.get('field_coverage')}")
+          d['current_collection_status']='OK'
+          d['current_microstructure_age_minutes']=round(age_min,2)
+          d['current_health_checked_at_utc']=datetime.now(timezone.utc).isoformat().replace('+00:00','Z')
+          with open('derivatives/state/collector_state.json','w',encoding='utf-8') as fh:
+              json.dump(d,fh,ensure_ascii=False,indent=2)
+          print('DERIVATIVES_CURRENT_QA=PASS')
           PY
 
-      - name: Validate derivatives 24H FINAL QA integrity
+      - name: Validate derivatives history integrity without blocking current recovery
         run: |
           python - <<'PY'
           import csv,json,sys
-          from datetime import datetime,timedelta
+          from datetime import datetime,timedelta,timezone
+          state_path='derivatives/state/collector_state.json'
           with open('derivatives/data/hourly_derivatives.csv',newline='',encoding='utf-8') as fh:
               rows=list(csv.DictReader(fh))
-          state=json.load(open('derivatives/state/collector_state.json'))
+          state=json.load(open(state_path))
           summary=json.load(open('derivatives/output/latest_summary.json'))
           venue=state.get('selected_venue')
           latest_s=state.get('snapshot_hour_utc')
           if not venue or not latest_s:
-              sys.exit('FINAL_QA failed: missing selected venue/latest timestamp')
+              sys.exit('CURRENT_QA failed: missing selected venue/latest timestamp')
           latest=datetime.fromisoformat(latest_s.replace('Z','+00:00'))
           keys=set()
           for r in rows:
               k=(r.get('time_utc'),r.get('venue'),r.get('symbol'))
               if k in keys:
-                  sys.exit(f'FINAL_QA failed: duplicate key {k}')
+                  sys.exit(f'CURRENT_QA failed: duplicate key {k}')
               keys.add(k)
           universe=int(state.get('universe_count') or 0)
           if universe <= 0:
-              sys.exit('FINAL_QA failed: invalid universe_count')
+              sys.exit('CURRENT_QA failed: invalid universe_count')
           latest_rows=[r for r in rows if r.get('venue')==venue and r.get('time_utc')==latest_s]
           if len(latest_rows) < max(1,int(universe*0.90)):
-              sys.exit(f'FINAL_QA failed: latest snapshot coverage <90% rows={len(latest_rows)} universe={universe}')
+              sys.exit(f'CURRENT_QA failed: latest snapshot coverage <90% rows={len(latest_rows)} universe={universe}')
           assets=summary.get('assets',[])
           if len(assets) < max(1,int(universe*0.90)):
-              sys.exit('FINAL_QA failed: latest summary coverage <90%')
+              sys.exit('CURRENT_QA failed: latest summary coverage <90%')
           row_index={(r.get('time_utc'),r.get('venue'),r.get('symbol')):r for r in rows}
           missing_windows={1:0,4:0,24:0}
+          eligible_assets=0
           for a in assets:
               if a.get('venue') != venue:
-                  sys.exit(f'FINAL_QA failed: cross-venue summary row {a.get("symbol")}')
+                  sys.exit(f'CURRENT_QA failed: cross-venue summary row {a.get("symbol")}')
               if a.get('status')=='OK' and a.get('last_funding_rate') is None:
-                  sys.exit(f'FINAL_QA failed: funding missing {a.get("symbol")}')
+                  sys.exit(f'CURRENT_QA failed: funding missing {a.get("symbol")}')
               if a.get('status')!='OK':
                   continue
+              eligible_assets += 1
               for h in (1,4,24):
                   target=(latest-timedelta(hours=h)).isoformat().replace('+00:00','Z')
                   prior=row_index.get((target,venue,a.get('symbol')))
                   exact_ok=bool(prior and prior.get('status')=='OK' and prior.get('open_interest_usdt'))
                   oi=a.get(f'oi_change_{h}h_pct')
                   if exact_ok and oi is None:
-                      sys.exit(f'FINAL_QA failed: exact {h}H baseline exists but OI change missing {a.get("symbol")}')
+                      sys.exit(f'CURRENT_QA failed: exact {h}H baseline exists but OI change missing {a.get("symbol")}')
                   if not exact_ok and oi is not None:
-                      sys.exit(f'FINAL_QA failed: stale/non-exact {h}H OI baseline used {a.get("symbol")}')
+                      sys.exit(f'CURRENT_QA failed: stale/non-exact {h}H OI baseline used {a.get("symbol")}')
                   if not exact_ok:
                       missing_windows[h]+=1
-          print('DERIVATIVES_WINDOW_GAPS', missing_windows)
-          print('DERIVATIVES_24H_FINAL_QA=PASS')
+          missing_named={f'{h}H':missing_windows[h] for h in (1,4,24)}
+          history_degraded=any(v>0 for v in missing_windows.values())
+          state['history_status']='RECOVERING' if history_degraded else 'OK'
+          state['history_recovery_mode']=history_degraded
+          state['missing_exact_windows']=missing_named
+          state['history_eligible_assets']=eligible_assets
+          state['history_health_checked_at_utc']=datetime.now(timezone.utc).isoformat().replace('+00:00','Z')
+          with open(state_path,'w',encoding='utf-8') as fh:
+              json.dump(state,fh,ensure_ascii=False,indent=2)
+          print('DERIVATIVES_WINDOW_GAPS', missing_named)
+          print('DERIVATIVES_HISTORY_STATUS', state['history_status'])
+          print('DERIVATIVES_HISTORY_QA=PASS_NONBLOCKING')
           PY
 
       - name: Commit updated data
