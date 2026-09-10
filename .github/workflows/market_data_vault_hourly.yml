@@ -6,8 +6,9 @@ on:
     - cron: '52 * * * *'
   push:
     paths:
+      - 'market_vault/collector_official.py'
       - 'market_vault/output_adapter.py'
-      - 'tools/apply_master_market_actual_flow_patch.py'
+      - 'market_vault/config.json'
       - '.github/workflows/market_data_vault_hourly.yml'
 
 permissions:
@@ -35,11 +36,6 @@ jobs:
 
       - name: Install
         run: pip install -r market_vault/requirements.txt
-
-      - name: Apply canonical and contract actual-flow patch
-        run: |
-          python -m py_compile tools/apply_master_market_actual_flow_patch.py
-          python tools/apply_master_market_actual_flow_patch.py
 
       - name: Syntax + self test
         run: |
@@ -124,7 +120,7 @@ jobs:
               sys.exit('CURRENT_QA failed: missing latest snapshot hour')
           latest=datetime.fromisoformat(latest_s.replace('Z','+00:00'))
 
-          # Structural corruption is still fatal. Historical incompleteness is not.
+          # Structural corruption remains fatal. Missing historical windows do not.
           keys=set()
           for r in rows:
               k=(r.get('snapshot_hour_utc'),r.get('metric'),r.get('source'))
@@ -166,12 +162,11 @@ jobs:
               issues.append(f'mandatory actual 24H comparisons <5 ({with24}); missing={missing24}')
 
           history_status='DEGRADED_HISTORY' if issues else 'OK'
-          recovery_mode=bool(issues)
           checked_at=datetime.now(timezone.utc).isoformat().replace('+00:00','Z')
 
           s['current_collection_status']='OK'
           s['history_status']=history_status
-          s['history_recovery_mode']=recovery_mode
+          s['history_recovery_mode']=bool(issues)
           s['history_recent_timestamp_count_26h']=len(recent)
           s['history_gap_max_hours']=round(max_gap,4)
           s['history_24h_comparison_count']=with24
@@ -182,7 +177,7 @@ jobs:
           collection=p.setdefault('collection',{})
           collection['current_collection_status']='OK'
           collection['history_status']=history_status
-          collection['history_recovery_mode']=recovery_mode
+          collection['history_recovery_mode']=bool(issues)
           collection['history_recent_timestamp_count_26h']=len(recent)
           collection['history_gap_max_hours']=round(max_gap,4)
           collection['history_24h_comparison_count']=with24
@@ -196,16 +191,13 @@ jobs:
               print('HISTORY_WARNING='+issue)
           PY
 
-      - name: Validate canonical and contract patch
-        run: python tools/apply_master_market_actual_flow_patch.py
-
-      - name: Save hourly market snapshot and MASTER patch
+      - name: Save hourly market snapshot
         run: |
           git config user.name "market-data-vault-bot"
           git config user.email "market-data-vault-bot@users.noreply.github.com"
-          git add market_vault/data market_vault/output market_vault/state master_prompts/master_market_v1_2_current.md state/master_market_v1_2_contract.json
+          git add market_vault/data market_vault/output market_vault/state
           if git diff --cached --quiet; then
-            echo "No generated data or contract changes"
+            echo "No generated MARKET vault data changes"
           else
             git commit -m "data: refresh MARKET vault and actual-flow adapters"
             max_attempts=5
