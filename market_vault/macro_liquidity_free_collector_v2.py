@@ -170,33 +170,49 @@ def buyback_metrics():
     data=doc.get('data') or []; meta=doc.get('meta') or {}
     if not data:raise RuntimeError('buyback FiscalData returned no rows')
     labels=meta.get('labels') or {}
-    opkey=key_by_label(meta,['operation','date']) or 'operation_date'
-    accepted_key=key_by_label(meta,['total','par','accepted'])
-    offered_key=key_by_label(meta,['total','par','offered'])
-    # Some rows are security-level; choose latest operation, then use aggregate fields if present, else sum security accepted/offered fields.
-    latest=max(str(r.get(opkey) or '') for r in data)
-    group=[r for r in data if str(r.get(opkey) or '')==latest]
-    def first_numeric(key):
-        if not key:return None
-        for r in group:
-            v=f(r.get(key))
-            if v is not None:return v
-        return None
-    accepted=first_numeric(accepted_key); offered=first_numeric(offered_key)
-    if accepted is None:
-        indiv=key_by_label(meta,['par','accepted'])
-        vals=[f(r.get(indiv)) for r in group] if indiv else []
-        vals=[x for x in vals if x is not None]
-        if vals:accepted=sum(vals)
-    if offered is None:
-        indiv=key_by_label(meta,['par','offered'])
-        vals=[f(r.get(indiv)) for r in group] if indiv else []
-        vals=[x for x in vals if x is not None]
-        if vals:offered=sum(vals)
-    if accepted is None:raise RuntimeError(f'buyback accepted amount field not found; labels={list(labels.values())[:20]}')
-    out=[{'metric':'TREASURY_BUYBACK_ACTUAL_ACCEPTED','value':accepted,'unit':'USD par amount','source':'US Treasury FiscalData buybacks_operations','source_url':BUYBACK_API,'source_observation_time':latest+'T00:00:00Z','source_frequency':'per_operation','status':'OK','note':'Latest operation total par amount accepted; actual result, not announced cap.'}]
-    if offered is not None:out.append({'metric':'TREASURY_BUYBACK_ACTUAL_OFFERED','value':offered,'unit':'USD par amount','source':'US Treasury FiscalData buybacks_operations','source_url':BUYBACK_API,'source_observation_time':latest+'T00:00:00Z','source_frequency':'per_operation','status':'OK','note':'Latest operation total par amount offered.'})
-    return out
+    keys={k for r in data for k in r.keys()}
+    opkey='operation_date' if 'operation_date' in keys else (key_by_label(meta,['operation','date']) or 'operation_date')
+    accepted_key='total_par_amt_accepted' if 'total_par_amt_accepted' in keys else key_by_label(meta,['total','par','accepted'])
+    offered_key='total_par_amt_offered' if 'total_par_amt_offered' in keys else key_by_label(meta,['total','par','offered'])
+    settlement_key='settlement_date' if 'settlement_date' in keys else key_by_label(meta,['settlement','date'])
+
+    # FiscalData may publish a newer scheduled/preliminary operation before its results exist.
+    # Select the latest operation that has an ACTUAL accepted amount instead of blindly
+    # selecting max(operation_date), which would turn a normal results-pending row into failure.
+    operation_dates=sorted({str(r.get(opkey) or '') for r in data if str(r.get(opkey) or '')},reverse=True)
+    pending_dates=[]
+    for operation_date in operation_dates:
+        group=[r for r in data if str(r.get(opkey) or '')==operation_date]
+        def first_numeric(key):
+            if not key:return None
+            for r in group:
+                v=f(r.get(key))
+                if v is not None:return v
+            return None
+        def first_text(key):
+            if not key:return None
+            for r in group:
+                v=str(r.get(key) or '').strip()
+                if v and v.lower()!='null':return v
+            return None
+
+        accepted=first_numeric(accepted_key)
+        offered=first_numeric(offered_key)
+        if accepted is None:
+            pending_dates.append(operation_date)
+            continue
+
+        settlement=first_text(settlement_key)
+        pending_note=''
+        if pending_dates:
+            pending_note=f" Newer operation(s) without published accepted amount skipped as results-pending: {', '.join(pending_dates[:3])}."
+        settlement_note=f' Settlement date: {settlement}.' if settlement else ''
+        out=[{'metric':'TREASURY_BUYBACK_ACTUAL_ACCEPTED','value':accepted,'unit':'USD par amount','source':'US Treasury FiscalData buybacks_operations','source_url':BUYBACK_API,'source_observation_time':operation_date+'T00:00:00Z','source_frequency':'per_operation','status':'OK','note':'Latest completed operation total par amount accepted; actual result, not announced cap.'+settlement_note+pending_note}]
+        if offered is not None:
+            out.append({'metric':'TREASURY_BUYBACK_ACTUAL_OFFERED','value':offered,'unit':'USD par amount','source':'US Treasury FiscalData buybacks_operations','source_url':BUYBACK_API,'source_observation_time':operation_date+'T00:00:00Z','source_frequency':'per_operation','status':'OK','note':'Latest completed operation total par amount offered.'+settlement_note+pending_note})
+        return out
+
+    raise RuntimeError(f'no completed buyback operation with actual accepted amount; latest_operations={operation_dates[:5]}; accepted_key={accepted_key}; labels={list(labels.values())[:21]}')
 
 def read_hist():
     if not HISTORY.exists():return []
