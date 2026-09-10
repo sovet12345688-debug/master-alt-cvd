@@ -1,0 +1,41 @@
+name: BTC TREND V2.6 R2 Score Engine Validation
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - btc-trend-v26-na-recovery-r1
+    paths:
+      - 'btc_trend_v26/feature_contract.json'
+      - 'btc_trend_v26/score_contract.json'
+      - 'btc_trend_v26/score_engine.py'
+      - 'btc_trend_v26/validate_score_contract.py'
+      - 'btc_trend_v26/test_score_engine.py'
+      - 'state/master_btc_trend_v2_6_contract.json'
+      - '.github/workflows/btc_trend_v26_r2_score_engine_validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-r2-score-engine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate R2 score contract against V2.6 production contract
+        run: python btc_trend_v26/validate_score_contract.py
+
+      - name: Run deterministic score engine tests
+        working-directory: btc_trend_v26
+        run: python -m unittest -v test_score_engine.py
+
+      - name: Compile score engine
+        run: python -m py_compile btc_trend_v26/score_engine.py btc_trend_v26/validate_score_contract.py btc_trend_v26/test_score_engine.py
