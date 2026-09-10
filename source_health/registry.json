@@ -28,7 +28,7 @@
       "impact": {"market": "CORE", "btc_trend": "CONTEXT", "alt_top100": "CONTEXT", "alt_final20": "CONTEXT", "trading": "CONTEXT"}
     },
     "market_macro_liquidity": {
-      "display_name": "MARKET Macro Liquidity",
+      "display_name": "MARKET Macro Backbone",
       "workflow_file": "market_macro_liquidity_free_hourly.yml",
       "expected_interval_minutes": 60,
       "warn_after_minutes": 90,
@@ -36,10 +36,22 @@
       "state_path": "market_vault/state/macro_liquidity_state.json",
       "timestamp_field": "last_run_utc",
       "checks": [
-        {"type": "empty_dict", "field": "failures"},
-        {"type": "min_len", "field": "collected_metrics", "value": 8}
+        {"type": "contains_all", "field": "collected_metrics", "values": ["FED_TOTAL_ASSETS", "FED_RESERVE_BALANCES", "FED_RRP_TOTAL", "TGA_CLOSING_BALANCE", "US_NET_LIQUIDITY_PROXY", "QRA_NET_MARKETABLE_BORROWING_CURRENT_Q", "QRA_END_CASH_BALANCE_CURRENT_Q", "QRA_NET_MARKETABLE_BORROWING_NEXT_Q", "QRA_END_CASH_BALANCE_NEXT_Q"]}
       ],
       "impact": {"market": "CORE", "btc_trend": "CONTEXT", "trading": "CONTEXT"}
+    },
+    "market_treasury_buyback": {
+      "display_name": "MARKET Treasury Buyback",
+      "workflow_file": "market_macro_liquidity_free_hourly.yml",
+      "expected_interval_minutes": 60,
+      "warn_after_minutes": 90,
+      "stale_after_minutes": 150,
+      "state_path": "market_vault/state/macro_liquidity_state.json",
+      "timestamp_field": "last_run_utc",
+      "checks": [
+        {"type": "contains_all", "field": "collected_metrics", "values": ["TREASURY_BUYBACK_ACTUAL_ACCEPTED"]}
+      ],
+      "impact": {"market": "OPTIONAL", "btc_trend": "CONTEXT", "trading": "CONTEXT"}
     },
     "market_etf_flows": {
       "display_name": "MARKET BTC/ETH ETF Flows",
