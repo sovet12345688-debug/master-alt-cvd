@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "system": "MASTER_MARKET_INTEGRATED_HEALTH",
-  "evaluated_at_utc": "2026-09-10T18:20:45.727152Z",
+  "evaluated_at_utc": "2026-09-10T19:15:44.020278Z",
   "overall_status": "HISTORY RECOVERING",
   "overall_icon": "🟡",
   "status_order": [
@@ -22,8 +22,8 @@
       "display_name": "Data Vault",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-10T17:58:09.780732Z",
-      "age_minutes": 22.6,
+      "timestamp_utc": "2026-09-10T18:58:53.805689Z",
+      "age_minutes": 16.8,
       "history_status": "DEGRADED_HISTORY",
       "reason_codes": [
         "CURRENT_OK_HISTORY_INCOMPLETE"
@@ -33,10 +33,10 @@
       "source_path": "market_vault/state/vault_state.json",
       "details": {
         "history_issues": [
-          "production timestamps <20 in ~26H (16)",
+          "production timestamps <20 in ~26H (17)",
           "mandatory actual 24H comparisons <5 (0); missing=['EFFR', 'TGA_CLOSING_BALANCE', 'US10Y', 'US10Y_REAL', 'US2Y', 'US30Y']"
         ],
-        "recent_timestamp_count_26h": 16,
+        "recent_timestamp_count_26h": 17,
         "history_24h_comparison_count": 0
       }
     },
@@ -45,8 +45,8 @@
       "display_name": "Stablecoin Windows",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-10T17:58:14.112317Z",
-      "age_minutes": 22.5,
+      "timestamp_utc": "2026-09-10T18:58:55.379484Z",
+      "age_minutes": 16.8,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -70,8 +70,8 @@
       "display_name": "Derivatives",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-10T17:17:17.756515Z",
-      "age_minutes": 63.5,
+      "timestamp_utc": "2026-09-10T19:15:04.472588Z",
+      "age_minutes": 0.7,
       "history_status": "RECOVERING",
       "reason_codes": [
         "CURRENT_OK_EXACT_WINDOWS_INCOMPLETE"
@@ -94,8 +94,8 @@
       "display_name": "Actor Retail",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-10T17:58:14.254695Z",
-      "age_minutes": 22.5,
+      "timestamp_utc": "2026-09-10T18:58:55.540453Z",
+      "age_minutes": 16.8,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -119,7 +119,7 @@
       "status": "CURRENT OK",
       "icon": "🟢",
       "timestamp_utc": "2026-09-10T01:07:12.295666Z",
-      "age_minutes": 1033.6,
+      "age_minutes": 1088.5,
       "history_status": "OK",
       "reason_codes": [
         "OK"
