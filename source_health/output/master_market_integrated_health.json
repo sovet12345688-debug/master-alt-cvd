@@ -1,9 +1,9 @@
 {
   "schema_version": "1.0",
   "system": "MASTER_MARKET_INTEGRATED_HEALTH",
-  "evaluated_at_utc": "2026-09-10T01:38:37.021200Z",
-  "overall_status": "FAILED",
-  "overall_icon": "🔴",
+  "evaluated_at_utc": "2026-09-10T02:19:21.665161Z",
+  "overall_status": "HISTORY RECOVERING",
+  "overall_icon": "🟡",
   "status_order": [
     "CURRENT OK",
     "HISTORY RECOVERING",
@@ -22,8 +22,8 @@
       "display_name": "Data Vault",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-10T01:03:47.090987Z",
-      "age_minutes": 34.8,
+      "timestamp_utc": "2026-09-10T01:59:24.717730Z",
+      "age_minutes": 19.9,
       "history_status": "DEGRADED_HISTORY",
       "reason_codes": [
         "CURRENT_OK_HISTORY_INCOMPLETE"
@@ -45,8 +45,8 @@
       "display_name": "Stablecoin Windows",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-10T01:03:50.082673Z",
-      "age_minutes": 34.8,
+      "timestamp_utc": "2026-09-10T01:59:27.371505Z",
+      "age_minutes": 19.9,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -73,8 +73,8 @@
       "display_name": "Derivatives",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-10T01:17:17.962853Z",
-      "age_minutes": 21.3,
+      "timestamp_utc": "2026-09-10T02:18:38.158865Z",
+      "age_minutes": 0.7,
       "history_status": "RECOVERING",
       "reason_codes": [
         "CURRENT_OK_EXACT_WINDOWS_INCOMPLETE"
@@ -97,8 +97,8 @@
       "display_name": "Actor Retail",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-10T01:03:50.193279Z",
-      "age_minutes": 34.8,
+      "timestamp_utc": "2026-09-10T01:59:27.483571Z",
+      "age_minutes": 19.9,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -108,9 +108,7 @@
       "source_path": "market_vault/output/latest_actor_flows.json",
       "details": {
         "missing_windows": [
-          "BTC:3D",
           "BTC:7D",
-          "ETH:3D",
           "ETH:7D"
         ],
         "retail_proxy_status": "OK"
@@ -122,7 +120,7 @@
       "status": "CURRENT OK",
       "icon": "🟢",
       "timestamp_utc": "2026-09-10T01:07:12.295666Z",
-      "age_minutes": 31.4,
+      "age_minutes": 72.2,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -143,27 +141,14 @@
   ],
   "registered_market_alerts": [
     {
-      "source_id": "market_macro_liquidity",
-      "display_name": "MARKET Macro Liquidity",
-      "impact": "CORE",
-      "status": "FAILED",
-      "raw_source_health_status": "FAILED",
-      "reason_codes": [
-        "QUALITY_CHECK_FAILED",
-        "LATEST_WORKFLOW_FAILED"
-      ],
-      "state_age_minutes": 39.7,
-      "workflow_file": "market_macro_liquidity_free_hourly.yml"
-    },
-    {
       "source_id": "us_net_liquidity",
       "display_name": "US Net Liquidity Proxy",
       "impact": "OPTIONAL",
       "status": "FAILED",
-      "raw_source_health_status": "MISSING",
+      "raw_source_health_status": "FAILED",
       "reason_codes": [
         "STATE_FILE_MISSING",
-        "WORKFLOW_RUNNING"
+        "LATEST_WORKFLOW_FAILED"
       ],
       "state_age_minutes": null,
       "workflow_file": "net_liquidity_hourly.yml"
