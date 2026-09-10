@@ -1,0 +1,91 @@
+{
+  "schema_version": "1.0",
+  "contract_id": "BTC_TREND_V26_FEATURE_ENGINE_R21",
+  "master_id": "btc_trend",
+  "production_version": "V2.6",
+  "status": "R2_1_SHADOW_ONLY",
+  "purpose": "Generate deterministic CURRENT TREND feature states for the subset whose runtime classifier is already non-probabilistic, while leaving unapproved features as N/A rather than inventing thresholds.",
+  "source_of_truth": {
+    "feature_contract": "btc_trend_v26/feature_contract.json",
+    "score_contract": "btc_trend_v26/score_contract.json",
+    "production_machine_contract": "state/master_btc_trend_v2_6_contract.json"
+  },
+  "promotion_policy": {
+    "production_use_allowed": false,
+    "shadow_only": true,
+    "official_state_write_forbidden": true,
+    "requires_shadow_validation": true,
+    "requires_coverage_expansion_to_at_least_70": true,
+    "requires_explicit_acceptance": true
+  },
+  "current_enabled_features": [
+    "EMA_MA_STACK",
+    "SPOT_ETF_FLOW",
+    "DERIVATIVES_STATE"
+  ],
+  "forced_na_until_validation": {
+    "STRUCTURE_1D": "N_A_THRESHOLD_UNAPPROVED",
+    "STRUCTURE_4H": "N_A_THRESHOLD_UNAPPROVED",
+    "STRUCTURE_1W": "N_A_THRESHOLD_UNAPPROVED",
+    "VOLUME_WAVE": "N_A_THRESHOLD_UNAPPROVED",
+    "VALUE_OVEREXTENSION": "N_A_THRESHOLD_UNAPPROVED",
+    "LIQUIDITY_MACRO": "N_A_THRESHOLD_UNAPPROVED"
+  },
+  "market_bars": {
+    "primary": "Binance USD-M Futures BTCUSDT public klines",
+    "endpoint": "https://fapi.binance.com/fapi/v1/klines",
+    "intervals": ["4h", "1d"],
+    "minimum_completed_bars": 205,
+    "incomplete_candle_role": "OBSERVE_ONLY",
+    "cross_venue_fallback_forbidden": true
+  },
+  "ema_ma_stack": {
+    "inputs": ["completed 4H close", "completed 1D close", "EMA20", "MA50", "MA200"],
+    "rules": {
+      "STRONG_LONG": "full bullish ordering close>EMA20>MA50>MA200 on both 1D and 4H",
+      "STRONG_SHORT": "full bearish ordering close<EMA20<MA50<MA200 on both 1D and 4H",
+      "LONG": "at least 4 of 6 bullish pair comparisons across 1D+4H and 1D is not full bearish",
+      "SHORT": "at least 4 of 6 bearish pair comparisons across 1D+4H and 1D is not full bullish",
+      "NEUTRAL": "otherwise"
+    }
+  },
+  "spot_etf_flow": {
+    "source": "market_vault/output/latest_etf_flows.json on main",
+    "inputs": ["BTC flow_1d_usd_m", "BTC flow_3d_usd_m", "BTC flow_7d_usd_m"],
+    "rules": {
+      "LONG": "all three inputs > 0",
+      "SHORT": "all three inputs < 0",
+      "NEUTRAL": "mixed signs or any input equals 0",
+      "STRONG_LONG": "FORBIDDEN_UNTIL_VALIDATED",
+      "STRONG_SHORT": "FORBIDDEN_UNTIL_VALIDATED"
+    },
+    "generated_file_freshness_hours": 24,
+    "trading_date_policy": "use latest actual trading row; holidays/weekends are not fabricated"
+  },
+  "derivatives_state": {
+    "source_summary": "derivatives/output/latest_summary.json on main",
+    "source_microstructure": "derivatives/output/latest_microstructure.json on main",
+    "source_health": "derivatives/state/collector_state.json on main",
+    "freshness_minutes_max": 90,
+    "base_mapping": {
+      "PRICE_UP_OI_UP": "LONG",
+      "PRICE_UP_OI_DOWN_SQUEEZE_RISK": "LONG",
+      "PRICE_DOWN_OI_UP_BEARISH_BUILD": "SHORT",
+      "DELEVERAGING": "SHORT",
+      "MIXED": "NEUTRAL"
+    },
+    "microstructure_confirmation": {
+      "bullish": "CVD > 0 and taker_buy_ratio > taker_sell_ratio",
+      "bearish": "CVD < 0 and taker_sell_ratio > taker_buy_ratio",
+      "conflict_rule": "if base direction and microstructure are opposite, emit NEUTRAL",
+      "strong_states": "FORBIDDEN_UNTIL_VALIDATED"
+    },
+    "funding_extreme_suffix_policy": "strip suffix for base mapping but preserve raw state in lineage",
+    "24h_missing_policy": "does not invalidate valid 1H/4H current category; never fill missing 24H"
+  },
+  "output": {
+    "path": "btc_trend_v26/output/latest_features.json",
+    "required_top_level": ["schema_version", "engine_id", "status", "asof_utc", "features", "production_eligible"],
+    "production_eligible": false
+  }
+}
