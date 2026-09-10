@@ -1,0 +1,191 @@
+{
+  "schema_version": "1.0",
+  "system": "MASTER_MARKET_INTEGRATED_HEALTH",
+  "evaluated_at_utc": "2026-09-10T01:36:29.236045Z",
+  "overall_status": "FAILED",
+  "overall_icon": "🔴",
+  "status_order": [
+    "CURRENT OK",
+    "HISTORY RECOVERING",
+    "STALE",
+    "FAILED"
+  ],
+  "counts": {
+    "CURRENT OK": 1,
+    "HISTORY RECOVERING": 4,
+    "STALE": 0,
+    "FAILED": 0
+  },
+  "components": [
+    {
+      "component_id": "data_vault",
+      "display_name": "Data Vault",
+      "status": "HISTORY RECOVERING",
+      "icon": "🟡",
+      "timestamp_utc": "2026-09-10T01:03:47.090987Z",
+      "age_minutes": 32.7,
+      "history_status": "DEGRADED_HISTORY",
+      "reason_codes": [
+        "CURRENT_OK_HISTORY_INCOMPLETE"
+      ],
+      "next_action": "현재값은 사용; 실제 동일원천 history 자동 축적 대기, backfill 금지",
+      "auto_recovery_expected": true,
+      "source_path": "market_vault/state/vault_state.json",
+      "details": {
+        "history_issues": [
+          "production timestamps <20 in ~26H (2)",
+          "mandatory actual 24H comparisons <5 (0); missing=['EFFR', 'TGA_CLOSING_BALANCE', 'US10Y', 'US10Y_REAL', 'US2Y', 'US30Y']"
+        ],
+        "recent_timestamp_count_26h": 2,
+        "history_24h_comparison_count": 0
+      }
+    },
+    {
+      "component_id": "stablecoin_windows",
+      "display_name": "Stablecoin Windows",
+      "status": "HISTORY RECOVERING",
+      "icon": "🟡",
+      "timestamp_utc": "2026-09-10T01:03:50.082673Z",
+      "age_minutes": 32.7,
+      "history_status": "PARTIAL_WINDOWS",
+      "reason_codes": [
+        "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
+      ],
+      "next_action": "현재 공급량은 사용; 누락 비교창은 실제 history 축적 대기",
+      "auto_recovery_expected": true,
+      "source_path": "market_vault/output/latest_stablecoin_windows.json",
+      "details": {
+        "missing_windows": [
+          "USDT_SUPPLY:1D",
+          "USDT_SUPPLY:7D",
+          "USDT_SUPPLY:20D",
+          "USDC_SUPPLY:1D",
+          "USDC_SUPPLY:7D",
+          "USDC_SUPPLY:20D",
+          "STABLECOIN_TOTAL_SUPPLY:1D",
+          "STABLECOIN_TOTAL_SUPPLY:7D",
+          "STABLECOIN_TOTAL_SUPPLY:20D"
+        ]
+      }
+    },
+    {
+      "component_id": "derivatives",
+      "display_name": "Derivatives",
+      "status": "HISTORY RECOVERING",
+      "icon": "🟡",
+      "timestamp_utc": "2026-09-10T01:17:17.962853Z",
+      "age_minutes": 19.2,
+      "history_status": "RECOVERING",
+      "reason_codes": [
+        "CURRENT_OK_EXACT_WINDOWS_INCOMPLETE"
+      ],
+      "next_action": "현재 파생값은 사용; exact 1H/4H/24H history 자동 축적 대기",
+      "auto_recovery_expected": true,
+      "source_path": "derivatives/state/collector_state.json",
+      "details": {
+        "missing_exact_windows": {
+          "1H": 0,
+          "4H": 21,
+          "24H": 0
+        },
+        "universe_count": 21,
+        "ok_count": 21
+      }
+    },
+    {
+      "component_id": "actor_retail",
+      "display_name": "Actor Retail",
+      "status": "HISTORY RECOVERING",
+      "icon": "🟡",
+      "timestamp_utc": "2026-09-10T01:03:50.193279Z",
+      "age_minutes": 32.7,
+      "history_status": "PARTIAL_WINDOWS",
+      "reason_codes": [
+        "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
+      ],
+      "next_action": "현재 Retail proxy는 사용; 누락 1D/3D/7D는 동일원천 history 축적 대기",
+      "auto_recovery_expected": true,
+      "source_path": "market_vault/output/latest_actor_flows.json",
+      "details": {
+        "missing_windows": [
+          "BTC:3D",
+          "BTC:7D",
+          "ETH:3D",
+          "ETH:7D"
+        ],
+        "retail_proxy_status": "OK"
+      }
+    },
+    {
+      "component_id": "yen_carry",
+      "display_name": "Yen Carry",
+      "status": "CURRENT OK",
+      "icon": "🟢",
+      "timestamp_utc": "2026-09-10T01:07:12.295666Z",
+      "age_minutes": 29.3,
+      "history_status": "OK",
+      "reason_codes": [
+        "OK"
+      ],
+      "next_action": "조치 없음",
+      "auto_recovery_expected": true,
+      "source_path": "market_yen_carry/output/latest_yen_carry.json",
+      "details": {
+        "coverage_pct": 100,
+        "source_freshness_days": {
+          "usd_jpy": 3,
+          "us10y": 4,
+          "jp10y": 4,
+          "vix": 4
+        }
+      }
+    }
+  ],
+  "registered_market_alerts": [
+    {
+      "source_id": "market_macro_liquidity",
+      "display_name": "MARKET Macro Liquidity",
+      "impact": "CORE",
+      "status": "FAILED",
+      "raw_source_health_status": "FAILED",
+      "reason_codes": [
+        "QUALITY_CHECK_FAILED",
+        "LATEST_WORKFLOW_FAILED"
+      ],
+      "state_age_minutes": 37.6,
+      "workflow_file": "market_macro_liquidity_free_hourly.yml"
+    },
+    {
+      "source_id": "stablecoin_exchange_flow",
+      "display_name": "Stablecoin Treasury→Exchange Flow",
+      "impact": "OPTIONAL",
+      "status": "FAILED",
+      "raw_source_health_status": "FAILED",
+      "reason_codes": [
+        "LATEST_WORKFLOW_FAILED"
+      ],
+      "state_age_minutes": 61.9,
+      "workflow_file": "stablecoin_flow_hourly.yml"
+    },
+    {
+      "source_id": "us_net_liquidity",
+      "display_name": "US Net Liquidity Proxy",
+      "impact": "OPTIONAL",
+      "status": "FAILED",
+      "raw_source_health_status": "MISSING",
+      "reason_codes": [
+        "STATE_FILE_MISSING",
+        "WORKFLOW_RUNNING"
+      ],
+      "state_age_minutes": null,
+      "workflow_file": "net_liquidity_hourly.yml"
+    }
+  ],
+  "policy": {
+    "operational_health_only": true,
+    "never_changes_master_score_or_direction": true,
+    "current_failure_precedence": "FAILED > STALE > HISTORY RECOVERING > CURRENT OK",
+    "history_rule": "Missing comparison history never backfills/interpolates current data; current values may remain usable while status is HISTORY RECOVERING.",
+    "core_alert_rule": "Related Source Health CORE alerts affect overall_status; OPTIONAL/CONTEXT alerts remain visible only."
+  }
+}
