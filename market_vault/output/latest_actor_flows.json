@@ -1,7 +1,7 @@
 {
   "engine": "MASTER_MARKET_ACTOR_FLOW_ADAPTER_V1",
   "schema_version": "1.0",
-  "generated_at_utc": "2026-09-10T03:58:30.228492Z",
+  "generated_at_utc": "2026-09-10T04:53:46.131182Z",
   "score_weight": 0,
   "rule": "actual observable values only; no institution/whale/retail synthetic score",
   "institution": {
@@ -9,47 +9,47 @@
       "source": "BTC/ETH spot ETF net flow",
       "unit": "USD millions",
       "latest_trading_date": "2026-09-09",
-      "flow_1d_usd_m": -100.7,
-      "flow_3d_usd_m": 27.3,
-      "flow_7d_usd_m": 839.4,
-      "flow_20d_usd_m": 3433.3
+      "flow_1d_usd_m": -120.2,
+      "flow_3d_usd_m": 7.8,
+      "flow_7d_usd_m": 819.9,
+      "flow_20d_usd_m": 3413.8
     },
     "ETH": {
       "source": "BTC/ETH spot ETF net flow",
       "unit": "USD millions",
       "latest_trading_date": "2026-09-09",
-      "flow_1d_usd_m": 2.1,
-      "flow_3d_usd_m": 3.7,
-      "flow_7d_usd_m": 193.1,
-      "flow_20d_usd_m": 1714.7
+      "flow_1d_usd_m": 34.7,
+      "flow_3d_usd_m": 36.3,
+      "flow_7d_usd_m": 225.7,
+      "flow_20d_usd_m": 1747.3
     }
   },
   "whale": {
     "BTC": {
       "current": {
-        "snapshot_time_utc": "2026-09-10T03:00:00Z",
+        "snapshot_time_utc": "2026-09-10T04:00:00Z",
         "threshold_usd": 20000000.0,
-        "long_usd": 326451670.89623,
-        "short_usd": 566880569.348864,
-        "net_usd": -240428898.45263398,
+        "long_usd": 323427192.63208,
+        "short_usd": 566122864.185354,
+        "net_usd": -242695671.55327398,
         "long_positions": 7,
         "short_positions": 12
       },
       "1d": {
-        "snapshot_time_utc": "2026-09-09T03:00:00Z",
+        "snapshot_time_utc": "2026-09-09T04:00:00Z",
         "threshold_usd": 20000000.0,
-        "long_usd": 268824209.788399,
-        "short_usd": 491745162.49231994,
-        "net_usd": -222920952.70392096,
+        "long_usd": 270508075.40098,
+        "short_usd": 494766727.58198,
+        "net_usd": -224258652.181,
         "long_positions": 5,
         "short_positions": 10
       },
       "3d": {
-        "snapshot_time_utc": "2026-09-07T03:00:00Z",
+        "snapshot_time_utc": "2026-09-07T04:00:00Z",
         "threshold_usd": 20000000.0,
-        "long_usd": 428491529.47029805,
-        "short_usd": 497844959.242276,
-        "net_usd": -69353429.77197796,
+        "long_usd": 429040548.46814996,
+        "short_usd": 497929460.6710201,
+        "net_usd": -68888912.20287013,
         "long_positions": 7,
         "short_positions": 9
       },
@@ -65,29 +65,29 @@
     },
     "ETH": {
       "current": {
-        "snapshot_time_utc": "2026-09-10T03:00:00Z",
+        "snapshot_time_utc": "2026-09-10T04:00:00Z",
         "threshold_usd": 20000000.0,
-        "long_usd": 469206723.38608,
-        "short_usd": 603942748.5474799,
-        "net_usd": -134736025.16139984,
+        "long_usd": 469045285.56798,
+        "short_usd": 579525265.161576,
+        "net_usd": -110479979.59359604,
         "long_positions": 9,
-        "short_positions": 10
+        "short_positions": 9
       },
       "1d": {
-        "snapshot_time_utc": "2026-09-09T03:00:00Z",
+        "snapshot_time_utc": "2026-09-09T04:00:00Z",
         "threshold_usd": 20000000.0,
-        "long_usd": 472833887.17889994,
-        "short_usd": 594188373.1752,
-        "net_usd": -121354485.99630004,
+        "long_usd": 475010965.97732,
+        "short_usd": 599242507.6897401,
+        "net_usd": -124231541.71242005,
         "long_positions": 9,
         "short_positions": 9
       },
       "3d": {
-        "snapshot_time_utc": "2026-09-07T03:00:00Z",
+        "snapshot_time_utc": "2026-09-07T04:00:00Z",
         "threshold_usd": 20000000.0,
-        "long_usd": 471690017.50011003,
-        "short_usd": 588806107.66763,
-        "net_usd": -117116090.16751993,
+        "long_usd": 471692188.66867995,
+        "short_usd": 587132841.7836859,
+        "net_usd": -115440653.11500597,
         "long_positions": 9,
         "short_positions": 9
       },
@@ -106,61 +106,61 @@
     "BTC": {
       "definition": "Bitget futures active long/short position ratio proxy; wallet identity is not verified retail identity",
       "current": {
-        "time_utc": "2026-09-10T03:19:02.643654Z",
-        "long_pct": 49.29,
-        "short_pct": 50.71,
-        "long_short_ratio": 0.9719,
+        "time_utc": "2026-09-10T04:18:52.163403Z",
+        "long_pct": 49.32,
+        "short_pct": 50.68,
+        "long_short_ratio": 0.9731,
         "venue": "Bitget USDT Futures"
       },
       "funding": {
-        "time_utc": "2026-09-10T03:00:00Z",
+        "time_utc": "2026-09-10T04:00:00Z",
         "funding_rate": 0.0001,
         "venue": "Bitget USDT Futures"
       },
       "1d": {
-        "time_utc": "2026-09-09T03:18:56.067087Z",
-        "long_pct": 49.69,
-        "short_pct": 50.31,
-        "long_short_ratio": 0.9876,
+        "time_utc": "2026-09-09T04:19:21.499807Z",
+        "long_pct": 49.72,
+        "short_pct": 50.28,
+        "long_short_ratio": 0.9888,
         "venue": "Bitget USDT Futures"
       },
       "3d": {
-        "time_utc": "2026-09-07T03:19:47.493239Z",
-        "long_pct": 49.8,
-        "short_pct": 50.2,
-        "long_short_ratio": 0.992,
+        "time_utc": "2026-09-07T04:18:43.830832Z",
+        "long_pct": 49.769999999999996,
+        "short_pct": 50.23,
+        "long_short_ratio": 0.9908,
         "venue": "Bitget USDT Futures"
       },
       "7d": null,
       "current_status": "OK",
-      "source_age_minutes": 39.46,
+      "source_age_minutes": 34.9,
       "funding_status": "OK",
-      "funding_age_minutes": 58.51,
+      "funding_age_minutes": 53.77,
       "freshness_max_age_minutes": 90.0
     },
     "ETH": {
       "definition": "Bitget futures active long/short position ratio proxy; wallet identity is not verified retail identity",
       "current": {
-        "time_utc": "2026-09-10T03:19:02.643654Z",
-        "long_pct": 49.68,
-        "short_pct": 50.32,
-        "long_short_ratio": 0.9872,
+        "time_utc": "2026-09-10T04:18:52.163403Z",
+        "long_pct": 49.7,
+        "short_pct": 50.3,
+        "long_short_ratio": 0.988,
         "venue": "Bitget USDT Futures"
       },
       "funding": {
-        "time_utc": "2026-09-10T03:00:00Z",
-        "funding_rate": 9.7e-05,
+        "time_utc": "2026-09-10T04:00:00Z",
+        "funding_rate": 9e-05,
         "venue": "Bitget USDT Futures"
       },
       "1d": {
-        "time_utc": "2026-09-09T03:18:56.067087Z",
-        "long_pct": 49.8,
-        "short_pct": 50.2,
-        "long_short_ratio": 0.992,
+        "time_utc": "2026-09-09T04:19:21.499807Z",
+        "long_pct": 49.76,
+        "short_pct": 50.239999999999995,
+        "long_short_ratio": 0.9904,
         "venue": "Bitget USDT Futures"
       },
       "3d": {
-        "time_utc": "2026-09-07T03:19:47.493239Z",
+        "time_utc": "2026-09-07T04:18:43.830832Z",
         "long_pct": 49.72,
         "short_pct": 50.28,
         "long_short_ratio": 0.9888,
@@ -168,9 +168,9 @@
       },
       "7d": null,
       "current_status": "OK",
-      "source_age_minutes": 39.46,
+      "source_age_minutes": 34.9,
       "funding_status": "OK",
-      "funding_age_minutes": 58.51,
+      "funding_age_minutes": 53.77,
       "freshness_max_age_minutes": 90.0
     }
   },
@@ -178,5 +178,5 @@
   "retail_freshness_max_age_minutes": 90.0,
   "warnings": [],
   "retail_proxy_status": "OK",
-  "retail_freshness_checked_at_utc": "2026-09-10T03:58:30.334564Z"
+  "retail_freshness_checked_at_utc": "2026-09-10T04:53:46.269698Z"
 }
