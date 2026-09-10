@@ -3,7 +3,9 @@ name: MARKET Yen Carry Risk Lite Daily
 on:
   workflow_dispatch:
   schedule:
-    - cron: '5 1 * * 1-5'
+    # 08:35 KST Monday-Friday = 23:35 UTC Sunday-Thursday.
+    # This finishes before the 09:00 KST MASTER MARKET OFFICIAL run.
+    - cron: '35 23 * * 0-4'
   push:
     paths:
       - 'market_yen_carry/collector.py'
@@ -39,17 +41,19 @@ jobs:
           python -m py_compile market_yen_carry/collector.py
           python market_yen_carry/collector.py
 
-      - name: Validate output contract
+      - name: Validate output contract and source freshness
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
 
           path = Path('market_yen_carry/output/latest_yen_carry.json')
+          config_path = Path('market_yen_carry/config.json')
           if not path.exists():
               raise SystemExit('latest_yen_carry.json missing')
 
           data = json.loads(path.read_text(encoding='utf-8'))
+          config = json.loads(config_path.read_text(encoding='utf-8'))
           if data.get('engine') != 'YEN_CARRY_RISK_LITE_V1':
               raise SystemExit('wrong engine')
           if data.get('schema_version') != '1.0':
@@ -58,6 +62,30 @@ jobs:
               raise SystemExit('score_weight must remain 0')
           if data.get('status') not in ('ok', 'partial'):
               raise SystemExit('invalid status')
+
+          expected_freshness = config.get('source_freshness_days') or {}
+          actual_freshness = data.get('source_freshness_days') or {}
+          required_sources = {'usd_jpy', 'us10y', 'jp10y', 'vix'}
+          if set(expected_freshness) != required_sources:
+              raise SystemExit(f'invalid source_freshness_days config: {expected_freshness}')
+          if actual_freshness != expected_freshness:
+              raise SystemExit(f'freshness policy mismatch output={actual_freshness} config={expected_freshness}')
+
+          sources = data.get('sources') or {}
+          for name in sorted(required_sources):
+              source = sources.get(name)
+              if not isinstance(source, dict):
+                  raise SystemExit(f'missing source metadata: {name}')
+              if source.get('status') == 'error':
+                  continue
+              age = source.get('source_age_days')
+              max_age = source.get('freshness_max_age_days')
+              if not isinstance(age, int) or not isinstance(max_age, int):
+                  raise SystemExit(f'missing freshness metadata: {name}')
+              if max_age != expected_freshness[name]:
+                  raise SystemExit(f'wrong freshness threshold for {name}: {max_age}')
+              if age > max_age:
+                  raise SystemExit(f'stale source escaped guard: {name} age={age} max={max_age}')
 
           coverage = data.get('coverage_pct')
           if not isinstance(coverage, int) or not 0 <= coverage <= 100:
@@ -78,6 +106,7 @@ jobs:
               f"status={data['status']}",
               f"coverage={coverage}",
               f"score={final_score}",
+              f"freshness={actual_freshness}",
           )
           PY
 
