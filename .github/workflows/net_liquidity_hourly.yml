@@ -25,6 +25,7 @@ jobs:
       - name: Checkout main
         uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0
 
       - name: Set up Python
@@ -37,6 +38,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r net_liquidity/requirements.txt
 
+      - name: Syntax check
+        run: python -m py_compile net_liquidity/collector.py
+
       - name: Build US net liquidity proxy
         run: python net_liquidity/collector.py
 
@@ -45,20 +49,39 @@ jobs:
           python - <<'PY'
           import json, sys
           s=json.load(open('net_liquidity/state/collector_state.json'))
+          p=json.load(open('net_liquidity/output/latest_summary.json'))
           print(s)
-          if s.get('status') != 'OK':
-              sys.exit('US net liquidity collector did not produce an OK snapshot')
+          if p.get('engine') != 'MASTER_US_NET_LIQUIDITY_V1_2':
+              sys.exit('wrong US net liquidity engine')
+          if s.get('source_mode') != 'canonical_macro_vault_adapter':
+              sys.exit('wrong US net liquidity source mode')
+          if s.get('status') != 'OK' or p.get('status') != 'OK' or p.get('net_liquidity_usd') is None:
+              sys.exit(f'US net liquidity current snapshot unavailable; errors={s.get("errors", [])}')
+          if s.get('upstream_age_minutes') is None or s.get('upstream_age_minutes') > 180:
+              sys.exit('US net liquidity macro upstream stale')
+          print('US_NET_LIQUIDITY_CURRENT_QA=PASS')
           PY
 
-      - name: Commit updated data
+      - name: Commit updated data and diagnostics
+        if: always()
         run: |
           git config user.name "net-liquidity-bot"
           git config user.email "net-liquidity-bot@users.noreply.github.com"
-          git add net_liquidity/data net_liquidity/output net_liquidity/state
+          git add net_liquidity/data net_liquidity/output net_liquidity/state || true
           if git diff --cached --quiet; then
             echo "No data changes"
           else
             git commit -m "data: hourly US net liquidity proxy"
-            git pull --rebase origin main
-            git push origin HEAD:main
+            for attempt in 1 2 3; do
+              if git pull --rebase origin main && git push origin HEAD:main; then
+                exit 0
+              fi
+              echo "push retry $attempt"
+              git rebase --abort 2>/dev/null || true
+              git fetch origin main
+              git rebase origin/main
+              sleep $((attempt * 2))
+            done
+            echo "failed to publish US net liquidity snapshot after retries"
+            exit 1
           fi
