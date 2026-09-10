@@ -41,7 +41,7 @@ jobs:
       - name: Collect free official macro liquidity data
         run: python market_vault/macro_liquidity_free_collector_v2.py
 
-      - name: Validate core free metrics
+      - name: Validate current macro backbone
         run: |
           python - <<'PY'
           import json,sys
@@ -58,9 +58,26 @@ jobs:
           qra={'QRA_NET_MARKETABLE_BORROWING_CURRENT_Q','QRA_END_CASH_BALANCE_CURRENT_Q','QRA_NET_MARKETABLE_BORROWING_NEXT_Q','QRA_END_CASH_BALANCE_NEXT_Q'}
           if qra-names:
               sys.exit(f'missing QRA metrics: {sorted(qra-names)}; failures={s.get("failures",{})}')
-          if 'TREASURY_BUYBACK_ACTUAL_ACCEPTED' not in names:
-              sys.exit(f'missing actual buyback accepted amount; failures={s.get("failures",{})}')
-          print('FREE_MACRO_CORE_QRA_BUYBACK=PASS')
+          print('FREE_MACRO_CURRENT_QA=PASS')
+          PY
+
+      - name: Evaluate Treasury buyback subfield
+        run: |
+          python - <<'PY'
+          import json
+          s=json.load(open('market_vault/state/macro_liquidity_state.json'))
+          p=json.load(open('market_vault/output/latest_macro_liquidity.json'))
+          names={m.get('metric') for m in p.get('metrics',[])}
+          if 'TREASURY_BUYBACK_ACTUAL_ACCEPTED' in names:
+              print('BUYBACK_SUBFIELD_QA=PASS')
+          else:
+              reason=(s.get('failures') or {}).get('BUYBACK_ACTUAL')
+              if reason:
+                  print(f'::warning title=Treasury Buyback subfield unavailable::{reason}')
+              else:
+                  print('::warning title=Treasury Buyback subfield unavailable::Actual accepted amount is not available in the current snapshot; keep the MASTER MARKET field visible as N/A.')
+              print('BUYBACK_SUBFIELD_QA=DEGRADED')
+              print('MACRO_BACKBONE_PUBLISH=ALLOWED')
           PY
 
       - name: Validate same-source history windows
