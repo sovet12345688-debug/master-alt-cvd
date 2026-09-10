@@ -1,20 +1,16 @@
 {
   "engine": "MASTER_STABLECOIN_TREASURY_EXCHANGE_V1",
-  "generated_at_utc": "2026-09-10T13:27:46.810567Z",
-  "window_start_utc": "2026-09-10T12:27:37.428784Z",
-  "window_end_utc": "2026-09-10T13:27:37.428784Z",
+  "generated_at_utc": "2026-09-10T17:26:31.473518Z",
+  "window_start_utc": "2026-09-10T16:26:25.863946Z",
+  "window_end_utc": "2026-09-10T17:26:25.863946Z",
   "chain": "ethereum",
-  "rpc_url": "https://rpc.mevblocker.io",
+  "rpc_url": "https://ethereum-rpc.publicnode.com",
   "block_range": [
-    25946984,
-    25947283
+    25948174,
+    25948474
   ],
   "log_chunk_blocks": 50,
-  "rpc_fallback_log": [
-    "https://ethereum-rpc.publicnode.com:RuntimeError:{'code': -32602, 'message': 'block range extends beyond current head block'}",
-    "https://eth.llamarpc.com:HTTPError:403 Client Error: Forbidden for url: https://eth.llamarpc.com/",
-    "https://1rpc.io/eth:RuntimeError:{'code': -32000, 'message': 'method not available'}"
-  ],
+  "rpc_fallback_log": [],
   "coverage_rule": "Exchange matching is partial and only covers explicitly verified addresses in this registry. No unmatched destination may be inferred as an exchange.",
   "rules": {
     "USDT": "Confirmed transfers from verified Tether Treasury address. Only destinations matching verified exchange registry count as Treasury->Exchange.",
@@ -42,8 +38,8 @@
       "chain": "ethereum",
       "mode": "mint_destination_proxy",
       "status": "OK",
-      "issuer_transfer_count": 292,
-      "issuer_transfer_amount": 33279624.500285998,
+      "issuer_transfer_count": 200,
+      "issuer_transfer_amount": 286229565.21905,
       "verified_exchange_match_count": 0,
       "verified_exchange_amount": 0,
       "verified_exchange_breakdown": {},
