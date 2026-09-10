@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "system": "MASTER_MARKET_INTEGRATED_HEALTH",
-  "evaluated_at_utc": "2026-09-10T17:18:04.278707Z",
+  "evaluated_at_utc": "2026-09-10T18:20:45.727152Z",
   "overall_status": "HISTORY RECOVERING",
   "overall_icon": "🟡",
   "status_order": [
@@ -22,8 +22,8 @@
       "display_name": "Data Vault",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-10T16:58:41.097913Z",
-      "age_minutes": 19.4,
+      "timestamp_utc": "2026-09-10T17:58:09.780732Z",
+      "age_minutes": 22.6,
       "history_status": "DEGRADED_HISTORY",
       "reason_codes": [
         "CURRENT_OK_HISTORY_INCOMPLETE"
@@ -33,10 +33,10 @@
       "source_path": "market_vault/state/vault_state.json",
       "details": {
         "history_issues": [
-          "production timestamps <20 in ~26H (15)",
+          "production timestamps <20 in ~26H (16)",
           "mandatory actual 24H comparisons <5 (0); missing=['EFFR', 'TGA_CLOSING_BALANCE', 'US10Y', 'US10Y_REAL', 'US2Y', 'US30Y']"
         ],
-        "recent_timestamp_count_26h": 15,
+        "recent_timestamp_count_26h": 16,
         "history_24h_comparison_count": 0
       }
     },
@@ -45,8 +45,8 @@
       "display_name": "Stablecoin Windows",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-10T16:58:43.297596Z",
-      "age_minutes": 19.3,
+      "timestamp_utc": "2026-09-10T17:58:14.112317Z",
+      "age_minutes": 22.5,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -71,7 +71,7 @@
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
       "timestamp_utc": "2026-09-10T17:17:17.756515Z",
-      "age_minutes": 0.8,
+      "age_minutes": 63.5,
       "history_status": "RECOVERING",
       "reason_codes": [
         "CURRENT_OK_EXACT_WINDOWS_INCOMPLETE"
@@ -94,8 +94,8 @@
       "display_name": "Actor Retail",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-10T16:58:43.469661Z",
-      "age_minutes": 19.3,
+      "timestamp_utc": "2026-09-10T17:58:14.254695Z",
+      "age_minutes": 22.5,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -119,7 +119,7 @@
       "status": "CURRENT OK",
       "icon": "🟢",
       "timestamp_utc": "2026-09-10T01:07:12.295666Z",
-      "age_minutes": 970.9,
+      "age_minutes": 1033.6,
       "history_status": "OK",
       "reason_codes": [
         "OK"
