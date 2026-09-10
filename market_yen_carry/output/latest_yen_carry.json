@@ -1,73 +1,73 @@
 {
   "engine": "YEN_CARRY_RISK_LITE_V1",
   "schema_version": "1.0",
-  "generated_at_utc": "2026-09-09T03:54:49.238758Z",
+  "generated_at_utc": "2026-09-10T01:05:49.155124Z",
   "score_weight": 0,
   "status": "ok",
   "coverage_pct": 100,
   "sources": {
     "usd_jpy": {
       "provider": "ECB",
-      "asof_date": "2026-09-08",
-      "value": 154.29653866023764,
+      "asof_date": "2026-09-09",
+      "value": 153.26982492276005,
       "source_url": "https://data-api.ecb.europa.eu/service/data/EXR/D.USD+JPY.EUR.SP00.A?format=csvdata&lastNObservations=20",
       "method": "JPY per EUR divided by USD per EUR"
     },
     "us10y": {
       "provider": "FRED_H15",
       "series_id": "DGS10",
-      "asof_date": "2026-09-04",
-      "value_pct": 4.78,
-      "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-07-26&coed=2026-09-09"
+      "asof_date": "2026-09-08",
+      "value_pct": 4.8,
+      "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-07-27&coed=2026-09-10"
     },
     "jp10y": {
       "provider": "MOF_JAPAN",
-      "asof_date": "2026-09-08",
-      "value_pct": 2.896,
+      "asof_date": "2026-09-09",
+      "value_pct": 2.891,
       "source_url": "https://www.mof.go.jp/english/policy/jgbs/reference/interest_rate/jgbcme.csv",
       "retrieval_mode": "current"
     },
     "vix": {
       "provider": "CBOE",
-      "asof_date": "2026-09-08",
-      "value": 15.72,
+      "asof_date": "2026-09-09",
+      "value": 16.46,
       "source_url": "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv"
     }
   },
   "metrics": {
     "usd_jpy": {
-      "current": 154.296539,
-      "asof_date": "2026-09-08",
-      "change_1d_pct": -0.2928,
-      "change_3d_pct": -1.2482,
-      "change_7d_pct": -3.6634,
-      "score": 10
+      "current": 153.269825,
+      "asof_date": "2026-09-09",
+      "change_1d_pct": -0.6654,
+      "change_3d_pct": -1.9053,
+      "change_7d_pct": -3.9637,
+      "score": 25
     },
     "us_jp_10y_spread": {
-      "current_pct_point": 1.87,
-      "asof_date": "2026-09-04",
-      "prior_3d_date": "2026-09-01",
-      "change_3d_bp": 6.7,
+      "current_pct_point": 1.904,
+      "asof_date": "2026-09-08",
+      "prior_3d_date": "2026-09-04",
+      "change_3d_bp": 3.4,
       "score": 0
     },
     "vix": {
-      "current": 15.72,
-      "asof_date": "2026-09-08",
-      "change_1d_pct": 2.7451,
+      "current": 16.46,
+      "asof_date": "2026-09-09",
+      "change_1d_pct": 4.7074,
       "score": 0
     }
   },
   "risk": {
-    "yen_score": 10,
+    "yen_score": 25,
     "spread_score": 0,
     "vix_score": 0,
-    "raw_score": 10,
-    "gate_applied": true,
-    "final_score": 10,
-    "level": "low",
-    "label_ko": "낮음"
+    "raw_score": 25,
+    "gate_applied": false,
+    "final_score": 25,
+    "level": "watch",
+    "label_ko": "주의"
   },
   "calculation_rule": "1D/3D/7D use the latest available observation on or before the target calendar day; no interpolation or synthetic backfill. score_weight remains 0.",
   "errors": [],
-  "easy_read": "엔화·금리차·시장 공포를 함께 보면 현재 엔 캐리 청산 위험은 낮습니다."
+  "easy_read": "엔화 또는 금리차에 주의 신호가 있지만 아직 엔 캐리 청산 위험이 높은 단계는 아닙니다."
 }
