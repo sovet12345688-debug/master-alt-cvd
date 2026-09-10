@@ -1,0 +1,73 @@
+name: BTC TREND V2.6 R2.1 Feature Score Shadow
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - btc-trend-v26-na-recovery-r1
+    paths:
+      - 'btc_trend_v26/feature_engine_contract.json'
+      - 'btc_trend_v26/feature_engine.py'
+      - 'btc_trend_v26/test_feature_engine.py'
+      - 'btc_trend_v26/score_contract.json'
+      - 'btc_trend_v26/score_engine.py'
+      - '.github/workflows/btc_trend_v26_r21_feature_engine_shadow.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  r21-shadow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Unit test R2.1 feature classifiers
+        working-directory: btc_trend_v26
+        run: python -m unittest -v test_feature_engine.py
+
+      - name: Unit test R2 score engine
+        working-directory: btc_trend_v26
+        run: python -m unittest -v test_score_engine.py
+
+      - name: Run live feature shadow
+        run: python btc_trend_v26/feature_engine.py --output btc_trend_v26/output/latest_features.json
+
+      - name: Run live score shadow
+        run: python btc_trend_v26/score_engine.py btc_trend_v26/output/latest_features.json --output btc_trend_v26/output/latest_score.json
+
+      - name: Assert shadow safety and print summary
+        run: |
+          python - <<'PY'
+          import json
+          f=json.load(open('btc_trend_v26/output/latest_features.json'))
+          s=json.load(open('btc_trend_v26/output/latest_score.json'))
+          assert f['production_eligible'] is False
+          assert f['official_state_write_allowed'] is False
+          assert s['production_eligible'] is False
+          print('feature_status=', f['status'])
+          print('current_feature_count=', f['current_feature_count'])
+          print('score_status=', s['status'])
+          print('coverage_pct=', s['coverage_pct'])
+          print('ratio=', s['long'], s['short'])
+          print('trend_strength=', s['trend_strength'])
+          print('dominant_state=', s['dominant_state'])
+          PY
+
+      - name: Upload R2.1 shadow outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v26-r21-shadow-${{ github.run_id }}
+          path: btc_trend_v26/output/
+          if-no-files-found: error
+          retention-days: 14
