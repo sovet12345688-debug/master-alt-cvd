@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "system": "MASTER_MARKET_INTEGRATED_HEALTH",
-  "evaluated_at_utc": "2026-09-10T03:20:55.239965Z",
+  "evaluated_at_utc": "2026-09-10T04:19:23.413468Z",
   "overall_status": "HISTORY RECOVERING",
   "overall_icon": "🟡",
   "status_order": [
@@ -11,8 +11,8 @@
     "FAILED"
   ],
   "counts": {
-    "CURRENT OK": 1,
-    "HISTORY RECOVERING": 4,
+    "CURRENT OK": 2,
+    "HISTORY RECOVERING": 3,
     "STALE": 0,
     "FAILED": 0
   },
@@ -22,8 +22,8 @@
       "display_name": "Data Vault",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-10T02:58:28.959249Z",
-      "age_minutes": 22.4,
+      "timestamp_utc": "2026-09-10T03:58:27.215985Z",
+      "age_minutes": 20.9,
       "history_status": "DEGRADED_HISTORY",
       "reason_codes": [
         "CURRENT_OK_HISTORY_INCOMPLETE"
@@ -33,10 +33,10 @@
       "source_path": "market_vault/state/vault_state.json",
       "details": {
         "history_issues": [
-          "production timestamps <20 in ~26H (3)",
+          "production timestamps <20 in ~26H (4)",
           "mandatory actual 24H comparisons <5 (0); missing=['EFFR', 'TGA_CLOSING_BALANCE', 'US10Y', 'US10Y_REAL', 'US2Y', 'US30Y']"
         ],
-        "recent_timestamp_count_26h": 3,
+        "recent_timestamp_count_26h": 4,
         "history_24h_comparison_count": 0
       }
     },
@@ -45,8 +45,8 @@
       "display_name": "Stablecoin Windows",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-10T02:58:32.797973Z",
-      "age_minutes": 22.4,
+      "timestamp_utc": "2026-09-10T03:58:30.100487Z",
+      "age_minutes": 20.9,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -57,13 +57,10 @@
       "details": {
         "missing_windows": [
           "USDT_SUPPLY:1D",
-          "USDT_SUPPLY:7D",
           "USDT_SUPPLY:20D",
           "USDC_SUPPLY:1D",
-          "USDC_SUPPLY:7D",
           "USDC_SUPPLY:20D",
           "STABLECOIN_TOTAL_SUPPLY:1D",
-          "STABLECOIN_TOTAL_SUPPLY:7D",
           "STABLECOIN_TOTAL_SUPPLY:20D"
         ]
       }
@@ -71,34 +68,26 @@
     {
       "component_id": "derivatives",
       "display_name": "Derivatives",
-      "status": "HISTORY RECOVERING",
-      "icon": "🟡",
-      "timestamp_utc": "2026-09-10T03:19:02.432428Z",
-      "age_minutes": 1.9,
-      "history_status": "RECOVERING",
+      "status": "CURRENT OK",
+      "icon": "🟢",
+      "timestamp_utc": "2026-09-10T04:18:52.004600Z",
+      "age_minutes": 0.5,
+      "history_status": "OK",
       "reason_codes": [
-        "CURRENT_OK_EXACT_WINDOWS_INCOMPLETE"
+        "OK"
       ],
-      "next_action": "현재 파생값은 사용; exact 1H/4H/24H history 자동 축적 대기",
+      "next_action": "조치 없음",
       "auto_recovery_expected": true,
       "source_path": "derivatives/state/collector_state.json",
-      "details": {
-        "missing_exact_windows": {
-          "1H": 0,
-          "4H": 21,
-          "24H": 0
-        },
-        "universe_count": 21,
-        "ok_count": 21
-      }
+      "details": {}
     },
     {
       "component_id": "actor_retail",
       "display_name": "Actor Retail",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-10T02:58:32.920473Z",
-      "age_minutes": 22.4,
+      "timestamp_utc": "2026-09-10T03:58:30.228492Z",
+      "age_minutes": 20.9,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -120,7 +109,7 @@
       "status": "CURRENT OK",
       "icon": "🟢",
       "timestamp_utc": "2026-09-10T01:07:12.295666Z",
-      "age_minutes": 133.7,
+      "age_minutes": 192.2,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -139,21 +128,7 @@
       }
     }
   ],
-  "registered_market_alerts": [
-    {
-      "source_id": "us_net_liquidity",
-      "display_name": "US Net Liquidity Proxy",
-      "impact": "OPTIONAL",
-      "status": "FAILED",
-      "raw_source_health_status": "FAILED",
-      "reason_codes": [
-        "STATE_FILE_MISSING",
-        "LATEST_WORKFLOW_FAILED"
-      ],
-      "state_age_minutes": null,
-      "workflow_file": "net_liquidity_hourly.yml"
-    }
-  ],
+  "registered_market_alerts": [],
   "policy": {
     "operational_health_only": true,
     "never_changes_master_score_or_direction": true,
