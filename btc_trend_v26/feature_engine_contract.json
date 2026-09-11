@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "contract_id": "BTC_TREND_V26_FEATURE_ENGINE_R21",
   "master_id": "btc_trend",
   "production_version": "V2.6",
@@ -29,13 +29,14 @@
   },
   "market_bars": {
     "primary": "Bitget USDT Futures BTCUSDT public candles",
-    "endpoint": "https://api.bitget.com/api/v2/mix/market/candles",
-    "product_type": "USDT-FUTURES",
+    "endpoint": "https://api.bitget.com/api/v3/market/candles",
+    "category": "USDT-FUTURES",
     "intervals": ["4H", "1D"],
     "minimum_completed_bars": 205,
+    "request_limit": 260,
     "incomplete_candle_role": "OBSERVE_ONLY",
     "cross_venue_fallback_forbidden": true,
-    "reason": "GitHub hosted runners can access the same Bitget futures venue already used by the V2.6 derivatives source; Binance USD-M public endpoint returned HTTPError in first shadow run and is not used as a silent fallback."
+    "reason": "Use the same accessible Bitget USDT-futures market family as the V2.6 derivatives source. The first shadow run proved the Binance USD-M endpoint unavailable from the hosted runner, so no silent cross-venue fallback is allowed."
   },
   "ema_ma_stack": {
     "inputs": ["completed 4H close", "completed 1D close", "EMA20", "MA50", "MA200"],
