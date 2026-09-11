@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "contract_id": "BTC_TREND_V26_VALUE_OVEREXTENSION_R1",
+  "master_id": "btc_trend",
+  "production_version": "V2.6",
+  "status": "SHADOW_VALIDATION_ONLY",
+  "weight_in_trend": 7,
+  "inputs": ["completed BTCUSDT 1D OHLC", "EMA20", "ATR14", "RSI14 1D", "RSI14 1W"],
+  "classifier": {
+    "STRONG_LONG": "distance_from_ema20_atr<=-2 AND RSI1D<=30 AND RSI1W<=45",
+    "LONG": "distance_from_ema20_atr<=-1 AND RSI1D<=40",
+    "NEUTRAL": "otherwise",
+    "SHORT": "distance_from_ema20_atr>=1 AND RSI1D>=60",
+    "STRONG_SHORT": "distance_from_ema20_atr>=2 AND RSI1D>=70 AND RSI1W>=55"
+  },
+  "oos": {
+    "recent_exclusion_days": 120,
+    "evaluation_days": 1080,
+    "forward_target_days": 5,
+    "min_signals": 80,
+    "min_hit_rate_pct": 52,
+    "min_holdout_signals": 15,
+    "min_holdout_hit_rate_pct": 50,
+    "positive_average_return_required": true,
+    "min_positive_folds": 3
+  },
+  "coverage_policy": "7 points become CURRENT only if the predeclared OOS gate passes. Otherwise remain N_A_THRESHOLD_UNAPPROVED and add zero coverage.",
+  "anti_fabrication": {"missing_as_zero": false, "stale_substitution": false, "chat_memory_backfill": false},
+  "production_approved": false,
+  "official_state_write_allowed": false
+}
