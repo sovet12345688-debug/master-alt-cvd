@@ -1,0 +1,65 @@
+name: MASTER MARKET Score Recovery Shadow
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'market_scoring/**'
+      - 'market_vault/output/**'
+      - 'derivatives/output/latest_microstructure.json'
+      - 'state/master_market_v1_2_contract.json'
+      - 'master_prompts/master_market_v1_2_current.md'
+      - '.github/workflows/master_market_score_recovery_shadow.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-shadow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Syntax
+        run: |
+          python -m py_compile market_scoring/validate_score_engine.py market_scoring/run_shadow_score_engine.py
+
+      - name: Existing score safety guard
+        run: |
+          python market_scoring/validate_score_engine.py
+
+      - name: Run shadow scorer
+        run: |
+          python market_scoring/run_shadow_score_engine.py
+
+      - name: Validate shadow output
+        run: |
+          python - <<'PY'
+          import json
+          p='market_scoring/output/latest_shadow_scores.json'
+          x=json.load(open(p, encoding='utf-8'))
+          assert x['status']=='SHADOW_ONLY'
+          assert x['official_write_enabled'] is False
+          required=['liquidity_lead','crypto_money_inflow','alt_money_inflow','market_positive']
+          assert list(x['scores']) == required
+          for key in required:
+              row=x['scores'][key]
+              score=row['score']
+              coverage=row['coverage_pct']
+              assert 0 <= coverage <= 100
+              if score is not None:
+                  assert 0 <= score <= 100
+              assert row['status'] in ['SHADOW_OK','PARTIAL_SHADOW','N/A']
+          print('MASTER_MARKET_SCORE_RECOVERY_SHADOW=PASS')
+          PY
+
+      - name: Prove no OFFICIAL state mutation
+        run: |
+          git diff --exit-code -- state/master_market_official_history.csv official_state/latest official_state/history || {
+            echo 'SHADOW MUST NOT MUTATE OFFICIAL STATE'; exit 1;
+          }
