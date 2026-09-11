@@ -1,0 +1,115 @@
+name: MASTER MARKET Active Score Engine
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '58 * * * *'
+  pull_request:
+    paths:
+      - 'market_scoring/score_engine_contract.json'
+      - 'market_scoring/score_engine_candidate_v1.json'
+      - 'market_scoring/run_score_engine.py'
+      - 'market_scoring/validate_score_engine.py'
+      - '.github/workflows/master_market_score_engine_active.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'market_scoring/score_engine_contract.json'
+      - 'market_scoring/score_engine_candidate_v1.json'
+      - 'market_scoring/run_score_engine.py'
+      - 'market_scoring/validate_score_engine.py'
+      - '.github/workflows/master_market_score_engine_active.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: master-market-score-engine-active
+  cancel-in-progress: false
+
+jobs:
+  score:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Syntax
+        run: |
+          python -m py_compile market_scoring/validate_score_engine.py market_scoring/run_score_engine.py
+
+      - name: Require approved ACTIVE engine
+        run: python market_scoring/validate_score_engine.py --require-active
+
+      - name: Run production scorer
+        run: python market_scoring/run_score_engine.py
+
+      - name: Validate production output contract
+        run: |
+          python - <<'PY'
+          import json
+          p='market_scoring/output/latest_scores.json'
+          x=json.load(open(p, encoding='utf-8'))
+          assert x['engine']=='MASTER_MARKET_SCORE_ENGINE_V1'
+          assert x['status'] in ['ACTIVE_OK','PARTIAL','BLOCKED_SCORE_NA','BLOCKED_STALE_INPUT']
+          assert x['official_history_write_enabled'] is False
+          assert x['watch_history_write_enabled'] is False
+          assert x['anti_fallback']['last_known_score_reuse'] is False
+          assert x['anti_fallback']['na_as_zero'] is False
+          required=['liquidity_lead','crypto_money_inflow','alt_money_inflow','market_positive']
+          assert list(x['scores']) == required
+          for key in required:
+              row=x['scores'][key]
+              assert 0 <= row['coverage_pct'] <= 100
+              if row['score'] is not None:
+                  assert 0 <= row['score'] <= 100
+              assert row['status'] in ['ACTIVE_OK','PARTIAL','N/A']
+          print('MASTER_MARKET_ACTIVE_SCORE_OUTPUT=PASS')
+          PY
+
+      - name: Activation PR must remove structural N/A
+        if: github.event_name == 'pull_request'
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('market_scoring/output/latest_scores.json', encoding='utf-8'))
+          assert x['official_persistence_eligible'] is True, x
+          assert x['status'] in ['ACTIVE_OK','PARTIAL'], x['status']
+          missing=[k for k,v in x['scores'].items() if v['score'] is None]
+          assert not missing, missing
+          print('MASTER_MARKET_STRUCTURAL_NA_RECOVERY=PASS')
+          print({k:v['score'] for k,v in x['scores'].items()})
+          PY
+
+      - name: Prove scorer does not directly mutate OFFICIAL history
+        run: |
+          git diff --exit-code -- state/master_market_official_history.csv official_state/latest official_state/history || {
+            echo 'SCORE ENGINE MUST NOT DIRECTLY MUTATE OFFICIAL STATE'; exit 1;
+          }
+
+      - name: Commit current score output on main
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          git config user.name "master-market-score-bot"
+          git config user.email "master-market-score-bot@users.noreply.github.com"
+          git add market_scoring/output/latest_scores.json
+          if git diff --cached --quiet; then
+            echo "No score output change"
+            exit 0
+          fi
+          git commit -m "score: refresh MASTER MARKET active scores"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Final result
+        run: echo 'MASTER_MARKET_ACTIVE_SCORE_ENGINE=PASS'

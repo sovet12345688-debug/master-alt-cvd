@@ -1,10 +1,12 @@
 {
-  "schema_version": "1.0",
-  "engine_id": "MASTER_MARKET_SCORE_ENGINE",
-  "status": "BLOCKED_MISSING_AUTHORITATIVE_FORMULA",
-  "purpose": "Make the four MASTER MARKET score N/A causes deterministic and prevent silent reuse, back-solving, or invention of score weights.",
+  "schema_version": "2.0",
+  "engine_id": "MASTER_MARKET_SCORE_ENGINE_V1",
+  "status": "ACTIVE",
+  "purpose": "Authoritative deterministic implementation for the four MASTER MARKET core scores, activated after explicit user approval of the existing candidate formula on 2026-09-11 KST.",
   "canonical_source": "master_prompts/master_market_v1_2_current.md",
   "machine_contract": "state/master_market_v1_2_contract.json",
+  "approved_candidate_source": "market_scoring/score_engine_candidate_v1.json",
+  "active_output": "market_scoring/output/latest_scores.json",
   "locked_scores": [
     "market_positive",
     "liquidity_lead",
@@ -15,22 +17,132 @@
     "liquidity_lead": [55, 65, 75],
     "market_positive_bands": "0-29 very negative | 30-44 negative | 45-54 mixed | 55-64 weak positive | 65-79 positive | 80-100 very positive"
   },
-  "provenance_audit": {
-    "result": "NO_AUTHORITATIVE_AXIS_WEIGHTS_OR_FULL_FORMULAS_FOUND",
-    "checked": [
-      "current canonical prompt",
-      "current machine contract",
-      "initial MASTER MARKET V1.2 machine contract in repository history",
-      "current repository tree",
-      "official score history"
-    ],
-    "important_note": "Historical numeric scores exist, but they are observations, not an authoritative formula specification. They must not be reverse-engineered into weights."
+  "formula_spec": {
+    "liquidity_lead": {
+      "weights": {
+        "us_net_liquidity": 20,
+        "tga_change": 10,
+        "fed_reserves": 10,
+        "us10y_real_yield": 15,
+        "dxy": 10,
+        "treasury_qra": 10,
+        "treasury_buyback": 5,
+        "btc_etf_flow": 10,
+        "stablecoin_total_flow": 10
+      },
+      "transforms": {
+        "us_net_liquidity": {"cuts": [-2.0, -0.5, 0.5, 2.0], "inverse": false, "source": "latest_macro_liquidity.US_NET_LIQUIDITY_PROXY.vs_1d.delta_pct"},
+        "tga_change": {"cuts": [-5.0, -1.0, 1.0, 5.0], "inverse": true, "source": "latest_summary.TGA_CLOSING_BALANCE.vs_24h.delta_pct"},
+        "fed_reserves": {"cuts": [-2.0, -0.5, 0.5, 2.0], "inverse": false, "source": "latest_macro_liquidity.FED_RESERVE_BALANCES.vs_1d.delta_pct"},
+        "us10y_real_yield": {"cuts": [-0.15, -0.05, 0.05, 0.15], "inverse": true, "source": "latest_summary.US10Y_REAL.vs_24h.delta"},
+        "dxy": {"cuts": [-1.0, -0.3, 0.3, 1.0], "inverse": true, "source": "latest_summary.DXY.vs_24h.delta_pct"},
+        "treasury_qra": {"cuts": [400.0, 600.0, 800.0, 1000.0], "inverse": true, "source": "latest_macro_liquidity.QRA_NET_MARKETABLE_BORROWING_CURRENT_Q.value"},
+        "treasury_buyback": {"cuts": [1000000000.0, 5000000000.0, 10000000000.0, 15000000000.0], "inverse": false, "source": "latest_macro_liquidity.TREASURY_BUYBACK_ACTUAL_ACCEPTED.value"},
+        "btc_etf_flow": {"cuts": [-300.0, -100.0, 100.0, 300.0], "inverse": false, "source": "latest_etf_flows.BTC.flow_1d_usd_m"},
+        "stablecoin_total_flow": {"cuts": [-1000000000.0, -250000000.0, 250000000.0, 1000000000.0], "inverse": false, "source": "latest_summary.STABLECOIN_TOTAL_SUPPLY.vs_24h.delta"}
+      },
+      "production_thresholds_locked": [55, 65, 75]
+    },
+    "crypto_money_inflow": {
+      "weights": {
+        "btc_etf_1d": 25,
+        "btc_etf_3d": 10,
+        "eth_etf_1d": 10,
+        "stablecoin_total_1d": 15,
+        "stablecoin_total_7d": 10,
+        "btc_whale_net": 15,
+        "eth_whale_net": 5,
+        "total_market_cap_1d": 5,
+        "market_volume_1d": 5
+      },
+      "transforms": {
+        "btc_etf_1d": {"cuts": [-300.0, -100.0, 100.0, 300.0], "inverse": false},
+        "btc_etf_3d": {"cuts": [-600.0, -200.0, 200.0, 600.0], "inverse": false},
+        "eth_etf_1d": {"cuts": [-150.0, -50.0, 50.0, 150.0], "inverse": false},
+        "stablecoin_total_1d": {"cuts": [-1000000000.0, -250000000.0, 250000000.0, 1000000000.0], "inverse": false},
+        "stablecoin_total_7d": {"cuts": [-3000000000.0, -1000000000.0, 1000000000.0, 3000000000.0], "inverse": false},
+        "btc_whale_net": {"cuts": [-300000000.0, -100000000.0, 100000000.0, 300000000.0], "inverse": false},
+        "eth_whale_net": {"cuts": [-200000000.0, -75000000.0, 75000000.0, 200000000.0], "inverse": false},
+        "total_market_cap_1d": {"cuts": [-3.0, -1.0, 1.0, 3.0], "inverse": false},
+        "market_volume_1d": {"cuts": [-15.0, -5.0, 5.0, 15.0], "inverse": false}
+      }
+    },
+    "alt_money_inflow": {
+      "weights": {
+        "eth_etf_1d": 20,
+        "eth_etf_7d": 10,
+        "eth_whale_net": 15,
+        "eth_dominance_change": 15,
+        "btc_dominance_inverse_change": 15,
+        "total_market_cap_1d": 10,
+        "market_volume_1d": 5,
+        "stablecoin_total_7d": 10
+      },
+      "transforms": {
+        "eth_etf_1d": {"cuts": [-150.0, -50.0, 50.0, 150.0], "inverse": false},
+        "eth_etf_7d": {"cuts": [-500.0, -150.0, 150.0, 500.0], "inverse": false},
+        "eth_whale_net": {"cuts": [-200000000.0, -75000000.0, 75000000.0, 200000000.0], "inverse": false},
+        "eth_dominance_change": {"cuts": [-0.5, -0.1, 0.1, 0.5], "inverse": false},
+        "btc_dominance_inverse_change": {"cuts": [-0.5, -0.1, 0.1, 0.5], "inverse": true},
+        "total_market_cap_1d": {"cuts": [-3.0, -1.0, 1.0, 3.0], "inverse": false},
+        "market_volume_1d": {"cuts": [-15.0, -5.0, 5.0, 15.0], "inverse": false},
+        "stablecoin_total_7d": {"cuts": [-3000000000.0, -1000000000.0, 1000000000.0, 3000000000.0], "inverse": false}
+      }
+    },
+    "market_positive": {
+      "weights": {
+        "liquidity_lead": 30,
+        "crypto_money_inflow": 25,
+        "alt_money_inflow": 10,
+        "btc_whale_net": 10,
+        "btc_derivatives_state": 10,
+        "market_breadth_state": 5,
+        "rates_macro_state": 5,
+        "oil_geopolitical_state": 5
+      },
+      "transforms": {
+        "btc_whale_net": {"cuts": [-300000000.0, -100000000.0, 100000000.0, 300000000.0], "inverse": false},
+        "btc_derivatives_cvd": {"cuts": [-25000000.0, -5000000.0, 5000000.0, 25000000.0], "inverse": false},
+        "btc_derivatives_taker_buy_ratio": {"cuts": [0.40, 0.47, 0.53, 0.60], "inverse": false},
+        "market_breadth_state": {"cuts": [-3.0, -1.0, 1.0, 3.0], "inverse": false},
+        "rates_macro_state": {"cuts": [-0.15, -0.05, 0.05, 0.15], "inverse": true},
+        "oil_geopolitical_state": {"cuts": [-5.0, -1.0, 1.0, 5.0], "inverse": true}
+      },
+      "bands_locked": "0-29 very negative | 30-44 negative | 45-54 mixed | 55-64 weak positive | 65-79 positive | 80-100 very positive"
+    }
   },
-  "activation_gate": {
-    "requires_authoritative_formula": true,
-    "new_or_changed_score_weights_require_explicit_user_approval": true,
-    "threshold_changes_require_explicit_user_approval": true,
-    "can_activate_from_historical_scores_only": false
+  "calculation_policy": {
+    "confirmed_weight_renormalization": true,
+    "partial_numeric_allowed": true,
+    "coverage_below_70": "Emit numeric PARTIAL score only from confirmed components; confidence cap C; no strong threshold alert.",
+    "no_confirmed_components": "N/A",
+    "current_score_source": "market_scoring/output/latest_scores.json",
+    "official_history_source": "state/master_market_official_history.csv",
+    "watch_history_write_forbidden": true,
+    "official_only_history_update": true
+  },
+  "freshness_policy": {
+    "machine_output_max_age_minutes": 180,
+    "stale_required_input_behavior": "FAIL_CLOSED_NA",
+    "source_publication_age": "Use collector source-time semantics; the machine output itself must be current even when the underlying official source is daily/weekly."
+  },
+  "provenance_audit": {
+    "result": "EXPLICIT_USER_APPROVAL_RECEIVED_FOR_EXISTING_CANDIDATE_FORMULA",
+    "prior_state": "BLOCKED_MISSING_AUTHORITATIVE_FORMULA",
+    "candidate_origin": "SHADOW candidate introduced by PR #22 without modifying OFFICIAL history",
+    "historical_scores_used_to_fit_weights": false,
+    "important_note": "Weights/cutoffs are the previously exposed candidate values approved as-is by the user; historical score rows were not reverse-engineered."
+  },
+  "activation_approval": {
+    "explicit_user_approval": true,
+    "approved_at_kst": "2026-09-11T10:04:10+09:00",
+    "approval_scope": [
+      "candidate weights",
+      "component transforms/cutoffs",
+      "partial-score production policy",
+      "ACTIVE production score generation",
+      "OFFICIAL persistence eligibility"
+    ]
   },
   "forbidden_fallbacks": [
     "copy last known score into current score",
@@ -38,17 +150,5 @@
     "regress or back-solve weights from historical score rows",
     "invent equal weights",
     "silently substitute a different score definition"
-  ],
-  "allowed_recovery_before_activation": [
-    "repair OFFICIAL persistence pipeline",
-    "preserve and expose last confirmed score as prior/history only",
-    "collect all required current axes and history",
-    "validate source freshness and coverage",
-    "prepare an inactive candidate score specification for explicit approval"
-  ],
-  "n_a_classification": {
-    "current_score_without_authoritative_formula": "현재 구조상 불가",
-    "auto_resolves_with_time": false,
-    "required_fix": "authoritative scoring formula/weights must be explicitly approved and encoded; then deterministic scorer can be activated"
-  }
+  ]
 }

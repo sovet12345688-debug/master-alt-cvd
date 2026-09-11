@@ -1,10 +1,11 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "engine_id": "MASTER_MARKET_SCORE_ENGINE_CANDIDATE_V1",
-  "status": "SHADOW_ONLY_PENDING_EXPLICIT_USER_APPROVAL",
-  "purpose": "Deterministic candidate formulas for the four MASTER MARKET scores. This file is additive and inactive: it MUST NOT write OFFICIAL history or replace production score values until explicit user approval activates it.",
+  "status": "PROMOTED_TO_ACTIVE",
+  "purpose": "Historical record of the deterministic candidate formulas for the four MASTER MARKET scores. The candidate was explicitly approved as-is and promoted to the active score-engine contract on 2026-09-11 KST.",
   "canonical_source": "master_prompts/master_market_v1_2_current.md",
   "machine_contract": "state/master_market_v1_2_contract.json",
+  "active_contract": "market_scoring/score_engine_contract.json",
   "safety": {
     "official_write_enabled": false,
     "watch_write_enabled": false,
@@ -12,7 +13,7 @@
     "na_as_zero_forbidden": true,
     "backsolve_from_history_forbidden": true,
     "cross_master_inputs_forbidden": true,
-    "coverage_partial_rule": "Renormalize only confirmed component weights. If confirmed weight coverage <70%, numeric score may be emitted only as PARTIAL_SHADOW and confidence is capped at C.",
+    "coverage_partial_rule": "Renormalize only confirmed component weights. If confirmed weight coverage <70%, numeric score may be emitted only as partial with confidence capped at C and no strong threshold alert.",
     "double_count_guard": "A raw event may influence only its owning component. Oil may affect macro risk directly; do not deduct the same oil move again through rates if yields already independently capture the observed move."
   },
   "formula_spec": {
@@ -28,7 +29,7 @@
         "btc_etf_flow": 10,
         "stablecoin_total_flow": 10
       },
-      "production_thresholds_locked": [55,65,75]
+      "production_thresholds_locked": [55, 65, 75]
     },
     "crypto_money_inflow": {
       "weights": {
@@ -71,12 +72,22 @@
   },
   "activation_gate": {
     "requires_explicit_user_approval": true,
-    "approval_must_cover": [
+    "approval_satisfied": true,
+    "approved_at_kst": "2026-09-11T10:04:10+09:00",
+    "approval_scope": [
       "candidate weights",
       "component transforms/cutoffs",
       "partial-score production policy",
-      "activation of OFFICIAL persistence"
+      "ACTIVE production score generation",
+      "OFFICIAL persistence eligibility"
     ],
-    "until_approved": "SHADOW outputs only; no OFFICIAL score/history mutation"
+    "until_approved": "SHADOW outputs only; no OFFICIAL score/history mutation",
+    "current_state": "PROMOTED_TO_ACTIVE"
+  },
+  "promotion": {
+    "explicit_user_approval": true,
+    "approved_at_kst": "2026-09-11T10:04:10+09:00",
+    "promoted_to": "market_scoring/score_engine_contract.json",
+    "production_output": "market_scoring/output/latest_scores.json"
   }
 }
