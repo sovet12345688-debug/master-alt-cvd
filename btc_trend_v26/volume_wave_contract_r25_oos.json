@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0",
+  "contract_id": "BTC_TREND_V26_VOLUME_WAVE_R25_EXTENDED_OOS",
+  "master_id": "btc_trend",
+  "production_version": "V2.6",
+  "status": "SHADOW_OOS_ONLY",
+  "candidate": "A_STRICT",
+  "candidate_semantics": "Reuse R2.4 evidence-aware classifier. VOLUME_WAVE is CURRENT only when completed 1D and completed 4H both provide directional evidence in the same direction, or both are TRUE_NEUTRAL. INSUFFICIENT_EVIDENCE contributes zero coverage.",
+  "purpose": "Validate the fixed R2.4 A_STRICT candidate on an older historical window excluded from the recent R2.4 shadow sample before any production promotion decision.",
+  "evaluation": {
+    "recent_exclusion_days": 120,
+    "historical_oos_days": 720,
+    "warmup_days": 60,
+    "forward_target": "next completed 1D close",
+    "fold_count": 4,
+    "holdout": "last 25 percent of extended OOS window"
+  },
+  "predeclared_promotion_gate": {
+    "min_total_signals": 40,
+    "min_total_hit_rate_pct": 53.0,
+    "total_avg_signed_forward_return": ">0",
+    "min_holdout_signals": 8,
+    "min_holdout_hit_rate_pct": 50.0,
+    "holdout_avg_signed_forward_return": ">0",
+    "min_positive_folds": 3
+  },
+  "source": {
+    "venue": "Bitget USDT Futures",
+    "symbol": "BTCUSDT",
+    "endpoint": "/api/v3/market/history-candles",
+    "timeframes": ["1D", "4H"],
+    "completed_candle_only": true
+  },
+  "anti_overfit": {
+    "candidate_fixed_before_r25_run": true,
+    "r24_thresholds_frozen": true,
+    "no_threshold_retuning_after_r25_result": true,
+    "b_primary_is_diagnostic_only": true,
+    "recent_120_days_excluded_from_extended_oos": true
+  },
+  "production_approved": false,
+  "official_state_write_allowed": false,
+  "promotion_policy": "R2.5 PASS creates a production-promotion candidate only. Main branch and official BASIC OFFICIAL remain unchanged until explicit merge validation."
+}
