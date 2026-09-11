@@ -3,7 +3,7 @@
   "contract_id": "BTC_TREND_V26_ACCUM_FASTPATH_V1",
   "master_id": "BTC_TREND_CURRENT",
   "production_version": "V2.6",
-  "status": "RESEARCH_SHADOW",
+  "status": "READY_LIMITED_DISPLAY",
   "purpose": "Coverage-gated ACCUMULATION partial score using only already-validated R2.2 structure features and current BTC ETF flow. This is a conservative transition/base proxy, not a full V2.6 accumulation model.",
   "weights": {
     "ACCUM_BASE_1D": 20,
@@ -16,6 +16,7 @@
   "missing_policy": "EXCLUDE_AND_RENORMALIZE_VALID_WEIGHT",
   "coverage_policy": {
     "display_shadow_min_pct": 50,
+    "display_min_pct": 50,
     "strong_confirmation_min_pct": 70,
     "below_70_label": "부분산출",
     "below_70_effect": "DISPLAY_ONLY_ZERO_GATE_EFFECT"
@@ -80,16 +81,19 @@
       "ACCUM_MACRO"
     ]
   },
-  "promotion_requirements": [
-    "current live shadow run succeeds",
-    "coverage >= 50",
-    "same-run artifact and SHA256 provenance are generated",
-    "score remains display-only below 70 coverage",
-    "explicit manifest and bridge promotion commit"
-  ],
+  "validation_evidence": {
+    "shadow_workflow": "BTC TREND V2.6 ACCUM Fastpath Shadow",
+    "shadow_run_conclusion": "success",
+    "verified_coverage_pct": 53,
+    "verified_score_range": true,
+    "verified_same_run_artifact": true,
+    "verified_score_sha256_provenance": true,
+    "verified_zero_entry_gate_effect": true,
+    "verified_zero_cross_score_effects": true
+  },
   "hard_safety": {
     "engine_direct_official_state_write_allowed": false,
-    "basic_official_verified_display_allowed": false,
+    "basic_official_verified_display_allowed": true,
     "historical_backfill_forbidden": true,
     "entry_gate_effect": 0,
     "long_short_effect": 0,
