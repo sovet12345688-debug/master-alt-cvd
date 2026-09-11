@@ -2,7 +2,7 @@
   "engine": "MASTER_MARKET_SCORE_ENGINE_V1",
   "schema_version": "1.0",
   "status": "ACTIVE_OK",
-  "generated_at_utc": "2026-09-11T13:01:58.098821Z",
+  "generated_at_utc": "2026-09-11T14:02:15.756683Z",
   "activation_approval": {
     "explicit_user_approval": true,
     "approved_at_kst": "2026-09-11T10:04:10+09:00",
@@ -15,11 +15,11 @@
     ]
   },
   "source_age_minutes": {
-    "vault": 2.4,
-    "macro": 3.4,
-    "etf": 11.4,
-    "actors": 2.4,
-    "derivatives": 37.6
+    "vault": 3.7,
+    "macro": 5.4,
+    "etf": 15.3,
+    "actors": 3.7,
+    "derivatives": 41.5
   },
   "overall_coverage_pct": 90.0,
   "confidence_cap": null,
@@ -47,7 +47,7 @@
       }
     },
     "crypto_money_inflow": {
-      "score": 38.8,
+      "score": 41.2,
       "coverage_pct": 100.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
@@ -59,13 +59,13 @@
         "stablecoin_total_1d": 50.0,
         "stablecoin_total_7d": 50.0,
         "btc_whale_net": 25.0,
-        "eth_whale_net": 25.0,
-        "total_market_cap_1d": 50.0,
-        "market_volume_1d": 100.0
+        "eth_whale_net": 75.0,
+        "total_market_cap_1d": 100.0,
+        "market_volume_1d": 50.0
       }
     },
     "alt_money_inflow": {
-      "score": 52.5,
+      "score": 66.2,
       "coverage_pct": 100.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
@@ -73,27 +73,27 @@
       "components": {
         "eth_etf_1d": 50.0,
         "eth_etf_7d": 50.0,
-        "eth_whale_net": 25.0,
+        "eth_whale_net": 75.0,
         "eth_dominance_change": 75.0,
-        "btc_dominance_inverse_change": 50.0,
-        "total_market_cap_1d": 50.0,
-        "market_volume_1d": 100.0,
+        "btc_dominance_inverse_change": 75.0,
+        "total_market_cap_1d": 100.0,
+        "market_volume_1d": 50.0,
         "stablecoin_total_7d": 50.0
       }
     },
     "market_positive": {
-      "score": 47.3,
+      "score": 56.0,
       "coverage_pct": 95.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
       "threshold_alert_allowed": true,
       "components": {
         "liquidity_lead": 62.5,
-        "crypto_money_inflow": 38.8,
-        "alt_money_inflow": 52.5,
+        "crypto_money_inflow": 41.2,
+        "alt_money_inflow": 66.2,
         "btc_whale_net": 25.0,
-        "btc_derivatives_state": 50.0,
-        "market_breadth_state": 50.0,
+        "btc_derivatives_state": 87.5,
+        "market_breadth_state": 100.0,
         "rates_macro_state": 25.0,
         "oil_geopolitical_state": null
       }
@@ -107,7 +107,7 @@
       75
     ],
     "liquidity_threshold_alert_allowed": true,
-    "market_positive_band": "혼합"
+    "market_positive_band": "약한 긍정"
   },
   "anti_fallback": {
     "last_known_score_reuse": false,
