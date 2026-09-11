@@ -116,9 +116,10 @@ def compute_trend_score(feature_payload: dict[str, Any], contract: dict[str, Any
 
     coverage_pct = (valid_weight / total_weight * Decimal("100")) if total_weight else Decimal("0")
     grade = coverage_grade(coverage_pct)
+    limited_display_eligible = valid_weight > 0 and coverage_pct >= Decimal("50")
 
     base = {
-        "schema_version": "1.0",
+        "schema_version": "1.1",
         "engine_id": "BTC_TREND_V26_TREND_SCORE_ENGINE_R2",
         "asof_utc": feature_payload["asof_utc"],
         "coverage_pct": float(coverage_pct.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)),
@@ -127,6 +128,9 @@ def compute_trend_score(feature_payload: dict[str, Any], contract: dict[str, Any
         "components": components,
         "unavailable_features": unavailable,
         "strong_confirmation_coverage_met": coverage_pct >= Decimal(str(c["coverage"]["strong_confirmation_min"])),
+        "limited_display_eligible": limited_display_eligible,
+        "limited_display_scope": ["LONG_SHORT_RATIO", "TREND_STRENGTH"] if limited_display_eligible else [],
+        "limited_display_rule": "Coverage C or better may be displayed with coverage label; coverage below 70 cannot be strong confirmation or independently alter Entry Gate.",
         "calibrated_probability": False,
         "entry_signal": False,
         "production_eligible": False,
@@ -183,10 +187,12 @@ def main() -> int:
         result = compute_trend_score(payload)
     except (OSError, json.JSONDecodeError, ScoreValidationError) as exc:
         result = {
-            "schema_version": "1.0",
+            "schema_version": "1.1",
             "engine_id": "BTC_TREND_V26_TREND_SCORE_ENGINE_R2",
             "status": "VALIDATION_FAIL",
             "error": str(exc),
+            "limited_display_eligible": False,
+            "limited_display_scope": [],
             "production_eligible": False,
         }
         text = json.dumps(result, ensure_ascii=False, indent=2) + "\n"
