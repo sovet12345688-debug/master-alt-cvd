@@ -1,0 +1,118 @@
+name: BTC TREND V2.6 Machine Ratio Bridge
+
+on:
+  workflow_dispatch:
+  schedule:
+    # KST 04:45 / 07:45 / 12:45 / 16:45 / 20:45. Scheduled runs activate after this workflow is on main.
+    - cron: '45 3,7,11,19,22 * * *'
+  push:
+    branches:
+      - main
+      - btc-trend-v26-na-recovery-r1
+    paths:
+      - '.github/workflows/btc_trend_v26_machine_ratio_bridge.yml'
+      - 'btc_trend_v26/score_engine.py'
+      - 'btc_trend_v26/structure_engine_r22.py'
+      - 'btc_trend_v26/feature_engine_r22.py'
+
+permissions:
+  contents: read
+
+jobs:
+  machine-ratio-bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout frozen validated runtime
+        uses: actions/checkout@v4
+        with:
+          ref: a75413240b60fefcbd3bec52a9792658b7f47fbb
+          fetch-depth: 1
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Unit tests
+        working-directory: btc_trend_v26
+        run: |
+          python -m unittest -v test_structure_engine_r22.py
+          python -m unittest -v test_feature_engine.py
+          python -m unittest -v test_score_engine.py
+
+      - name: Structure replay validation
+        run: python btc_trend_v26/validate_structure_r22.py --output btc_trend_v26/output/structure_validation_r22.json
+
+      - name: Build current features
+        run: python btc_trend_v26/feature_engine_r22.py --output btc_trend_v26/output/latest_features_r22.json
+
+      - name: Build current machine ratio
+        run: python btc_trend_v26/score_engine.py btc_trend_v26/output/latest_features_r22.json --output btc_trend_v26/output/latest_score_r22.json
+
+      - name: Validate limited display and build provenance
+        env:
+          GITHUB_RUN_ID_VALUE: ${{ github.run_id }}
+        run: |
+          python - <<'PY'
+          import hashlib, json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          out = Path('btc_trend_v26/output')
+          feature_path = out / 'latest_features_r22.json'
+          score_path = out / 'latest_score_r22.json'
+          validation_path = out / 'structure_validation_r22.json'
+          f = json.loads(feature_path.read_text())
+          s = json.loads(score_path.read_text())
+          v = json.loads(validation_path.read_text())
+          assert v.get('status') == 'PASS', v
+          assert s.get('status') == 'OK', s
+          assert s.get('limited_display_eligible') is True, s
+          assert float(s.get('coverage_pct', 0)) >= 50.0, s
+          assert int(s['long']) + int(s['short']) == 100, s
+          assert 0 <= int(s['trend_strength']) <= 100, s
+          assert f.get('official_state_write_allowed') is False, f
+          assert s.get('production_eligible') is False, s
+
+          def sha(path):
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+          provenance = {
+              'schema_version': '1.0',
+              'provenance_contract': 'BTC_TREND_V26_MACHINE_RATIO_PROVENANCE_V1',
+              'workflow_run_id': int(os.environ['GITHUB_RUN_ID_VALUE']),
+              'workflow_name': 'BTC TREND V2.6 Machine Ratio Bridge',
+              'runtime_source_ref': 'a75413240b60fefcbd3bec52a9792658b7f47fbb',
+              'generated_at_utc': datetime.now(timezone.utc).isoformat().replace('+00:00','Z'),
+              'feature_sha256': sha(feature_path),
+              'score_sha256': sha(score_path),
+              'validation_sha256': sha(validation_path),
+              'coverage_pct': s['coverage_pct'],
+              'coverage_grade': s['coverage_grade'],
+              'long': s['long'],
+              'short': s['short'],
+              'trend_strength': s['trend_strength'],
+              'dominant_state': s['dominant_state'],
+              'limited_display_eligible': True,
+              'strong_confirmation_coverage_met': s['strong_confirmation_coverage_met'],
+              'allowed_output_scope': ['LONG_SHORT_RATIO','TREND_STRENGTH','TREND_DOMINANT_STATE','TREND_COVERAGE'],
+              'official_state_write_allowed': False
+          }
+          (out / 'bridge_provenance.json').write_text(json.dumps(provenance, ensure_ascii=False, indent=2) + '\n')
+          print(json.dumps(provenance, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Upload machine ratio artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v26-machine-ratio-${{ github.run_id }}
+          path: |
+            btc_trend_v26/output/latest_features_r22.json
+            btc_trend_v26/output/latest_score_r22.json
+            btc_trend_v26/output/structure_validation_r22.json
+            btc_trend_v26/output/bridge_provenance.json
+          if-no-files-found: error
+          retention-days: 14
