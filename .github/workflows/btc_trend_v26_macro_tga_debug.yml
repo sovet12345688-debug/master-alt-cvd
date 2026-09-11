@@ -1,0 +1,31 @@
+name: BTC TREND V2.6 Macro TGA Debug
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [btc-trend-v26-macro-r1]
+    paths: ['.github/workflows/btc_trend_v26_macro_tga_debug.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  tga-debug:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: Inspect FiscalData response
+        run: |
+          python - <<'PY'
+          import requests, json
+          url='https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/dts/operating_cash_balance'
+          params={'sort':'record_date','page[size]':'20','fields':'record_date,account_type,close_today_bal,open_today_bal','format':'json','filter':'record_date:gte:2025-01-01,record_date:lte:2025-01-10'}
+          r=requests.get(url,params=params,timeout=30); print('status',r.status_code,'url',r.url); r.raise_for_status(); d=r.json()
+          print('meta',json.dumps(d.get('meta'),indent=2)[:4000])
+          print('rows',len(d.get('data') or []))
+          print(json.dumps((d.get('data') or [])[:20],indent=2)[:12000])
+          PY
