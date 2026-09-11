@@ -1,0 +1,118 @@
+{
+  "engine": "MASTER_MARKET_SCORE_ENGINE_V1",
+  "schema_version": "1.0",
+  "status": "ACTIVE_OK",
+  "generated_at_utc": "2026-09-11T01:11:20.470166Z",
+  "activation_approval": {
+    "explicit_user_approval": true,
+    "approved_at_kst": "2026-09-11T10:04:10+09:00",
+    "approval_scope": [
+      "candidate weights",
+      "component transforms/cutoffs",
+      "partial-score production policy",
+      "ACTIVE production score generation",
+      "OFFICIAL persistence eligibility"
+    ]
+  },
+  "source_age_minutes": {
+    "vault": 11.4,
+    "macro": 13.5,
+    "etf": 23.0,
+    "actors": 11.4,
+    "derivatives": 45.2
+  },
+  "overall_coverage_pct": 90.0,
+  "confidence_cap": null,
+  "official_persistence_eligible": true,
+  "official_history_write_enabled": false,
+  "watch_history_write_enabled": false,
+  "score_history_source": "state/master_market_official_history.csv",
+  "scores": {
+    "liquidity_lead": {
+      "score": 62.5,
+      "coverage_pct": 90.0,
+      "status": "ACTIVE_OK",
+      "confidence_cap": null,
+      "threshold_alert_allowed": true,
+      "components": {
+        "us_net_liquidity": 100.0,
+        "tga_change": 75.0,
+        "fed_reserves": 100.0,
+        "us10y_real_yield": 25.0,
+        "dxy": null,
+        "treasury_qra": 50.0,
+        "treasury_buyback": 50.0,
+        "btc_etf_flow": 25.0,
+        "stablecoin_total_flow": 50.0
+      }
+    },
+    "crypto_money_inflow": {
+      "score": 35.0,
+      "coverage_pct": 100.0,
+      "status": "ACTIVE_OK",
+      "confidence_cap": null,
+      "threshold_alert_allowed": true,
+      "components": {
+        "btc_etf_1d": 25.0,
+        "btc_etf_3d": 25.0,
+        "eth_etf_1d": 50.0,
+        "stablecoin_total_1d": 50.0,
+        "stablecoin_total_7d": 50.0,
+        "btc_whale_net": 25.0,
+        "eth_whale_net": 50.0,
+        "total_market_cap_1d": 25.0,
+        "market_volume_1d": 25.0
+      }
+    },
+    "alt_money_inflow": {
+      "score": 53.8,
+      "coverage_pct": 100.0,
+      "status": "ACTIVE_OK",
+      "confidence_cap": null,
+      "threshold_alert_allowed": true,
+      "components": {
+        "eth_etf_1d": 50.0,
+        "eth_etf_7d": 50.0,
+        "eth_whale_net": 50.0,
+        "eth_dominance_change": 75.0,
+        "btc_dominance_inverse_change": 75.0,
+        "total_market_cap_1d": 25.0,
+        "market_volume_1d": 25.0,
+        "stablecoin_total_7d": 50.0
+      }
+    },
+    "market_positive": {
+      "score": 47.8,
+      "coverage_pct": 95.0,
+      "status": "ACTIVE_OK",
+      "confidence_cap": null,
+      "threshold_alert_allowed": true,
+      "components": {
+        "liquidity_lead": 62.5,
+        "crypto_money_inflow": 35.0,
+        "alt_money_inflow": 53.8,
+        "btc_whale_net": 25.0,
+        "btc_derivatives_state": 75.0,
+        "market_breadth_state": 25.0,
+        "rates_macro_state": 25.0,
+        "oil_geopolitical_state": null
+      }
+    }
+  },
+  "display": {
+    "liquidity_stage": "상승 초입 신호",
+    "liquidity_thresholds": [
+      55,
+      65,
+      75
+    ],
+    "liquidity_threshold_alert_allowed": true,
+    "market_positive_band": "혼합"
+  },
+  "anti_fallback": {
+    "last_known_score_reuse": false,
+    "na_as_zero": false,
+    "historical_backsolve": false,
+    "cross_master_inputs": false
+  }
+}
