@@ -1,0 +1,92 @@
+{
+  "schema_version": "1.0",
+  "contract_id": "BTC_TREND_V26_BOTTOM_SCORE_BRIDGE_V1",
+  "master_id": "BTC_TREND_CURRENT",
+  "production_version": "V2.6",
+  "status": "READY_LIMITED_DISPLAY",
+  "purpose": "Remove structural BOTTOM N/A with a deterministic partial machine score when Coverage C or better is available, while preserving fail-closed behavior and zero independent Entry Gate authority below strong-confirmation coverage.",
+  "manifest_registration": {
+    "required": true,
+    "manifest_path": "money_master_os/masters/btc_trend/manifest.json",
+    "manifest_key": "bottom_score_bridge_contract"
+  },
+  "source": {
+    "repo": "sovet12345688-debug/master-alt-cvd",
+    "workflow_name": "BTC TREND V2.6 BOTTOM Fastpath Shadow",
+    "workflow_file": ".github/workflows/btc_trend_v26_bottom_fastpath.yml",
+    "score_file_in_artifact": "latest_bottom_fastpath.json",
+    "provenance_file_in_artifact": "bottom_bridge_provenance.json",
+    "artifact_name_pattern": "btc-trend-v26-bottom-fastpath-{workflow_run_id}"
+  },
+  "schedule_kst": {
+    "05:00": "04:40",
+    "08:00": "07:40",
+    "13:00": "12:40",
+    "17:00": "16:40",
+    "21:00": "20:40"
+  },
+  "selection": {
+    "workflow_status": "completed",
+    "workflow_conclusion": "success",
+    "must_complete_before_master_report_start": true,
+    "same_run_artifact_required": true,
+    "provenance_contract": "BTC_TREND_V26_BOTTOM_SCORE_PROVENANCE_V1",
+    "max_score_age_minutes_at_report": 75,
+    "future_run_forbidden": true,
+    "failed_or_in_progress_run_forbidden": true,
+    "previous_score_substitution_forbidden": true,
+    "chat_memory_backfill_forbidden": true
+  },
+  "acceptance": {
+    "engine_status": "OK_SHADOW",
+    "coverage_min_pct": 50,
+    "bottom_score_range": [0, 100],
+    "score_sha256_must_match_provenance": true,
+    "confirmed_1d_turn_false_max_score": 59
+  },
+  "coverage_policy": {
+    "A": ">=85",
+    "B": "70-84",
+    "C": "50-69",
+    "LOW": "<50",
+    "display_allowed_min": 50,
+    "strong_confirmation_min": 70,
+    "below_70_label": "부분산출",
+    "below_70_behavior": "Display BOTTOM score with Coverage grade and partial-output label only. It must not independently pass Entry Gate, change LONG:SHORT, or change LIVE PLAN.",
+    "below_50_behavior": "BOTTOM_UNAVAILABLE -> N/A"
+  },
+  "allowed_output_scope": [
+    "BOTTOM_SCORE",
+    "BOTTOM_BAND",
+    "BOTTOM_COVERAGE",
+    "BOTTOM_CONFIRMED_1D_TURN"
+  ],
+  "forbidden_effects": [
+    "LONG_SHORT_RATIO",
+    "TREND_STRENGTH",
+    "IGNITION",
+    "MATURITY",
+    "TOP",
+    "ACCUMULATION",
+    "ENTRY_GATE",
+    "LIVE_PLAN",
+    "FRACTAL",
+    "SUPPORT_RESISTANCE",
+    "BTC_LEADING_SIGNAL_ENGINE"
+  ],
+  "persistence": {
+    "engine_direct_official_state_write_allowed": false,
+    "basic_official_may_persist_verified_display_value": true,
+    "persist_only_as_actual_basic_official_output": true,
+    "historical_backfill_forbidden": true
+  },
+  "fail_closed": {
+    "source_unavailable": "N/A",
+    "artifact_missing": "N/A",
+    "provenance_mismatch": "N/A",
+    "coverage_below_50": "N/A",
+    "validation_fail": "N/A",
+    "stale_score": "N/A",
+    "invent_or_estimate_missing_score": false
+  }
+}
