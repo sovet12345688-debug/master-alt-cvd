@@ -3,7 +3,7 @@
   "contract_id": "BTC_TREND_V26_LIQUIDITY_MACRO_R21_PROMOTION_CANDIDATE",
   "master_id": "btc_trend",
   "production_version": "V2.6",
-  "status": "PROMOTION_CANDIDATE_PENDING_REGRESSION",
+  "status": "REGRESSION_PASS_READY_FOR_EXPLICIT_APPROVAL",
   "weight_in_trend": 10,
   "engine": "btc_trend_v26/liquidity_macro_engine_r21.py",
   "current_source": "market_vault/output/latest_summary.json",
@@ -29,15 +29,23 @@
     "holdout_positive_average_return_required": true,
     "min_positive_folds": 3
   },
-  "required_regression": [
-    "latest-main feature engine completes",
-    "latest-main score engine completes",
-    "OOS promotion_gate remains PASS without threshold changes",
-    "LIQUIDITY_MACRO adds exactly 10 valid weight",
-    "all non-Macro feature states are unchanged by injection",
-    "LONG+SHORT remains 100",
-    "official_state write remains disabled until explicit production promotion"
-  ],
+  "latest_main_regression": {
+    "workflow": "BTC TREND V2.6 Macro R2.1 Promotion Regression",
+    "status": "PASS",
+    "oos_signals": 85,
+    "oos_hit_rate_pct": 60.0,
+    "oos_avg_signed_forward_return_pct": 1.4205,
+    "holdout_signals": 21,
+    "holdout_hit_rate_pct": 61.9,
+    "holdout_avg_signed_forward_return_pct": 2.0528,
+    "positive_folds": 3,
+    "baseline_coverage_pct_at_validation": 60.0,
+    "candidate_coverage_pct_at_validation": 70.0,
+    "candidate_coverage_grade": "B",
+    "strong_confirmation_coverage_met": true,
+    "non_macro_feature_mutation": false
+  },
+  "activation_note": "Current production Machine Ratio Bridge is pinned to a frozen runtime commit. This candidate is not active until an explicit activation patch updates the validated runtime source and related bridge provenance under separate approval.",
   "anti_fabrication": {
     "missing_as_zero": false,
     "stale_substitution": false,
