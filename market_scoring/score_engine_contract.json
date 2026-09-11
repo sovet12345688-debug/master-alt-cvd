@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0",
+  "engine_id": "MASTER_MARKET_SCORE_ENGINE",
+  "status": "BLOCKED_MISSING_AUTHORITATIVE_FORMULA",
+  "purpose": "Make the four MASTER MARKET score N/A causes deterministic and prevent silent reuse, back-solving, or invention of score weights.",
+  "canonical_source": "master_prompts/master_market_v1_2_current.md",
+  "machine_contract": "state/master_market_v1_2_contract.json",
+  "locked_scores": [
+    "market_positive",
+    "liquidity_lead",
+    "crypto_money_inflow",
+    "alt_money_inflow"
+  ],
+  "locked_thresholds": {
+    "liquidity_lead": [55, 65, 75],
+    "market_positive_bands": "0-29 very negative | 30-44 negative | 45-54 mixed | 55-64 weak positive | 65-79 positive | 80-100 very positive"
+  },
+  "provenance_audit": {
+    "result": "NO_AUTHORITATIVE_AXIS_WEIGHTS_OR_FULL_FORMULAS_FOUND",
+    "checked": [
+      "current canonical prompt",
+      "current machine contract",
+      "initial MASTER MARKET V1.2 machine contract in repository history",
+      "current repository tree",
+      "official score history"
+    ],
+    "important_note": "Historical numeric scores exist, but they are observations, not an authoritative formula specification. They must not be reverse-engineered into weights."
+  },
+  "activation_gate": {
+    "requires_authoritative_formula": true,
+    "new_or_changed_score_weights_require_explicit_user_approval": true,
+    "threshold_changes_require_explicit_user_approval": true,
+    "can_activate_from_historical_scores_only": false
+  },
+  "forbidden_fallbacks": [
+    "copy last known score into current score",
+    "treat N/A as zero",
+    "regress or back-solve weights from historical score rows",
+    "invent equal weights",
+    "silently substitute a different score definition"
+  ],
+  "allowed_recovery_before_activation": [
+    "repair OFFICIAL persistence pipeline",
+    "preserve and expose last confirmed score as prior/history only",
+    "collect all required current axes and history",
+    "validate source freshness and coverage",
+    "prepare an inactive candidate score specification for explicit approval"
+  ],
+  "n_a_classification": {
+    "current_score_without_authoritative_formula": "현재 구조상 불가",
+    "auto_resolves_with_time": false,
+    "required_fix": "authoritative scoring formula/weights must be explicitly approved and encoded; then deterministic scorer can be activated"
+  }
+}
