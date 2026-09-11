@@ -1,0 +1,102 @@
+name: BTC TREND V2.6 Volume Wave R2.3 Shadow
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - btc-trend-v26-na-recovery-r2
+    paths:
+      - 'btc_trend_v26/volume_wave_engine_r23.py'
+      - 'btc_trend_v26/volume_wave_contract_r23.json'
+      - 'btc_trend_v26/test_volume_wave_engine_r23.py'
+      - 'btc_trend_v26/validate_volume_wave_r23.py'
+      - 'btc_trend_v26/feature_engine_r23.py'
+      - '.github/workflows/btc_trend_v26_volume_wave_r23_shadow.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  volume-wave-shadow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout shadow branch
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Unit tests
+        working-directory: btc_trend_v26
+        run: |
+          python -m unittest -v test_volume_wave_engine_r23.py
+          python -m unittest -v test_structure_engine_r22.py
+          python -m unittest -v test_score_engine.py
+
+      - name: Run Volume Wave shadow validation
+        run: python btc_trend_v26/validate_volume_wave_r23.py --output btc_trend_v26/output/volume_wave_validation_r23.json
+
+      - name: Build current Volume Wave candidate
+        run: python btc_trend_v26/volume_wave_engine_r23.py --output btc_trend_v26/output/volume_wave_latest_r23.json
+
+      - name: Build R2.3 shadow features
+        run: python btc_trend_v26/feature_engine_r23.py --output btc_trend_v26/output/latest_features_r23.json
+
+      - name: Compute shadow trend score
+        run: python btc_trend_v26/score_engine.py btc_trend_v26/output/latest_features_r23.json --output btc_trend_v26/output/latest_score_r23.json
+
+      - name: Validate 15-point integration
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          out = Path('btc_trend_v26/output')
+          f = json.loads((out/'latest_features_r23.json').read_text())
+          s = json.loads((out/'latest_score_r23.json').read_text())
+          v = json.loads((out/'volume_wave_validation_r23.json').read_text())
+          vw = f['features']['VOLUME_WAVE']
+          assert v['status'] == 'TECHNICAL_PASS', v
+          assert vw['availability'] == 'CURRENT', vw
+          assert vw['state'] in {'LONG','SHORT','NEUTRAL'}, vw
+          assert s['status'] == 'OK', s
+          comp = next(x for x in s['components'] if x['feature_id'] == 'VOLUME_WAVE')
+          assert comp['weight'] == 15, comp
+          assert f.get('production_eligible') is False, f
+          assert f.get('official_state_write_allowed') is False, f
+          assert s.get('production_eligible') is False, s
+          result = {
+              'schema_version': '1.0',
+              'status': 'SHADOW_INTEGRATION_PASS',
+              'volume_wave_state': vw['state'],
+              'volume_wave_weight': comp['weight'],
+              'coverage_pct_with_volume_wave': s['coverage_pct'],
+              'coverage_grade_with_volume_wave': s['coverage_grade'],
+              'strong_confirmation_coverage_met': s['strong_confirmation_coverage_met'],
+              'long': s['long'],
+              'short': s['short'],
+              'trend_strength': s['trend_strength'],
+              'production_approved': False,
+              'official_state_write_allowed': False,
+          }
+          (out/'volume_wave_shadow_integration_r23.json').write_text(json.dumps(result, indent=2)+'\n')
+          print(json.dumps(result, indent=2))
+          PY
+
+      - name: Upload shadow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v26-volume-wave-r23-${{ github.run_id }}
+          path: |
+            btc_trend_v26/output/volume_wave_validation_r23.json
+            btc_trend_v26/output/volume_wave_latest_r23.json
+            btc_trend_v26/output/latest_features_r23.json
+            btc_trend_v26/output/latest_score_r23.json
+            btc_trend_v26/output/volume_wave_shadow_integration_r23.json
+          if-no-files-found: error
+          retention-days: 14
