@@ -1,0 +1,87 @@
+name: MASTER MARKET Canonical Score Sync 20260911
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'maintenance/sync_master_market_active_score_contract_20260911.py'
+      - '.github/workflows/master_market_contract_sync_20260911.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'maintenance/sync_master_market_active_score_contract_20260911.py'
+      - '.github/workflows/master_market_contract_sync_20260911.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: master-market-canonical-score-sync-20260911
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Syntax
+        run: python -m py_compile maintenance/sync_master_market_active_score_contract_20260911.py
+
+      - name: Apply canonical and contract sync in workspace
+        run: python maintenance/sync_master_market_active_score_contract_20260911.py --apply
+
+      - name: Validate synchronized contract
+        run: python maintenance/sync_master_market_active_score_contract_20260911.py --check
+
+      - name: Validate diff scope
+        shell: bash
+        run: |
+          git diff --check
+          mapfile -t changed < <(git diff --name-only | sort)
+          printf '%s\n' "${changed[@]}"
+          allowed=(
+            '.github/workflows/master_market_score_engine_active.yml'
+            'master_prompts/master_market_v1_2_current.md'
+            'state/master_market_v1_2_contract.json'
+          )
+          for f in "${changed[@]}"; do
+            ok=false
+            for a in "${allowed[@]}"; do
+              [[ "$f" == "$a" ]] && ok=true
+            done
+            $ok || { echo "Unexpected migration diff: $f"; exit 1; }
+          done
+          [[ ${#changed[@]} -eq 3 ]] || { echo "Expected exactly 3 synchronized files, got ${#changed[@]}"; exit 1; }
+          echo 'MASTER_MARKET_CANONICAL_SYNC_DIFF_SCOPE=PASS'
+
+      - name: Commit synchronized files on main
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          git config user.name "master-market-contract-bot"
+          git config user.email "master-market-contract-bot@users.noreply.github.com"
+          git add \
+            master_prompts/master_market_v1_2_current.md \
+            state/master_market_v1_2_contract.json \
+            .github/workflows/master_market_score_engine_active.yml
+          if git diff --cached --quiet; then
+            echo 'No canonical sync change'
+            exit 0
+          fi
+          git commit -m 'contract: sync MASTER MARKET active score engine canonical'
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Final result
+        run: echo 'MASTER_MARKET_CANONICAL_SCORE_SYNC_WORKFLOW=PASS'
