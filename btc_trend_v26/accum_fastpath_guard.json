@@ -1,6 +1,11 @@
 {
-  "status": "RESEARCH_SHADOW",
-  "display_allowed": false,
-  "merge_to_main_allowed_before_review": false,
-  "required_next_step": "VERIFY_LIVE_WORKFLOW_AND_ARTIFACT"
+  "status": "READY_LIMITED_DISPLAY",
+  "display_allowed": true,
+  "display_min_coverage_pct": 50,
+  "strong_confirmation_min_coverage_pct": 70,
+  "below_70_entry_gate_effect": 0,
+  "engine_direct_official_state_write_allowed": false,
+  "verified_shadow_workflow_success": true,
+  "verified_same_run_artifact_and_sha256": true,
+  "merge_to_main_requires_final_head_ci_success": true
 }
