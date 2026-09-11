@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.2",
+  "schema_version": "1.3",
   "contract_id": "BTC_TREND_V26_FEATURE_ENGINE_R21",
   "master_id": "btc_trend",
   "production_version": "V2.6",
@@ -29,14 +29,18 @@
   },
   "market_bars": {
     "primary": "Bitget USDT Futures BTCUSDT public candles",
-    "endpoint": "https://api.bitget.com/api/v3/market/candles",
+    "recent_endpoint": "https://api.bitget.com/api/v3/market/candles",
+    "history_endpoint": "https://api.bitget.com/api/v3/market/history-candles",
     "category": "USDT-FUTURES",
     "intervals": ["4H", "1D"],
     "minimum_completed_bars": 205,
-    "request_limit": 260,
+    "recent_limit": 1000,
+    "history_limit": 100,
+    "history_query_max_days": 90,
+    "history_pagination": "walk endTime backward in <=90-day windows until >=205 unique completed bars",
     "incomplete_candle_role": "OBSERVE_ONLY",
     "cross_venue_fallback_forbidden": true,
-    "reason": "Use the same accessible Bitget USDT-futures market family as the V2.6 derivatives source. The first shadow run proved the Binance USD-M endpoint unavailable from the hosted runner, so no silent cross-venue fallback is allowed."
+    "reason": "Bitget recent candles cover the recent access window; 1D requires history-candles pagination to obtain MA200 warmup. The first Binance attempt was unavailable from the hosted runner, so no silent cross-venue fallback is allowed."
   },
   "ema_ma_stack": {
     "inputs": ["completed 4H close", "completed 1D close", "EMA20", "MA50", "MA200"],
