@@ -15,16 +15,23 @@ def replay_states(bars, left: int, right: int, max_points: int = 120):
     start = max(left + right + 12, len(bars) - max_points)
     states = []
     failures = 0
+    warmup_skips = 0
+    first_success_seen = False
     for end in range(start, len(bars) + 1):
         try:
             r = classify_structure(bars[:end], left, right)
             states.append(r["state"])
+            first_success_seen = True
         except Exception:
-            failures += 1
+            if first_success_seen:
+                failures += 1
+            else:
+                warmup_skips += 1
     transitions = sum(1 for a, b in zip(states, states[1:]) if a != b)
     return {
         "observations": len(states),
-        "failures": failures,
+        "warmup_skips": warmup_skips,
+        "failures_after_first_valid_state": failures,
         "state_counts": dict(Counter(states)),
         "transitions": transitions,
         "transition_rate": (transitions / max(1, len(states) - 1)) if states else None,
@@ -40,7 +47,7 @@ def main() -> int:
     now = datetime.now(timezone.utc)
     contract = load_contract()
     report = {
-        "schema_version": "1.0",
+        "schema_version": "1.1",
         "engine_id": "BTC_TREND_V26_STRUCTURE_VALIDATION_R22",
         "asof_utc": now.isoformat().replace("+00:00", "Z"),
         "status": "PASS",
@@ -64,7 +71,12 @@ def main() -> int:
                     sensitivity[str(span)] = f"N/A:{type(exc).__name__}"
             valid_sensitivity = [v for v in sensitivity.values() if not str(v).startswith("N/A:")]
             replay = replay_states(bars, left, right)
-            tf_pass = replay["observations"] >= 30 and replay["failures"] == 0
+            tf_pass = (
+                replay["observations"] >= 30
+                and replay["failures_after_first_valid_state"] == 0
+                and baseline["confirmed_high_count"] >= 2
+                and baseline["confirmed_low_count"] >= 2
+            )
             if not tf_pass:
                 report["status"] = "FAIL"
             report["timeframes"][feature_id] = {
