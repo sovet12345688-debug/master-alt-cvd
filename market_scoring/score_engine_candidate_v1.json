@@ -1,0 +1,82 @@
+{
+  "schema_version": "1.0",
+  "engine_id": "MASTER_MARKET_SCORE_ENGINE_CANDIDATE_V1",
+  "status": "SHADOW_ONLY_PENDING_EXPLICIT_USER_APPROVAL",
+  "purpose": "Deterministic candidate formulas for the four MASTER MARKET scores. This file is additive and inactive: it MUST NOT write OFFICIAL history or replace production score values until explicit user approval activates it.",
+  "canonical_source": "master_prompts/master_market_v1_2_current.md",
+  "machine_contract": "state/master_market_v1_2_contract.json",
+  "safety": {
+    "official_write_enabled": false,
+    "watch_write_enabled": false,
+    "last_known_fallback_forbidden": true,
+    "na_as_zero_forbidden": true,
+    "backsolve_from_history_forbidden": true,
+    "cross_master_inputs_forbidden": true,
+    "coverage_partial_rule": "Renormalize only confirmed component weights. If confirmed weight coverage <70%, numeric score may be emitted only as PARTIAL_SHADOW and confidence is capped at C.",
+    "double_count_guard": "A raw event may influence only its owning component. Oil may affect macro risk directly; do not deduct the same oil move again through rates if yields already independently capture the observed move."
+  },
+  "formula_spec": {
+    "liquidity_lead": {
+      "weights": {
+        "us_net_liquidity": 20,
+        "tga_change": 10,
+        "fed_reserves": 10,
+        "us10y_real_yield": 15,
+        "dxy": 10,
+        "treasury_qra": 10,
+        "treasury_buyback": 5,
+        "btc_etf_flow": 10,
+        "stablecoin_total_flow": 10
+      },
+      "production_thresholds_locked": [55,65,75]
+    },
+    "crypto_money_inflow": {
+      "weights": {
+        "btc_etf_1d": 25,
+        "btc_etf_3d": 10,
+        "eth_etf_1d": 10,
+        "stablecoin_total_1d": 15,
+        "stablecoin_total_7d": 10,
+        "btc_whale_net": 15,
+        "eth_whale_net": 5,
+        "total_market_cap_1d": 5,
+        "market_volume_1d": 5
+      }
+    },
+    "alt_money_inflow": {
+      "weights": {
+        "eth_etf_1d": 20,
+        "eth_etf_7d": 10,
+        "eth_whale_net": 15,
+        "eth_dominance_change": 15,
+        "btc_dominance_inverse_change": 15,
+        "total_market_cap_1d": 10,
+        "market_volume_1d": 5,
+        "stablecoin_total_7d": 10
+      }
+    },
+    "market_positive": {
+      "weights": {
+        "liquidity_lead": 30,
+        "crypto_money_inflow": 25,
+        "alt_money_inflow": 10,
+        "btc_whale_net": 10,
+        "btc_derivatives_state": 10,
+        "market_breadth_state": 5,
+        "rates_macro_state": 5,
+        "oil_geopolitical_state": 5
+      },
+      "bands_locked": "0-29 very negative | 30-44 negative | 45-54 mixed | 55-64 weak positive | 65-79 positive | 80-100 very positive"
+    }
+  },
+  "activation_gate": {
+    "requires_explicit_user_approval": true,
+    "approval_must_cover": [
+      "candidate weights",
+      "component transforms/cutoffs",
+      "partial-score production policy",
+      "activation of OFFICIAL persistence"
+    ],
+    "until_approved": "SHADOW outputs only; no OFFICIAL score/history mutation"
+  }
+}
