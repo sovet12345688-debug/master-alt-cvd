@@ -1,0 +1,167 @@
+{
+  "schema_version": "1.0",
+  "state_status": "STORED",
+  "master_id": "btc_trend",
+  "display_name": "MASTER BTC TREND",
+  "master_version": "V2.6 PRODUCTION",
+  "source_path": "master_prompts/master_btc_trend_v2_6_current.md",
+  "contract_path": "state/master_btc_trend_v2_6_contract.json",
+  "run": {
+    "run_type": "OFFICIAL",
+    "run_id": "MBTC-V26-20260911-1300-KST",
+    "executed_kst": "2026-09-11T13:02:05+09:00",
+    "updated_kst": "2026-09-11T13:02:05+09:00",
+    "prior_official_run_id": "MBTC-V26-20260911-0800-KST"
+  },
+  "validity": {
+    "valid_until_kst": null,
+    "next_official_run_kst": "2026-09-11T17:00:00+09:00",
+    "freshness_status": "CURRENT"
+  },
+  "data_quality": {
+    "coverage_pct": 68,
+    "confidence": null,
+    "known_na": [
+      "VOLUME_WAVE_THRESHOLD_UNAPPROVED",
+      "VALUE_OVEREXTENSION_THRESHOLD_UNAPPROVED",
+      "LIQUIDITY_MACRO_THRESHOLD_UNAPPROVED",
+      "ACCUMULATION_CURRENT_MACHINE_SCORE_UNAVAILABLE",
+      "FRACTAL_CURRENT_ARTIFACT_UNAVAILABLE",
+      "SR_STRENGTH_CURRENT_REACTION_MODEL_UNAVAILABLE"
+    ],
+    "stale_sources": [],
+    "time_mismatch_warnings": [],
+    "source_health_snapshot_pointer": "source_health/output/latest.json"
+  },
+  "decision": {
+    "direction": "SHORT",
+    "permission_or_environment": "SHORT_DOMINANT_BUT_WAIT_NONCHASE_NEAR_SUPPORT",
+    "action": "⏳ 아직 신규포지션 대기",
+    "risk_veto": [],
+    "invalidations": [
+      "77.606K 이상 재탈환·안착 시 단기 숏 우세 약화",
+      "79.736~80.548K 상향 안착 시 중기 숏 우세 약화",
+      "67.0K 하회 시 기존 LIVE LONG PLAN 구조 무효"
+    ]
+  },
+  "core_state": {
+    "market_snapshot": {
+      "current_price_usdt": 76911.7,
+      "price_source": "Binance BTCUSDT USDS-M Futures ticker",
+      "latest_completed_1h_close_usdt": 76860.8,
+      "latest_completed_4h_close_usdt": 76540.0,
+      "latest_completed_1d_close_usdt": 77220.0
+    },
+    "direction_ratio": {
+      "long": 41,
+      "short": 59,
+      "dominant": "SHORT",
+      "coverage_pct": 68,
+      "coverage_grade": "C",
+      "calibrated_probability": false,
+      "entry_signal": false
+    },
+    "trend": {
+      "state": "1W LONG 유지 · 1D SHORT · 4H STRONG_SHORT",
+      "strength": 18,
+      "trajectory": "단기 하락 우세, 장기 구조와 충돌",
+      "strong_confirmation_coverage_met": false
+    },
+    "bottom": {
+      "score": 24,
+      "band": "낮음",
+      "coverage_pct": 57,
+      "confirmed_1d_turn": false,
+      "entry_gate_effect": 0
+    },
+    "top": {
+      "score": 58,
+      "band": "가능성 관찰",
+      "coverage_pct": 50,
+      "confirmed_1d_turn_down": true,
+      "entry_gate_effect": 0
+    },
+    "accumulation": {
+      "score": null,
+      "status": "N/A_CURRENT_MACHINE_SCORE_UNAVAILABLE"
+    },
+    "support_resistance": {
+      "short_term": {
+        "support": "76.23~76.40K",
+        "resistance": "77.606K",
+        "strength": "N/A_CURRENT_REACTION_MODEL_UNAVAILABLE"
+      },
+      "mid_term": {
+        "support": "74.5~75.2K",
+        "resistance": "79.736~80.548K",
+        "strength": "N/A_CURRENT_REACTION_MODEL_UNAVAILABLE"
+      },
+      "long_term": {
+        "support": "69.3~70.8K",
+        "resistance": "82.248~82.8K",
+        "strength": "1W_NOT_APPROVED_INSUFFICIENT_SAMPLE"
+      }
+    },
+    "spot_etf_flow": {
+      "state": "NEUTRAL",
+      "flow_1d_usd_m": -258.2,
+      "flow_3d_usd_m": -425.0,
+      "flow_7d_usd_m": 345.0,
+      "latest_trading_date": "2026-09-10"
+    },
+    "derivatives": {
+      "source": "Bitget USDT Futures BTC same venue/contract family",
+      "snapshot_time_utc": "2026-09-11T03:18:23.143112Z",
+      "state": "NEUTRAL",
+      "raw_state": "PRICE_UP_OI_UP",
+      "cvd_1h_usdt": -468876.6232899986,
+      "taker_buy_ratio": 0.4943800995400528,
+      "taker_sell_ratio": 0.5056199004599473,
+      "oi_24h_available": true
+    },
+    "btc_leading_signal_engine": {
+      "mode": "READ_ONLY_AUXILIARY",
+      "selection_status": "CURRENT",
+      "expected_source_slot_kst": "2026-09-11T08:20:00+09:00",
+      "actual_source_kst": "2026-09-11T08:26:23+09:00",
+      "strict_detection_rows": 0,
+      "strict_seeds": 0,
+      "positions": 0,
+      "ledger_integrity": "PASS",
+      "frozen_identity": "PASS",
+      "current_user_state": "신호 없음 / 대기",
+      "production_weight": 0
+    },
+    "fractal": {
+      "current_status": "N/A_CURRENT_ARTIFACT_UNAVAILABLE",
+      "master_weight": 0
+    },
+    "live_long_plan": {
+      "plan_id": "BTC-SWING-20260902-03",
+      "T1": "76.3~76.8K / 2%",
+      "T2": "74.5~75.2K / 4%",
+      "T3": "69.3~70.8K / 6%",
+      "structural_sl": "67.0K",
+      "targets": ["79.3K", "81.5K", "82.8K"],
+      "status": "CARRIED_FORWARD_NOT_INVALIDATED"
+    }
+  },
+  "lineage": {
+    "state_origin": "ACTUAL_STORED_RUN",
+    "run_record_source": "BASIC_OFFICIAL_AUTOMATION_2026-09-11T13:02:05+09:00",
+    "history_pointer": "official_state/history/btc_trend/2026-09.jsonl",
+    "canonical_identity_verified": true,
+    "cross_master_decision_dependency": false
+  },
+  "privacy": {
+    "contains_personal_account_data": false,
+    "public_repository_safe": true
+  },
+  "do_not_reconstruct": [
+    "missing accumulation score",
+    "unavailable current fractal artifact",
+    "unavailable S/R strength artifact",
+    "unapproved threshold features",
+    "private user account or position data"
+  ]
+}
