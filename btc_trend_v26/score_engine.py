@@ -117,6 +117,12 @@ def compute_trend_score(feature_payload: dict[str, Any], contract: dict[str, Any
     coverage_pct = (valid_weight / total_weight * Decimal("100")) if total_weight else Decimal("0")
     grade = coverage_grade(coverage_pct)
     limited_display_eligible = valid_weight > 0 and coverage_pct >= Decimal("50")
+    limited_display_scope = [
+        "LONG_SHORT_RATIO",
+        "TREND_STRENGTH",
+        "TREND_DOMINANT_STATE",
+        "TREND_COVERAGE",
+    ] if limited_display_eligible else []
 
     base = {
         "schema_version": "1.1",
@@ -129,7 +135,7 @@ def compute_trend_score(feature_payload: dict[str, Any], contract: dict[str, Any
         "unavailable_features": unavailable,
         "strong_confirmation_coverage_met": coverage_pct >= Decimal(str(c["coverage"]["strong_confirmation_min"])),
         "limited_display_eligible": limited_display_eligible,
-        "limited_display_scope": ["LONG_SHORT_RATIO", "TREND_STRENGTH"] if limited_display_eligible else [],
+        "limited_display_scope": limited_display_scope,
         "limited_display_rule": "Coverage C or better may be displayed with coverage label; coverage below 70 cannot be strong confirmation or independently alter Entry Gate.",
         "calibrated_probability": False,
         "entry_signal": False,
