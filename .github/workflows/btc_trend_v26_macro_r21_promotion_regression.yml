@@ -1,0 +1,134 @@
+name: BTC TREND V2.6 Macro R2.1 Promotion Regression
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [btc-trend-v26-macro-r21-promotion]
+    paths:
+      - 'btc_trend_v26/liquidity_macro_engine_r2.py'
+      - 'btc_trend_v26/liquidity_macro_engine_r21.py'
+      - 'btc_trend_v26/liquidity_macro_contract_r21_promotion.json'
+      - '.github/workflows/btc_trend_v26_macro_r21_promotion_regression.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  latest-main-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: Syntax regression
+        run: |
+          python -m py_compile btc_trend_v26/liquidity_macro_engine_r2.py btc_trend_v26/liquidity_macro_engine_r21.py btc_trend_v26/feature_engine_r22.py btc_trend_v26/score_engine.py
+      - name: Capture base lineage
+        run: |
+          python - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+          head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          parent=subprocess.check_output(['git','merge-base','HEAD','origin/main'],text=True).strip() if subprocess.call(['git','show-ref','--verify','--quiet','refs/remotes/origin/main'])==0 else None
+          Path('btc_trend_v26/output').mkdir(parents=True,exist_ok=True)
+          Path('btc_trend_v26/output/macro_r21_promotion_lineage.json').write_text(json.dumps({'head_sha':head,'main_merge_base':parent},indent=2)+'\n')
+          PY
+      - name: Run Macro R2.1 frozen OOS on latest-main branch
+        run: python btc_trend_v26/liquidity_macro_engine_r21.py --output btc_trend_v26/output/liquidity_macro_r21_promotion.json
+      - name: Build latest-main baseline features
+        run: python btc_trend_v26/feature_engine_r22.py --output btc_trend_v26/output/latest_features_baseline.json
+      - name: Score latest-main baseline
+        run: python btc_trend_v26/score_engine.py btc_trend_v26/output/latest_features_baseline.json --output btc_trend_v26/output/latest_score_baseline.json
+      - name: Inject Macro only
+        run: |
+          python - <<'PY'
+          import copy, json
+          from pathlib import Path
+          out=Path('btc_trend_v26/output')
+          base=json.loads((out/'latest_features_baseline.json').read_text())
+          macro=json.loads((out/'liquidity_macro_r21_promotion.json').read_text())
+          shadow=copy.deepcopy(base)
+          shadow['schema_version']='1.5-macro-r21-promotion'
+          shadow['engine_id']='BTC_TREND_V26_FEATURE_ENGINE_MACRO_R21_PROMOTION_REGRESSION'
+          shadow['features']['LIQUIDITY_MACRO']=macro['feature']
+          shadow['production_eligible']=False
+          shadow['official_state_write_allowed']=False
+          (out/'latest_features_macro_r21_promotion.json').write_text(json.dumps(shadow,indent=2)+'\n')
+          PY
+      - name: Score Macro-integrated candidate
+        run: python btc_trend_v26/score_engine.py btc_trend_v26/output/latest_features_macro_r21_promotion.json --output btc_trend_v26/output/latest_score_macro_r21_promotion.json
+      - name: Assert regression and integration invariants
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          out=Path('btc_trend_v26/output')
+          macro=json.loads((out/'liquidity_macro_r21_promotion.json').read_text())
+          basef=json.loads((out/'latest_features_baseline.json').read_text())
+          newf=json.loads((out/'latest_features_macro_r21_promotion.json').read_text())
+          bases=json.loads((out/'latest_score_baseline.json').read_text())
+          news=json.loads((out/'latest_score_macro_r21_promotion.json').read_text())
+          contract=json.loads(Path('btc_trend_v26/score_contract.json').read_text())
+
+          assert macro['status']=='SHADOW_CANDIDATE', macro
+          assert macro['oos']['promotion_gate']=='PASS', macro['oos']
+          assert all(macro['oos']['checks'].values()), macro['oos']['checks']
+          assert macro['production_approved'] is False
+          assert macro['official_state_write_allowed'] is False
+          assert macro['feature']['availability']=='CURRENT', macro['feature']
+          assert contract['trend_weights']['LIQUIDITY_MACRO']==10, contract['trend_weights']
+
+          # Macro injection must not mutate any other feature.
+          for fid, rec in basef['features'].items():
+              if fid=='LIQUIDITY_MACRO':
+                  continue
+              assert newf['features'][fid]==rec, f'non-macro feature changed: {fid}'
+
+          base_macro=basef['features'].get('LIQUIDITY_MACRO',{})
+          assert base_macro.get('availability')!='CURRENT', base_macro
+          comp=next(x for x in news['components'] if x['feature_id']=='LIQUIDITY_MACRO')
+          assert comp['weight']==10, comp
+          assert news['valid_weight']==bases['valid_weight']+10, (bases['valid_weight'],news['valid_weight'])
+          assert abs(news['coverage_pct']-(bases['coverage_pct']+10.0))<1e-9, (bases['coverage_pct'],news['coverage_pct'])
+          assert news['long']+news['short']==100, news
+          assert news['status']=='OK', news
+          assert newf['production_eligible'] is False
+          assert newf['official_state_write_allowed'] is False
+
+          result={
+            'status':'PROMOTION_REGRESSION_PASS',
+            'macro_oos':macro['oos']['total'],
+            'macro_holdout':macro['oos']['holdout'],
+            'positive_folds':macro['oos']['positive_folds'],
+            'current_macro_state':macro['feature']['state'],
+            'baseline_coverage_pct':bases['coverage_pct'],
+            'candidate_coverage_pct':news['coverage_pct'],
+            'candidate_coverage_grade':news['coverage_grade'],
+            'baseline_long':bases['long'],
+            'baseline_short':bases['short'],
+            'candidate_long':news['long'],
+            'candidate_short':news['short'],
+            'candidate_trend_strength':news['trend_strength'],
+            'strong_confirmation_coverage_met':news['strong_confirmation_coverage_met'],
+            'production_approved':False,
+            'official_state_write_allowed':False
+          }
+          (out/'macro_r21_promotion_regression.json').write_text(json.dumps(result,indent=2)+'\n')
+          print(json.dumps(result,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v26-macro-r21-promotion-${{ github.run_id }}
+          path: |
+            btc_trend_v26/output/liquidity_macro_r21_promotion.json
+            btc_trend_v26/output/latest_features_baseline.json
+            btc_trend_v26/output/latest_score_baseline.json
+            btc_trend_v26/output/latest_score_macro_r21_promotion.json
+            btc_trend_v26/output/macro_r21_promotion_regression.json
+            btc_trend_v26/output/macro_r21_promotion_lineage.json
+          retention-days: 14
