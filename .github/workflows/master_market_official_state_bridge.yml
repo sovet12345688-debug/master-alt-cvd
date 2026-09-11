@@ -1,0 +1,143 @@
+name: MASTER MARKET OFFICIAL State Bridge
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'official_state/inbox/market/*.json'
+      - 'official_state/process_market_inbox.py'
+      - 'official_state/market_bridge_contract.json'
+      - '.github/workflows/master_market_official_state_bridge.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: master-market-official-state-bridge
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Capture queued MARKET run ids
+        shell: bash
+        run: |
+          python - <<'PY' > /tmp/market_run_ids.txt
+          import json, pathlib
+          root=pathlib.Path('official_state/inbox/market')
+          for p in sorted(root.glob('*.json')):
+              try:
+                  s=json.load(open(p, encoding='utf-8'))
+                  rid=(s.get('run') or {}).get('run_id')
+                  if rid:
+                      print(rid)
+              except Exception:
+                  pass
+          PY
+          echo "Queued run ids:"
+          cat /tmp/market_run_ids.txt || true
+
+      - name: Syntax and contract smoke test
+        shell: bash
+        run: |
+          python -m py_compile official_state/process_market_inbox.py official_state/publish_official_state.py
+          python - <<'PY'
+          import json
+          c=json.load(open('official_state/market_bridge_contract.json', encoding='utf-8'))
+          assert c['status'] == 'READY'
+          assert c['master_id'] == 'market'
+          assert c['schedule']['official_hours'] == [1,5,9,13,17,21]
+          assert c['schedule']['watch_persistence_forbidden'] is True
+          assert len(c['required_current_run_core_scores']) == 4
+          assert c['core_score_policy']['prior_score_copy_forbidden'] is True
+          assert c['core_score_policy']['backfill_forbidden'] is True
+          print('MASTER_MARKET_BRIDGE_CONTRACT=PASS')
+          PY
+
+      - name: Process MASTER MARKET OFFICIAL inbox
+        id: process
+        shell: bash
+        run: |
+          set +e
+          python official_state/process_market_inbox.py
+          rc=$?
+          echo "bridge_rc=$rc" >> "$GITHUB_OUTPUT"
+          if [ "$rc" != "0" ]; then
+            echo "MARKET_BRIDGE_PROCESS=FAIL"
+            git reset --hard HEAD
+            exit "$rc"
+          fi
+          echo "MARKET_BRIDGE_PROCESS=PASS"
+
+      - name: Verify MARKET publish targets
+        shell: bash
+        run: |
+          python - <<'PY'
+          import csv, json, pathlib
+          queued=[x.strip() for x in pathlib.Path('/tmp/market_run_ids.txt').read_text().splitlines() if x.strip()]
+          if not queued:
+              print('MASTER_MARKET_TARGET_VERIFY=NO_INPUT_SMOKE_PASS')
+              raise SystemExit(0)
+          expected=queued[-1]
+          latest=json.load(open('official_state/latest/market.json', encoding='utf-8'))
+          index=json.load(open('official_state/latest/index.json', encoding='utf-8'))
+          rid=(latest.get('run') or {}).get('run_id')
+          assert latest.get('state_status') == 'STORED', latest.get('state_status')
+          assert rid == expected, (rid, expected)
+          ent=(index.get('masters') or {}).get('market') or {}
+          assert ent.get('state_status') == 'STORED', ent
+          assert ent.get('latest_official_run_id') == expected, ent
+          hp=((latest.get('lineage') or {}).get('history_pointer'))
+          assert hp, 'missing history_pointer'
+          hist=pathlib.Path(hp)
+          assert hist.exists(), hp
+          text=hist.read_text(encoding='utf-8')
+          assert f'"run_id":"{expected}"' in text or f'"run_id": "{expected}"' in text, expected
+          rows=list(csv.DictReader(open('state/master_market_official_history.csv', encoding='utf-8')))
+          assert rows and rows[-1].get('run_id') == expected, (rows[-1].get('run_id') if rows else None, expected)
+          print(f'MASTER_MARKET_TARGET_VERIFY=PASS run_id={expected}')
+          PY
+
+      - name: Validate common OFFICIAL state layer
+        shell: bash
+        run: |
+          python official_state/publish_official_state.py --mode validate-latest
+
+      - name: Commit material MARKET OFFICIAL state changes
+        shell: bash
+        run: |
+          git config user.name "master-market-official-state-bot"
+          git config user.email "master-market-official-state-bot@users.noreply.github.com"
+          git add \
+            official_state/inbox/market \
+            official_state/rejected/market \
+            official_state/latest \
+            official_state/history/market \
+            state/master_market_official_history.csv 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No material MASTER MARKET OFFICIAL state changes"
+          else
+            git commit -m "state: publish MASTER MARKET OFFICIAL run"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+      - name: Final bridge result
+        shell: bash
+        run: |
+          echo "MASTER_MARKET_OFFICIAL_STATE_BRIDGE=PASS"
