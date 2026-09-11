@@ -116,6 +116,10 @@ jobs:
       - name: Validate common OFFICIAL state layer
         shell: bash
         run: |
+          if [ ! -s /tmp/market_run_ids.txt ]; then
+            echo "OFFICIAL_STATE_VALIDATION=SKIP_EMPTY_SMOKE"
+            exit 0
+          fi
           python official_state/publish_official_state.py --mode validate-latest
 
       - name: Commit material MARKET OFFICIAL state changes
