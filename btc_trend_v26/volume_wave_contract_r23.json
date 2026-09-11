@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "contract_id": "BTC_TREND_V26_VOLUME_WAVE_R23_SHADOW",
+  "master_id": "btc_trend",
+  "production_version": "V2.6",
+  "status": "SHADOW_VALIDATION_ONLY",
+  "weight_in_trend": 15,
+  "purpose": "Replace structural N/A for VOLUME_WAVE with a deterministic, auditable shadow candidate without production promotion.",
+  "source": {
+    "venue": "Bitget USDT Futures",
+    "symbol": "BTCUSDT",
+    "timeframes": ["1D", "4H"],
+    "completed_candle_only": true,
+    "cross_venue_fallback_forbidden": true
+  },
+  "inputs": [
+    "completed OHLCV",
+    "prior volume MA5",
+    "prior volume MA10",
+    "close-to-close impulse direction",
+    "candle body direction",
+    "ATR14-normalized wave energy"
+  ],
+  "timeframe_rule": {
+    "volume_confirmation": "current quote volume >= prior MA5 AND current quote volume >= prior MA10",
+    "wave_confirmation": "abs(close - previous_close) / ATR14 >= 1.0",
+    "price_coherence": "close-to-close impulse sign equals candle body sign and is non-zero",
+    "LONG": "price_coherence AND (volume_confirmation OR wave_confirmation) AND impulse > 0",
+    "SHORT": "price_coherence AND (volume_confirmation OR wave_confirmation) AND impulse < 0",
+    "NEUTRAL": "otherwise",
+    "STRONG_LONG": "FORBIDDEN_IN_R23_SHADOW",
+    "STRONG_SHORT": "FORBIDDEN_IN_R23_SHADOW"
+  },
+  "combine_rule": {
+    "LONG": "1D=LONG AND 4H=LONG",
+    "SHORT": "1D=SHORT AND 4H=SHORT",
+    "NEUTRAL": "all disagreements or insufficient directional confirmation"
+  },
+  "validation_policy": {
+    "no_forward_data_in_feature": true,
+    "forward_return_used_for_diagnostics_only": true,
+    "predictive_metric_does_not_auto_promote": true,
+    "technical_pass_requires": [
+      "unit tests pass",
+      "current feature availability=CURRENT",
+      "state in LONG/SHORT/NEUTRAL",
+      "completed-candle lineage present",
+      "score engine accepts VOLUME_WAVE as a 15-point CURRENT component",
+      "production_approved=false",
+      "official_state_write_allowed=false"
+    ],
+    "production_promotion_requires_explicit_acceptance": true
+  },
+  "anti_fabrication": {
+    "missing_as_zero": false,
+    "stale_substitution": false,
+    "chat_memory_backfill": false,
+    "threshold_tuning_from_current_forward_result": false
+  }
+}
