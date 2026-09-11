@@ -1,6 +1,6 @@
 # BTC Trend V2.6 ACCUM Fastpath V1
 
-Research/shadow-only recovery path for structural `ACCUMULATION` N/A.
+Coverage-gated **LIMITED DISPLAY** recovery path for structural `ACCUMULATION` N/A. The engine remains partial and has no independent execution authority.
 
 ## Current fast path
 
@@ -12,15 +12,20 @@ Uses only already machine-available facts:
 
 Maximum available canonical weight is 53/100. Missing weight is excluded and valid weight is renormalized, while Coverage remains the original canonical weight coverage.
 
-## Safety
+## Display and safety
 
-- Coverage below 50 => N/A.
-- Coverage 50-69 => shadow/partial only; zero Entry Gate authority.
+- Coverage below 50 => fail-closed N/A.
+- Coverage 50-69 => `부분산출` limited display only; zero independent Entry Gate authority.
 - Strong confirmation requires Coverage >=70.
 - If 1D or 4H structure is `STRONG_LONG`, the canonical rapid-rise cap is conservatively proxied and the score is capped at 64.
-- No direct `official_state` writes.
+- Same-run successful workflow + artifact + matching score SHA256 provenance are required.
+- The engine never writes `official_state` directly. Only an actual BASIC OFFICIAL may persist a verified display value.
 - No effect on LONG:SHORT, TREND_STRENGTH, LIVE PLAN, BOTTOM, TOP, Fractal, S/R, or BTC leading signal engine.
-- No backfill, stale substitution, cross-MASTER decisions, or invented missing values.
+- No historical backfill, stale substitution, cross-MASTER decisions, or invented missing values.
+
+## Current validation
+
+The branch live workflow passed with Coverage 53% (C), generated a same-run artifact and matching SHA256 provenance, and preserved all zero-effect guards. The observed ACCUMULATION value is dynamic and must be recalculated every run; it is not a fixed score.
 
 ## Not yet included
 
