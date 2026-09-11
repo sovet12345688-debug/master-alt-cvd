@@ -1,0 +1,108 @@
+name: BTC TREND V2.6 ACCUM Fastpath Shadow
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - btc-trend-v26-accum-fastpath-v1
+    paths:
+      - 'btc_trend_v26/accum_fastpath_contract.json'
+      - 'btc_trend_v26/accum_fastpath_engine.py'
+      - 'btc_trend_v26/test_accum_fastpath_engine.py'
+      - '.github/workflows/btc_trend_v26_accum_fastpath.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'btc_trend_v26/accum_fastpath_contract.json'
+      - 'btc_trend_v26/accum_fastpath_engine.py'
+      - 'btc_trend_v26/test_accum_fastpath_engine.py'
+      - 'state/master_btc_trend_v2_6_accum_score_bridge_contract.json'
+      - 'money_master_os/masters/btc_trend/manifest.json'
+      - '.github/workflows/btc_trend_v26_accum_fastpath.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  accum-fastpath-shadow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Unit tests
+        working-directory: btc_trend_v26
+        run: python -m unittest -v test_accum_fastpath_engine.py
+
+      - name: Build current ACCUMULATION shadow score
+        run: python btc_trend_v26/accum_fastpath_engine.py --output btc_trend_v26/output/latest_accum_fastpath.json
+
+      - name: Validate shadow safety and build provenance
+        env:
+          GITHUB_RUN_ID_VALUE: ${{ github.run_id }}
+        run: |
+          python - <<'PY'
+          import hashlib, json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          out = Path('btc_trend_v26/output')
+          p = out / 'latest_accum_fastpath.json'
+          x = json.loads(p.read_text())
+          assert x.get('status') == 'OK_SHADOW', x
+          assert float(x.get('coverage_pct', 0)) >= 50.0, x
+          assert 0 <= int(x['accumulation_score']) <= 100, x
+          assert x.get('production_eligible') is False, x
+          assert x.get('official_state_write_allowed') is False, x
+          assert int(x.get('entry_gate_effect', -1)) == 0, x
+          assert int(x.get('long_short_effect', -1)) == 0, x
+          assert int(x.get('trend_strength_effect', -1)) == 0, x
+          assert int(x.get('live_plan_effect', -1)) == 0, x
+          if x.get('rapid_rise_proxy'):
+              assert int(x['accumulation_score']) <= 64, x
+
+          score_sha = hashlib.sha256(p.read_bytes()).hexdigest()
+          provenance = {
+              'schema_version': '1.0',
+              'provenance_contract': 'BTC_TREND_V26_ACCUM_SCORE_PROVENANCE_V1',
+              'workflow_run_id': int(os.environ['GITHUB_RUN_ID_VALUE']),
+              'workflow_name': 'BTC TREND V2.6 ACCUM Fastpath Shadow',
+              'generated_at_utc': datetime.now(timezone.utc).isoformat().replace('+00:00','Z'),
+              'score_sha256': score_sha,
+              'coverage_pct': x['coverage_pct'],
+              'coverage_grade': x['coverage_grade'],
+              'accumulation_score': x['accumulation_score'],
+              'band': x['band'],
+              'rapid_rise_proxy': x['rapid_rise_proxy'],
+              'cap_64_applied': x['cap_64_applied'],
+              'strong_confirmation_coverage_met': x['strong_confirmation_coverage_met'],
+              'allowed_output_scope': ['ACCUMULATION_SCORE','ACCUMULATION_BAND','ACCUMULATION_COVERAGE','ACCUMULATION_RAPID_RISE_PROXY'],
+              'engine_direct_official_state_write_allowed': False,
+              'entry_gate_effect': 0,
+              'long_short_effect': 0,
+              'trend_strength_effect': 0,
+              'live_plan_effect': 0
+          }
+          (out / 'accum_bridge_provenance.json').write_text(json.dumps(provenance, ensure_ascii=False, indent=2) + '\n')
+          print(json.dumps(provenance, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Upload ACCUMULATION shadow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v26-accum-fastpath-${{ github.run_id }}
+          path: |
+            btc_trend_v26/output/latest_accum_fastpath.json
+            btc_trend_v26/output/accum_bridge_provenance.json
+          if-no-files-found: error
+          retention-days: 14
