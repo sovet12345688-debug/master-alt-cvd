@@ -169,7 +169,7 @@ def confirmed_pivots(
 def classify_structure(
     bars: list[dict[str, Any]], left: int, right: int
 ) -> dict[str, Any]:
-    if len(bars) < max(left + right + 5, 12):
+    if len(bars) < left + right + 5:
         raise StructureEngineError("insufficient bars for structure classification")
     highs, lows = confirmed_pivots(bars, left, right)
     if len(highs) < 2 or len(lows) < 2:
