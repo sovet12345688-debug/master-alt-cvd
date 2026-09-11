@@ -1,0 +1,124 @@
+name: BTC TREND V2.6 Volume Wave R2.4 Shadow
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - btc-trend-v26-na-recovery-r2
+    paths:
+      - 'btc_trend_v26/volume_wave_engine_r24.py'
+      - 'btc_trend_v26/volume_wave_contract_r24.json'
+      - 'btc_trend_v26/test_volume_wave_engine_r24.py'
+      - 'btc_trend_v26/validate_volume_wave_r24.py'
+      - 'btc_trend_v26/feature_engine_r24.py'
+      - '.github/workflows/btc_trend_v26_volume_wave_r24_shadow.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  volume-wave-r24-shadow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout shadow branch
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Unit tests
+        working-directory: btc_trend_v26
+        run: |
+          python -m unittest -v test_volume_wave_engine_r24.py
+          python -m unittest -v test_structure_engine_r22.py
+          python -m unittest -v test_score_engine.py
+
+      - name: Run R2.4 semantic and performance validation
+        run: python btc_trend_v26/validate_volume_wave_r24.py --output btc_trend_v26/output/volume_wave_validation_r24.json
+
+      - name: Build current R2.4 candidate
+        run: python btc_trend_v26/volume_wave_engine_r24.py --output btc_trend_v26/output/volume_wave_latest_r24.json
+
+      - name: Build baseline R2.2 features
+        run: python btc_trend_v26/feature_engine_r22.py --output btc_trend_v26/output/latest_features_r22_for_r24.json
+
+      - name: Compute baseline score
+        run: python btc_trend_v26/score_engine.py btc_trend_v26/output/latest_features_r22_for_r24.json --output btc_trend_v26/output/latest_score_r22_for_r24.json
+
+      - name: Build R2.4 shadow features
+        run: python btc_trend_v26/feature_engine_r24.py --output btc_trend_v26/output/latest_features_r24.json
+
+      - name: Compute R2.4 shadow trend score
+        run: python btc_trend_v26/score_engine.py btc_trend_v26/output/latest_features_r24.json --output btc_trend_v26/output/latest_score_r24.json
+
+      - name: Validate no coverage inflation and 15-point integration
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          out = Path('btc_trend_v26/output')
+          c = json.loads((out/'volume_wave_latest_r24.json').read_text())
+          v = json.loads((out/'volume_wave_validation_r24.json').read_text())
+          f = json.loads((out/'latest_features_r24.json').read_text())
+          base = json.loads((out/'latest_score_r22_for_r24.json').read_text())
+          score = json.loads((out/'latest_score_r24.json').read_text())
+          assert v['status'] == 'TECHNICAL_PASS', v
+          assert score['status'] == 'OK', score
+          shadow = f['volume_wave_shadow']
+          decision = shadow['decision_status']
+          injected = shadow['injected_as_current']
+          comps = {x['feature_id']: x for x in score['components']}
+          if decision == 'CURRENT':
+              assert injected is True, shadow
+              assert 'VOLUME_WAVE' in comps, comps
+              assert comps['VOLUME_WAVE']['weight'] == 15, comps['VOLUME_WAVE']
+              assert round(score['coverage_pct'] - base['coverage_pct'], 2) == 15.0, (base, score)
+              coverage_behavior = 'CURRENT_ADDS_15'
+          else:
+              assert injected is False, shadow
+              assert 'VOLUME_WAVE' not in comps, comps
+              assert score['coverage_pct'] == base['coverage_pct'], (base, score)
+              coverage_behavior = 'INSUFFICIENT_ADDS_0'
+          result = {
+              'schema_version': '1.0',
+              'status': 'SHADOW_INTEGRATION_PASS',
+              'decision_status': decision,
+              'decision_reason': shadow.get('decision_reason'),
+              'candidate_state': shadow.get('candidate_state'),
+              'coverage_behavior': coverage_behavior,
+              'baseline_coverage_pct': base['coverage_pct'],
+              'r24_coverage_pct': score['coverage_pct'],
+              'coverage_delta_pct': round(score['coverage_pct'] - base['coverage_pct'], 2),
+              'performance_gate': v['performance_gate'],
+              'performance_checks': v['performance_checks'],
+              'ab_summary': v['ab_summary'],
+              'long': score['long'],
+              'short': score['short'],
+              'trend_strength': score['trend_strength'],
+              'production_approved': False,
+              'official_state_write_allowed': False,
+          }
+          (out/'volume_wave_shadow_integration_r24.json').write_text(json.dumps(result, indent=2)+'\n')
+          print(json.dumps(result, indent=2))
+          PY
+
+      - name: Upload R2.4 shadow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v26-volume-wave-r24-${{ github.run_id }}
+          path: |
+            btc_trend_v26/output/volume_wave_validation_r24.json
+            btc_trend_v26/output/volume_wave_latest_r24.json
+            btc_trend_v26/output/latest_features_r22_for_r24.json
+            btc_trend_v26/output/latest_score_r22_for_r24.json
+            btc_trend_v26/output/latest_features_r24.json
+            btc_trend_v26/output/latest_score_r24.json
+            btc_trend_v26/output/volume_wave_shadow_integration_r24.json
+          if-no-files-found: error
+          retention-days: 14
