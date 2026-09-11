@@ -1,0 +1,77 @@
+name: BTC TREND V2.6 Macro R2 Shadow
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [btc-trend-v26-macro-r1]
+    paths:
+      - 'btc_trend_v26/liquidity_macro_engine_r2.py'
+      - 'btc_trend_v26/liquidity_macro_contract_r2.json'
+      - '.github/workflows/btc_trend_v26_macro_r2_shadow.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  macro-r2-shadow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: Run Macro R2 OOS and current candidate
+        run: python btc_trend_v26/liquidity_macro_engine_r2.py --output btc_trend_v26/output/liquidity_macro_r2.json
+      - name: Build baseline R2.2 features
+        run: python btc_trend_v26/feature_engine_r22.py --output btc_trend_v26/output/latest_features_r22_macro_r2.json
+      - name: Build shadow integrated features
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          out=Path('btc_trend_v26/output')
+          base=json.loads((out/'latest_features_r22_macro_r2.json').read_text())
+          m=json.loads((out/'liquidity_macro_r2.json').read_text())
+          base['schema_version']='1.4-macro-r2'
+          base['engine_id']='BTC_TREND_V26_FEATURE_ENGINE_MACRO_R2_SHADOW'
+          base['features']['LIQUIDITY_MACRO']=m['feature']
+          base['macro_shadow']={'engine_id':m['engine_id'],'promotion_gate':m['oos']['promotion_gate'],'checks':m['oos']['checks'],'production_approved':False}
+          base['production_eligible']=False
+          base['official_state_write_allowed']=False
+          (out/'latest_features_macro_r2.json').write_text(json.dumps(base,indent=2)+'\n')
+          PY
+      - name: Compute shadow trend score
+        run: python btc_trend_v26/score_engine.py btc_trend_v26/output/latest_features_macro_r2.json --output btc_trend_v26/output/latest_score_macro_r2.json
+      - name: Validate 10-point integration semantics
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          out=Path('btc_trend_v26/output')
+          m=json.loads((out/'liquidity_macro_r2.json').read_text())
+          s=json.loads((out/'latest_score_macro_r2.json').read_text())
+          assert m['status']=='SHADOW_CANDIDATE', m
+          assert m['production_approved'] is False
+          assert m['official_state_write_allowed'] is False
+          gate=m['oos']['promotion_gate']
+          if gate=='PASS':
+              comp=next(x for x in s['components'] if x['feature_id']=='LIQUIDITY_MACRO')
+              assert comp['weight']==10, comp
+              behavior='CURRENT_ADDS_10'
+          else:
+              assert any(x['feature_id']=='LIQUIDITY_MACRO' for x in s['unavailable_features']), s
+              behavior='HOLD_ADDS_0'
+          result={'status':'SHADOW_INTEGRATION_PASS','promotion_gate':gate,'coverage_behavior':behavior,'coverage_pct':s.get('coverage_pct'),'long':s.get('long'),'short':s.get('short'),'trend_strength':s.get('trend_strength'),'production_approved':False}
+          (out/'macro_shadow_integration_r2.json').write_text(json.dumps(result,indent=2)+'\n')
+          print(json.dumps(result,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v26-macro-r2-${{ github.run_id }}
+          path: |
+            btc_trend_v26/output/liquidity_macro_r2.json
+            btc_trend_v26/output/latest_score_macro_r2.json
+            btc_trend_v26/output/macro_shadow_integration_r2.json
+          retention-days: 14
