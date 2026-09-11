@@ -10,6 +10,14 @@ on:
       - 'btc_trend_v26/bottom_fastpath_engine.py'
       - 'btc_trend_v26/test_bottom_fastpath_engine.py'
       - '.github/workflows/btc_trend_v26_bottom_fastpath.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'btc_trend_v26/bottom_fastpath_contract.json'
+      - 'btc_trend_v26/bottom_fastpath_engine.py'
+      - 'btc_trend_v26/test_bottom_fastpath_engine.py'
+      - '.github/workflows/btc_trend_v26_bottom_fastpath.yml'
 
 permissions:
   contents: read
