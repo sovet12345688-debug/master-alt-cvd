@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "system": "MASTER_MARKET_INTEGRATED_HEALTH",
-  "evaluated_at_utc": "2026-09-10T23:15:23.002382Z",
+  "evaluated_at_utc": "2026-09-11T00:26:53.869712Z",
   "overall_status": "HISTORY RECOVERING",
   "overall_icon": "🟡",
   "status_order": [
@@ -11,8 +11,8 @@
     "FAILED"
   ],
   "counts": {
-    "CURRENT OK": 1,
-    "HISTORY RECOVERING": 4,
+    "CURRENT OK": 3,
+    "HISTORY RECOVERING": 2,
     "STALE": 0,
     "FAILED": 0
   },
@@ -20,32 +20,26 @@
     {
       "component_id": "data_vault",
       "display_name": "Data Vault",
-      "status": "HISTORY RECOVERING",
-      "icon": "🟡",
-      "timestamp_utc": "2026-09-10T22:58:13.643228Z",
-      "age_minutes": 17.2,
-      "history_status": "DEGRADED_HISTORY",
+      "status": "CURRENT OK",
+      "icon": "🟢",
+      "timestamp_utc": "2026-09-10T23:57:52.327493Z",
+      "age_minutes": 29.0,
+      "history_status": "OK",
       "reason_codes": [
-        "CURRENT_OK_HISTORY_INCOMPLETE"
+        "OK"
       ],
-      "next_action": "현재값은 사용; 실제 동일원천 history 자동 축적 대기, backfill 금지",
+      "next_action": "조치 없음",
       "auto_recovery_expected": true,
       "source_path": "market_vault/state/vault_state.json",
-      "details": {
-        "history_issues": [
-          "mandatory actual 24H comparisons <5 (0); missing=['EFFR', 'TGA_CLOSING_BALANCE', 'US10Y', 'US10Y_REAL', 'US2Y', 'US30Y']"
-        ],
-        "recent_timestamp_count_26h": 21,
-        "history_24h_comparison_count": 0
-      }
+      "details": {}
     },
     {
       "component_id": "stablecoin_windows",
       "display_name": "Stablecoin Windows",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-10T22:58:15.689060Z",
-      "age_minutes": 17.1,
+      "timestamp_utc": "2026-09-10T23:57:54.931590Z",
+      "age_minutes": 29.0,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -55,11 +49,8 @@
       "source_path": "market_vault/output/latest_stablecoin_windows.json",
       "details": {
         "missing_windows": [
-          "USDT_SUPPLY:1D",
           "USDT_SUPPLY:20D",
-          "USDC_SUPPLY:1D",
           "USDC_SUPPLY:20D",
-          "STABLECOIN_TOTAL_SUPPLY:1D",
           "STABLECOIN_TOTAL_SUPPLY:20D"
         ]
       }
@@ -67,34 +58,26 @@
     {
       "component_id": "derivatives",
       "display_name": "Derivatives",
-      "status": "HISTORY RECOVERING",
-      "icon": "🟡",
-      "timestamp_utc": "2026-09-10T23:14:51.926896Z",
-      "age_minutes": 0.5,
-      "history_status": "RECOVERING",
+      "status": "CURRENT OK",
+      "icon": "🟢",
+      "timestamp_utc": "2026-09-11T00:25:52.634367Z",
+      "age_minutes": 1.0,
+      "history_status": "OK",
       "reason_codes": [
-        "CURRENT_OK_EXACT_WINDOWS_INCOMPLETE"
+        "OK"
       ],
-      "next_action": "현재 파생값은 사용; exact 1H/4H/24H history 자동 축적 대기",
+      "next_action": "조치 없음",
       "auto_recovery_expected": true,
       "source_path": "derivatives/state/collector_state.json",
-      "details": {
-        "missing_exact_windows": {
-          "1H": 0,
-          "4H": 0,
-          "24H": 21
-        },
-        "universe_count": 21,
-        "ok_count": 21
-      }
+      "details": {}
     },
     {
       "component_id": "actor_retail",
       "display_name": "Actor Retail",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-10T22:58:15.788969Z",
-      "age_minutes": 17.1,
+      "timestamp_utc": "2026-09-10T23:57:55.065559Z",
+      "age_minutes": 29.0,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -104,9 +87,7 @@
       "source_path": "market_vault/output/latest_actor_flows.json",
       "details": {
         "missing_windows": [
-          "BTC:1D",
           "BTC:7D",
-          "ETH:1D",
           "ETH:7D"
         ],
         "retail_proxy_status": "OK"
@@ -117,8 +98,8 @@
       "display_name": "Yen Carry",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-10T01:07:12.295666Z",
-      "age_minutes": 1328.2,
+      "timestamp_utc": "2026-09-10T23:37:50.316423Z",
+      "age_minutes": 49.1,
       "history_status": "OK",
       "reason_codes": [
         "OK"
