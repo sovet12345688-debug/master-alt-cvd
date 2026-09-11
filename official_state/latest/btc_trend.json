@@ -8,14 +8,14 @@
   "contract_path": "state/master_btc_trend_v2_6_contract.json",
   "run": {
     "run_type": "OFFICIAL",
-    "run_id": "MBTC-V26-20260912-0500-KST",
-    "executed_kst": "2026-09-12T05:08:52+09:00",
-    "updated_kst": "2026-09-12T05:08:52+09:00",
-    "prior_official_run_id": "MBTC-V26-20260911-1300-KST"
+    "run_id": "MBTC-V26-20260912-0800-KST",
+    "executed_kst": "2026-09-12T08:04:42+09:00",
+    "updated_kst": "2026-09-12T08:04:42+09:00",
+    "prior_official_run_id": "MBTC-V26-20260912-0500-KST"
   },
   "validity": {
     "valid_until_kst": null,
-    "next_official_run_kst": "2026-09-12T08:00:00+09:00",
+    "next_official_run_kst": "2026-09-12T13:00:00+09:00",
     "freshness_status": "CURRENT"
   },
   "data_quality": {
@@ -48,9 +48,9 @@
   },
   "core_state": {
     "market_snapshot": {
-      "observed_progressing_price_usdt": 77443.74,
+      "observed_progressing_price_usdt": 77186.0,
       "price_source": "Binance BTCUSDT Spot",
-      "latest_completed_1h_close_usdt": 77286.01,
+      "latest_completed_1h_close_usdt": 77150.0,
       "latest_completed_4h_close_usdt": 77286.01,
       "latest_completed_1d_close_usdt": 76568.72
     },
@@ -66,7 +66,7 @@
     "trend": {
       "state": "SHORT_DOMINANT",
       "strength": 35.27,
-      "trajectory": "↓ 악화 중 · 직전 저장 공식 대비 SHORT 우세 강화",
+      "trajectory": "→ 05:00 공식 대비 SHORT 우세 유지",
       "strong_confirmation_coverage_met": false
     },
     "bottom": {
@@ -103,8 +103,8 @@
     "btc_leading_signal_engine": {
       "mode": "READ_ONLY_AUXILIARY",
       "selection_status": "CURRENT",
-      "expected_source_slot_kst": "2026-09-11T21:20:00+09:00",
-      "actual_source_kst": "2026-09-11T21:47:51+09:00",
+      "expected_source_slot_kst": "2026-09-12T05:20:00+09:00",
+      "actual_source_kst": "2026-09-12T05:29:35+09:00",
       "strict_detection_rows": 0,
       "strict_seeds": 0,
       "positions": 0,
@@ -140,7 +140,7 @@
   },
   "lineage": {
     "state_origin": "ACTUAL_STORED_RUN",
-    "run_record_source": "BASIC_OFFICIAL_AUTOMATION_2026-09-12T05:08:52+09:00",
+    "run_record_source": "BASIC_OFFICIAL_AUTOMATION_2026-09-12T08:04:42+09:00",
     "history_pointer": "official_state/history/btc_trend/2026-09.jsonl",
     "canonical_identity_verified": true,
     "cross_master_decision_dependency": false
