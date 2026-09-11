@@ -5,12 +5,14 @@ on:
   pull_request:
     paths:
       - 'maintenance/sync_master_market_active_score_contract_20260911.py'
+      - 'maintenance/sync_master_market_active_score_contract_20260911_v2.py'
       - '.github/workflows/master_market_contract_sync_20260911.yml'
   push:
     branches:
       - main
     paths:
       - 'maintenance/sync_master_market_active_score_contract_20260911.py'
+      - 'maintenance/sync_master_market_active_score_contract_20260911_v2.py'
       - '.github/workflows/master_market_contract_sync_20260911.yml'
 
 permissions:
@@ -36,13 +38,15 @@ jobs:
           python-version: '3.12'
 
       - name: Syntax
-        run: python -m py_compile maintenance/sync_master_market_active_score_contract_20260911.py
+        run: |
+          python -m py_compile maintenance/sync_master_market_active_score_contract_20260911.py
+          python -m py_compile maintenance/sync_master_market_active_score_contract_20260911_v2.py
 
       - name: Apply canonical and contract sync in workspace
-        run: python maintenance/sync_master_market_active_score_contract_20260911.py --apply
+        run: python maintenance/sync_master_market_active_score_contract_20260911_v2.py --apply
 
       - name: Validate synchronized contract
-        run: python maintenance/sync_master_market_active_score_contract_20260911.py --check
+        run: python maintenance/sync_master_market_active_score_contract_20260911_v2.py --check
 
       - name: Validate diff scope
         shell: bash
@@ -51,7 +55,6 @@ jobs:
           mapfile -t changed < <(git diff --name-only | sort)
           printf '%s\n' "${changed[@]}"
           allowed=(
-            '.github/workflows/master_market_score_engine_active.yml'
             'master_prompts/master_market_v1_2_current.md'
             'state/master_market_v1_2_contract.json'
           )
@@ -62,7 +65,7 @@ jobs:
             done
             $ok || { echo "Unexpected migration diff: $f"; exit 1; }
           done
-          [[ ${#changed[@]} -eq 3 ]] || { echo "Expected exactly 3 synchronized files, got ${#changed[@]}"; exit 1; }
+          [[ ${#changed[@]} -eq 2 ]] || { echo "Expected exactly 2 synchronized files, got ${#changed[@]}"; exit 1; }
           echo 'MASTER_MARKET_CANONICAL_SYNC_DIFF_SCOPE=PASS'
 
       - name: Commit synchronized files on main
@@ -73,8 +76,7 @@ jobs:
           git config user.email "master-market-contract-bot@users.noreply.github.com"
           git add \
             master_prompts/master_market_v1_2_current.md \
-            state/master_market_v1_2_contract.json \
-            .github/workflows/master_market_score_engine_active.yml
+            state/master_market_v1_2_contract.json
           if git diff --cached --quiet; then
             echo 'No canonical sync change'
             exit 0
