@@ -13,6 +13,7 @@
   "trend_score_bridge_contract": "state/master_btc_trend_v2_6_trend_score_bridge_contract.json",
   "bottom_score_bridge_contract": "state/master_btc_trend_v2_6_bottom_score_bridge_contract.json",
   "top_score_bridge_contract": "state/master_btc_trend_v2_6_top_score_bridge_contract.json",
+  "accum_score_bridge_contract": "state/master_btc_trend_v2_6_accum_score_bridge_contract.json",
   "btc_leading_signal_schedule_contract": "state/master_btc_trend_r26_schedule_link_contract.json",
   "official_state": "official_state/latest/btc_trend.json",
   "official_state_bridge": {
@@ -88,6 +89,7 @@
     "trend_score_machine_ratio": "state/master_btc_trend_v2_6_trend_score_bridge_contract.json LIMITED DISPLAY",
     "bottom_score_machine": "state/master_btc_trend_v2_6_bottom_score_bridge_contract.json LIMITED DISPLAY PARTIAL SCORE",
     "top_score_machine": "state/master_btc_trend_v2_6_top_score_bridge_contract.json LIMITED DISPLAY PARTIAL SCORE",
+    "accumulation_score_machine": "state/master_btc_trend_v2_6_accum_score_bridge_contract.json LIMITED DISPLAY PARTIAL SCORE",
     "btc_leading_signal_engine": "btc-trend-v30-r26-final-integration READ_ONLY; Frozen R2.5 execution authority only"
   },
   "trend_score_engine": {
@@ -148,6 +150,27 @@
     "below_70_entry_gate_effect": 0,
     "missing_or_invalid_behavior": "N/A",
     "must_not_fill_accumulation": true
+  },
+  "accum_score_engine": {
+    "status": "READY_LIMITED_DISPLAY",
+    "mode": "ACCUMULATION_PARTIAL_SCORE_COVERAGE_GATED",
+    "bridge_contract": "state/master_btc_trend_v2_6_accum_score_bridge_contract.json",
+    "workflow_name": "BTC TREND V2.6 ACCUM Fastpath Shadow",
+    "workflow_file": ".github/workflows/btc_trend_v26_accum_fastpath.yml",
+    "artifact_name_pattern": "btc-trend-v26-accum-fastpath-{workflow_run_id}",
+    "allowed_output_scope": [
+      "ACCUMULATION_SCORE",
+      "ACCUMULATION_BAND",
+      "ACCUMULATION_COVERAGE",
+      "ACCUMULATION_RAPID_RISE_PROXY"
+    ],
+    "display_allowed_min_coverage": 50,
+    "strong_confirmation_min_coverage": 70,
+    "below_70_display_label": "부분산출",
+    "below_70_entry_gate_effect": 0,
+    "missing_or_invalid_behavior": "N/A",
+    "rapid_rise_proxy_max_score": 64,
+    "must_not_change_long_short_or_live_plan": true
   },
   "btc_leading_signal_engine": {
     "user_display_name": "BTC 선행신호 엔진",
