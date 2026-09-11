@@ -1,0 +1,140 @@
+{
+  "schema_version": "1.0",
+  "contract_id": "BTC_TREND_V26_SCORE_CONTRACT_R2",
+  "master_id": "btc_trend",
+  "production_version": "V2.6",
+  "research_version": "V3.0",
+  "status": "R2_TREND_SCORE_ENGINE_LOCKED_RESEARCH_ONLY",
+  "purpose": "Deterministically convert approved TREND feature states into LONG:SHORT ratio and trend strength without GPT judgement, missing-as-zero, stale substitution, cross-master decisions, or silent production promotion.",
+  "source_of_truth": {
+    "feature_contract": "btc_trend_v26/feature_contract.json",
+    "production_machine_contract": "state/master_btc_trend_v2_6_contract.json"
+  },
+  "promotion_policy": {
+    "production_use_allowed": false,
+    "silent_promotion_forbidden": true,
+    "requires_feature_engine": true,
+    "requires_shadow_mode": true,
+    "requires_oos_or_forward_validation": true,
+    "requires_explicit_acceptance": true
+  },
+  "scope": {
+    "included": [
+      "TREND_LONG_SHORT",
+      "TREND_STRENGTH"
+    ],
+    "excluded_until_later_phases": [
+      "IGNITION",
+      "MATURITY",
+      "BOTTOM",
+      "TOP",
+      "ACCUMULATION",
+      "ENTRY_GATE",
+      "LIVE_PLAN",
+      "TODAY_DIRECTION_TIE_BREAKER"
+    ]
+  },
+  "directional_state_values": {
+    "STRONG_SHORT": -1.0,
+    "SHORT": -0.5,
+    "NEUTRAL": 0.0,
+    "LONG": 0.5,
+    "STRONG_LONG": 1.0
+  },
+  "trend_weights": {
+    "STRUCTURE_1D": 22,
+    "STRUCTURE_4H": 10,
+    "STRUCTURE_1W": 8,
+    "VOLUME_WAVE": 15,
+    "EMA_MA_STACK": 10,
+    "SPOT_ETF_FLOW": 10,
+    "DERIVATIVES_STATE": 8,
+    "VALUE_OVEREXTENSION": 7,
+    "LIQUIDITY_MACRO": 10
+  },
+  "weight_total": 100,
+  "availability_policy": {
+    "usable": ["CURRENT"],
+    "excluded_and_renormalized": [
+      "N_A_SOURCE_MISSING",
+      "N_A_STALE",
+      "N_A_VALIDATION_FAIL",
+      "N_A_THRESHOLD_UNAPPROVED",
+      "N_A_INSUFFICIENT_HISTORY"
+    ],
+    "missing_is_zero": false,
+    "last_good_current_substitution_forbidden": true,
+    "cross_venue_repair_forbidden": true,
+    "chat_memory_backfill_forbidden": true,
+    "invalid_current_state_is_fatal_validation_error": true
+  },
+  "calculation": {
+    "valid_weight": "sum(weight_i for features where availability=CURRENT and state is valid)",
+    "directional_score": "sum(weight_i * state_value_i) / valid_weight",
+    "directional_score_range": [-1.0, 1.0],
+    "long_raw": "50 * (1 + directional_score)",
+    "long_display": "ROUND_HALF_UP(long_raw) to integer points",
+    "short_display": "100 - long_display",
+    "trend_strength": "abs(long_display - short_display)",
+    "trend_strength_range": [0, 100],
+    "ratio_sum": 100,
+    "calibrated_probability": false
+  },
+  "dominance": {
+    "dominant_gap_points_min": 10,
+    "neutral_if_gap_below": 10,
+    "LONG": "long_display - short_display >= 10",
+    "SHORT": "short_display - long_display >= 10",
+    "NEUTRAL": "absolute gap < 10",
+    "today_direction_override_forbidden": true,
+    "entry_signal": false
+  },
+  "coverage": {
+    "formula": "100 * valid_weight / 100",
+    "grades": {
+      "A": ">=85",
+      "B": "70-84",
+      "C": "50-69",
+      "LOW": "<50"
+    },
+    "strong_confirmation_min": 70,
+    "score_may_be_computed_below_70_for_audit": true,
+    "low_coverage_score_must_not_be_presented_as_strong_confirmation": true,
+    "zero_valid_weight_result": "SCORE_UNAVAILABLE"
+  },
+  "input_schema": {
+    "required_top_level": ["asof_utc", "features"],
+    "feature_record_required": ["availability"],
+    "feature_record_required_when_current": ["state", "feature_timestamp", "source_timestamps", "lineage"],
+    "feature_ids_must_match_trend_weights": true,
+    "extra_feature_ids_ignored_for_r2": true
+  },
+  "output_schema": {
+    "required_top_level": [
+      "schema_version",
+      "engine_id",
+      "status",
+      "asof_utc",
+      "coverage_pct",
+      "coverage_grade",
+      "valid_weight",
+      "directional_score",
+      "long",
+      "short",
+      "trend_strength",
+      "dominant_state",
+      "components",
+      "unavailable_features",
+      "production_eligible"
+    ],
+    "status_values": ["OK", "SCORE_UNAVAILABLE", "VALIDATION_FAIL"],
+    "production_eligible": false
+  },
+  "anti_fabrication": {
+    "invent_missing_feature_state": false,
+    "infer_state_from_prose": false,
+    "reuse_previous_score_when_current_unavailable": false,
+    "convert_ratio_to_probability": false,
+    "use_other_master_score_or_permission": false
+  }
+}

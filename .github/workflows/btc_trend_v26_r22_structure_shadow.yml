@@ -1,0 +1,90 @@
+name: BTC TREND V2.6 R2.2 Structure Shadow
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - btc-trend-v26-na-recovery-r1
+    paths:
+      - 'btc_trend_v26/structure_contract_r22.json'
+      - 'btc_trend_v26/structure_engine_r22.py'
+      - 'btc_trend_v26/feature_engine_r22.py'
+      - 'btc_trend_v26/test_structure_engine_r22.py'
+      - 'btc_trend_v26/validate_structure_r22.py'
+      - '.github/workflows/btc_trend_v26_r22_structure_shadow.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  r22-structure-shadow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Unit test R2.2 structure engine
+        working-directory: btc_trend_v26
+        run: python -m unittest -v test_structure_engine_r22.py
+
+      - name: Unit test existing feature engine
+        working-directory: btc_trend_v26
+        run: python -m unittest -v test_feature_engine.py
+
+      - name: Unit test score engine
+        working-directory: btc_trend_v26
+        run: python -m unittest -v test_score_engine.py
+
+      - name: Run R2.2 structure replay validation
+        run: python btc_trend_v26/validate_structure_r22.py --output btc_trend_v26/output/structure_validation_r22.json
+
+      - name: Run R2.2 live feature shadow
+        run: python btc_trend_v26/feature_engine_r22.py --output btc_trend_v26/output/latest_features_r22.json
+
+      - name: Run score engine against R2.2 features
+        run: python btc_trend_v26/score_engine.py btc_trend_v26/output/latest_features_r22.json --output btc_trend_v26/output/latest_score_r22.json
+
+      - name: Assert R2.2 safety and coverage target
+        run: |
+          python - <<'PY'
+          import json
+          f=json.load(open('btc_trend_v26/output/latest_features_r22.json'))
+          s=json.load(open('btc_trend_v26/output/latest_score_r22.json'))
+          v=json.load(open('btc_trend_v26/output/structure_validation_r22.json'))
+          assert f['production_eligible'] is False
+          assert f['official_state_write_allowed'] is False
+          assert s['production_eligible'] is False
+          assert v['production_eligible'] is False
+          assert v['status'] == 'PASS'
+          for fid in ('STRUCTURE_1D','STRUCTURE_4H','STRUCTURE_1W'):
+              assert f['features'][fid]['availability'] == 'CURRENT', (fid, f['features'][fid])
+          assert f['current_weight'] >= 68, f['current_weight']
+          assert s['coverage_pct'] >= 68, s['coverage_pct']
+          print('feature_status=', f['status'])
+          print('current_feature_count=', f['current_feature_count'])
+          print('current_weight=', f['current_weight'])
+          print('structure_states=', {k:f['features'][k]['state'] for k in ('STRUCTURE_1D','STRUCTURE_4H','STRUCTURE_1W')})
+          print('score_status=', s['status'])
+          print('coverage_pct=', s['coverage_pct'])
+          print('ratio=', s['long'], s['short'])
+          print('trend_strength=', s['trend_strength'])
+          print('dominant_state=', s['dominant_state'])
+          print('validation_status=', v['status'])
+          PY
+
+      - name: Upload R2.2 shadow outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v26-r22-structure-shadow-${{ github.run_id }}
+          path: btc_trend_v26/output/
+          if-no-files-found: error
+          retention-days: 14
