@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "contract_id": "BTC_TREND_V26_VOLUME_WAVE_R24_SHADOW",
+  "master_id": "btc_trend",
+  "production_version": "V2.6",
+  "status": "SHADOW_VALIDATION_ONLY",
+  "weight_in_trend": 15,
+  "purpose": "Separate valid neutral market structure from insufficient evidence, prevent coverage inflation, and compare strict 1D+4H agreement against a conservative 1D-primary/4H-confirmation design.",
+  "source": {
+    "venue": "Bitget USDT Futures",
+    "symbol": "BTCUSDT",
+    "timeframes": ["1D", "4H"],
+    "completed_candle_only": true,
+    "cross_venue_fallback_forbidden": true
+  },
+  "timeframe_semantics": {
+    "DIRECTIONAL": "price impulse and candle body are coherent AND either volume >= prior MA5 and MA10 OR abs(close-prev_close)/ATR14 >= 1.0",
+    "TRUE_NEUTRAL": "not directional AND volume participation >= 0.80 of both prior MA5 and MA10 AND wave_energy_atr <= 0.35 AND body_efficiency <= 0.35",
+    "INSUFFICIENT_EVIDENCE": "neither DIRECTIONAL nor TRUE_NEUTRAL",
+    "critical_rule": "INSUFFICIENT_EVIDENCE is never mapped to NEUTRAL and never adds 15 coverage points"
+  },
+  "directional_quality": {
+    "score_range": [0, 3],
+    "components": [
+      "volume_confirmation",
+      "wave_confirmation",
+      "body_efficiency >= 0.50"
+    ]
+  },
+  "ab_variants": {
+    "A_STRICT": {
+      "LONG": "1D DIRECTIONAL LONG and 4H DIRECTIONAL LONG",
+      "SHORT": "1D DIRECTIONAL SHORT and 4H DIRECTIONAL SHORT",
+      "NEUTRAL": "1D TRUE_NEUTRAL and 4H TRUE_NEUTRAL",
+      "otherwise": "INSUFFICIENT_EVIDENCE"
+    },
+    "B_1D_PRIMARY": {
+      "LONG_SHORT": "1D DIRECTIONAL is primary; accept if 4H same direction, or if 4H TRUE_NEUTRAL and 1D directional_quality >= 2",
+      "NEUTRAL": "1D TRUE_NEUTRAL and 4H TRUE_NEUTRAL",
+      "4H_INSUFFICIENT": "never confirms 1D",
+      "4H_OPPOSITE": "INSUFFICIENT_EVIDENCE"
+    }
+  },
+  "coverage_policy": {
+    "CURRENT": "only when B_1D_PRIMARY decision_status=CURRENT",
+    "INSUFFICIENT_EVIDENCE": "do not inject VOLUME_WAVE into score engine; preserve baseline N/A record",
+    "missing_is_zero": false,
+    "neutral_from_missing_evidence_forbidden": true
+  },
+  "shadow_performance_gate": {
+    "predeclared_before_result": true,
+    "one_day_min_signals": 25,
+    "one_day_min_hit_rate_pct": 53.0,
+    "combined_primary_min_signals": 12,
+    "combined_primary_min_hit_rate_pct": 53.0,
+    "average_signed_forward_return_must_be_positive": true,
+    "four_hour_standalone": "DIAGNOSTIC_ONLY_NOT_PROMOTION_GATE",
+    "gate_pass_does_not_auto_promote": true
+  },
+  "validation_policy": {
+    "no_forward_data_in_feature": true,
+    "forward_return_used_for_replay_diagnostics_only": true,
+    "technical_pass_is_not_production_promotion": true,
+    "production_promotion_requires_explicit_acceptance": true,
+    "production_approved": false,
+    "official_state_write_allowed": false
+  },
+  "anti_fabrication": {
+    "missing_as_zero": false,
+    "stale_substitution": false,
+    "chat_memory_backfill": false,
+    "threshold_tuning_from_current_forward_result": false,
+    "insufficient_evidence_as_neutral": false
+  }
+}
