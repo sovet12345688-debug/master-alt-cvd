@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0",
+  "contract_id": "BTC_TREND_V26_STRUCTURE_R22",
+  "master_id": "btc_trend",
+  "production_version": "V2.6",
+  "status": "R2_2_STRUCTURE_SHADOW_ONLY",
+  "purpose": "Deterministically classify 4H/1D/1W completed-candle market structure for TREND scoring without GPT judgement or lookahead.",
+  "promotion_policy": {
+    "production_use_allowed": false,
+    "shadow_only": true,
+    "official_state_write_forbidden": true,
+    "requires_oos_or_forward_validation": true,
+    "requires_multi_run_shadow_stability": true,
+    "requires_explicit_acceptance": true
+  },
+  "source": {
+    "venue": "Bitget USDT Futures",
+    "symbol": "BTCUSDT",
+    "recent_endpoint": "https://api.bitget.com/api/v3/market/candles",
+    "history_endpoint": "https://api.bitget.com/api/v3/market/history-candles",
+    "category": "USDT-FUTURES",
+    "cross_venue_fallback_forbidden": true,
+    "completed_candle_only": true
+  },
+  "timeframes": {
+    "STRUCTURE_4H": {"interval": "4H", "weight": 10, "pivot_left": 3, "pivot_right": 3, "minimum_completed_bars": 120},
+    "STRUCTURE_1D": {"interval": "1D", "weight": 22, "pivot_left": 2, "pivot_right": 2, "minimum_completed_bars": 180},
+    "STRUCTURE_1W": {"interval": "1W", "weight": 8, "pivot_left": 2, "pivot_right": 2, "minimum_completed_bars": 80}
+  },
+  "pivot_rule": {
+    "swing_high": "bar.high must be strictly greater than every high in left and right confirmation windows",
+    "swing_low": "bar.low must be strictly lower than every low in left and right confirmation windows",
+    "confirmation": "a pivot is usable only after pivot_right later candles have completed",
+    "minimum_swings": "at least two confirmed swing highs and two confirmed swing lows are required",
+    "tie_policy": "equal highs/lows do not form a confirmed pivot"
+  },
+  "facts": {
+    "HH": "latest confirmed swing high > previous confirmed swing high",
+    "LH": "latest confirmed swing high < previous confirmed swing high",
+    "HL": "latest confirmed swing low > previous confirmed swing low",
+    "LL": "latest confirmed swing low < previous confirmed swing low",
+    "BOS_UP": "latest completed close > latest confirmed swing high",
+    "BOS_DOWN": "latest completed close < latest confirmed swing low",
+    "RECLAIM": "previous completed close <= latest confirmed swing high and latest completed close > it",
+    "BREAKDOWN": "previous completed close >= latest confirmed swing low and latest completed close < it"
+  },
+  "classifier": {
+    "STRONG_LONG": "BOS_UP and HH and HL",
+    "STRONG_SHORT": "BOS_DOWN and LH and LL",
+    "LONG": "BOS_UP, or HH+HL while BOS_DOWN is false",
+    "SHORT": "BOS_DOWN, or LH+LL while BOS_UP is false",
+    "NEUTRAL": "all other mixed structures",
+    "break_priority": "BOS direction overrides a conflicting prior HH/HL or LH/LL sequence but is not STRONG unless the sequence agrees"
+  },
+  "availability": {
+    "CURRENT": "all source bars are completed, enough history exists, and two confirmed highs/lows exist",
+    "N_A_SOURCE_MISSING": "source request unavailable",
+    "N_A_INSUFFICIENT_HISTORY": "not enough completed bars or confirmed swings",
+    "N_A_VALIDATION_FAIL": "schema or classifier invariant failure"
+  },
+  "anti_lookahead": {
+    "future_bars_for_state": false,
+    "right_window_is_confirmation_delay_not_future_peek": true,
+    "current_incomplete_bar": "OBSERVE_ONLY_NOT_USED"
+  },
+  "shadow_target": {
+    "existing_current_weight": 28,
+    "structure_weight_added_if_all_current": 40,
+    "expected_total_coverage_if_all_current": 68,
+    "production_threshold": 70,
+    "note": "68% remains below the 70% production confirmation threshold; R2.2 cannot promote by itself."
+  }
+}
