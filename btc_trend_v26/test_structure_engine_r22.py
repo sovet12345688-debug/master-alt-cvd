@@ -56,18 +56,21 @@ class StructureR22Tests(unittest.TestCase):
     def test_break_priority_can_flip_old_bull_sequence(self):
         highs = [10, 12, 11, 13, 12, 14, 13, 15, 14, 14.5]
         lows = [8, 9, 8.5, 10, 9.5, 11, 10.5, 12, 11, 10]
-        closes = [9, 11, 10, 12, 11, 13, 12, 14, 13, 10.5]
+        closes = [9, 11, 10, 12, 11, 13, 12, 14, 13, 10.2]
         r = classify_structure(make_bars(highs, lows, closes), left=1, right=1)
         self.assertEqual(r["state"], "SHORT")
         self.assertTrue(r["facts"]["BOS_DOWN"])
 
-    def test_mixed_structure_is_neutral_without_break(self):
-        highs = [10, 12, 11, 11.5, 11, 13, 12, 12.5, 12, 12.2]
-        lows = [8, 9, 8.5, 9.5, 9, 10, 9.5, 10.5, 10, 10.3]
-        closes = [9, 11, 10, 11, 10.5, 12, 11, 12, 11.5, 12.0]
+    def test_mixed_lh_hl_compression_is_neutral(self):
+        highs = [13, 15, 14, 14.5, 13.5, 14, 13, 13.5, 13, 13.2]
+        lows = [10, 11, 9, 10, 9.5, 10.5, 10, 11, 10.5, 11]
+        closes = [11.5, 13, 11.5, 12.5, 11.5, 12.5, 11.5, 12.5, 11.5, 12.5]
         r = classify_structure(make_bars(highs, lows, closes), left=1, right=1)
-        self.assertIn(r["state"], {"NEUTRAL", "LONG", "SHORT"})
-        self.assertFalse(r["facts"]["BOS_UP"] and r["facts"]["BOS_DOWN"])
+        self.assertEqual(r["state"], "NEUTRAL")
+        self.assertTrue(r["facts"]["LH"])
+        self.assertTrue(r["facts"]["HL"])
+        self.assertFalse(r["facts"]["BOS_UP"])
+        self.assertFalse(r["facts"]["BOS_DOWN"])
 
 
 if __name__ == "__main__":
