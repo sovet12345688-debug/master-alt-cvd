@@ -1,7 +1,7 @@
 {
   "engine": "MASTER_ST_WHALE_PROFIT_TAKING_RISK_PROXY_V1",
   "schema_version": "1.2",
-  "generated_at_utc": "2026-09-11T21:38:20.876838Z",
+  "generated_at_utc": "2026-09-11T22:39:33.305157Z",
   "name_ko": "단기 고래 차익실현 위험",
   "role": "AUXILIARY_RISK_ONLY",
   "score_weight": 0,
@@ -17,7 +17,7 @@
         "status": "OK",
         "trace_name": "STH-NUPL",
         "source_time_utc": "2026-09-11T00:00:00Z",
-        "source_age_hours": 21.64,
+        "source_age_hours": 22.66,
         "value": 0.0845587818747946,
         "percentile_4y": 67.85225718194255,
         "avg_7d": 0.09828520394094083,
@@ -36,7 +36,7 @@
         "status": "OK",
         "trace_name": "STH-MVRV",
         "source_time_utc": "2026-09-11T00:00:00Z",
-        "source_age_hours": 21.64,
+        "source_age_hours": 22.66,
         "value": 1.0924,
         "percentile_4y": 67.85225718194255,
         "avg_7d": 1.1092625,
@@ -55,7 +55,7 @@
         "status": "OK",
         "trace_name": "STH-SOPR",
         "source_time_utc": "2026-09-11T00:00:00Z",
-        "source_age_hours": 21.64,
+        "source_age_hours": 22.66,
         "value": 1.0,
         "percentile_4y": 100.0,
         "avg_7d": 1.0,
@@ -83,14 +83,14 @@
     {
       "signal": "🔴",
       "indicator": "BTC CVD",
-      "display_value": "-$6.8M",
+      "display_value": "-$7.4M",
       "state": "적극매도 우세",
       "raw": {
         "status": "OK",
-        "value": -6751905.474409997,
-        "cvd_to_volume_ratio": -0.12201354263058799,
-        "trade_notional_1h_usdt": 55337344.76387,
-        "source_time_utc": "2026-09-11T21:16:45.258464Z",
+        "value": -7420126.774560001,
+        "cvd_to_volume_ratio": -0.16970929858904968,
+        "trade_notional_1h_usdt": 43722570.514699996,
+        "source_time_utc": "2026-09-11T22:17:15.217378Z",
         "source": "derivatives/output/latest_microstructure.json (Bitget BTC 1H)"
       }
     }
