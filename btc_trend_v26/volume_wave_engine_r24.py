@@ -107,11 +107,13 @@ def atr14(rows: list[dict[str, float]]) -> float:
 
 
 def classify_tf(rows: list[dict[str, float]]) -> dict[str, Any]:
-    """Classify one completed timeframe without conflating no evidence with neutral.
+    """Classify a completed timeframe without conflating no evidence with neutral.
 
-    DIRECTIONAL: coherent price direction plus confirmed volume or >=1 ATR impulse.
-    TRUE_NEUTRAL: adequate participation but low directional displacement and small body.
-    INSUFFICIENT_EVIDENCE: neither condition is satisfied.
+    DIRECTIONAL requires coherent price direction and either:
+      - >=1 ATR directional impulse, or
+      - confirmed volume plus minimum directional displacement/body efficiency.
+    TRUE_NEUTRAL requires adequate participation with low directional displacement.
+    Everything else is INSUFFICIENT_EVIDENCE.
     """
     if len(rows) < MIN_BARS:
         raise VolumeWaveError(f"need at least {MIN_BARS} completed bars")
@@ -142,7 +144,15 @@ def classify_tf(rows: list[dict[str, float]]) -> dict[str, Any]:
     candle_range = max(cur["high"] - cur["low"], 0.0)
     body_efficiency = abs(body) / candle_range if candle_range > 0 else 0.0
 
-    directional_confirmed = price_body_coherent and (volume_confirmed or wave_confirmed)
+    volume_directional_confirmed = (
+        price_body_coherent
+        and volume_confirmed
+        and wave_energy_atr >= 0.20
+        and body_efficiency >= 0.25
+    )
+    wave_directional_confirmed = price_body_coherent and wave_confirmed
+    directional_confirmed = volume_directional_confirmed or wave_directional_confirmed
+
     true_neutral = (
         not directional_confirmed
         and participation_sufficient
@@ -161,8 +171,8 @@ def classify_tf(rows: list[dict[str, float]]) -> dict[str, Any]:
         evidence_class = "INSUFFICIENT_EVIDENCE"
 
     directional_quality = (
-        int(volume_confirmed)
-        + int(wave_confirmed)
+        int(volume_directional_confirmed)
+        + int(wave_directional_confirmed)
         + int(body_efficiency >= 0.50)
     ) if directional_confirmed else 0
 
@@ -186,13 +196,14 @@ def classify_tf(rows: list[dict[str, float]]) -> dict[str, Any]:
         "wave_confirmed": wave_confirmed,
         "body_efficiency": body_efficiency,
         "price_body_coherent": price_body_coherent,
+        "volume_directional_confirmed": volume_directional_confirmed,
+        "wave_directional_confirmed": wave_directional_confirmed,
         "directional_confirmed": directional_confirmed,
         "true_neutral": true_neutral,
     }
 
 
 def combine_strict(d1: dict[str, Any], h4: dict[str, Any]) -> dict[str, Any]:
-    """Variant A: R2.3-style strict agreement, now evidence-aware."""
     if d1["evidence_class"] == "DIRECTIONAL" and h4["evidence_class"] == "DIRECTIONAL":
         if d1["state"] == h4["state"]:
             return {"decision_status": "CURRENT", "state": d1["state"], "reason": "1D_4H_DIRECTION_AGREE"}
@@ -203,7 +214,6 @@ def combine_strict(d1: dict[str, Any], h4: dict[str, Any]) -> dict[str, Any]:
 
 
 def combine_primary(d1: dict[str, Any], h4: dict[str, Any]) -> dict[str, Any]:
-    """Variant B: 1D primary; 4H confirms or must be genuinely balanced, never merely missing evidence."""
     if d1["evidence_class"] == "DIRECTIONAL":
         if h4["evidence_class"] == "DIRECTIONAL":
             if d1["state"] == h4["state"]:
