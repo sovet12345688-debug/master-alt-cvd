@@ -13,7 +13,9 @@ HERE = Path(__file__).resolve().parent
 CONTRACT_PATH = HERE / "feature_engine_contract.json"
 RAW_BASE = "https://raw.githubusercontent.com/sovet12345688-debug/master-alt-cvd/main"
 BITGET_CANDLES = "https://api.bitget.com/api/v3/market/candles"
+BITGET_HISTORY_CANDLES = "https://api.bitget.com/api/v3/market/history-candles"
 INTERVAL_MS = {"4H": 4 * 60 * 60 * 1000, "1D": 24 * 60 * 60 * 1000}
+DAY_MS = 24 * 60 * 60 * 1000
 TREND_IDS = [
     "STRUCTURE_1D", "STRUCTURE_4H", "STRUCTURE_1W", "VOLUME_WAVE",
     "EMA_MA_STACK", "SPOT_ETF_FLOW", "DERIVATIVES_STATE",
@@ -45,7 +47,7 @@ def load_json(path: Path) -> dict[str, Any]:
 
 
 def get_json(url: str, params: dict[str, Any] | None = None) -> Any:
-    r = requests.get(url, params=params, timeout=20, headers={"User-Agent": "btc-trend-v26-r21-shadow/1.1"})
+    r = requests.get(url, params=params, timeout=20, headers={"User-Agent": "btc-trend-v26-r21-shadow/1.2"})
     r.raise_for_status()
     return r.json()
 
@@ -73,38 +75,83 @@ def ema(values: list[float], n: int) -> float:
     return out
 
 
-def fetch_completed_closes(interval: str, now: datetime, limit: int = 260) -> tuple[list[float], str]:
-    if interval not in INTERVAL_MS:
-        raise FeatureEngineError(f"unsupported interval: {interval}")
-    payload = get_json(BITGET_CANDLES, {
+def _bitget_rows(url: str, interval: str, **extra: str) -> list[list[Any]]:
+    params = {
         "category": "USDT-FUTURES",
         "symbol": "BTCUSDT",
         "interval": interval,
         "type": "market",
-        "limit": str(limit),
-    })
+        **extra,
+    }
+    payload = get_json(url, params)
     if not isinstance(payload, dict) or str(payload.get("code")) != "00000":
         raise FeatureEngineError(f"Bitget candles error: {payload!r}")
     rows = payload.get("data") or []
     if not isinstance(rows, list):
         raise FeatureEngineError(f"unexpected Bitget candle payload: {interval}")
-    now_ms = int(now.timestamp() * 1000)
+    return rows
+
+
+def _parse_completed(rows: list[list[Any]], interval: str, now_ms: int) -> dict[int, tuple[float, int]]:
     duration = INTERVAL_MS[interval]
-    completed: list[tuple[int, float, int]] = []
+    parsed: dict[int, tuple[float, int]] = {}
     for row in rows:
         if not isinstance(row, list) or len(row) < 5:
             continue
-        open_ms = int(row[0])
-        close_boundary_ms = open_ms + duration
-        if close_boundary_ms > now_ms:
+        try:
+            open_ms = int(row[0])
+            close_boundary_ms = open_ms + duration
+            close = float(row[4])
+        except (TypeError, ValueError):
             continue
-        close = float(row[4])
-        if math.isfinite(close):
-            completed.append((open_ms, close, close_boundary_ms))
-    completed.sort(key=lambda x: x[0])
-    if len(completed) < 205:
-        raise FeatureEngineError(f"{interval}: only {len(completed)} completed Bitget bars")
-    return [x[1] for x in completed], iso(datetime.fromtimestamp(completed[-1][2] / 1000, tz=timezone.utc))
+        if close_boundary_ms > now_ms or not math.isfinite(close):
+            continue
+        parsed[open_ms] = (close, close_boundary_ms)
+    return parsed
+
+
+def fetch_completed_closes(interval: str, now: datetime, minimum: int = 205) -> tuple[list[float], str]:
+    if interval not in INTERVAL_MS:
+        raise FeatureEngineError(f"unsupported interval: {interval}")
+    now_ms = int(now.timestamp() * 1000)
+    all_rows: dict[int, tuple[float, int]] = {}
+
+    # Recent endpoint. Bitget exposes the recent access window; for 1D this alone is
+    # intentionally insufficient for MA200, so history is appended below.
+    recent = _bitget_rows(BITGET_CANDLES, interval, limit="1000")
+    all_rows.update(_parse_completed(recent, interval, now_ms))
+
+    # Walk backwards in <=90-day history windows until the indicator warm-up is met.
+    # The history endpoint returns up to 100 rows and does not require a cursor.
+    loops = 0
+    while len(all_rows) < minimum and loops < 8:
+        loops += 1
+        if all_rows:
+            earliest_open = min(all_rows)
+            end_ms = earliest_open - 1
+        else:
+            end_ms = now_ms - 1
+        start_ms = end_ms - 89 * DAY_MS
+        history = _bitget_rows(
+            BITGET_HISTORY_CANDLES,
+            interval,
+            startTime=str(start_ms),
+            endTime=str(end_ms),
+            limit="100",
+        )
+        parsed = _parse_completed(history, interval, now_ms)
+        before = len(all_rows)
+        all_rows.update(parsed)
+        if len(all_rows) == before:
+            break
+
+    ordered = sorted(all_rows.items(), key=lambda x: x[0])
+    if len(ordered) < minimum:
+        raise FeatureEngineError(f"{interval}: only {len(ordered)} completed Bitget bars after history pagination")
+    ordered = ordered[-max(minimum, 260):]
+    closes = [x[1][0] for x in ordered]
+    latest_close_boundary = ordered[-1][1][1]
+    return closes, iso(datetime.fromtimestamp(latest_close_boundary / 1000, tz=timezone.utc))
 
 
 def stack_bits(closes: list[float]) -> dict[str, Any]:
@@ -208,11 +255,11 @@ def build_live_features(now: datetime | None = None) -> dict[str, Any]:
         ft = max(parse_iso(d1_ts), parse_iso(h4_ts))
         features["EMA_MA_STACK"] = current_record(
             state, iso(ft), {"bitget_1d_completed": d1_ts, "bitget_4h_completed": h4_ts},
-            {"engine": "R2.1", "source": "Bitget USDT Futures BTCUSDT", "completed_candle_only": True, "cross_venue_fallback": False},
+            {"engine": "R2.1", "source": "Bitget USDT Futures BTCUSDT", "completed_candle_only": True, "cross_venue_fallback": False, "history_pagination": True},
             {"1D": d1, "4H": h4},
         )
     except Exception as exc:
-        features["EMA_MA_STACK"] = na_record("N_A_SOURCE_MISSING", f"EMA/MA runtime unavailable: {type(exc).__name__}: {str(exc)[:120]}")
+        features["EMA_MA_STACK"] = na_record("N_A_SOURCE_MISSING", f"EMA/MA runtime unavailable: {type(exc).__name__}: {str(exc)[:160]}")
 
     try:
         etf = remote_main("market_vault/output/latest_etf_flows.json")
@@ -264,7 +311,7 @@ def build_live_features(now: datetime | None = None) -> dict[str, Any]:
 
     current_count = sum(1 for x in features.values() if x.get("availability") == "CURRENT")
     return {
-        "schema_version": "1.1",
+        "schema_version": "1.2",
         "engine_id": "BTC_TREND_V26_FEATURE_ENGINE_R21",
         "status": "OK_SHADOW" if current_count else "FEATURES_UNAVAILABLE",
         "asof_utc": iso(now),
@@ -283,7 +330,7 @@ def main() -> int:
         payload = build_live_features()
     except Exception as exc:
         payload = {
-            "schema_version": "1.1",
+            "schema_version": "1.2",
             "engine_id": "BTC_TREND_V26_FEATURE_ENGINE_R21",
             "status": "VALIDATION_FAIL",
             "error": f"{type(exc).__name__}: {exc}",
