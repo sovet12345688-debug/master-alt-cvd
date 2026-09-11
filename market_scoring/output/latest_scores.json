@@ -2,7 +2,7 @@
   "engine": "MASTER_MARKET_SCORE_ENGINE_V1",
   "schema_version": "1.0",
   "status": "ACTIVE_OK",
-  "generated_at_utc": "2026-09-11T08:02:11.345180Z",
+  "generated_at_utc": "2026-09-11T09:01:53.794541Z",
   "activation_approval": {
     "explicit_user_approval": true,
     "approved_at_kst": "2026-09-11T10:04:10+09:00",
@@ -15,11 +15,11 @@
     ]
   },
   "source_age_minutes": {
-    "vault": 3.2,
-    "macro": 5.2,
-    "etf": 15.2,
-    "actors": 3.2,
-    "derivatives": 43.1
+    "vault": 2.8,
+    "macro": 4.2,
+    "etf": 13.9,
+    "actors": 2.8,
+    "derivatives": 41.9
   },
   "overall_coverage_pct": 90.0,
   "confidence_cap": null,
@@ -65,7 +65,7 @@
       }
     },
     "alt_money_inflow": {
-      "score": 47.5,
+      "score": 51.2,
       "coverage_pct": 100.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
@@ -74,7 +74,7 @@
         "eth_etf_1d": 50.0,
         "eth_etf_7d": 50.0,
         "eth_whale_net": 25.0,
-        "eth_dominance_change": 50.0,
+        "eth_dominance_change": 75.0,
         "btc_dominance_inverse_change": 50.0,
         "total_market_cap_1d": 50.0,
         "market_volume_1d": 75.0,
@@ -82,7 +82,7 @@
       }
     },
     "market_positive": {
-      "score": 45.1,
+      "score": 42.9,
       "coverage_pct": 95.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
@@ -90,9 +90,9 @@
       "components": {
         "liquidity_lead": 62.5,
         "crypto_money_inflow": 37.5,
-        "alt_money_inflow": 47.5,
+        "alt_money_inflow": 51.2,
         "btc_whale_net": 25.0,
-        "btc_derivatives_state": 37.5,
+        "btc_derivatives_state": 12.5,
         "market_breadth_state": 50.0,
         "rates_macro_state": 25.0,
         "oil_geopolitical_state": null
@@ -107,7 +107,7 @@
       75
     ],
     "liquidity_threshold_alert_allowed": true,
-    "market_positive_band": "혼합"
+    "market_positive_band": "부정적"
   },
   "anti_fallback": {
     "last_known_score_reuse": false,
