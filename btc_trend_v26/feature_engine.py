@@ -12,7 +12,8 @@ import requests
 HERE = Path(__file__).resolve().parent
 CONTRACT_PATH = HERE / "feature_engine_contract.json"
 RAW_BASE = "https://raw.githubusercontent.com/sovet12345688-debug/master-alt-cvd/main"
-BINANCE_KLINES = "https://fapi.binance.com/fapi/v1/klines"
+BITGET_CANDLES = "https://api.bitget.com/api/v3/market/candles"
+INTERVAL_MS = {"4H": 4 * 60 * 60 * 1000, "1D": 24 * 60 * 60 * 1000}
 TREND_IDS = [
     "STRUCTURE_1D", "STRUCTURE_4H", "STRUCTURE_1W", "VOLUME_WAVE",
     "EMA_MA_STACK", "SPOT_ETF_FLOW", "DERIVATIVES_STATE",
@@ -44,7 +45,7 @@ def load_json(path: Path) -> dict[str, Any]:
 
 
 def get_json(url: str, params: dict[str, Any] | None = None) -> Any:
-    r = requests.get(url, params=params, timeout=20, headers={"User-Agent": "btc-trend-v26-r21-shadow/1.0"})
+    r = requests.get(url, params=params, timeout=20, headers={"User-Agent": "btc-trend-v26-r21-shadow/1.1"})
     r.raise_for_status()
     return r.json()
 
@@ -73,23 +74,37 @@ def ema(values: list[float], n: int) -> float:
 
 
 def fetch_completed_closes(interval: str, now: datetime, limit: int = 260) -> tuple[list[float], str]:
-    rows = get_json(BINANCE_KLINES, {"symbol": "BTCUSDT", "interval": interval, "limit": limit})
+    if interval not in INTERVAL_MS:
+        raise FeatureEngineError(f"unsupported interval: {interval}")
+    payload = get_json(BITGET_CANDLES, {
+        "category": "USDT-FUTURES",
+        "symbol": "BTCUSDT",
+        "interval": interval,
+        "type": "market",
+        "limit": str(limit),
+    })
+    if not isinstance(payload, dict) or str(payload.get("code")) != "00000":
+        raise FeatureEngineError(f"Bitget candles error: {payload!r}")
+    rows = payload.get("data") or []
     if not isinstance(rows, list):
-        raise FeatureEngineError(f"unexpected Binance kline payload: {interval}")
+        raise FeatureEngineError(f"unexpected Bitget candle payload: {interval}")
     now_ms = int(now.timestamp() * 1000)
-    completed: list[tuple[float, int]] = []
+    duration = INTERVAL_MS[interval]
+    completed: list[tuple[int, float, int]] = []
     for row in rows:
-        if not isinstance(row, list) or len(row) < 7:
+        if not isinstance(row, list) or len(row) < 5:
             continue
-        close_time = int(row[6])
-        if close_time >= now_ms:
+        open_ms = int(row[0])
+        close_boundary_ms = open_ms + duration
+        if close_boundary_ms > now_ms:
             continue
         close = float(row[4])
         if math.isfinite(close):
-            completed.append((close, close_time))
+            completed.append((open_ms, close, close_boundary_ms))
+    completed.sort(key=lambda x: x[0])
     if len(completed) < 205:
-        raise FeatureEngineError(f"{interval}: only {len(completed)} completed bars")
-    return [x[0] for x in completed], iso(datetime.fromtimestamp(completed[-1][1] / 1000, tz=timezone.utc))
+        raise FeatureEngineError(f"{interval}: only {len(completed)} completed Bitget bars")
+    return [x[1] for x in completed], iso(datetime.fromtimestamp(completed[-1][2] / 1000, tz=timezone.utc))
 
 
 def stack_bits(closes: list[float]) -> dict[str, Any]:
@@ -184,23 +199,21 @@ def build_live_features(now: datetime | None = None) -> dict[str, Any]:
     for fid, reason in contract["forced_na_until_validation"].items():
         features[fid] = na_record(reason, "R2.1 intentionally fail-closed until classifier/threshold validation")
 
-    # EMA/MA: completed 1D + 4H candles only.
     try:
-        d1_closes, d1_ts = fetch_completed_closes("1d", now)
-        h4_closes, h4_ts = fetch_completed_closes("4h", now)
+        d1_closes, d1_ts = fetch_completed_closes("1D", now)
+        h4_closes, h4_ts = fetch_completed_closes("4H", now)
         d1 = stack_bits(d1_closes)
         h4 = stack_bits(h4_closes)
         state = classify_ema_stack(d1, h4)
         ft = max(parse_iso(d1_ts), parse_iso(h4_ts))
         features["EMA_MA_STACK"] = current_record(
-            state, iso(ft), {"binance_1d_completed": d1_ts, "binance_4h_completed": h4_ts},
-            {"engine": "R2.1", "source": "Binance USD-M Futures BTCUSDT", "completed_candle_only": True},
+            state, iso(ft), {"bitget_1d_completed": d1_ts, "bitget_4h_completed": h4_ts},
+            {"engine": "R2.1", "source": "Bitget USDT Futures BTCUSDT", "completed_candle_only": True, "cross_venue_fallback": False},
             {"1D": d1, "4H": h4},
         )
     except Exception as exc:
-        features["EMA_MA_STACK"] = na_record("N_A_SOURCE_MISSING", f"EMA/MA runtime unavailable: {type(exc).__name__}")
+        features["EMA_MA_STACK"] = na_record("N_A_SOURCE_MISSING", f"EMA/MA runtime unavailable: {type(exc).__name__}: {str(exc)[:120]}")
 
-    # ETF: only sign consensus of 1D/3D/7D; strong bands remain forbidden.
     try:
         etf = remote_main("market_vault/output/latest_etf_flows.json")
         generated = str(etf["generated_at_utc"])
@@ -215,9 +228,8 @@ def build_live_features(now: datetime | None = None) -> dict[str, Any]:
             {k: btc.get(k) for k in ("flow_1d_usd_m", "flow_3d_usd_m", "flow_7d_usd_m")},
         )
     except Exception as exc:
-        features["SPOT_ETF_FLOW"] = na_record("N_A_SOURCE_MISSING", f"ETF runtime unavailable: {type(exc).__name__}")
+        features["SPOT_ETF_FLOW"] = na_record("N_A_SOURCE_MISSING", f"ETF runtime unavailable: {type(exc).__name__}: {str(exc)[:120]}")
 
-    # Derivatives: primary category plus same-venue CVD/taker conflict guard.
     try:
         summary = remote_main("derivatives/output/latest_summary.json")
         micro = remote_main("derivatives/output/latest_microstructure.json")
@@ -244,7 +256,7 @@ def build_live_features(now: datetime | None = None) -> dict[str, Any]:
             {"cvd_1h_usdt": cvd, "taker_buy_ratio": buy, "taker_sell_ratio": sell, "oi_24h_available": s_btc.get("oi_change_24h_pct") is not None},
         )
     except Exception as exc:
-        features["DERIVATIVES_STATE"] = na_record("N_A_SOURCE_MISSING", f"Derivatives runtime unavailable: {type(exc).__name__}")
+        features["DERIVATIVES_STATE"] = na_record("N_A_SOURCE_MISSING", f"Derivatives runtime unavailable: {type(exc).__name__}: {str(exc)[:120]}")
 
     for fid in TREND_IDS:
         if fid not in features:
@@ -252,7 +264,7 @@ def build_live_features(now: datetime | None = None) -> dict[str, Any]:
 
     current_count = sum(1 for x in features.values() if x.get("availability") == "CURRENT")
     return {
-        "schema_version": "1.0",
+        "schema_version": "1.1",
         "engine_id": "BTC_TREND_V26_FEATURE_ENGINE_R21",
         "status": "OK_SHADOW" if current_count else "FEATURES_UNAVAILABLE",
         "asof_utc": iso(now),
@@ -271,7 +283,7 @@ def main() -> int:
         payload = build_live_features()
     except Exception as exc:
         payload = {
-            "schema_version": "1.0",
+            "schema_version": "1.1",
             "engine_id": "BTC_TREND_V26_FEATURE_ENGINE_R21",
             "status": "VALIDATION_FAIL",
             "error": f"{type(exc).__name__}: {exc}",
