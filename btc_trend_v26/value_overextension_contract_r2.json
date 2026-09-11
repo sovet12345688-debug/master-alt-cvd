@@ -1,0 +1,43 @@
+{
+  "schema_version": "2.0",
+  "contract_id": "BTC_TREND_V26_VALUE_OVEREXTENSION_R2",
+  "master_id": "btc_trend",
+  "production_version": "V2.6",
+  "status": "SHADOW_VALIDATION_ONLY",
+  "weight_in_trend": 7,
+  "design_reason": "R1 short-horizon contrarian hypothesis failed OOS. R2 is a new predeclared medium-horizon value-context hypothesis, not a threshold retune of R1.",
+  "inputs": [
+    "completed BTCUSDT 1D OHLC",
+    "EMA50",
+    "ATR14",
+    "180-day percentile rank of EMA50/ATR deviation",
+    "RSI14 on completed weekly closes"
+  ],
+  "classifier": {
+    "STRONG_LONG": "deviation percentile <=10 AND weekly RSI<=45",
+    "LONG": "deviation percentile <=20 AND weekly RSI<=50",
+    "NEUTRAL": "otherwise",
+    "SHORT": "deviation percentile >=80 AND weekly RSI>=50",
+    "STRONG_SHORT": "deviation percentile >=90 AND weekly RSI>=55"
+  },
+  "oos": {
+    "recent_exclusion_days": 120,
+    "evaluation_days": 1080,
+    "forward_target_days": 20,
+    "min_signals": 60,
+    "min_hit_rate_pct": 53,
+    "min_holdout_signals": 12,
+    "min_holdout_hit_rate_pct": 50,
+    "positive_average_return_required": true,
+    "min_positive_folds": 3
+  },
+  "coverage_policy": "7 points become CURRENT only if every predeclared OOS gate passes; otherwise remain N_A_THRESHOLD_UNAPPROVED and contribute zero coverage.",
+  "anti_overfit": {
+    "r1_result_not_used_to_tune_r2_thresholds": true,
+    "adaptive_percentile_used_instead_of fitted price levels": true,
+    "recent_120_days_excluded": true,
+    "silent_retuning_after_result": false
+  },
+  "production_approved": false,
+  "official_state_write_allowed": false
+}
