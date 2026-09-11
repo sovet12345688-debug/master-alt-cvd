@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import argparse, csv, io, json, math, time
+import argparse, csv, io, json, time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -11,18 +11,31 @@ ROOT=HERE.parent
 SUMMARY=ROOT/'market_vault/output/latest_summary.json'
 MACRO=ROOT/'market_vault/output/latest_macro_liquidity.json'
 BITGET='https://api.bitget.com/api/v3/market/history-candles'
-FRED='https://fred.stlouisfed.org/graph/fredgraph.csv?id={}'
+FRED_MULTI='https://fred.stlouisfed.org/graph/fredgraph.csv?id={}'
 LLAMA='https://stablecoins.llama.fi/stablecoincharts/all'
 RECENT_EXCLUSION_DAYS=120
 EVAL_DAYS=1080
 FORWARD_DAYS=7
 GATES={"min_signals":80,"min_hit_rate_pct":52.0,"min_holdout_signals":15,"min_holdout_hit_rate_pct":50.0,"min_positive_folds":3}
 DEADBANDS={"real_yield_pp":0.03,"nominal_yield_pp":0.05,"netliq_pct":0.25,"stablecoin_pct":0.10,"tga_pct":2.0}
+FRED_SERIES=('DFII10','DGS10','WALCL','WTREGEN','RRPONTSYD')
 
 
 def iso(dt): return dt.astimezone(timezone.utc).isoformat().replace('+00:00','Z')
 def load_json(p): return json.loads(p.read_text())
 def metric_map(p): return {x['metric']:x for x in p.get('metrics',[]) if isinstance(x,dict) and x.get('metric')}
+
+def get_retry(url:str, *, params=None, timeout=60, attempts=3):
+    last=None
+    for i in range(attempts):
+        try:
+            r=requests.get(url,params=params,timeout=timeout,headers={'User-Agent':'btc-trend-v26-macro-r1/1.1'})
+            r.raise_for_status()
+            return r
+        except requests.RequestException as exc:
+            last=exc
+            if i+1<attempts: time.sleep(2**i)
+    raise RuntimeError(f'source fetch failed after {attempts} attempts: {url}: {last}')
 
 def delta7(rec:dict[str,Any], fallback_weekly:bool=False):
     v=rec.get('vs_7d')
@@ -59,18 +72,27 @@ def current_feature():
     times=[s[k].get('source_observation_time') for k in req]+[m['US_NET_LIQUIDITY_PROXY'].get('source_observation_time')]
     return {'state':state,'composite_score':score,'components':comps,'inputs':{'real_yield_delta_pp':r[0],'nominal_yield_delta_pp':n[0],'net_liquidity_delta_pct':nl[1],'stablecoin_supply_delta_pct':st[1],'tga_delta_pct':tga[1]},'source_times':times}
 
-def fred_series(series:str)->dict[datetime,float]:
-    r=requests.get(FRED.format(series),timeout=30,headers={'User-Agent':'btc-trend-v26-macro-r1/1.0'}); r.raise_for_status()
-    out={}
+def fred_bundle(series_ids=FRED_SERIES)->dict[str,dict[datetime,float]]:
+    # One request instead of five independent requests. This removes the prior FRED timeout bottleneck.
+    url=FRED_MULTI.format(','.join(series_ids))
+    r=get_retry(url,timeout=60,attempts=3)
+    out={sid:{} for sid in series_ids}
     for row in csv.DictReader(io.StringIO(r.text)):
-        raw=row.get(series)
-        if not raw or raw=='.': continue
-        try: out[datetime.strptime(row['DATE'],'%Y-%m-%d').replace(tzinfo=timezone.utc)]=float(raw)
-        except Exception: pass
+        date_raw=row.get('DATE') or row.get('observation_date')
+        if not date_raw: continue
+        try: dt=datetime.strptime(date_raw,'%Y-%m-%d').replace(tzinfo=timezone.utc)
+        except ValueError: continue
+        for sid in series_ids:
+            raw=row.get(sid)
+            if not raw or raw=='.': continue
+            try: out[sid][dt]=float(raw)
+            except (TypeError,ValueError): pass
+    missing=[sid for sid in series_ids if not out[sid]]
+    if missing: raise RuntimeError(f'FRED bundle missing series: {missing}')
     return out
 
 def stable_series()->dict[datetime,float]:
-    r=requests.get(LLAMA,timeout=30,headers={'User-Agent':'btc-trend-v26-macro-r1/1.0'}); r.raise_for_status(); data=r.json(); out={}
+    r=get_retry(LLAMA,timeout=60,attempts=3); data=r.json(); out={}
     def num(v):
         if isinstance(v,(int,float)): return float(v)
         if isinstance(v,dict): return sum(num(x) for x in v.values())
@@ -88,7 +110,7 @@ def btc_daily(start,end):
     rows={}; cur=start
     while cur<end:
         ce=min(cur+timedelta(days=80),end)
-        r=requests.get(BITGET,params={'category':'USDT-FUTURES','symbol':'BTCUSDT','interval':'1D','startTime':str(int(cur.timestamp()*1000)),'endTime':str(int(ce.timestamp()*1000)),'type':'market','limit':'100'},timeout=20); r.raise_for_status(); p=r.json()
+        r=get_retry(BITGET,params={'category':'USDT-FUTURES','symbol':'BTCUSDT','interval':'1D','startTime':str(int(cur.timestamp()*1000)),'endTime':str(int(ce.timestamp()*1000)),'type':'market','limit':'100'},timeout=30,attempts=3); p=r.json()
         if str(p.get('code'))!='00000': raise RuntimeError(f'Bitget {p!r}')
         for x in p.get('data') or []: rows[int(x[0])]=float(x[4])
         cur=ce; time.sleep(.04)
@@ -106,7 +128,9 @@ def summarize(rs):
 
 def oos(now):
     ee=(now-timedelta(days=RECENT_EXCLUSION_DAYS)).replace(hour=0,minute=0,second=0,microsecond=0); es=ee-timedelta(days=EVAL_DAYS); fs=es-timedelta(days=45)
-    btc=btc_daily(fs,ee+timedelta(days=FORWARD_DAYS+3)); real=fred_series('DFII10'); nom=fred_series('DGS10'); fed=fred_series('WALCL'); tga=fred_series('WTREGEN'); rrp=fred_series('RRPONTSYD'); stable=stable_series()
+    btc=btc_daily(fs,ee+timedelta(days=FORWARD_DAYS+3))
+    fred=fred_bundle(); real=fred['DFII10']; nom=fred['DGS10']; fed=fred['WALCL']; tga=fred['WTREGEN']; rrp=fred['RRPONTSYD']
+    stable=stable_series()
     prices={d:p for d,p in btc}; dates=[d for d,_ in btc]
     recs=[]
     for idx,d in enumerate(dates):
@@ -133,8 +157,8 @@ def oos(now):
 
 def build():
     now=datetime.now(timezone.utc); cur=current_feature(); val=oos(now); gate=val['promotion_gate']
-    feature={'availability':'CURRENT' if gate=='PASS' else 'N_A_THRESHOLD_UNAPPROVED','state':cur['state'] if gate=='PASS' else None,'feature_timestamp':iso(now),'source_timestamps':{'market_vault_summary':load_json(SUMMARY).get('snapshot_hour_utc'),'market_vault_macro':load_json(MACRO).get('snapshot_hour_utc')},'lineage':{'engine':'BTC_TREND_V26_LIQUIDITY_MACRO_R1','current_sources':['market_vault/output/latest_summary.json','market_vault/output/latest_macro_liquidity.json'],'oos_sources':['FRED','DefiLlama','Bitget'],'promotion_gate':gate},'details':cur}
-    return {'schema_version':'1.0','engine_id':'BTC_TREND_V26_LIQUIDITY_MACRO_R1','status':'SHADOW_CANDIDATE','asof_utc':iso(now),'deadbands':DEADBANDS,'gates':GATES,'oos':val,'feature':feature,'production_approved':False,'official_state_write_allowed':False}
+    feature={'availability':'CURRENT' if gate=='PASS' else 'N_A_THRESHOLD_UNAPPROVED','state':cur['state'] if gate=='PASS' else None,'feature_timestamp':iso(now),'source_timestamps':{'market_vault_summary':load_json(SUMMARY).get('snapshot_hour_utc'),'market_vault_macro':load_json(MACRO).get('snapshot_hour_utc')},'lineage':{'engine':'BTC_TREND_V26_LIQUIDITY_MACRO_R1','current_sources':['market_vault/output/latest_summary.json','market_vault/output/latest_macro_liquidity.json'],'oos_sources':['FRED bundled CSV','DefiLlama','Bitget'],'promotion_gate':gate},'details':cur}
+    return {'schema_version':'1.1','engine_id':'BTC_TREND_V26_LIQUIDITY_MACRO_R1','status':'SHADOW_CANDIDATE','asof_utc':iso(now),'deadbands':DEADBANDS,'gates':GATES,'oos':val,'feature':feature,'production_approved':False,'official_state_write_allowed':False}
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--output',type=Path,required=True);a=p.parse_args()
