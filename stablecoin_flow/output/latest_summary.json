@@ -1,16 +1,20 @@
 {
   "engine": "MASTER_STABLECOIN_TREASURY_EXCHANGE_V1",
-  "generated_at_utc": "2026-09-11T19:26:00.946869Z",
-  "window_start_utc": "2026-09-11T18:25:56.805659Z",
-  "window_end_utc": "2026-09-11T19:25:56.805659Z",
+  "generated_at_utc": "2026-09-11T20:28:25.893058Z",
+  "window_start_utc": "2026-09-11T19:28:14.836597Z",
+  "window_end_utc": "2026-09-11T20:28:14.836597Z",
   "chain": "ethereum",
-  "rpc_url": "https://ethereum-rpc.publicnode.com",
+  "rpc_url": "https://rpc.mevblocker.io",
   "block_range": [
-    25955941,
-    25956239
+    25956251,
+    25956550
   ],
   "log_chunk_blocks": 50,
-  "rpc_fallback_log": [],
+  "rpc_fallback_log": [
+    "https://ethereum-rpc.publicnode.com:RuntimeError:{'code': -32602, 'message': 'block range extends beyond current head block'}",
+    "https://eth.llamarpc.com:HTTPError:403 Client Error: Forbidden for url: https://eth.llamarpc.com/",
+    "https://1rpc.io/eth:RuntimeError:{'code': -32000, 'message': 'method not available'}"
+  ],
   "coverage_rule": "Exchange matching is partial and only covers explicitly verified addresses in this registry. No unmatched destination may be inferred as an exchange.",
   "rules": {
     "USDT": "Confirmed transfers from verified Tether Treasury address. Only destinations matching verified exchange registry count as Treasury->Exchange.",
@@ -24,8 +28,8 @@
       "chain": "ethereum",
       "mode": "treasury_outflow",
       "status": "OK",
-      "issuer_transfer_count": 0,
-      "issuer_transfer_amount": 0,
+      "issuer_transfer_count": 1,
+      "issuer_transfer_amount": 80000000.0,
       "verified_exchange_match_count": 0,
       "verified_exchange_amount": 0,
       "verified_exchange_breakdown": {},
@@ -38,8 +42,8 @@
       "chain": "ethereum",
       "mode": "mint_destination_proxy",
       "status": "OK",
-      "issuer_transfer_count": 165,
-      "issuer_transfer_amount": 34798759.789586,
+      "issuer_transfer_count": 196,
+      "issuer_transfer_amount": 24414231.352055,
       "verified_exchange_match_count": 0,
       "verified_exchange_amount": 0,
       "verified_exchange_breakdown": {},
