@@ -1,5 +1,5 @@
 {
-  "schema_version": "2.0",
+  "schema_version": "2.1",
   "master_id": "BTC_TREND_CURRENT",
   "display_name": "MASTER BTC TREND",
   "production_version": "V2.6",
@@ -10,6 +10,7 @@
   "canonical_source": "master_prompts/master_btc_trend_v2_6_current.md",
   "ui_canonical_source": "master_prompts/master_btc_trend_v2_6_ui_final.md",
   "machine_contract": "state/master_btc_trend_v2_6_contract.json",
+  "trend_score_bridge_contract": "state/master_btc_trend_v2_6_trend_score_bridge_contract.json",
   "btc_leading_signal_schedule_contract": "state/master_btc_trend_r26_schedule_link_contract.json",
   "official_state": "official_state/latest/btc_trend.json",
   "official_state_bridge": {
@@ -82,7 +83,27 @@
     "official_state_transport": "official_state_bridge",
     "research_assets": "btc_backtest + btc-fractal-v26-build",
     "chat_memory": "NON_CANONICAL",
+    "trend_score_machine_ratio": "state/master_btc_trend_v2_6_trend_score_bridge_contract.json LIMITED DISPLAY",
     "btc_leading_signal_engine": "btc-trend-v30-r26-final-integration READ_ONLY; Frozen R2.5 execution authority only"
+  },
+  "trend_score_engine": {
+    "status": "READY_LIMITED_DISPLAY",
+    "mode": "MACHINE_RATIO_COVERAGE_GATED",
+    "bridge_contract": "state/master_btc_trend_v2_6_trend_score_bridge_contract.json",
+    "workflow_name": "BTC TREND V2.6 Machine Ratio Bridge",
+    "workflow_file": ".github/workflows/btc_trend_v26_machine_ratio_bridge.yml",
+    "artifact_name_pattern": "btc-trend-v26-machine-ratio-{workflow_run_id}",
+    "allowed_output_scope": [
+      "LONG_SHORT_RATIO",
+      "TREND_STRENGTH",
+      "TREND_DOMINANT_STATE",
+      "TREND_COVERAGE"
+    ],
+    "display_allowed_min_coverage": 50,
+    "strong_confirmation_min_coverage": 70,
+    "below_70_entry_gate_effect": 0,
+    "missing_or_invalid_behavior": "N/A",
+    "must_not_fill_bottom_top_accumulation": true
   },
   "btc_leading_signal_engine": {
     "user_display_name": "BTC 선행신호 엔진",
