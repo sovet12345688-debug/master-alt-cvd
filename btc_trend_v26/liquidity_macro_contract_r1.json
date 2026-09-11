@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "contract_id": "BTC_TREND_V26_LIQUIDITY_MACRO_R1",
+  "master_id": "btc_trend",
+  "production_version": "V2.6",
+  "status": "SHADOW_VALIDATION_ONLY",
+  "weight_in_trend": 10,
+  "current_source_paths": [
+    "market_vault/output/latest_summary.json",
+    "market_vault/output/latest_macro_liquidity.json"
+  ],
+  "current_components": [
+    "US10Y_REAL 7D change (falling=BTC positive)",
+    "US10Y 7D change (falling=BTC positive)",
+    "US_NET_LIQUIDITY_PROXY 7D/source-observation change (rising=BTC positive)",
+    "STABLECOIN_TOTAL_SUPPLY 7D change (rising=BTC positive)",
+    "TGA_CLOSING_BALANCE 7D change (falling=BTC positive)"
+  ],
+  "component_deadbands": {
+    "real_yield_pp": 0.03,
+    "nominal_yield_pp": 0.05,
+    "net_liquidity_pct": 0.25,
+    "stablecoin_supply_pct": 0.10,
+    "tga_pct": 2.0
+  },
+  "state_rule": {
+    "STRONG_LONG": "component score >= 4",
+    "LONG": "component score >= 2",
+    "NEUTRAL": "component score between -1 and +1",
+    "SHORT": "component score <= -2",
+    "STRONG_SHORT": "component score <= -4"
+  },
+  "oos": {
+    "recent_exclusion_days": 120,
+    "evaluation_days": 1080,
+    "sampling": "non-overlapping weekly observations",
+    "forward_target_days": 7,
+    "history_sources": ["FRED", "DefiLlama stablecoincharts/all", "Bitget BTCUSDT 1D"],
+    "min_signals": 80,
+    "min_hit_rate_pct": 52,
+    "min_holdout_signals": 15,
+    "min_holdout_hit_rate_pct": 50,
+    "positive_average_return_required": true,
+    "min_positive_folds": 3
+  },
+  "coverage_policy": "10 points become CURRENT only if the predeclared OOS gate passes. Otherwise remain N_A_THRESHOLD_UNAPPROVED and add zero coverage.",
+  "anti_fabrication": {"missing_as_zero": false, "stale_substitution": false, "chat_memory_backfill": false, "other_master_decision_input": false},
+  "production_approved": false,
+  "official_state_write_allowed": false
+}
