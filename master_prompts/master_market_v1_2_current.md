@@ -116,6 +116,25 @@ Coinness policy: Coinness is EARLY DETECTION ONLY. A Coinness item may trigger i
 - WATCH rule: **Polymarket alone never alerts.** An A/B market move of `>=10pp/4H` or `>=15pp/1D` is only a WATCH candidate and requires at least one independent aligned MASTER axis. Polymarket alone never creates LEVEL1/LEVEL2.
 - If Polymarket data is stale/unavailable, keep the SCREEN5 block visible and show `N/A` / `확인 실패`; do not substitute guessed probabilities.
 
+## ACTIVE SCORE ENGINE LOCK — APPROVED 2026-09-11
+
+User explicitly approved the previously exposed candidate formula **as-is** at `2026-09-11T10:04:10+09:00`. This approval activates the deterministic production score engine without historical back-solving or past-score copying.
+
+- Authoritative formula/transform contract = `market_scoring/score_engine_contract.json`.
+- Current machine score output = `market_scoring/output/latest_scores.json` with `engine=MASTER_MARKET_SCORE_ENGINE_V1`.
+- Production refresh workflow = `.github/workflows/master_market_score_engine_active.yml`; scheduled every hour at `:58` so a fresh score artifact is prepared before the next hourly MASTER decision cycle.
+- Required current-run core scores = `liquidity_lead | crypto_money_inflow | alt_money_inflow | market_positive`.
+- When `latest_scores.json` is fresh/schema-compatible and the required score is numeric, use that current-run value. Do **not** replace it with the last OFFICIAL score.
+- The former structural failure reason `BLOCKED_MISSING_AUTHORITATIVE_FORMULA` is resolved and must not be used for these four scores after this activation.
+- Core-score N/A is allowed only for a real current-run failure such as missing/incompatible/stale machine output, `score=null` because no confirmed component exists, or a freshness/validation guard failure. Explain the actual cause in `N/A 항목 안내`.
+- Machine output freshness limit = **180 minutes**. Stale required input/output => fail-closed N/A; never reuse an old score as current.
+- Confirmed component weights are renormalized. If confirmed coverage is below 70%, a numeric `PARTIAL` score may be shown only from confirmed components, Confidence is capped at C, and strong threshold alerts are forbidden.
+- Existing BTC Liquidity Lead thresholds **55 / 65 / 75** and Market Positive bands remain unchanged.
+- `state/master_market_official_history.csv` is comparison/history only. It may supply prior/1D/3D/7D context after valid OFFICIAL observations accumulate, but it is never a current-score fallback.
+- Only confirmed OFFICIAL runs may persist official score history through the existing OFFICIAL persistence path. WATCH/manual non-OFFICIAL must not write or overwrite score history.
+- No historical backfill for the structural-N/A gap. New history accumulates prospectively from valid OFFICIAL runs after activation.
+- Forbidden fallbacks remain locked: `last-known score reuse | N/A=0 | historical score backsolve | invented equal weights | cross-MASTER score substitution`.
+
 ## BTC LIQUIDITY LEAD INDEX
 
 Axes when available: US Net Liquidity, TGA change, Fed Reserves, 10Y real yield, DXY, Treasury/QRA, Buyback, ETF, Stablecoin Flow. If at least one confirmed weight exists, renormalize confirmed weights and output a partial numeric score.
@@ -387,10 +406,10 @@ Explicitly removed fields are not required items: do not show `Global M2` or the
 The mobile output UI lock above is authoritative for user-visible SCREEN order/layout and N/A presentation. It does not alter data collection, score weights, thresholds, Risk Veto, WATCH, official history, or collector behavior.
 
 Final OFFICIAL line, with nothing after it:
-`🕒 MASTER MARKET V1.2 | 실행완료: YYYY-MM-DD HH:mm KST | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST`
+`🕒 MASTER MARKET V1.2 | 실행완료: YYYY-MM-DD HH:mm KST | 롱/숏 | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST`
 
 Final WATCH line, with nothing after it:
-`🕒 MASTER MARKET WATCH | 감지완료: YYYY-MM-DD HH:mm KST | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST`
+`🕒 MASTER MARKET WATCH | 감지완료: YYYY-MM-DD HH:mm KST | 롱/숏 | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST`
 
 ## SHORT-TERM WHALE PROFIT-TAKING RISK — ADDITIVE OVERRIDE 2026-09-08
 

@@ -1,8 +1,8 @@
 {
-  "schema_version": "1.11",
+  "schema_version": "1.12",
   "master": "MASTER MARKET V1.2",
   "status": "FINAL_CUMULATIVE_LOCK",
-  "updated_kst": "2026-09-09T12:49:00+09:00",
+  "updated_kst": "2026-09-11T10:24:59+09:00",
   "purpose": "Machine-readable cumulative contract for MASTER MARKET. Existing required data, checks, and user-visible output blocks must survive future version upgrades unless the user explicitly orders removal.",
   "no_silent_omission": {
     "enabled": true,
@@ -15,8 +15,20 @@
   "change_management": {
     "recommendation_freedom": true,
     "rule": "RECOMMEND FREELY, EXPLAIN TRADE-OFFS, PRESERVE BY DEFAULT, EXECUTE DESTRUCTIVE OR CONTRACT-BREAKING CHANGES ONLY WITH USER APPROVAL.",
-    "allowed_recommendations": ["data-source upgrade or replacement","GitHub collector or schema improvement","new data layer or adapter","freshness/quality validation improvement","output layout or readability improvement","deprecation or replacement of a weak source","score-history or persistence improvement"],
-    "recommendation_channels": ["report body","audit note","follow-up questions"],
+    "allowed_recommendations": [
+      "data-source upgrade or replacement",
+      "GitHub collector or schema improvement",
+      "new data layer or adapter",
+      "freshness/quality validation improvement",
+      "output layout or readability improvement",
+      "deprecation or replacement of a weak source",
+      "score-history or persistence improvement"
+    ],
+    "recommendation_channels": [
+      "report body",
+      "audit note",
+      "follow-up questions"
+    ],
     "execution_policy": {
       "additive_non_destructive": "may be proposed proactively; implementation should preserve the locked information set unless the user explicitly authorizes a contract change",
       "destructive_or_contract_breaking": "requires explicit user approval before execution",
@@ -35,30 +47,133 @@
     }
   },
   "change_windows": {
-    "locked_windows": ["1D","3D","7D"],
+    "locked_windows": [
+      "1D",
+      "3D",
+      "7D"
+    ],
     "column_order_rule": "For locked mobile summary tables, show 1D then 3D then 7D after prior/직전 when applicable.",
     "data_rule": "Use only actual stored values, actual cumulative flow, or same-source comparable observations. No interpolation or reconstruction. Missing windows remain visible as N/A.",
-    "applies_to": ["SCREEN1_BTC_LIQUIDITY_LEAD","SCREEN2_CORE_MONEY_FLOW","SCREEN2_MARKET_POSITIVE_SCORE","SCREEN4_INSTITUTION_WHALE_RETAIL_TABLE"],
+    "applies_to": [
+      "SCREEN1_BTC_LIQUIDITY_LEAD",
+      "SCREEN2_CORE_MONEY_FLOW",
+      "SCREEN2_MARKET_POSITIVE_SCORE",
+      "SCREEN4_INSTITUTION_WHALE_RETAIL_TABLE"
+    ],
     "screen5_exception": "SCREEN5 is research/context only and does not duplicate upstream core-axis score tables. Polymarket 7D is additionally applicability-gated by verified market age >=7 full days."
   },
   "schedule": {
     "timezone": "Asia/Seoul",
-    "official_hours": [1,5,9,13,17,21],
+    "official_hours": [
+      1,
+      5,
+      9,
+      13,
+      17,
+      21
+    ],
     "other_hours": "URGENT_WATCH_ONLY",
     "official_updates_score_history": true,
-    "watch_overwrites_official_history": false
+    "watch_overwrites_official_history": false,
+    "score_refresh_minute": 58,
+    "score_refresh_workflow": ".github/workflows/master_market_score_engine_active.yml"
   },
   "required_data": {
-    "macro_liquidity": ["Fed/QE-QT","US Net Liquidity","TGA","Fed Reserves","Treasury/QRA","Treasury Buyback actual accepted/settlement when available","US2Y","US10Y","US30Y","US10Y Real Yield","EFFR","SOFR","DXY","WTI","Brent","Nasdaq","S&P500","geopolitics/regulation"],
-    "crypto_capital_flow": ["BTC ETF 1D/3D/5D/7D/20D","ETH ETF 1D/3D/5D/7D/20D","USDT supply","USDC supply","total stablecoin supply"],
-    "market_breadth_rotation": ["CRYPTO_TOTAL_MCAP","CRYPTO_24H_VOLUME","BTC_DOMINANCE","ETH_DOMINANCE","USD->Stablecoin->BTC->ETH->ALT rotation"],
-    "whale": ["BTC core whales","ETH core whales","Hyperliquid same-run same-population positions","Position/Side/Entry/Leverage/Liquidation/Liq Distance","1H/4H/24H actual position-size changes","recent maximum 6 actual observations","$20M WATCH candidate","$50M LEVEL1 candidate"],
-    "derivatives": ["Price","OI","Funding","OI 1H/4H/24H change","Funding 1H/4H/24H change when available","CVD","Taker Buy/Sell","Long/Short","Liquidation","Basis","Depth","Volume"],
-    "short_term_whale_profit_taking_risk": ["STH unrealized-profit state proxy (not exact STH Whale)","STH-MVRV","STH-SOPR","Hyperliquid BTC whale NET","BTC CVD"],
-    "yen_carry_risk_lite": ["USDJPY current/1D/3D/7D","US-JP 10Y spread current/3D change","VIX current/1D change","Yen Carry Risk final score/level/easy_read - score weight 0"],
-    "news_and_calendar": ["Coinness fast news radar","News TOP5","Economic indicator calendar","major unlock/supply events","hack/exploit","policy/macro/oil shock"],
-    "secondary_confirmation": ["Sean Farrell latest view - score 0","Stanley Druckenmiller latest view - score 0"],
-    "prediction_markets": ["Polymarket market-impact TOP10","YES probability current","probability-point change 1H/4H/1D/7D where applicable","24H and total volume","liquidity","open interest","spread","confidence grade","market impact and easy interpretation","traffic-light judgement for current market impact"]
+    "macro_liquidity": [
+      "Fed/QE-QT",
+      "US Net Liquidity",
+      "TGA",
+      "Fed Reserves",
+      "Treasury/QRA",
+      "Treasury Buyback actual accepted/settlement when available",
+      "US2Y",
+      "US10Y",
+      "US30Y",
+      "US10Y Real Yield",
+      "EFFR",
+      "SOFR",
+      "DXY",
+      "WTI",
+      "Brent",
+      "Nasdaq",
+      "S&P500",
+      "geopolitics/regulation"
+    ],
+    "crypto_capital_flow": [
+      "BTC ETF 1D/3D/5D/7D/20D",
+      "ETH ETF 1D/3D/5D/7D/20D",
+      "USDT supply",
+      "USDC supply",
+      "total stablecoin supply"
+    ],
+    "market_breadth_rotation": [
+      "CRYPTO_TOTAL_MCAP",
+      "CRYPTO_24H_VOLUME",
+      "BTC_DOMINANCE",
+      "ETH_DOMINANCE",
+      "USD->Stablecoin->BTC->ETH->ALT rotation"
+    ],
+    "whale": [
+      "BTC core whales",
+      "ETH core whales",
+      "Hyperliquid same-run same-population positions",
+      "Position/Side/Entry/Leverage/Liquidation/Liq Distance",
+      "1H/4H/24H actual position-size changes",
+      "recent maximum 6 actual observations",
+      "$20M WATCH candidate",
+      "$50M LEVEL1 candidate"
+    ],
+    "derivatives": [
+      "Price",
+      "OI",
+      "Funding",
+      "OI 1H/4H/24H change",
+      "Funding 1H/4H/24H change when available",
+      "CVD",
+      "Taker Buy/Sell",
+      "Long/Short",
+      "Liquidation",
+      "Basis",
+      "Depth",
+      "Volume"
+    ],
+    "short_term_whale_profit_taking_risk": [
+      "STH unrealized-profit state proxy (not exact STH Whale)",
+      "STH-MVRV",
+      "STH-SOPR",
+      "Hyperliquid BTC whale NET",
+      "BTC CVD"
+    ],
+    "yen_carry_risk_lite": [
+      "USDJPY current/1D/3D/7D",
+      "US-JP 10Y spread current/3D change",
+      "VIX current/1D change",
+      "Yen Carry Risk final score/level/easy_read - score weight 0"
+    ],
+    "news_and_calendar": [
+      "Coinness fast news radar",
+      "News TOP5",
+      "Economic indicator calendar",
+      "major unlock/supply events",
+      "hack/exploit",
+      "policy/macro/oil shock"
+    ],
+    "secondary_confirmation": [
+      "Sean Farrell latest view - score 0",
+      "Stanley Druckenmiller latest view - score 0"
+    ],
+    "prediction_markets": [
+      "Polymarket market-impact TOP10",
+      "YES probability current",
+      "probability-point change 1H/4H/1D/7D where applicable",
+      "24H and total volume",
+      "liquidity",
+      "open interest",
+      "spread",
+      "confidence grade",
+      "market impact and easy interpretation",
+      "traffic-light judgement for current market impact"
+    ]
   },
   "source_policy": {
     "coinness": "EARLY_DETECTION_ONLY. Coinness can trigger investigation but cannot alone change the score. Confirm important claims with official/primary source, Reuters, exchange/project source, or another independent source before score impact.",
@@ -72,13 +187,26 @@
     "stablecoin_window_adapter": "Read market_vault/output/latest_stablecoin_windows.json when fresh for same-source prior/1D/3D/5D/7D/20D Stablecoin comparisons. No interpolation or backfill.",
     "actor_flow_adapter": "Read market_vault/output/latest_actor_flows.json when fresh for SCREEN2 and SCREEN4 actual-value institution/whale/retail-proxy comparisons. Adapter score weight is 0 and does not alter underlying score engine, Risk Veto, WATCH, or official history.",
     "short_term_whale_risk_proxy": "Read onchain/output/latest_short_term_whale_risk.json when fresh and engine/schema guards pass. STH metrics come from free public Checkonchain static Plotly HTML; exact CryptoQuant STH Whale is never claimed/reproduced. Hyperliquid NET and BTC CVD reuse existing validated MASTER outputs. No API key, paid source, backfill, interpolation, OCR, or guessed values.",
-    "yen_carry_risk_lite": "Read market_yen_carry/output/latest_yen_carry.json only when engine=YEN_CARRY_RISK_LITE_V1, schema_version=1.0, score_weight=0 and status/coverage guards pass. READ-ONLY SCREEN1 auxiliary; no MASTER recalculation, no cross-fill, no score/direction/Risk Veto/WATCH/DXY/BTC/whale/derivatives effect. Partial/null/stale/incompatible output => visible N/A and parent MASTER continues."
+    "yen_carry_risk_lite": "Read market_yen_carry/output/latest_yen_carry.json only when engine=YEN_CARRY_RISK_LITE_V1, schema_version=1.0, score_weight=0 and status/coverage guards pass. READ-ONLY SCREEN1 auxiliary; no MASTER recalculation, no cross-fill, no score/direction/Risk Veto/WATCH/DXY/BTC/whale/derivatives effect. Partial/null/stale/incompatible output => visible N/A and parent MASTER continues.",
+    "active_score_engine": "Read market_scoring/output/latest_scores.json for the four current core scores only when engine=MASTER_MARKET_SCORE_ENGINE_V1, schema/status/freshness guards pass. Formula authority is market_scoring/score_engine_contract.json. Stale/incompatible/missing output fails closed to N/A; never use official history as current fallback."
   },
   "required_scores": {
-    "BTC_Liquidity_Lead_Index": {"bands":"0-39 Risk-Off | 40-54 Neutral/Weak | 55-64 Early Ignition | 65-74 Uptrend Start | 75-84 Acceleration | 85-100 Euphoria","fixed_thresholds":[55,65,75]},
-    "Market_Positive_Score": {"bands":"0-29 very negative | 30-44 negative | 45-54 mixed | 55-64 weak positive | 65-79 positive | 80-100 very positive"},
+    "BTC_Liquidity_Lead_Index": {
+      "bands": "0-39 Risk-Off | 40-54 Neutral/Weak | 55-64 Early Ignition | 65-74 Uptrend Start | 75-84 Acceleration | 85-100 Euphoria",
+      "fixed_thresholds": [
+        55,
+        65,
+        75
+      ]
+    },
+    "Market_Positive_Score": {
+      "bands": "0-29 very negative | 30-44 negative | 45-54 mixed | 55-64 weak positive | 65-79 positive | 80-100 very positive"
+    },
     "Crypto_Money_Inflow": true,
-    "ALT_Money_Inflow": true
+    "ALT_Money_Inflow": true,
+    "current_source": "market_scoring/output/latest_scores.json",
+    "formula_contract": "market_scoring/score_engine_contract.json",
+    "structural_na_due_to_missing_formula": "RESOLVED_2026-09-11"
   },
   "mobile_output_policy": {
     "enabled": true,
@@ -91,7 +219,7 @@
     "minimize_trigger_condition_explanation": true,
     "preferred_change_symbols": "↑ / → / ↓",
     "easy_korean": true,
-    "engine_change": "NONE"
+    "engine_change": "ACTIVE_SCORE_ENGINE_V1_APPROVED_2026-09-11"
   },
   "required_output": {
     "screen_count": 5,
@@ -178,16 +306,30 @@
     "consolidated_na_section": "After SCREEN5, if any unavailable value exists, show one consolidated N/A 항목 안내 table with signal|item|reason|automatic recovery yes/no|expected exposure time or required action. Do not repeat per-screen N/A tables. Verified Polymarket market age <7 full days makes 7D NOT_APPLICABLE, not N/A, so it must not appear in this section; old-enough-market 7D failures remain N/A. Absence of a separate whale/retail 0-100 score is not an N/A condition because SCREEN2 uses actual NET values for those rows. Missing required rows in the short-term whale risk auxiliary are N/A and must be explained.",
     "final_verdict": "After N/A section (if any), show ★ 최종 판정 table with signal|Market Positive Score|dominant direction, then one compact 핵심 메시지.",
     "follow_up": "OFFICIAL includes exactly 5 compact follow-up questions/recommendations before footer.",
-    "footer": "🕒 MASTER MARKET V1.2 | 실행완료: YYYY-MM-DD HH:mm KST | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST",
-    "watch_footer": "🕒 MASTER MARKET WATCH | 감지완료: YYYY-MM-DD HH:mm KST | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST"
+    "footer": "🕒 MASTER MARKET V1.2 | 실행완료: YYYY-MM-DD HH:mm KST | 롱/숏 | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST",
+    "watch_footer": "🕒 MASTER MARKET WATCH | 감지완료: YYYY-MM-DD HH:mm KST | 롱/숏 | 다음 정식 보고 시간: YYYY-MM-DD HH:mm KST"
   },
   "official_score_history": {
     "enabled": true,
     "file": "state/master_market_official_history.csv",
     "no_backfill": true,
     "append_only": true,
-    "fields": ["run_id","executed_kst","market_positive","liquidity_lead","crypto_money_inflow","alt_money_inflow","coverage","confidence","direction","risk_veto"],
-    "rule": "Only confirmed OFFICIAL runs are appended. WATCH and manual non-official runs never overwrite official history. Missing past runs are not reconstructed."
+    "fields": [
+      "run_id",
+      "executed_kst",
+      "market_positive",
+      "liquidity_lead",
+      "crypto_money_inflow",
+      "alt_money_inflow",
+      "coverage",
+      "confidence",
+      "direction",
+      "risk_veto"
+    ],
+    "rule": "Only confirmed OFFICIAL runs are appended. WATCH and manual non-official runs never overwrite official history. Missing past runs are not reconstructed.",
+    "current_score_source": "market_scoring/output/latest_scores.json",
+    "current_score_fallback_to_history_forbidden": true,
+    "structural_na_gap_backfill_forbidden": true
   },
   "polymarket_policy": {
     "enabled": true,
@@ -196,19 +338,49 @@
     "collector_output": "polymarket/output/latest_summary.json",
     "collector_state": "polymarket/state/collector_state.json",
     "history": "polymarket/data/hourly_top10.csv",
-    "themes": ["FED_INFLATION","GEO_OIL","CRYPTO_PRICE","US_MACRO","CRYPTO_POLICY"],
-    "change_windows": ["1H","4H","1D","7D"],
+    "themes": [
+      "FED_INFLATION",
+      "GEO_OIL",
+      "CRYPTO_PRICE",
+      "US_MACRO",
+      "CRYPTO_POLICY"
+    ],
+    "change_windows": [
+      "1H",
+      "4H",
+      "1D",
+      "7D"
+    ],
     "window_applicability": {
       "7D": "Require/show only when exact market age is verified >=7 full days and an actual same-market/same-YES 7D observation exists.",
       "younger_than_7d": "NOT_APPLICABLE: omit 7D for that market and do not create N/A 안내 solely for the absent 7D.",
       "old_enough_but_missing": "N/A: genuine collection/history failure remains visible and must be explained."
     },
-    "quality_inputs": ["24H volume","total volume","liquidity","spread","open interest"],
-    "prefer_grades": ["A","B"],
-    "watch_candidate_thresholds_pp": {"4H":10,"1D":15},
+    "quality_inputs": [
+      "24H volume",
+      "total volume",
+      "liquidity",
+      "spread",
+      "open interest"
+    ],
+    "prefer_grades": [
+      "A",
+      "B"
+    ],
+    "watch_candidate_thresholds_pp": {
+      "4H": 10,
+      "1D": 15
+    },
     "single_signal_alert_forbidden": true,
     "watch_requires_independent_aligned_confirmation": true,
-    "cannot_directly_change": ["Market Positive Score","BTC Liquidity Lead","Crypto Money Inflow","ALT Money Inflow","direction","Risk Veto"],
+    "cannot_directly_change": [
+      "Market Positive Score",
+      "BTC Liquidity Lead",
+      "Crypto Money Inflow",
+      "ALT Money Inflow",
+      "direction",
+      "Risk Veto"
+    ],
     "missing_behavior": "Keep SCREEN5 Polymarket block visible and mark true unavailable values N/A/CONFIRMATION_FAILED. Never guess probability. A verified market younger than 7 full days has 7D NOT_APPLICABLE rather than missing/N/A.",
     "onchain_output_remains_removed": true,
     "onchain_exception": "Only the dedicated SCREEN4 short-term whale profit-taking risk proxy is restored; this does not restore the old general on-chain block.",
@@ -216,7 +388,12 @@
       "enabled": true,
       "column_name": "판정",
       "column_position": "mobile-optimized",
-      "values": {"bullish":"🟢 상승우호","bearish":"🔴 하락압력","mixed_neutral":"🟡 중립·혼합","unknown":"⚪ N/A"},
+      "values": {
+        "bullish": "🟢 상승우호",
+        "bearish": "🔴 하락압력",
+        "mixed_neutral": "🟡 중립·혼합",
+        "unknown": "⚪ N/A"
+      },
       "basis": "Directional implication for BTC/ETH/ALT/risk assets from the event transmission path and current meaning; do not color solely from YES probability magnitude or confidence grade.",
       "conditional_behavior": "Use 🟡 중립·혼합 when direction is conditional/two-sided; use ⚪ N/A when insufficient.",
       "score_effect": 0,
@@ -238,8 +415,19 @@
     "output": "onchain/output/latest_short_term_whale_risk.json",
     "history": "onchain/data/short_term_whale_risk_history.csv",
     "required_engine": "MASTER_ST_WHALE_PROFIT_TAKING_RISK_PROXY_V1",
-    "table_columns": ["신호","지표","현재","상태"],
-    "rows_in_order": ["STH 미실현 수익상태 (Whale 대체)","STH-MVRV","STH-SOPR","Hyperliquid 고래 NET","BTC CVD"],
+    "table_columns": [
+      "신호",
+      "지표",
+      "현재",
+      "상태"
+    ],
+    "rows_in_order": [
+      "STH 미실현 수익상태 (Whale 대체)",
+      "STH-MVRV",
+      "STH-SOPR",
+      "Hyperliquid 고래 NET",
+      "BTC CVD"
+    ],
     "sources": {
       "sth_unrealized_proxy": "Checkonchain public static Plotly HTML STH cohort NUPL/unrealized-profit state; no key",
       "sth_mvrv": "Checkonchain public static Plotly HTML STH-MVRV; no key",
@@ -248,9 +436,18 @@
       "btc_cvd": "existing derivatives/output/latest_microstructure.json Bitget BTC 1H CVD"
     },
     "risk_logic": {
-      "row_points": {"red":1.0,"yellow":0.5,"green":0.0},
+      "row_points": {
+        "red": 1.0,
+        "yellow": 0.5,
+        "green": 0.0
+      },
       "minimum_available_rows": 3,
-      "levels": {"very_high":">=0.80 intensity","high":">=0.60 intensity","medium":">=0.35 intensity","low":"<0.35 intensity"},
+      "levels": {
+        "very_high": ">=0.80 intensity",
+        "high": ">=0.60 intensity",
+        "medium": ">=0.35 intensity",
+        "low": "<0.35 intensity"
+      },
       "display_only": true,
       "not_official_master_score": true
     },
@@ -264,10 +461,26 @@
       "no_guessing": true,
       "missing_component": "KEEP_ROW_NA_AND_EXPLAIN_IN_CONSOLIDATED_NA"
     },
-    "cannot_alone_change": ["Market Positive Score","BTC Liquidity Lead","Crypto Money Inflow","ALT Money Inflow","direction","Risk Veto","WATCH"],
+    "cannot_alone_change": [
+      "Market Positive Score",
+      "BTC Liquidity Lead",
+      "Crypto Money Inflow",
+      "ALT Money Inflow",
+      "direction",
+      "Risk Veto",
+      "WATCH"
+    ],
     "limited_restoration": {
-      "restored_only_for_this_auxiliary": ["STH unrealized-profit state proxy","STH-MVRV","STH-SOPR"],
-      "still_removed": ["STH Realized Price","Exchange Netflow","old general on-chain synthesis block"]
+      "restored_only_for_this_auxiliary": [
+        "STH unrealized-profit state proxy",
+        "STH-MVRV",
+        "STH-SOPR"
+      ],
+      "still_removed": [
+        "STH Realized Price",
+        "Exchange Netflow",
+        "old general on-chain synthesis block"
+      ]
     }
   },
   "yen_carry_risk_lite": {
@@ -280,11 +493,46 @@
     "output": "market_yen_carry/output/latest_yen_carry.json",
     "required_engine": "YEN_CARRY_RISK_LITE_V1",
     "required_schema_version": "1.0",
-    "required_fields": ["status","coverage_pct","metrics.usd_jpy","metrics.us_jp_10y_spread","metrics.vix","risk.final_score","risk.level","risk.label_ko","easy_read"],
-    "table_columns": ["신호","항목","현재","1D","3D","7D","상태"],
-    "rows_in_order": ["엔화 강세","미·일 10년 금리차","시장 공포"],
+    "required_fields": [
+      "status",
+      "coverage_pct",
+      "metrics.usd_jpy",
+      "metrics.us_jp_10y_spread",
+      "metrics.vix",
+      "risk.final_score",
+      "risk.level",
+      "risk.label_ko",
+      "easy_read"
+    ],
+    "table_columns": [
+      "신호",
+      "항목",
+      "현재",
+      "1D",
+      "3D",
+      "7D",
+      "상태"
+    ],
+    "rows_in_order": [
+      "엔화 강세",
+      "미·일 10년 금리차",
+      "시장 공포"
+    ],
     "failure_behavior": "KEEP_BLOCK_VISIBLE_AS_NA_AND_CONTINUE_PARENT_MASTER",
-    "cannot_alone_change": ["Market Positive Score","BTC Liquidity Lead","Crypto Money Inflow","ALT Money Inflow","direction","Risk Veto","WATCH","official score history","DXY logic","BTC logic","whale logic","derivatives logic"],
+    "cannot_alone_change": [
+      "Market Positive Score",
+      "BTC Liquidity Lead",
+      "Crypto Money Inflow",
+      "ALT Money Inflow",
+      "direction",
+      "Risk Veto",
+      "WATCH",
+      "official score history",
+      "DXY logic",
+      "BTC logic",
+      "whale logic",
+      "derivatives logic"
+    ],
     "guards": {
       "read_only": true,
       "no_master_recalculation": true,
@@ -299,8 +547,19 @@
     "long_display": "🟢 LONG",
     "short_display": "🔴 SHORT",
     "unknown_flat_display": "⚪ N/A/FLAT",
-    "applies_to": ["moving_whale_top3","btc_core_whales","eth_core_whales"],
-    "core_table_columns": ["rank","side","entry_size","entry_price","leverage","change_optional"],
+    "applies_to": [
+      "moving_whale_top3",
+      "btc_core_whales",
+      "eth_core_whales"
+    ],
+    "core_table_columns": [
+      "rank",
+      "side",
+      "entry_size",
+      "entry_price",
+      "leverage",
+      "change_optional"
+    ],
     "change_rule": "Show change only when the same whale/account is reliably tracked with actual comparable observations; otherwise omit the entire change column.",
     "user_visible_liquidation_distance": "OMIT_FROM_CORE_TABLE",
     "underlying_liquidation_data_preserved": true,
@@ -311,12 +570,34 @@
   },
   "na_explanation_policy": {
     "enabled": true,
-    "applies_to_screens": [1,2,3,4,5],
+    "applies_to_screens": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
     "presentation": "ONE_CONSOLIDATED_SECTION_AFTER_SCREEN5",
-    "trigger_values": ["N/A","확인 실패","확인 제한","equivalent unavailable state"],
+    "trigger_values": [
+      "N/A",
+      "확인 실패",
+      "확인 제한",
+      "equivalent unavailable state"
+    ],
     "section_title": "N/A 항목 안내",
-    "columns": ["신호","N/A 항목","이유","자동해소 여부","예상 노출시점 / 필요조치"],
-    "reason_classes": {"ACCUMULATION_WAIT":"축적 대기","SOURCE_UPDATE_WAIT":"원천 갱신 대기","TEMPORARY_COLLECTION_FAILURE":"일시 수집 실패","STRUCTURALLY_UNAVAILABLE":"현재 구조상 불가"},
+    "columns": [
+      "신호",
+      "N/A 항목",
+      "이유",
+      "자동해소 여부",
+      "예상 노출시점 / 필요조치"
+    ],
+    "reason_classes": {
+      "ACCUMULATION_WAIT": "축적 대기",
+      "SOURCE_UPDATE_WAIT": "원천 갱신 대기",
+      "TEMPORARY_COLLECTION_FAILURE": "일시 수집 실패",
+      "STRUCTURALLY_UNAVAILABLE": "현재 구조상 불가"
+    },
     "accumulation_rule": "ETA only from known first-valid timestamp + actual required window/cadence; 1D/3D/7D eligibility is 24h/72h/168h. If first-valid timestamp unknown, say 기준점 부족 → 예정시각 계산 불가.",
     "source_update_rule": "Show next confirmed source/release time; otherwise 다음 원천 갱신 후.",
     "temporary_failure_rule": "Say 다음 자동수집/다음 OFFICIAL에서 재시도; never guarantee recovery by that time.",
@@ -328,13 +609,22 @@
     "anti_fabrication": true,
     "no_na_to_zero": true,
     "no_interpolation_backfill_cross_source_fill": true,
-    "removed_field_behavior": "Explicitly removed fields are outside required output and must not be displayed as N/A or included in N/A 안내, except explicitly restored rows inside the dedicated short-term whale auxiliary."
+    "removed_field_behavior": "Explicitly removed fields are outside required output and must not be displayed as N/A or included in N/A 안내, except explicitly restored rows inside the dedicated short-term whale auxiliary.",
+    "core_score_structural_na_rule": "For liquidity_lead/crypto_money_inflow/alt_money_inflow/market_positive, BLOCKED_MISSING_AUTHORITATIVE_FORMULA is no longer valid after 2026-09-11 activation. If a core score is N/A, report the real current failure: missing/stale/incompatible latest_scores output, failed freshness/validation guard, or no confirmed component."
   },
   "expert_badge_policy": {
     "enabled": true,
-    "experts": ["Sean Farrell","Stanley Druckenmiller"],
+    "experts": [
+      "Sean Farrell",
+      "Stanley Druckenmiller"
+    ],
     "display_location": "Together in SCREEN5 compact expert table",
-    "values": {"bullish":"🟢 상승우호","bearish":"🔴 하락압력","mixed_neutral":"🟡 중립·혼합","stale_or_unavailable":"⚪ 최신관점 N/A"},
+    "values": {
+      "bullish": "🟢 상승우호",
+      "bearish": "🔴 하락압력",
+      "mixed_neutral": "🟡 중립·혼합",
+      "stale_or_unavailable": "⚪ 최신관점 N/A"
+    },
     "basis": "Directional implication of latest sufficiently current directly verified public view for crypto/risk assets/liquidity.",
     "stale_rule": "If too old or context-specific for current-market guidance, use ⚪ 최신관점 N/A, show last verified date, explain staleness/insufficiency.",
     "one_sentence_summary_required_per_expert": true,
@@ -350,29 +640,64 @@
       "output": "derivatives/output/latest_microstructure.json",
       "required_engine": "MASTER_DERIVATIVES_MICROSTRUCTURE_V2",
       "venue": "Bitget USDT Futures",
-      "fields": ["CVD","Taker Buy/Sell","Long/Short","Liquidation","Basis","Depth","Volume"],
+      "fields": [
+        "CVD",
+        "Taker Buy/Sell",
+        "Long/Short",
+        "Liquidation",
+        "Basis",
+        "Depth",
+        "Volume"
+      ],
       "source_type": "free public Bitget market APIs; no trading auth",
       "failure_behavior": "Keep only actually affected required fields as N/A and explain in the consolidated N/A section; never cross-fill venue or guess."
     },
     "macro_liquidity": {
       "output": "market_vault/output/latest_macro_liquidity.json",
       "required_engine": "MASTER_MARKET_FREE_MACRO_LIQUIDITY_V2",
-      "fields": ["US_NET_LIQUIDITY_PROXY","FED_TOTAL_ASSETS","FED_RESERVE_BALANCES","FED_RRP_TOTAL","TGA_CLOSING_BALANCE","QRA_NET_MARKETABLE_BORROWING_CURRENT_Q","QRA_END_CASH_BALANCE_CURRENT_Q","QRA_NET_MARKETABLE_BORROWING_NEXT_Q","QRA_END_CASH_BALANCE_NEXT_Q","TREASURY_BUYBACK_ACTUAL_ACCEPTED"],
+      "fields": [
+        "US_NET_LIQUIDITY_PROXY",
+        "FED_TOTAL_ASSETS",
+        "FED_RESERVE_BALANCES",
+        "FED_RRP_TOTAL",
+        "TGA_CLOSING_BALANCE",
+        "QRA_NET_MARKETABLE_BORROWING_CURRENT_Q",
+        "QRA_END_CASH_BALANCE_CURRENT_Q",
+        "QRA_NET_MARKETABLE_BORROWING_NEXT_Q",
+        "QRA_END_CASH_BALANCE_NEXT_Q",
+        "TREASURY_BUYBACK_ACTUAL_ACCEPTED"
+      ],
       "source_type": "free official Federal Reserve + U.S. Treasury sources",
       "net_liquidity_label_rule": "Must identify US Net Liquidity as a proxy formula, not an official Fed-published index.",
-      "history_windows": ["1D","3D","7D"],
+      "history_windows": [
+        "1D",
+        "3D",
+        "7D"
+      ],
       "history_rule": "Actual same-source observations only; no backfill/interpolation."
     },
     "etf_flows": {
       "output": "market_vault/output/latest_etf_flows.json",
       "required_engine": "MASTER_MARKET_FREE_ETF_FLOW_V1",
-      "assets": ["BTC","ETH"],
-      "windows": ["1D","3D","5D","20D"],
+      "assets": [
+        "BTC",
+        "ETH"
+      ],
+      "windows": [
+        "1D",
+        "3D",
+        "5D",
+        "20D"
+      ],
       "source_policy": "Farside-derived public history may use a public GitHub mirror as transport/cache only; latest material date/value should be cross-checked in OFFICIAL."
     },
     "stablecoin_supply": {
       "output": "market_vault/output/latest_summary.json",
-      "metrics": ["USDT_SUPPLY","USDC_SUPPLY","STABLECOIN_TOTAL_SUPPLY"],
+      "metrics": [
+        "USDT_SUPPLY",
+        "USDC_SUPPLY",
+        "STABLECOIN_TOTAL_SUPPLY"
+      ],
       "role": "potential dry powder only; not confirmed actual spot buying"
     },
     "short_term_whale_risk": {
@@ -386,8 +711,22 @@
   "explicitly_removed_fields": {
     "enabled": true,
     "authorized_by_user": true,
-    "removed_from_required_data": ["Global M2","stablecoin Mint/Burn","stablecoin issuer Treasury balance","stablecoin Treasury-to-Exchange","stablecoin Exchange Balance","stablecoin Mint->Treasury->Exchange->Spot Buy confirmation chain"],
-    "removed_from_user_visible_output": ["Global M2","stablecoin Mint/Burn","stablecoin issuer Treasury balance","stablecoin Treasury-to-Exchange","stablecoin Exchange Balance","stablecoin Mint->Treasury->Exchange->Spot Buy confirmation chain"],
+    "removed_from_required_data": [
+      "Global M2",
+      "stablecoin Mint/Burn",
+      "stablecoin issuer Treasury balance",
+      "stablecoin Treasury-to-Exchange",
+      "stablecoin Exchange Balance",
+      "stablecoin Mint->Treasury->Exchange->Spot Buy confirmation chain"
+    ],
+    "removed_from_user_visible_output": [
+      "Global M2",
+      "stablecoin Mint/Burn",
+      "stablecoin issuer Treasury balance",
+      "stablecoin Treasury-to-Exchange",
+      "stablecoin Exchange Balance",
+      "stablecoin Mint->Treasury->Exchange->Spot Buy confirmation chain"
+    ],
     "must_not_show_as_na": true,
     "must_not_trigger_na_explanation": true,
     "tga_preservation_rule": "U.S. Treasury TGA is NOT removed. Only stablecoin issuer Treasury-balance/wallet-tracking fields are removed.",
@@ -396,6 +735,54 @@
   "stablecoin_watch_policy": {
     "wallet_tracking_removed": true,
     "allowed_watch_basis": "major confirmed stablecoin supply shock/exit or other independently confirmed remaining MASTER evidence",
-    "forbidden_basis": ["Mint/Burn alone","Treasury-to-Exchange field","Exchange Balance field","Mint->Treasury->Exchange->Spot Buy chain"]
+    "forbidden_basis": [
+      "Mint/Burn alone",
+      "Treasury-to-Exchange field",
+      "Exchange Balance field",
+      "Mint->Treasury->Exchange->Spot Buy chain"
+    ]
+  },
+  "active_score_engine": {
+    "enabled": true,
+    "authorized_by_user": true,
+    "approved_at_kst": "2026-09-11T10:04:10+09:00",
+    "engine_id": "MASTER_MARKET_SCORE_ENGINE_V1",
+    "score_contract": "market_scoring/score_engine_contract.json",
+    "current_output": "market_scoring/output/latest_scores.json",
+    "workflow": ".github/workflows/master_market_score_engine_active.yml",
+    "refresh_minute_each_hour": 58,
+    "required_current_scores": [
+      "liquidity_lead",
+      "crypto_money_inflow",
+      "alt_money_inflow",
+      "market_positive"
+    ],
+    "current_value_rule": "Use fresh/schema-compatible latest_scores.json current-run numeric values. Never copy prior OFFICIAL/history as current.",
+    "history_value_rule": "state/master_market_official_history.csv is prior/1D/3D/7D comparison history only and is never a current-score fallback.",
+    "freshness_max_age_minutes": 180,
+    "valid_output_status": [
+      "ACTIVE_OK",
+      "PARTIAL"
+    ],
+    "structural_formula_na_resolved": true,
+    "forbidden_old_reason": "BLOCKED_MISSING_AUTHORITATIVE_FORMULA",
+    "coverage_policy": {
+      "confirmed_weight_renormalization": true,
+      "coverage_below_70": "numeric PARTIAL from confirmed components only; Confidence max C; no strong threshold alert",
+      "no_confirmed_components": "N/A"
+    },
+    "fallback_forbidden": [
+      "last-known score reuse",
+      "N/A=0",
+      "historical score backsolve",
+      "invented equal weights",
+      "cross-MASTER score substitution"
+    ],
+    "persistence": {
+      "official_only": true,
+      "watch_write_forbidden": true,
+      "manual_non_official_write_forbidden": true,
+      "historical_backfill_forbidden": true
+    }
   }
 }
