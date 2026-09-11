@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "contract_id": "BTC_TREND_V26_TOP_FASTPATH_SHADOW_V1",
+  "master_id": "BTC_TREND_CURRENT",
+  "production_version": "V2.6",
+  "status": "SHADOW_ONLY",
+  "purpose": "Fast-path recovery of structural TOP N/A using only already-validated R2.2 structure features and current BTC ETF flow. Failed mirrored overbought rules from V2.6 Threshold Research are explicitly excluded.",
+  "weights": {
+    "TOP_STRUCTURE_1D": 22,
+    "TOP_STRUCTURE_4H": 10,
+    "TOP_STRUCTURE_1W": 8,
+    "TOP_SPOT_ETF": 10
+  },
+  "weight_total_available": 50,
+  "full_v26_top_weight_total": 100,
+  "missing_policy": "EXCLUDE_AND_RENORMALIZE_VALID_WEIGHT",
+  "coverage_policy": {
+    "display_shadow_min_pct": 50,
+    "strong_confirmation_min_pct": 70,
+    "below_70_effect": "DISPLAY_RESEARCH_ONLY_ZERO_GATE_EFFECT"
+  },
+  "evidence_values": {
+    "NONE": 0.0,
+    "WEAK": 0.25,
+    "MODERATE": 0.5,
+    "STRONG": 0.75,
+    "VERY_STRONG": 1.0
+  },
+  "structure_mapping": {
+    "STRONG_SHORT": "VERY_STRONG",
+    "SHORT": "STRONG",
+    "NEUTRAL": "WEAK",
+    "LONG": "NONE",
+    "STRONG_LONG": "NONE"
+  },
+  "spot_etf_mapping": {
+    "STRONG_SHORT": "VERY_STRONG",
+    "SHORT": "STRONG",
+    "NEUTRAL": "WEAK",
+    "LONG": "NONE",
+    "STRONG_LONG": "NONE"
+  },
+  "top_cap": {
+    "rule": "INTACT_1D_BULL_STRUCTURE_MAX_59",
+    "intact_1d_states": ["LONG", "STRONG_LONG"],
+    "max_while_intact": 59,
+    "note": "Conservative shadow proxy for canonical top_intact_1d_hh_hl_max; no claim of exact HH/HL probability."
+  },
+  "bands": {
+    "0-39": "낮음",
+    "40-59": "가능성 관찰",
+    "60-74": "유의미",
+    "75-84": "강함",
+    "85-100": "매우 강함"
+  },
+  "research_exclusions": {
+    "source_run": 34481021338,
+    "excluded_rule_family": "MIRRORED_OVERBOUGHT_TOP_RULES",
+    "reason": "Threshold Research V1 found TOP mirror rules predominantly SIGN_OR_EDGE_FAIL or LOW_SAMPLE. They are not used by this fast-path."
+  },
+  "hard_safety": {
+    "production_eligible": false,
+    "official_state_write_allowed": false,
+    "entry_gate_effect": 0,
+    "long_short_effect": 0,
+    "live_plan_effect": 0,
+    "bottom_effect": 0,
+    "accumulation_effect": 0,
+    "invent_missing_values": false,
+    "stale_substitution": false,
+    "cross_master_input": false,
+    "completed_candle_only": true
+  }
+}
