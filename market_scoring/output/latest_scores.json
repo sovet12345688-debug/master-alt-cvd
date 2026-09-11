@@ -2,7 +2,7 @@
   "engine": "MASTER_MARKET_SCORE_ENGINE_V1",
   "schema_version": "1.0",
   "status": "ACTIVE_OK",
-  "generated_at_utc": "2026-09-11T21:02:06.191076Z",
+  "generated_at_utc": "2026-09-11T22:02:11.341325Z",
   "activation_approval": {
     "explicit_user_approval": true,
     "approved_at_kst": "2026-09-11T10:04:10+09:00",
@@ -15,11 +15,11 @@
     ]
   },
   "source_age_minutes": {
-    "vault": 3.7,
-    "macro": 6.0,
-    "etf": 15.9,
-    "actors": 3.7,
-    "derivatives": 43.6
+    "vault": 4.2,
+    "macro": 6.7,
+    "etf": 19.2,
+    "actors": 4.2,
+    "derivatives": 45.3
   },
   "overall_coverage_pct": 90.0,
   "confidence_cap": null,
@@ -29,7 +29,7 @@
   "score_history_source": "state/master_market_official_history.csv",
   "scores": {
     "liquidity_lead": {
-      "score": 43.1,
+      "score": 45.8,
       "coverage_pct": 90.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
@@ -43,11 +43,11 @@
         "treasury_qra": 50.0,
         "treasury_buyback": 50.0,
         "btc_etf_flow": 25.0,
-        "stablecoin_total_flow": 25.0
+        "stablecoin_total_flow": 50.0
       }
     },
     "crypto_money_inflow": {
-      "score": 36.2,
+      "score": 40.0,
       "coverage_pct": 100.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
@@ -56,7 +56,7 @@
         "btc_etf_1d": 25.0,
         "btc_etf_3d": 25.0,
         "eth_etf_1d": 50.0,
-        "stablecoin_total_1d": 25.0,
+        "stablecoin_total_1d": 50.0,
         "stablecoin_total_7d": 50.0,
         "btc_whale_net": 25.0,
         "eth_whale_net": 50.0,
@@ -82,17 +82,17 @@
       }
     },
     "market_positive": {
-      "score": 42.6,
+      "score": 41.8,
       "coverage_pct": 95.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
       "threshold_alert_allowed": true,
       "components": {
-        "liquidity_lead": 43.1,
-        "crypto_money_inflow": 36.2,
+        "liquidity_lead": 45.8,
+        "crypto_money_inflow": 40.0,
         "alt_money_inflow": 60.0,
         "btc_whale_net": 25.0,
-        "btc_derivatives_state": 50.0,
+        "btc_derivatives_state": 25.0,
         "market_breadth_state": 50.0,
         "rates_macro_state": 50.0,
         "oil_geopolitical_state": null
