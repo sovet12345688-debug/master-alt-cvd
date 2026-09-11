@@ -1,0 +1,62 @@
+{
+  "schema_version": "2.0",
+  "contract_id": "BTC_TREND_V26_LIQUIDITY_MACRO_R2",
+  "master_id": "btc_trend",
+  "production_version": "V2.6",
+  "status": "SHADOW_VALIDATION_ONLY",
+  "weight_in_trend": 10,
+  "design_reason": "Remove unstable direct FRED dependency from GitHub Actions while preserving independent historical validation. Use sources already proven reachable by repository collectors.",
+  "scored_components": [
+    "US10Y_REAL 7D change: falling is BTC-positive",
+    "US10Y nominal 7D change: falling is BTC-positive",
+    "STABLECOIN_TOTAL_SUPPLY 7D change: rising is BTC-positive",
+    "TGA_CLOSING_BALANCE 7D change: falling is BTC-positive"
+  ],
+  "auxiliary_not_scored": {
+    "US_NET_LIQUIDITY_PROXY": "Current fact may be displayed elsewhere but contributes zero to R2 until a sufficiently long validated historical lineage is available."
+  },
+  "component_deadbands": {
+    "real_yield_pp": 0.03,
+    "nominal_yield_pp": 0.05,
+    "stablecoin_supply_pct": 0.10,
+    "tga_pct": 2.0
+  },
+  "state_rule": {
+    "STRONG_LONG": "4-component score >= 3",
+    "LONG": "score >= 2",
+    "NEUTRAL": "score from -1 to +1",
+    "SHORT": "score <= -2",
+    "STRONG_SHORT": "score <= -3"
+  },
+  "current_source": "market_vault/output/latest_summary.json",
+  "oos_sources": {
+    "nominal_yield": "US Treasury XML daily_treasury_yield_curve",
+    "real_yield": "US Treasury XML daily_treasury_real_yield_curve",
+    "tga": "US Treasury FiscalData operating_cash_balance",
+    "stablecoin": "DefiLlama stablecoincharts/all",
+    "btc": "Bitget USDT Futures BTCUSDT 1D"
+  },
+  "oos_gate": {
+    "recent_exclusion_days": 120,
+    "evaluation_days": 1080,
+    "sampling": "weekly non-overlapping",
+    "forward_target_days": 7,
+    "min_signals": 80,
+    "min_hit_rate_pct": 52,
+    "positive_average_return_required": true,
+    "min_holdout_signals": 15,
+    "min_holdout_hit_rate_pct": 50,
+    "holdout_positive_average_return_required": true,
+    "min_positive_folds": 3
+  },
+  "coverage_policy": "The 10 points add to TREND coverage only after every predeclared OOS gate passes; otherwise remain N_A_THRESHOLD_UNAPPROVED and contribute zero coverage.",
+  "anti_fabrication": {
+    "missing_as_zero": false,
+    "stale_substitution": false,
+    "chat_memory_backfill": false,
+    "other_master_decision_input": false,
+    "silent_threshold_retuning_after_result": false
+  },
+  "production_approved": false,
+  "official_state_write_allowed": false
+}
