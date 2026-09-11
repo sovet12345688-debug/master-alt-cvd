@@ -2,13 +2,19 @@ name: BTC TREND V2.6 ACCUM Fastpath Shadow
 
 on:
   workflow_dispatch:
+  schedule:
+    # KST 04:35 / 07:35 / 12:35 / 16:35 / 20:35. Active after merge to main.
+    - cron: '35 3,7,11,19,22 * * *'
   push:
     branches:
+      - main
       - btc-trend-v26-accum-fastpath-v1
     paths:
       - 'btc_trend_v26/accum_fastpath_contract.json'
       - 'btc_trend_v26/accum_fastpath_engine.py'
       - 'btc_trend_v26/test_accum_fastpath_engine.py'
+      - 'state/master_btc_trend_v2_6_accum_score_bridge_contract.json'
+      - 'money_master_os/masters/btc_trend/manifest.json'
       - '.github/workflows/btc_trend_v26_accum_fastpath.yml'
   pull_request:
     branches:
@@ -47,7 +53,7 @@ jobs:
       - name: Build current ACCUMULATION shadow score
         run: python btc_trend_v26/accum_fastpath_engine.py --output btc_trend_v26/output/latest_accum_fastpath.json
 
-      - name: Validate shadow safety and build provenance
+      - name: Validate limited display and build provenance
         env:
           GITHUB_RUN_ID_VALUE: ${{ github.run_id }}
         run: |
