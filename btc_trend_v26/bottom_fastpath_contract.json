@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0",
+  "contract_id": "BTC_TREND_V26_BOTTOM_FASTPATH_SHADOW_V1",
+  "master_id": "BTC_TREND_CURRENT",
+  "production_version": "V2.6",
+  "status": "SHADOW_ONLY",
+  "purpose": "Fast-path recovery of the structural BOTTOM N/A using only already-available V2.6 feature infrastructure plus previously OOS-stable capitulation seeds. No Entry Gate, LIVE PLAN, LONG:SHORT, TOP, ACCUMULATION, Fractal or S/R effect is allowed.",
+  "weights": {
+    "BOTTOM_STRUCTURE_1D": 22,
+    "BOTTOM_STRUCTURE_4H": 10,
+    "CAPITULATION": 15,
+    "BOTTOM_SPOT_ETF": 10
+  },
+  "weight_total_available": 57,
+  "full_v26_bottom_weight_total": 100,
+  "missing_policy": "EXCLUDE_AND_RENORMALIZE_VALID_WEIGHT",
+  "coverage_policy": {
+    "display_shadow_min_pct": 50,
+    "strong_confirmation_min_pct": 70,
+    "below_70_effect": "DISPLAY_RESEARCH_ONLY_ZERO_GATE_EFFECT"
+  },
+  "evidence_values": {
+    "NONE": 0.0,
+    "WEAK": 0.25,
+    "MODERATE": 0.5,
+    "STRONG": 0.75,
+    "VERY_STRONG": 1.0
+  },
+  "structure_mapping": {
+    "STRONG_LONG": "VERY_STRONG",
+    "LONG": "STRONG",
+    "NEUTRAL": "WEAK",
+    "SHORT": "NONE",
+    "STRONG_SHORT": "NONE"
+  },
+  "capitulation_rules": {
+    "research_source": "BTC TREND V2.6 Threshold Research run 34481021338",
+    "all_selected_rules_train_oos_status": "DIRECTIONALLY_STABLE",
+    "flags": {
+      "RSI_MIN24_LE_35": "min 1H RSI14 over last 24 completed hours <= 35",
+      "RET12_MIN24_LE_MINUS_3PCT": "minimum 12H return observed over last 24 completed hours <= -3%",
+      "VOLZ_MAX24_GE_0_8": "maximum 1H volume z-score over last 24 completed hours >= 0.8",
+      "LOWER_WICK_MAX24_GE_50PCT": "maximum 1H lower-wick/range ratio over last 24 completed hours >= 50%"
+    },
+    "evidence_by_flag_count": {
+      "0": "NONE",
+      "1": "WEAK",
+      "2": "MODERATE",
+      "3": "STRONG",
+      "4": "VERY_STRONG"
+    }
+  },
+  "spot_etf_mapping": {
+    "LONG": "STRONG",
+    "NEUTRAL": "WEAK",
+    "SHORT": "NONE",
+    "STRONG_LONG": "VERY_STRONG",
+    "STRONG_SHORT": "NONE"
+  },
+  "bottom_cap": {
+    "rule": "NO_CONFIRMED_1D_TURN_MAX_59",
+    "confirmed_1d_turn_states": ["LONG", "STRONG_LONG"],
+    "max_without_confirmed_1d_turn": 59
+  },
+  "bands": {
+    "0-39": "낮음",
+    "40-59": "가능성 관찰",
+    "60-74": "유의미",
+    "75-84": "강함",
+    "85-100": "매우 강함"
+  },
+  "hard_safety": {
+    "production_eligible": false,
+    "official_state_write_allowed": false,
+    "entry_gate_effect": 0,
+    "long_short_effect": 0,
+    "live_plan_effect": 0,
+    "top_effect": 0,
+    "accumulation_effect": 0,
+    "invent_missing_values": false,
+    "stale_substitution": false,
+    "cross_master_input": false,
+    "completed_candle_only": true
+  }
+}
