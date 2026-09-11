@@ -1,0 +1,87 @@
+{
+  "schema_version": "1.0",
+  "contract_id": "BTC_TREND_V26_MACHINE_RATIO_BRIDGE_V1",
+  "master_id": "BTC_TREND_CURRENT",
+  "production_version": "V2.6",
+  "status": "READY_LIMITED_DISPLAY",
+  "purpose": "Remove structural N/A for LONG:SHORT ratio and TREND_STRENGTH by reading a deterministic machine score with Coverage C or better, while preserving fail-closed behavior and blocking low-coverage strong confirmation.",
+  "source": {
+    "repo": "sovet12345688-debug/master-alt-cvd",
+    "workflow_name": "BTC TREND V2.6 Machine Ratio Bridge",
+    "workflow_file": ".github/workflows/btc_trend_v26_machine_ratio_bridge.yml",
+    "runtime_source_ref": "a75413240b60fefcbd3bec52a9792658b7f47fbb",
+    "runtime_origin_branch": "btc-trend-v26-na-recovery-r1",
+    "feature_file_in_artifact": "latest_features_r22.json",
+    "score_file_in_artifact": "latest_score_r22.json",
+    "validation_file_in_artifact": "structure_validation_r22.json",
+    "provenance_file_in_artifact": "bridge_provenance.json",
+    "artifact_name_pattern": "btc-trend-v26-machine-ratio-{workflow_run_id}"
+  },
+  "schedule_kst": {
+    "05:00": "04:45",
+    "08:00": "07:45",
+    "13:00": "12:45",
+    "17:00": "16:45",
+    "21:00": "20:45"
+  },
+  "selection": {
+    "workflow_status": "completed",
+    "workflow_conclusion": "success",
+    "must_complete_before_master_report_start": true,
+    "same_run_artifact_required": true,
+    "provenance_contract": "BTC_TREND_V26_MACHINE_RATIO_PROVENANCE_V1",
+    "max_score_age_minutes_at_report": 60,
+    "future_run_forbidden": true,
+    "failed_or_in_progress_run_forbidden": true,
+    "previous_score_substitution_forbidden": true,
+    "chat_memory_backfill_forbidden": true
+  },
+  "acceptance": {
+    "score_status": "OK",
+    "limited_display_eligible_required": true,
+    "coverage_min_pct": 50,
+    "ratio_sum_required": 100,
+    "trend_strength_range": [0, 100],
+    "structure_validation_status": "PASS",
+    "score_sha256_must_match_provenance": true,
+    "feature_sha256_must_match_provenance": true,
+    "validation_sha256_must_match_provenance": true
+  },
+  "coverage_policy": {
+    "A": ">=85",
+    "B": "70-84",
+    "C": "50-69",
+    "LOW": "<50",
+    "display_allowed_min": 50,
+    "strong_confirmation_min": 70,
+    "below_70_behavior": "Display LONG:SHORT and TREND_STRENGTH with Coverage grade, but never call them strong confirmation and never independently pass Entry Gate.",
+    "below_50_behavior": "SCORE_UNAVAILABLE -> N/A"
+  },
+  "allowed_output_scope": [
+    "LONG_SHORT_RATIO",
+    "TREND_STRENGTH",
+    "TREND_DOMINANT_STATE",
+    "TREND_COVERAGE"
+  ],
+  "forbidden_effects": [
+    "IGNITION",
+    "MATURITY",
+    "BOTTOM",
+    "TOP",
+    "ACCUMULATION",
+    "ENTRY_GATE",
+    "LIVE_PLAN",
+    "FRACTAL",
+    "SUPPORT_RESISTANCE",
+    "BTC_LEADING_SIGNAL_ENGINE"
+  ],
+  "fail_closed": {
+    "source_unavailable": "N/A",
+    "artifact_missing": "N/A",
+    "provenance_mismatch": "N/A",
+    "coverage_below_50": "N/A",
+    "validation_fail": "N/A",
+    "stale_score": "N/A",
+    "invent_or_estimate_missing_score": false
+  }
+}
