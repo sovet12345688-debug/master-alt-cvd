@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0",
+  "bridge_id": "MASTER_MARKET_OFFICIAL_STATE_BRIDGE",
+  "status": "READY",
+  "master_id": "market",
+  "master_version": "V1.2 FINAL",
+  "purpose": "Persist already-completed actual MASTER MARKET OFFICIAL state and its four locked core scores without calculating, reconstructing, or backfilling them.",
+  "canonical_source": "master_prompts/master_market_v1_2_current.md",
+  "machine_contract": "state/master_market_v1_2_contract.json",
+  "input_directory": "official_state/inbox/market",
+  "rejected_directory": "official_state/rejected/market",
+  "publisher": "official_state/publish_official_state.py",
+  "processor": "official_state/process_market_inbox.py",
+  "persistence": {
+    "latest_state": "official_state/latest/market.json",
+    "state_history": "official_state/history/market/YYYY-MM.jsonl",
+    "score_history": "state/master_market_official_history.csv"
+  },
+  "schedule": {
+    "timezone": "Asia/Seoul",
+    "official_hours": [1, 5, 9, 13, 17, 21],
+    "watch_persistence_forbidden": true,
+    "manual_non_official_persistence_forbidden": true
+  },
+  "required_current_run_core_scores": [
+    "market_positive",
+    "liquidity_lead",
+    "crypto_money_inflow",
+    "alt_money_inflow"
+  ],
+  "core_score_policy": {
+    "numeric_range": "0..100",
+    "current_run_required": true,
+    "prior_score_copy_forbidden": true,
+    "last_known_fallback_forbidden": true,
+    "backfill_forbidden": true,
+    "formula_invention_forbidden": true,
+    "bridge_calculates_scores": false
+  },
+  "required_payload_guards": [
+    "master_id=market",
+    "state_status=STORED",
+    "run.run_type=OFFICIAL",
+    "run_id starts MMARKET-V12- and ends -KST",
+    "executed_kst resolves to an official KST hour",
+    "all four core scores are numeric 0..100",
+    "coverage_pct is numeric 0..100",
+    "direction is LONG or SHORT",
+    "canonical_identity_verified=true",
+    "cross_master_decision_dependency=false",
+    "public_repository_safe=true",
+    "contains_personal_account_data=false"
+  ],
+  "failure_policy": {
+    "mode": "FAIL_CLOSED",
+    "invalid_payload": "REJECT",
+    "missing_core_score": "REJECT",
+    "duplicate_run_id": "REJECT",
+    "stale_or_out_of_order_official": "REJECT",
+    "watch_attempt": "REJECT"
+  },
+  "non_goals": [
+    "This bridge does not define or change score weights.",
+    "This bridge does not change score thresholds.",
+    "This bridge does not infer missing OFFICIAL runs.",
+    "This bridge does not modify market data collectors."
+  ]
+}
