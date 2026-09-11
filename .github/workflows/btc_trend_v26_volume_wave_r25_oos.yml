@@ -1,0 +1,69 @@
+name: BTC TREND V2.6 Volume Wave R2.5 Extended OOS
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - btc-trend-v26-na-recovery-r2
+    paths:
+      - 'btc_trend_v26/validate_volume_wave_r25_oos.py'
+      - 'btc_trend_v26/volume_wave_contract_r25_oos.json'
+      - 'btc_trend_v26/volume_wave_engine_r24.py'
+      - 'btc_trend_v26/test_volume_wave_engine_r24.py'
+      - '.github/workflows/btc_trend_v26_volume_wave_r25_oos.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  volume-wave-r25-oos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout recovery branch
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Freeze R2.4 semantics tests
+        working-directory: btc_trend_v26
+        run: python -m unittest -v test_volume_wave_engine_r24.py
+
+      - name: Run R2.5 extended OOS
+        run: python btc_trend_v26/validate_volume_wave_r25_oos.py --output btc_trend_v26/output/volume_wave_validation_r25_oos.json
+
+      - name: Validate contract remains non-production
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          result = json.loads(Path('btc_trend_v26/output/volume_wave_validation_r25_oos.json').read_text())
+          contract = json.loads(Path('btc_trend_v26/volume_wave_contract_r25_oos.json').read_text())
+          assert result['status'] == 'TECHNICAL_PASS', result
+          assert result['candidate_fixed_before_run'] == 'A_STRICT', result
+          assert result['production_approved'] is False, result
+          assert result['official_state_write_allowed'] is False, result
+          assert contract['production_approved'] is False, contract
+          assert contract['official_state_write_allowed'] is False, contract
+          print(json.dumps({
+              'status': result['status'],
+              'promotion_gate': result['promotion_gate'],
+              'checks': result['checks'],
+              'A_STRICT': result['A_STRICT'],
+              'B_DIAGNOSTIC': result['B_1D_PRIMARY_DIAGNOSTIC'],
+          }, indent=2))
+          PY
+
+      - name: Upload R2.5 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-trend-v26-volume-wave-r25-${{ github.run_id }}
+          path: btc_trend_v26/output/volume_wave_validation_r25_oos.json
+          if-no-files-found: error
+          retention-days: 14
