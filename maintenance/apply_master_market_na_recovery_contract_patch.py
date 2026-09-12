@@ -7,6 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PROMPT = ROOT / "master_prompts/master_market_v1_2_current.md"
 CONTRACT = ROOT / "state/master_market_v1_2_contract.json"
+SCORE_ENGINE = ROOT / "market_scoring/run_score_engine.py"
 PATCH_UPDATED_KST = "2026-09-12T21:26:00+09:00"
 MARKER = "## SCORE HISTORY SEPARATION + DXY/OIL RECOVERY — APPROVED 2026-09-12"
 
@@ -25,10 +26,11 @@ RECOVERY_BLOCK = """
 - User approved split persistence: core score history and final OFFICIAL decision state are separate responsibilities.
 - Core score comparison source = `state/master_market_score_history.csv`; fields are run_id/scheduled_kst/score_generated_at_utc/market_positive/liquidity_lead/crypto_money_inflow/alt_money_inflow/overall_coverage_pct/status.
 - Final decision state remains separate through `official_state/process_market_inbox.py` / `official_state/latest/market.json`; no score-history process may invent LONG/SHORT or Risk Veto.
-- DXY recovery source = `market_vault/dxy_adapter.py` using actual Yahoo Finance `DX-Y.NYB` observations only. Current/1D/3D/7D use same-instrument actual observations; no broad-dollar proxy substitution or interpolation.
-- Oil recovery source = `market_vault/oil_adapter.py` using actual Yahoo Finance `CL=F` (WTI front-month futures) and `BZ=F` (Brent front-month futures) observations only. Current/1D/3D/7D are same-instrument actual observations; label futures explicitly and do not present them as physical spot assessments.
+- DXY recovery output = `market_vault/output/latest_dxy.json`, produced by `market_vault/dxy_adapter.py` using actual Yahoo Finance `DX-Y.NYB` observations only. Current/1D/3D/7D use same-instrument actual observations; no broad-dollar proxy substitution or interpolation.
+- Oil recovery output = `market_vault/output/latest_oil.json`, produced by `market_vault/oil_adapter.py` using actual Yahoo Finance `CL=F` (WTI front-month futures) and `BZ=F` (Brent front-month futures) observations only. Current/1D/3D/7D are same-instrument actual observations; label futures explicitly and do not present them as physical spot assessments.
 - Oil adapter output feeds the existing Oil Hard Importance axis only. It does not add a new score weight and oil rise alone still does not automatically equal Risk-Off.
 - DXY/Oil adapters run synchronously inside `.github/workflows/master_market_score_engine_active.yml` immediately before the production score calculation, preventing schedule-race mismatches.
+- `market_vault/output/latest_summary.json` remains owned by the existing Vault workflow and is not committed by the DXY/Oil recovery path; this avoids cross-workflow write races. User-visible DXY/Oil reads use their dedicated outputs.
 """
 
 
@@ -66,8 +68,8 @@ def patch_contract() -> bool:
 
     sp = c.setdefault("source_policy", {})
     sp["score_history"] = "Read state/master_market_score_history.csv for prior/1D/3D/7D context of the four core scores only. Current scores always come from market_scoring/output/latest_scores.json. Score history contains no invented direction/Risk Veto and WATCH/manual non-OFFICIAL cannot write it."
-    sp["dxy_adapter"] = "market_vault/dxy_adapter.py; actual Yahoo Finance DX-Y.NYB observations only; current/1D/3D/7D same-instrument comparisons; no broad-dollar proxy substitution/interpolation. Runs synchronously before active score calculation."
-    sp["oil_adapter"] = "market_vault/oil_adapter.py; actual Yahoo Finance CL=F WTI front-month futures and BZ=F Brent front-month futures; current/1D/3D/7D same-instrument comparisons; label futures explicitly; no interpolation/cross-instrument substitution. Runs synchronously before active score calculation."
+    sp["dxy_adapter"] = "Read market_vault/output/latest_dxy.json; produced by market_vault/dxy_adapter.py from actual Yahoo Finance DX-Y.NYB observations only; current/1D/3D/7D same-instrument comparisons; no broad-dollar proxy substitution/interpolation. Runs synchronously before active score calculation."
+    sp["oil_adapter"] = "Read market_vault/output/latest_oil.json; produced by market_vault/oil_adapter.py from actual Yahoo Finance CL=F WTI front-month futures and BZ=F Brent front-month futures; current/1D/3D/7D same-instrument comparisons; label futures explicitly; no interpolation/cross-instrument substitution. Runs synchronously before active score calculation."
 
     hist = c.setdefault("official_score_history", {})
     hist["enabled"] = True
@@ -101,10 +103,24 @@ def patch_contract() -> bool:
     return False
 
 
+def patch_score_engine() -> bool:
+    text = SCORE_ENGINE.read_text(encoding="utf-8")
+    old = '"score_history_source": "state/master_market_official_history.csv"'
+    new = '"score_history_source": "state/master_market_score_history.csv"'
+    if old not in text:
+        if new in text:
+            return False
+        raise SystemExit("SCORE_ENGINE_PATCH_BLOCKED_HISTORY_SOURCE_MISSING")
+    text = text.replace(old, new)
+    SCORE_ENGINE.write_text(text, encoding="utf-8")
+    return True
+
+
 def main() -> int:
     p = patch_prompt()
     c = patch_contract()
-    print(f"MASTER_MARKET_NA_CONTRACT_PATCH=PASS prompt_changed={p} contract_changed={c}")
+    s = patch_score_engine()
+    print(f"MASTER_MARKET_NA_CONTRACT_PATCH=PASS prompt_changed={p} contract_changed={c} scorer_changed={s}")
     return 0
 
 
