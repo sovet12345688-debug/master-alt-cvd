@@ -1,7 +1,7 @@
 {
   "engine": "MASTER_ST_WHALE_PROFIT_TAKING_RISK_PROXY_V1",
   "schema_version": "1.2",
-  "generated_at_utc": "2026-09-12T21:39:57.624980Z",
+  "generated_at_utc": "2026-09-12T22:41:08.299339Z",
   "name_ko": "단기 고래 차익실현 위험",
   "role": "AUXILIARY_RISK_ONLY",
   "score_weight": 0,
@@ -17,7 +17,7 @@
         "status": "OK",
         "trace_name": "STH-NUPL",
         "source_time_utc": "2026-09-12T00:00:00Z",
-        "source_age_hours": 21.67,
+        "source_age_hours": 22.69,
         "value": 0.0810843333316962,
         "percentile_4y": 66.62106703146375,
         "avg_7d": 0.09353679200714826,
@@ -36,7 +36,7 @@
         "status": "OK",
         "trace_name": "STH-MVRV",
         "source_time_utc": "2026-09-12T00:00:00Z",
-        "source_age_hours": 21.67,
+        "source_age_hours": 22.69,
         "value": 1.0882,
         "percentile_4y": 66.62106703146375,
         "avg_7d": 1.1035,
@@ -55,7 +55,7 @@
         "status": "OK",
         "trace_name": "STH-SOPR",
         "source_time_utc": "2026-09-12T00:00:00Z",
-        "source_age_hours": 21.67,
+        "source_age_hours": 22.69,
         "value": 1.0,
         "percentile_4y": 100.0,
         "avg_7d": 1.0,
@@ -81,16 +81,16 @@
       }
     },
     {
-      "signal": "🟡",
+      "signal": "🟢",
       "indicator": "BTC CVD",
-      "display_value": "+$1.1M",
-      "state": "매수·매도 혼조",
+      "display_value": "+$6.4M",
+      "state": "적극매수 우세",
       "raw": {
         "status": "OK",
-        "value": 1076916.8904599994,
-        "cvd_to_volume_ratio": 0.04899206085462914,
-        "trade_notional_1h_usdt": 21981457.23356,
-        "source_time_utc": "2026-09-12T21:16:51.214827Z",
+        "value": 6447377.484370001,
+        "cvd_to_volume_ratio": 0.3972411213513462,
+        "trade_notional_1h_usdt": 16230387.887430001,
+        "source_time_utc": "2026-09-12T22:16:30.023423Z",
         "source": "derivatives/output/latest_microstructure.json (Bitget BTC 1H)"
       }
     }
@@ -98,7 +98,7 @@
   "overall": {
     "signal": "🟡",
     "level": "주의",
-    "risk_points": 2.5,
+    "risk_points": 2.0,
     "available_rows": 5,
     "total_rows": 5,
     "coverage": 1.0,
