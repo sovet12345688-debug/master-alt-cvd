@@ -98,7 +98,9 @@ def main() -> int:
         print("MASTER_MARKET_SCORE_HISTORY=SKIP_NON_OFFICIAL_SLOT")
         return 0
 
-    run_id = f"MMARKET-V12-{target.strftime('%Y%m%d-%H00')}-KST"
+    # Distinct ID namespace prevents a score snapshot from masquerading as a
+    # completed final OFFICIAL decision run.
+    run_id = f"MMARKET-SCORE-V12-{target.strftime('%Y%m%d-%H00')}-KST"
     if run_id in existing_run_ids():
         print(f"MASTER_MARKET_SCORE_HISTORY=SKIP_DUPLICATE run_id={run_id}")
         return 0
