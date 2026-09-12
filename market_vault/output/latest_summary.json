@@ -2,110 +2,110 @@
   "engine": "MASTER_MARKET_DATA_VAULT_V1",
   "schema_version": "1.1",
   "collector_version": "1.2-official-keyless",
-  "snapshot_hour_utc": "2026-09-12T17:00:00Z",
-  "generated_at_utc": "2026-09-12T17:58:13.124461Z",
+  "snapshot_hour_utc": "2026-09-12T18:00:00Z",
+  "generated_at_utc": "2026-09-12T18:57:54.413665Z",
   "role": "historical comparison cache only; not a score and not a current-market substitute",
   "comparison_rule": "same metric + same source only; repeated retrieval of the same official observation is not new movement",
   "metrics": [
     {
       "metric": "BTC_DOMINANCE",
-      "value": 58.17938979734104,
+      "value": 58.20669882593138,
       "unit": "percent",
       "source": "CoinGecko Global",
-      "source_observation_time": "2026-09-12T17:57:17Z",
+      "source_observation_time": "2026-09-12T18:57:21Z",
       "source_frequency": "current",
       "timestamp_quality": "source_updated_at",
       "new_source_observation_since_prior_snapshot": true,
       "vs_prior_snapshot": {
-        "previous_value": 58.201910308206685,
-        "delta": -0.02252051086564677,
-        "delta_pct": -0.03869376579976499,
-        "previous_snapshot_hour_utc": "2026-09-12T16:00:00Z",
-        "source_observation_time": "2026-09-12T16:57:13Z",
+        "previous_value": 58.17938979734104,
+        "delta": 0.027309028590345008,
+        "delta_pct": 0.046939352037674874,
+        "previous_snapshot_hour_utc": "2026-09-12T17:00:00Z",
+        "source_observation_time": "2026-09-12T17:57:17Z",
         "target_gap_minutes": null
       },
       "vs_24h": {
-        "previous_value": 58.15955621319303,
-        "delta": 0.019833584148010175,
-        "delta_pct": 0.03410202112840587,
-        "previous_snapshot_hour_utc": "2026-09-11T17:00:00Z",
-        "source_observation_time": "2026-09-11T17:55:16Z",
+        "previous_value": 58.17373503281684,
+        "delta": 0.0329637931145399,
+        "delta_pct": 0.05666439174989268,
+        "previous_snapshot_hour_utc": "2026-09-11T18:00:00Z",
+        "source_observation_time": "2026-09-11T18:55:21Z",
         "target_gap_minutes": 0.0
       },
       "vs_7d": {
-        "previous_value": 58.89651797637313,
-        "delta": -0.7171281790320947,
-        "delta_pct": -1.217607090659888,
-        "previous_snapshot_hour_utc": "2026-09-05T17:00:00Z",
-        "source_observation_time": "2026-09-05T17:53:17Z",
+        "previous_value": 58.85955114442511,
+        "delta": -0.6528523184937285,
+        "delta_pct": -1.1091697197822812,
+        "previous_snapshot_hour_utc": "2026-09-05T18:00:00Z",
+        "source_observation_time": "2026-09-05T18:53:22Z",
         "target_gap_minutes": 0.0
       }
     },
     {
       "metric": "CRYPTO_24H_VOLUME",
-      "value": 56806772013.82851,
+      "value": 53423919144.18913,
       "unit": "USD",
       "source": "CoinGecko Global",
-      "source_observation_time": "2026-09-12T17:57:17Z",
+      "source_observation_time": "2026-09-12T18:57:21Z",
       "source_frequency": "current",
       "timestamp_quality": "source_updated_at",
       "new_source_observation_since_prior_snapshot": true,
       "vs_prior_snapshot": {
-        "previous_value": 58735643732.58034,
-        "delta": -1928871718.751831,
-        "delta_pct": -3.2839883862239794,
-        "previous_snapshot_hour_utc": "2026-09-12T16:00:00Z",
-        "source_observation_time": "2026-09-12T16:57:13Z",
+        "previous_value": 56806772013.82851,
+        "delta": -3382852869.639374,
+        "delta_pct": -5.955016892732233,
+        "previous_snapshot_hour_utc": "2026-09-12T17:00:00Z",
+        "source_observation_time": "2026-09-12T17:57:17Z",
         "target_gap_minutes": null
       },
       "vs_24h": {
-        "previous_value": 106563799997.32523,
-        "delta": -49757027983.49672,
-        "delta_pct": -46.692242567124694,
-        "previous_snapshot_hour_utc": "2026-09-11T17:00:00Z",
-        "source_observation_time": "2026-09-11T17:55:16Z",
+        "previous_value": 107687645702.0985,
+        "delta": -54263726557.90936,
+        "delta_pct": -50.389927464866034,
+        "previous_snapshot_hour_utc": "2026-09-11T18:00:00Z",
+        "source_observation_time": "2026-09-11T18:55:21Z",
         "target_gap_minutes": 0.0
       },
       "vs_7d": {
-        "previous_value": 59349997568.40531,
-        "delta": -2543225554.576805,
-        "delta_pct": -4.285131691278584,
-        "previous_snapshot_hour_utc": "2026-09-05T17:00:00Z",
-        "source_observation_time": "2026-09-05T17:53:17Z",
+        "previous_value": 60132697511.19668,
+        "delta": -6708778367.007545,
+        "delta_pct": -11.156623009899688,
+        "previous_snapshot_hour_utc": "2026-09-05T18:00:00Z",
+        "source_observation_time": "2026-09-05T18:53:22Z",
         "target_gap_minutes": 0.0
       }
     },
     {
       "metric": "CRYPTO_TOTAL_MCAP",
-      "value": 2658993478160.9897,
+      "value": 2656129664121.1187,
       "unit": "USD",
       "source": "CoinGecko Global",
-      "source_observation_time": "2026-09-12T17:57:17Z",
+      "source_observation_time": "2026-09-12T18:57:21Z",
       "source_frequency": "current",
       "timestamp_quality": "source_updated_at",
       "new_source_observation_since_prior_snapshot": true,
       "vs_prior_snapshot": {
-        "previous_value": 2662791886753.356,
-        "delta": -3798408592.366211,
-        "delta_pct": -0.142647595227484,
-        "previous_snapshot_hour_utc": "2026-09-12T16:00:00Z",
-        "source_observation_time": "2026-09-12T16:57:13Z",
+        "previous_value": 2658993478160.9897,
+        "delta": -2863814039.8710938,
+        "delta_pct": -0.10770293584366976,
+        "previous_snapshot_hour_utc": "2026-09-12T17:00:00Z",
+        "source_observation_time": "2026-09-12T17:57:17Z",
         "target_gap_minutes": null
       },
       "vs_24h": {
-        "previous_value": 2669374775551.603,
-        "delta": -10381297390.613281,
-        "delta_pct": -0.3889037045563629,
-        "previous_snapshot_hour_utc": "2026-09-11T17:00:00Z",
-        "source_observation_time": "2026-09-11T17:55:16Z",
+        "previous_value": 2649447719130.892,
+        "delta": 6681944990.2265625,
+        "delta_pct": 0.25220142831950143,
+        "previous_snapshot_hour_utc": "2026-09-11T18:00:00Z",
+        "source_observation_time": "2026-09-11T18:55:21Z",
         "target_gap_minutes": 0.0
       },
       "vs_7d": {
-        "previous_value": 2724957092599.0264,
-        "delta": -65963614438.03662,
-        "delta_pct": -2.420721214920909,
-        "previous_snapshot_hour_utc": "2026-09-05T17:00:00Z",
-        "source_observation_time": "2026-09-05T17:53:17Z",
+        "previous_value": 2721473955331.9434,
+        "delta": -65344291210.82471,
+        "delta_pct": -2.4010625228582994,
+        "previous_snapshot_hour_utc": "2026-09-05T18:00:00Z",
+        "source_observation_time": "2026-09-05T18:53:22Z",
         "target_gap_minutes": 0.0
       }
     },
@@ -122,7 +122,7 @@
         "previous_value": 3.63,
         "delta": 0.0,
         "delta_pct": 0.0,
-        "previous_snapshot_hour_utc": "2026-09-12T16:00:00Z",
+        "previous_snapshot_hour_utc": "2026-09-12T17:00:00Z",
         "source_observation_time": "2026-09-10T00:00:00Z",
         "target_gap_minutes": null
       },
@@ -130,7 +130,7 @@
         "previous_value": 3.63,
         "delta": 0.0,
         "delta_pct": 0.0,
-        "previous_snapshot_hour_utc": "2026-09-11T17:00:00Z",
+        "previous_snapshot_hour_utc": "2026-09-11T18:00:00Z",
         "source_observation_time": "2026-09-10T00:00:00Z",
         "target_gap_minutes": 0.0
       },
@@ -138,42 +138,42 @@
         "previous_value": 3.63,
         "delta": 0.0,
         "delta_pct": 0.0,
-        "previous_snapshot_hour_utc": "2026-09-05T17:00:00Z",
+        "previous_snapshot_hour_utc": "2026-09-05T18:00:00Z",
         "source_observation_time": "2026-09-03T00:00:00Z",
         "target_gap_minutes": 0.0
       }
     },
     {
       "metric": "ETH_DOMINANCE",
-      "value": 11.569683291071984,
+      "value": 11.561836017645525,
       "unit": "percent",
       "source": "CoinGecko Global",
-      "source_observation_time": "2026-09-12T17:57:17Z",
+      "source_observation_time": "2026-09-12T18:57:21Z",
       "source_frequency": "current",
       "timestamp_quality": "source_updated_at",
       "new_source_observation_since_prior_snapshot": true,
       "vs_prior_snapshot": {
-        "previous_value": 11.577493326743433,
-        "delta": -0.0078100356714490005,
-        "delta_pct": -0.06745877929731306,
-        "previous_snapshot_hour_utc": "2026-09-12T16:00:00Z",
-        "source_observation_time": "2026-09-12T16:57:13Z",
+        "previous_value": 11.569683291071984,
+        "delta": -0.007847273426458301,
+        "delta_pct": -0.06782617318932,
+        "previous_snapshot_hour_utc": "2026-09-12T17:00:00Z",
+        "source_observation_time": "2026-09-12T17:57:17Z",
         "target_gap_minutes": null
       },
       "vs_24h": {
-        "previous_value": 11.703345647592657,
-        "delta": -0.1336623565206736,
-        "delta_pct": -1.1420867207162042,
-        "previous_snapshot_hour_utc": "2026-09-11T17:00:00Z",
-        "source_observation_time": "2026-09-11T17:55:16Z",
+        "previous_value": 11.64811878671725,
+        "delta": -0.08628276907172427,
+        "delta_pct": -0.7407442407791676,
+        "previous_snapshot_hour_utc": "2026-09-11T18:00:00Z",
+        "source_observation_time": "2026-09-11T18:55:21Z",
         "target_gap_minutes": 0.0
       },
       "vs_7d": {
-        "previous_value": 11.081243091320985,
-        "delta": 0.4884401997509986,
-        "delta_pct": 4.407810529249676,
-        "previous_snapshot_hour_utc": "2026-09-05T17:00:00Z",
-        "source_observation_time": "2026-09-05T17:53:17Z",
+        "previous_value": 11.082652991335568,
+        "delta": 0.4791830263099577,
+        "delta_pct": 4.323721284827591,
+        "previous_snapshot_hour_utc": "2026-09-05T18:00:00Z",
+        "source_observation_time": "2026-09-05T18:53:22Z",
         "target_gap_minutes": 0.0
       }
     },
@@ -190,7 +190,7 @@
         "previous_value": 3.62,
         "delta": 0.0,
         "delta_pct": 0.0,
-        "previous_snapshot_hour_utc": "2026-09-12T16:00:00Z",
+        "previous_snapshot_hour_utc": "2026-09-12T17:00:00Z",
         "source_observation_time": "2026-09-10T00:00:00Z",
         "target_gap_minutes": null
       },
@@ -198,7 +198,7 @@
         "previous_value": 3.62,
         "delta": 0.0,
         "delta_pct": 0.0,
-        "previous_snapshot_hour_utc": "2026-09-11T17:00:00Z",
+        "previous_snapshot_hour_utc": "2026-09-11T18:00:00Z",
         "source_observation_time": "2026-09-10T00:00:00Z",
         "target_gap_minutes": 0.0
       },
@@ -206,42 +206,42 @@
         "previous_value": 3.66,
         "delta": -0.040000000000000036,
         "delta_pct": -1.0928961748633887,
-        "previous_snapshot_hour_utc": "2026-09-05T17:00:00Z",
+        "previous_snapshot_hour_utc": "2026-09-05T18:00:00Z",
         "source_observation_time": "2026-09-03T00:00:00Z",
         "target_gap_minutes": 0.0
       }
     },
     {
       "metric": "STABLECOIN_TOTAL_SUPPLY",
-      "value": 312325283085.8804,
+      "value": 312325540537.2117,
       "unit": "USD",
       "source": "DefiLlama Stablecoins",
-      "source_observation_time": "2026-09-12T17:58:12.956803Z",
+      "source_observation_time": "2026-09-12T18:57:54.187981Z",
       "source_frequency": "current",
       "timestamp_quality": "retrieval_time_proxy",
       "new_source_observation_since_prior_snapshot": true,
       "vs_prior_snapshot": {
-        "previous_value": 312318215881.4671,
-        "delta": 7067204.413269043,
-        "delta_pct": 0.0022628217164096607,
-        "previous_snapshot_hour_utc": "2026-09-12T16:00:00Z",
-        "source_observation_time": "2026-09-12T16:58:07.072163Z",
+        "previous_value": 312325283085.8804,
+        "delta": 257451.33129882812,
+        "delta_pct": 8.24305124308609e-05,
+        "previous_snapshot_hour_utc": "2026-09-12T17:00:00Z",
+        "source_observation_time": "2026-09-12T17:58:12.956803Z",
         "target_gap_minutes": null
       },
       "vs_24h": {
-        "previous_value": 310881777136.4159,
-        "delta": 1443505949.4644775,
-        "delta_pct": 0.4643263309804945,
-        "previous_snapshot_hour_utc": "2026-09-11T17:00:00Z",
-        "source_observation_time": "2026-09-11T17:58:35.676902Z",
+        "previous_value": 310852406146.18445,
+        "delta": 1473134391.0272217,
+        "delta_pct": 0.4739015564622817,
+        "previous_snapshot_hour_utc": "2026-09-11T18:00:00Z",
+        "source_observation_time": "2026-09-11T18:58:06.264150Z",
         "target_gap_minutes": 0.0
       },
       "vs_7d": {
-        "previous_value": 311531213571.8116,
-        "delta": 794069514.0687866,
-        "delta_pct": 0.2548924407812973,
-        "previous_snapshot_hour_utc": "2026-09-05T17:00:00Z",
-        "source_observation_time": "2026-09-05T17:58:07.647339Z",
+        "previous_value": 311530186421.69995,
+        "delta": 795354115.5117188,
+        "delta_pct": 0.2553056333472273,
+        "previous_snapshot_hour_utc": "2026-09-05T18:00:00Z",
+        "source_observation_time": "2026-09-05T18:58:13.074794Z",
         "target_gap_minutes": 0.0
       }
     },
@@ -258,7 +258,7 @@
         "previous_value": 818110.0,
         "delta": 0.0,
         "delta_pct": 0.0,
-        "previous_snapshot_hour_utc": "2026-09-12T16:00:00Z",
+        "previous_snapshot_hour_utc": "2026-09-12T17:00:00Z",
         "source_observation_time": "2026-09-10T00:00:00Z",
         "target_gap_minutes": null
       },
@@ -266,7 +266,7 @@
         "previous_value": 843705.0,
         "delta": -25595.0,
         "delta_pct": -3.0336432757895238,
-        "previous_snapshot_hour_utc": "2026-09-11T17:00:00Z",
+        "previous_snapshot_hour_utc": "2026-09-11T18:00:00Z",
         "source_observation_time": "2026-09-09T00:00:00Z",
         "target_gap_minutes": 0.0
       },
@@ -274,7 +274,7 @@
         "previous_value": 903928.0,
         "delta": -85818.0,
         "delta_pct": -9.49389774406811,
-        "previous_snapshot_hour_utc": "2026-09-05T17:00:00Z",
+        "previous_snapshot_hour_utc": "2026-09-05T18:00:00Z",
         "source_observation_time": "2026-09-03T00:00:00Z",
         "target_gap_minutes": 0.0
       }
@@ -292,7 +292,7 @@
         "previous_value": 4.96,
         "delta": 0.0,
         "delta_pct": 0.0,
-        "previous_snapshot_hour_utc": "2026-09-12T16:00:00Z",
+        "previous_snapshot_hour_utc": "2026-09-12T17:00:00Z",
         "source_observation_time": "2026-09-11T00:00:00",
         "target_gap_minutes": null
       },
@@ -300,7 +300,7 @@
         "previous_value": 4.95,
         "delta": 0.009999999999999787,
         "delta_pct": 0.20202020202019771,
-        "previous_snapshot_hour_utc": "2026-09-11T17:00:00Z",
+        "previous_snapshot_hour_utc": "2026-09-11T18:00:00Z",
         "source_observation_time": "2026-09-10T00:00:00",
         "target_gap_minutes": 0.0
       },
@@ -308,7 +308,7 @@
         "previous_value": 4.78,
         "delta": 0.17999999999999972,
         "delta_pct": 3.7656903765690317,
-        "previous_snapshot_hour_utc": "2026-09-05T17:00:00Z",
+        "previous_snapshot_hour_utc": "2026-09-05T18:00:00Z",
         "source_observation_time": "2026-09-04T00:00:00",
         "target_gap_minutes": 0.0
       }
@@ -326,7 +326,7 @@
         "previous_value": 2.6,
         "delta": 0.0,
         "delta_pct": 0.0,
-        "previous_snapshot_hour_utc": "2026-09-12T16:00:00Z",
+        "previous_snapshot_hour_utc": "2026-09-12T17:00:00Z",
         "source_observation_time": "2026-09-11T00:00:00",
         "target_gap_minutes": null
       },
@@ -334,7 +334,7 @@
         "previous_value": 2.55,
         "delta": 0.050000000000000266,
         "delta_pct": 1.960784313725501,
-        "previous_snapshot_hour_utc": "2026-09-11T17:00:00Z",
+        "previous_snapshot_hour_utc": "2026-09-11T18:00:00Z",
         "source_observation_time": "2026-09-10T00:00:00",
         "target_gap_minutes": 0.0
       },
@@ -342,7 +342,7 @@
         "previous_value": 2.43,
         "delta": 0.16999999999999993,
         "delta_pct": 6.9958847736625485,
-        "previous_snapshot_hour_utc": "2026-09-05T17:00:00Z",
+        "previous_snapshot_hour_utc": "2026-09-05T18:00:00Z",
         "source_observation_time": "2026-09-04T00:00:00",
         "target_gap_minutes": 0.0
       }
@@ -360,7 +360,7 @@
         "previous_value": 4.63,
         "delta": 0.0,
         "delta_pct": 0.0,
-        "previous_snapshot_hour_utc": "2026-09-12T16:00:00Z",
+        "previous_snapshot_hour_utc": "2026-09-12T17:00:00Z",
         "source_observation_time": "2026-09-11T00:00:00",
         "target_gap_minutes": null
       },
@@ -368,7 +368,7 @@
         "previous_value": 4.56,
         "delta": 0.07000000000000028,
         "delta_pct": 1.535087719298252,
-        "previous_snapshot_hour_utc": "2026-09-11T17:00:00Z",
+        "previous_snapshot_hour_utc": "2026-09-11T18:00:00Z",
         "source_observation_time": "2026-09-10T00:00:00",
         "target_gap_minutes": 0.0
       },
@@ -376,7 +376,7 @@
         "previous_value": 4.37,
         "delta": 0.2599999999999998,
         "delta_pct": 5.949656750572077,
-        "previous_snapshot_hour_utc": "2026-09-05T17:00:00Z",
+        "previous_snapshot_hour_utc": "2026-09-05T18:00:00Z",
         "source_observation_time": "2026-09-04T00:00:00",
         "target_gap_minutes": 0.0
       }
@@ -394,7 +394,7 @@
         "previous_value": 5.35,
         "delta": 0.0,
         "delta_pct": 0.0,
-        "previous_snapshot_hour_utc": "2026-09-12T16:00:00Z",
+        "previous_snapshot_hour_utc": "2026-09-12T17:00:00Z",
         "source_observation_time": "2026-09-11T00:00:00",
         "target_gap_minutes": null
       },
@@ -402,7 +402,7 @@
         "previous_value": 5.37,
         "delta": -0.020000000000000462,
         "delta_pct": -0.3724394785847386,
-        "previous_snapshot_hour_utc": "2026-09-11T17:00:00Z",
+        "previous_snapshot_hour_utc": "2026-09-11T18:00:00Z",
         "source_observation_time": "2026-09-10T00:00:00",
         "target_gap_minutes": 0.0
       },
@@ -410,76 +410,76 @@
         "previous_value": 5.24,
         "delta": 0.10999999999999943,
         "delta_pct": 2.099236641221363,
-        "previous_snapshot_hour_utc": "2026-09-05T17:00:00Z",
+        "previous_snapshot_hour_utc": "2026-09-05T18:00:00Z",
         "source_observation_time": "2026-09-04T00:00:00",
         "target_gap_minutes": 0.0
       }
     },
     {
       "metric": "USDC_SUPPLY",
-      "value": 74429306478.38503,
+      "value": 74436288154.09866,
       "unit": "USD",
       "source": "DefiLlama Stablecoins",
-      "source_observation_time": "2026-09-12T17:58:12.956803Z",
+      "source_observation_time": "2026-09-12T18:57:54.187981Z",
       "source_frequency": "current",
       "timestamp_quality": "retrieval_time_proxy",
       "new_source_observation_since_prior_snapshot": true,
       "vs_prior_snapshot": {
-        "previous_value": 74422131914.3454,
-        "delta": 7174564.039627075,
-        "delta_pct": 0.009640363498165425,
-        "previous_snapshot_hour_utc": "2026-09-12T16:00:00Z",
-        "source_observation_time": "2026-09-12T16:58:07.072163Z",
+        "previous_value": 74429306478.38503,
+        "delta": 6981675.713638306,
+        "delta_pct": 0.009380277801817017,
+        "previous_snapshot_hour_utc": "2026-09-12T17:00:00Z",
+        "source_observation_time": "2026-09-12T17:58:12.956803Z",
         "target_gap_minutes": null
       },
       "vs_24h": {
-        "previous_value": 74578780994.35864,
-        "delta": -149474515.97361755,
-        "delta_pct": -0.2004249921769628,
-        "previous_snapshot_hour_utc": "2026-09-11T17:00:00Z",
-        "source_observation_time": "2026-09-11T17:58:35.676902Z",
+        "previous_value": 74506540448.16273,
+        "delta": -70252294.06407166,
+        "delta_pct": -0.09429010344796383,
+        "previous_snapshot_hour_utc": "2026-09-11T18:00:00Z",
+        "source_observation_time": "2026-09-11T18:58:06.264150Z",
         "target_gap_minutes": 0.0
       },
       "vs_7d": {
-        "previous_value": 74724317718.94855,
-        "delta": -295011240.56352234,
-        "delta_pct": -0.3947995104794561,
-        "previous_snapshot_hour_utc": "2026-09-05T17:00:00Z",
-        "source_observation_time": "2026-09-05T17:58:07.647339Z",
+        "previous_value": 74718769326.69788,
+        "delta": -282481172.59921265,
+        "delta_pct": -0.37805918799880295,
+        "previous_snapshot_hour_utc": "2026-09-05T18:00:00Z",
+        "source_observation_time": "2026-09-05T18:58:13.074794Z",
         "target_gap_minutes": 0.0
       }
     },
     {
       "metric": "USDT_SUPPLY",
-      "value": 183548679927.4355,
+      "value": 183541203228.24622,
       "unit": "USD",
       "source": "DefiLlama Stablecoins",
-      "source_observation_time": "2026-09-12T17:58:12.956803Z",
+      "source_observation_time": "2026-09-12T18:57:54.187981Z",
       "source_frequency": "current",
       "timestamp_quality": "retrieval_time_proxy",
       "new_source_observation_since_prior_snapshot": true,
       "vs_prior_snapshot": {
-        "previous_value": 183546519689.65207,
-        "delta": 2160237.783416748,
-        "delta_pct": 0.0011769429281848361,
-        "previous_snapshot_hour_utc": "2026-09-12T16:00:00Z",
-        "source_observation_time": "2026-09-12T16:58:07.072163Z",
+        "previous_value": 183548679927.4355,
+        "delta": -7476699.1892700195,
+        "delta_pct": -0.004073414852248392,
+        "previous_snapshot_hour_utc": "2026-09-12T17:00:00Z",
+        "source_observation_time": "2026-09-12T17:58:12.956803Z",
         "target_gap_minutes": null
       },
       "vs_24h": {
-        "previous_value": 183059143668.29453,
-        "delta": 489536259.1409607,
-        "delta_pct": 0.26741972530364644,
-        "previous_snapshot_hour_utc": "2026-09-11T17:00:00Z",
-        "source_observation_time": "2026-09-11T17:58:35.676902Z",
+        "previous_value": 183067861809.94366,
+        "delta": 473341418.30255127,
+        "delta_pct": 0.2585606308080236,
+        "previous_snapshot_hour_utc": "2026-09-11T18:00:00Z",
+        "source_observation_time": "2026-09-11T18:58:06.264150Z",
         "target_gap_minutes": 0.0
       },
       "vs_7d": {
-        "previous_value": 183398277829.6018,
-        "delta": 150402097.8336792,
-        "delta_pct": 0.08200845701147758,
-        "previous_snapshot_hour_utc": "2026-09-05T17:00:00Z",
-        "source_observation_time": "2026-09-05T17:58:07.647339Z",
+        "previous_value": 183393480263.0231,
+        "delta": 147722965.223114,
+        "delta_pct": 0.080549736561654,
+        "previous_snapshot_hour_utc": "2026-09-05T18:00:00Z",
+        "source_observation_time": "2026-09-05T18:58:13.074794Z",
         "target_gap_minutes": 0.0
       }
     }
@@ -507,7 +507,7 @@
       "USDT_SUPPLY"
     ],
     "failures": {},
-    "history_rows": 2450,
+    "history_rows": 2464,
     "current_collection_status": "OK",
     "history_status": "OK",
     "history_recovery_mode": false,
@@ -515,6 +515,6 @@
     "history_gap_max_hours": 1.0,
     "history_24h_comparison_count": 6,
     "history_issues": [],
-    "history_health_checked_at_utc": "2026-09-12T17:58:13.957696Z"
+    "history_health_checked_at_utc": "2026-09-12T18:57:55.191124Z"
   }
 }
