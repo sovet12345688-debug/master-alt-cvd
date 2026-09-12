@@ -130,10 +130,22 @@ User explicitly approved the previously exposed candidate formula **as-is** at `
 - Machine output freshness limit = **180 minutes**. Stale required input/output => fail-closed N/A; never reuse an old score as current.
 - Confirmed component weights are renormalized. If confirmed coverage is below 70%, a numeric `PARTIAL` score may be shown only from confirmed components, Confidence is capped at C, and strong threshold alerts are forbidden.
 - Existing BTC Liquidity Lead thresholds **55 / 65 / 75** and Market Positive bands remain unchanged.
-- `state/master_market_official_history.csv` is comparison/history only. It may supply prior/1D/3D/7D context after valid OFFICIAL observations accumulate, but it is never a current-score fallback.
-- Only confirmed OFFICIAL runs may persist official score history through the existing OFFICIAL persistence path. WATCH/manual non-OFFICIAL must not write or overwrite score history.
+- `state/master_market_score_history.csv` is the authoritative comparison/history source for the four core scores (`market_positive | liquidity_lead | crypto_money_inflow | alt_money_inflow`). It may supply prior/1D/3D/7D context after valid scheduled OFFICIAL score snapshots accumulate, but it is never a current-score fallback.
+- `state/master_market_official_history.csv` remains the legacy/final OFFICIAL decision-history file used by the separate OFFICIAL State Bridge. It contains direction/Risk Veto context and is not the new core-score delta source after the 2026-09-12 separation.
+- Core-score history persistence is separated from final decision persistence: the :58 production scorer may append only the four numeric core scores to `state/master_market_score_history.csv` when its snapshot maps to a locked OFFICIAL hour. WATCH/manual non-OFFICIAL snapshots never write score history. Final LONG/SHORT and Risk Veto remain owned by the separate OFFICIAL State Bridge and are never invented by the score-history writer.
 - No historical backfill for the structural-N/A gap. New history accumulates prospectively from valid OFFICIAL runs after activation.
 - Forbidden fallbacks remain locked: `last-known score reuse | N/A=0 | historical score backsolve | invented equal weights | cross-MASTER score substitution`.
+
+## SCORE HISTORY SEPARATION + DXY/OIL RECOVERY — APPROVED 2026-09-12
+
+- User approved split persistence: core score history and final OFFICIAL decision state are separate responsibilities.
+- Core score comparison source = `state/master_market_score_history.csv`; fields are run_id/scheduled_kst/score_generated_at_utc/market_positive/liquidity_lead/crypto_money_inflow/alt_money_inflow/overall_coverage_pct/status.
+- Final decision state remains separate through `official_state/process_market_inbox.py` / `official_state/latest/market.json`; no score-history process may invent LONG/SHORT or Risk Veto.
+- DXY recovery output = `market_vault/output/latest_dxy.json`, produced by `market_vault/dxy_adapter.py` using actual Yahoo Finance `DX-Y.NYB` observations only. Current/1D/3D/7D use same-instrument actual observations; no broad-dollar proxy substitution or interpolation.
+- Oil recovery output = `market_vault/output/latest_oil.json`, produced by `market_vault/oil_adapter.py` using actual Yahoo Finance `CL=F` (WTI front-month futures) and `BZ=F` (Brent front-month futures) observations only. Current/1D/3D/7D are same-instrument actual observations; label futures explicitly and do not present them as physical spot assessments.
+- Oil adapter output feeds the existing Oil Hard Importance axis only. It does not add a new score weight and oil rise alone still does not automatically equal Risk-Off.
+- DXY/Oil adapters run synchronously inside `.github/workflows/master_market_score_engine_active.yml` immediately before the production score calculation, preventing schedule-race mismatches.
+- `market_vault/output/latest_summary.json` remains owned by the existing Vault workflow and is not committed by the DXY/Oil recovery path; this avoids cross-workflow write races. User-visible DXY/Oil reads use their dedicated outputs.
 
 ## BTC LIQUIDITY LEAD INDEX
 

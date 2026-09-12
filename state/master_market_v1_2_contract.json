@@ -2,7 +2,7 @@
   "schema_version": "1.12",
   "master": "MASTER MARKET V1.2",
   "status": "FINAL_CUMULATIVE_LOCK",
-  "updated_kst": "2026-09-11T10:24:59+09:00",
+  "updated_kst": "2026-09-12T21:26:00+09:00",
   "purpose": "Machine-readable cumulative contract for MASTER MARKET. Existing required data, checks, and user-visible output blocks must survive future version upgrades unless the user explicitly orders removal.",
   "no_silent_omission": {
     "enabled": true,
@@ -76,7 +76,9 @@
     "official_updates_score_history": true,
     "watch_overwrites_official_history": false,
     "score_refresh_minute": 58,
-    "score_refresh_workflow": ".github/workflows/master_market_score_engine_active.yml"
+    "score_refresh_workflow": ".github/workflows/master_market_score_engine_active.yml",
+    "score_history_file": "state/master_market_score_history.csv",
+    "final_official_state_separate": true
   },
   "required_data": {
     "macro_liquidity": [
@@ -188,7 +190,10 @@
     "actor_flow_adapter": "Read market_vault/output/latest_actor_flows.json when fresh for SCREEN2 and SCREEN4 actual-value institution/whale/retail-proxy comparisons. Adapter score weight is 0 and does not alter underlying score engine, Risk Veto, WATCH, or official history.",
     "short_term_whale_risk_proxy": "Read onchain/output/latest_short_term_whale_risk.json when fresh and engine/schema guards pass. STH metrics come from free public Checkonchain static Plotly HTML; exact CryptoQuant STH Whale is never claimed/reproduced. Hyperliquid NET and BTC CVD reuse existing validated MASTER outputs. No API key, paid source, backfill, interpolation, OCR, or guessed values.",
     "yen_carry_risk_lite": "Read market_yen_carry/output/latest_yen_carry.json only when engine=YEN_CARRY_RISK_LITE_V1, schema_version=1.0, score_weight=0 and status/coverage guards pass. READ-ONLY SCREEN1 auxiliary; no MASTER recalculation, no cross-fill, no score/direction/Risk Veto/WATCH/DXY/BTC/whale/derivatives effect. Partial/null/stale/incompatible output => visible N/A and parent MASTER continues.",
-    "active_score_engine": "Read market_scoring/output/latest_scores.json for the four current core scores only when engine=MASTER_MARKET_SCORE_ENGINE_V1, schema/status/freshness guards pass. Formula authority is market_scoring/score_engine_contract.json. Stale/incompatible/missing output fails closed to N/A; never use official history as current fallback."
+    "active_score_engine": "Read market_scoring/output/latest_scores.json for the four current core scores only when engine=MASTER_MARKET_SCORE_ENGINE_V1, schema/status/freshness guards pass. Formula authority is market_scoring/score_engine_contract.json. Stale/incompatible/missing output fails closed to N/A; never use official history as current fallback.",
+    "score_history": "Read state/master_market_score_history.csv for prior/1D/3D/7D context of the four core scores only. Current scores always come from market_scoring/output/latest_scores.json. Score history contains no invented direction/Risk Veto and WATCH/manual non-OFFICIAL cannot write it.",
+    "dxy_adapter": "Read market_vault/output/latest_dxy.json; produced by market_vault/dxy_adapter.py from actual Yahoo Finance DX-Y.NYB observations only; current/1D/3D/7D same-instrument comparisons; no broad-dollar proxy substitution/interpolation. Runs synchronously before active score calculation.",
+    "oil_adapter": "Read market_vault/output/latest_oil.json; produced by market_vault/oil_adapter.py from actual Yahoo Finance CL=F WTI front-month futures and BZ=F Brent front-month futures; current/1D/3D/7D same-instrument comparisons; label futures explicitly; no interpolation/cross-instrument substitution. Runs synchronously before active score calculation."
   },
   "required_scores": {
     "BTC_Liquidity_Lead_Index": {
@@ -311,25 +316,27 @@
   },
   "official_score_history": {
     "enabled": true,
-    "file": "state/master_market_official_history.csv",
+    "file": "state/master_market_score_history.csv",
     "no_backfill": true,
     "append_only": true,
     "fields": [
       "run_id",
-      "executed_kst",
+      "scheduled_kst",
+      "score_generated_at_utc",
       "market_positive",
       "liquidity_lead",
       "crypto_money_inflow",
       "alt_money_inflow",
-      "coverage",
-      "confidence",
-      "direction",
-      "risk_veto"
+      "overall_coverage_pct",
+      "status"
     ],
-    "rule": "Only confirmed OFFICIAL runs are appended. WATCH and manual non-official runs never overwrite official history. Missing past runs are not reconstructed.",
+    "rule": "Only scheduled score snapshots mapped to locked OFFICIAL KST hours are appended. WATCH/manual non-OFFICIAL snapshots never write. This file stores core scores only and never invents LONG/SHORT or Risk Veto.",
     "current_score_source": "market_scoring/output/latest_scores.json",
     "current_score_fallback_to_history_forbidden": true,
-    "structural_na_gap_backfill_forbidden": true
+    "structural_na_gap_backfill_forbidden": true,
+    "final_official_state_separate": true,
+    "final_official_state_bridge": "official_state/process_market_inbox.py",
+    "legacy_final_decision_history": "state/master_market_official_history.csv"
   },
   "polymarket_policy": {
     "enabled": true,

@@ -173,7 +173,7 @@ def write_blocked(now: datetime, reason: str, ages: dict[str, float | None]) -> 
         "official_history_write_enabled": False,
         "watch_history_write_enabled": False,
         "scores": scores,
-        "score_history_source": "state/master_market_official_history.csv",
+        "score_history_source": "state/master_market_score_history.csv",
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -295,7 +295,7 @@ def main() -> int:
         "official_persistence_eligible": numeric,
         "official_history_write_enabled": False,
         "watch_history_write_enabled": False,
-        "score_history_source": "state/master_market_official_history.csv",
+        "score_history_source": "state/master_market_score_history.csv",
         "scores": scores,
         "display": {
             "liquidity_stage": liquidity_stage(liquidity["score"]),

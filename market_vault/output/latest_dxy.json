@@ -1,0 +1,48 @@
+{
+  "engine": "MASTER_MARKET_DXY_ADAPTER_V1",
+  "schema_version": "1.0",
+  "generated_at_utc": "2026-09-12T13:55:18.558869Z",
+  "metric": {
+    "metric": "DXY",
+    "value": 99.12000274658203,
+    "unit": "index",
+    "source": "Yahoo Finance:DX-Y.NYB",
+    "source_observation_time": "2026-09-11T04:00:00Z",
+    "source_frequency": "daily_market",
+    "timestamp_quality": "exchange_chart_timestamp",
+    "new_source_observation_since_prior_snapshot": true,
+    "vs_prior_snapshot": {
+      "previous_value": 99.08999633789062,
+      "delta": 0.03000640869140625,
+      "delta_pct": 0.030281975779962986,
+      "previous_snapshot_hour_utc": "2026-09-10T04:00:00Z",
+      "source_observation_time": "2026-09-10T04:00:00Z",
+      "target_gap_minutes": 1440.0
+    },
+    "vs_24h": {
+      "previous_value": 99.08999633789062,
+      "delta": 0.03000640869140625,
+      "delta_pct": 0.030281975779962986,
+      "previous_snapshot_hour_utc": "2026-09-10T04:00:00Z",
+      "source_observation_time": "2026-09-10T04:00:00Z",
+      "target_gap_minutes": 1440.0
+    },
+    "vs_3d": {
+      "previous_value": 98.83999633789062,
+      "delta": 0.28000640869140625,
+      "delta_pct": 0.2832926133811125,
+      "previous_snapshot_hour_utc": "2026-09-08T04:00:00Z",
+      "source_observation_time": "2026-09-08T04:00:00Z",
+      "target_gap_minutes": 4320.0
+    },
+    "vs_7d": {
+      "previous_value": 99.16000366210938,
+      "delta": -0.04000091552734375,
+      "delta_pct": -0.040339768102115085,
+      "previous_snapshot_hour_utc": "2026-09-04T04:00:00Z",
+      "source_observation_time": "2026-09-04T04:00:00Z",
+      "target_gap_minutes": 10080.0
+    }
+  },
+  "rule": "actual Yahoo DX-Y.NYB observations only; no interpolation, no proxy substitution"
+}

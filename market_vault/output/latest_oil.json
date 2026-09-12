@@ -1,0 +1,94 @@
+{
+  "engine": "MASTER_MARKET_OIL_ADAPTER_V1",
+  "schema_version": "1.0",
+  "generated_at_utc": "2026-09-12T13:55:18.311074Z",
+  "metrics": [
+    {
+      "metric": "WTI",
+      "value": 100.05000305175781,
+      "unit": "USD/barrel",
+      "source": "Yahoo Finance:CL=F",
+      "source_label": "WTI front-month futures",
+      "source_observation_time": "2026-09-11T04:00:00Z",
+      "source_frequency": "daily_market",
+      "timestamp_quality": "exchange_chart_timestamp",
+      "new_source_observation_since_prior_snapshot": true,
+      "vs_prior_snapshot": {
+        "previous_value": 102.4800033569336,
+        "delta": -2.4300003051757812,
+        "delta_pct": -2.3711945995085415,
+        "previous_snapshot_hour_utc": "2026-09-10T04:00:00Z",
+        "source_observation_time": "2026-09-10T04:00:00Z",
+        "target_gap_minutes": 1440.0
+      },
+      "vs_24h": {
+        "previous_value": 102.4800033569336,
+        "delta": -2.4300003051757812,
+        "delta_pct": -2.3711945995085415,
+        "previous_snapshot_hour_utc": "2026-09-10T04:00:00Z",
+        "source_observation_time": "2026-09-10T04:00:00Z",
+        "target_gap_minutes": 1440.0
+      },
+      "vs_3d": {
+        "previous_value": 93.02999877929688,
+        "delta": 7.0200042724609375,
+        "delta_pct": 7.545957609991054,
+        "previous_snapshot_hour_utc": "2026-09-08T04:00:00Z",
+        "source_observation_time": "2026-09-08T04:00:00Z",
+        "target_gap_minutes": 4320.0
+      },
+      "vs_7d": {
+        "previous_value": 91.4800033569336,
+        "delta": 8.569999694824219,
+        "delta_pct": 9.368167228182188,
+        "previous_snapshot_hour_utc": "2026-09-04T04:00:00Z",
+        "source_observation_time": "2026-09-04T04:00:00Z",
+        "target_gap_minutes": 10080.0
+      }
+    },
+    {
+      "metric": "BRENT",
+      "value": 104.61000061035156,
+      "unit": "USD/barrel",
+      "source": "Yahoo Finance:BZ=F",
+      "source_label": "Brent front-month futures",
+      "source_observation_time": "2026-09-11T04:00:00Z",
+      "source_frequency": "daily_market",
+      "timestamp_quality": "exchange_chart_timestamp",
+      "new_source_observation_since_prior_snapshot": true,
+      "vs_prior_snapshot": {
+        "previous_value": 107.62999725341797,
+        "delta": -3.0199966430664062,
+        "delta_pct": -2.805906085787344,
+        "previous_snapshot_hour_utc": "2026-09-10T04:00:00Z",
+        "source_observation_time": "2026-09-10T04:00:00Z",
+        "target_gap_minutes": 1440.0
+      },
+      "vs_24h": {
+        "previous_value": 107.62999725341797,
+        "delta": -3.0199966430664062,
+        "delta_pct": -2.805906085787344,
+        "previous_snapshot_hour_utc": "2026-09-10T04:00:00Z",
+        "source_observation_time": "2026-09-10T04:00:00Z",
+        "target_gap_minutes": 1440.0
+      },
+      "vs_3d": {
+        "previous_value": 97.91999816894531,
+        "delta": 6.69000244140625,
+        "delta_pct": 6.832110464160467,
+        "previous_snapshot_hour_utc": "2026-09-08T04:00:00Z",
+        "source_observation_time": "2026-09-08T04:00:00Z",
+        "target_gap_minutes": 4320.0
+      },
+      "vs_7d": {
+        "previous_value": 96.27999877929688,
+        "delta": 8.330001831054688,
+        "delta_pct": 8.651850785903719,
+        "previous_snapshot_hour_utc": "2026-09-04T04:00:00Z",
+        "source_observation_time": "2026-09-04T04:00:00Z",
+        "target_gap_minutes": 10080.0
+      }
+    }
+  ],
+  "rule": "actual Yahoo CL=F/BZ=F observations only; no interpolation or cross-instrument substitution"
+}
