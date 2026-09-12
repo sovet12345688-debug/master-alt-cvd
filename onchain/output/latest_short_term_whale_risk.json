@@ -1,7 +1,7 @@
 {
   "engine": "MASTER_ST_WHALE_PROFIT_TAKING_RISK_PROXY_V1",
   "schema_version": "1.2",
-  "generated_at_utc": "2026-09-12T06:43:46.615077Z",
+  "generated_at_utc": "2026-09-12T07:39:18.046275Z",
   "name_ko": "단기 고래 차익실현 위험",
   "role": "AUXILIARY_RISK_ONLY",
   "score_weight": 0,
@@ -17,7 +17,7 @@
         "status": "OK",
         "trace_name": "STH-NUPL",
         "source_time_utc": "2026-09-12T00:00:00Z",
-        "source_age_hours": 6.73,
+        "source_age_hours": 7.65,
         "value": 0.0783987703150018,
         "percentile_4y": 65.52667578659371,
         "avg_7d": 0.09320109663006146,
@@ -36,7 +36,7 @@
         "status": "OK",
         "trace_name": "STH-MVRV",
         "source_time_utc": "2026-09-12T00:00:00Z",
-        "source_age_hours": 6.73,
+        "source_age_hours": 7.65,
         "value": 1.0851,
         "percentile_4y": 65.59507523939808,
         "avg_7d": 1.1031125,
@@ -55,7 +55,7 @@
         "status": "OK",
         "trace_name": "STH-SOPR",
         "source_time_utc": "2026-09-12T00:00:00Z",
-        "source_age_hours": 6.73,
+        "source_age_hours": 7.66,
         "value": 1.0,
         "percentile_4y": 100.0,
         "avg_7d": 1.0,
@@ -72,25 +72,25 @@
       "state": "고래 순포지션 숏 우세",
       "raw": {
         "status": "OK",
-        "value": -203112427.4719301,
-        "net_ratio": -0.20204046709311127,
-        "long_usd": 401096622.0900499,
-        "short_usd": 604209049.56198,
-        "source_time_utc": "2026-09-12T05:00:00Z",
+        "value": -203135750.0238639,
+        "net_ratio": -0.20184006915607608,
+        "long_usd": 401641797.064592,
+        "short_usd": 604777547.0884559,
+        "source_time_utc": "2026-09-12T06:00:00Z",
         "source": "market_vault/output/latest_actor_flows.json (Hyperliquid >=$20M BTC aggregate)"
       }
     },
     {
       "signal": "🟢",
       "indicator": "BTC CVD",
-      "display_value": "+$5.4M",
+      "display_value": "+$1.5M",
       "state": "적극매수 우세",
       "raw": {
         "status": "OK",
-        "value": 5443105.2741,
-        "cvd_to_volume_ratio": 0.289933670930083,
-        "trade_notional_1h_usdt": 18773622.45178,
-        "source_time_utc": "2026-09-12T06:21:59.170319Z",
+        "value": 1543870.062859999,
+        "cvd_to_volume_ratio": 0.08205598730818567,
+        "trade_notional_1h_usdt": 18814837.44826,
+        "source_time_utc": "2026-09-12T07:15:49.345826Z",
         "source": "derivatives/output/latest_microstructure.json (Bitget BTC 1H)"
       }
     }
