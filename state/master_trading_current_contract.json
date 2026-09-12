@@ -12,7 +12,7 @@
     "canonicalization_mode": "USER_APPROVED_RULESET_PLUS_VALIDATED_GITHUB_OVERLAY",
     "historical_identical_prompt_claim": false,
     "canonicalized_kst": "2026-09-07T11:33:00+09:00",
-    "ui_canonicalized_kst": "2026-09-07T16:48:00+09:00",
+    "ui_canonicalized_kst": "2026-09-12T13:42:00+09:00",
     "asset_routing_locked_kst": "2026-09-07T15:00:00+09:00"
   },
   "independence": {
@@ -99,9 +99,10 @@
       "SCREEN 2 - 차트분석 SCORE",
       "SCREEN 3 - LONG 타점 3개",
       "SCREEN 4 - SHORT 타점 3개",
-      "SCREEN 5 - 파생 데이터 + 파동 시나리오 최종 조합 결론"
+      "SCREEN 5 - 파생 데이터 + 파동 시나리오 최종 조합 결론",
+      "SCREEN 6 - BEST 타점 7문항 검증"
     ],
-    "visual_screen_count": 5,
+    "visual_screen_count": 6,
     "screen_order_locked": true,
     "asset_ui_parity_required": true,
     "mobile_first": true,
@@ -118,6 +119,25 @@
       "signal_light_is_presentation_only": true,
       "signal_light_values": ["🟢", "🟡", "🔴"]
     },
+    "screen_6_best_trade_validation": {
+      "additive_only": true,
+      "must_not_modify_screens_1_to_5": true,
+      "basis": "SCREEN 3 LONG BEST + SCREEN 4 SHORT BEST ONLY",
+      "columns": ["핵심질문", "LONG 판정", "LONG 타점 검증", "SHORT 판정", "SHORT 타점 검증"],
+      "questions": [
+        "1. 시장 — 지금은 추세장인가, 횡보장인가?",
+        "2. 시간축 — 이 매매는 몇분, 몇시간, 며칠짜리인가?",
+        "3. 자리 — 어떤 근거의 진입 구간인가?",
+        "4. 반응 — 캔들과 거래량이 실제로 확인되었는가?",
+        "5. 위험 — 틀리면 어디서 얼마를 잃는가? 손익비.",
+        "6. 수익 — 맞으면 어디서 얼마를 분할로 수익을 내는가?",
+        "7. 중단 — 언제 어떤 근거로 오늘 매매를 중단할 것인가? 무효화근거"
+      ],
+      "final_gate_row_required": true,
+      "asset_agnostic": true,
+      "completed_trigger_required_for_reaction_pass": true,
+      "minimum_rr_for_enter": 3.0
+    },
     "time_validity_display_mode": "MAX_NEW_FILL_ALLOWED_UNTIL_KST",
     "time_validity_internal_labels_hidden_by_default": ["신선 유효", "유효", "다음 재검증"],
     "quick_command_go": {
@@ -126,7 +146,7 @@
       "asset_autodetect": true,
       "execute_without_ticker_text_when_identifiable": true,
       "same_engine_all_assets": true,
-      "same_five_screen_ui_all_assets": true
+      "same_six_screen_ui_all_assets": true
     },
     "follow_up_fifth_question": "스크린2 파동분석을 첨부한 차트 기반으로 엘리엇파동을 숫자(1~5, A-B-C) 직접 표시한 버전으로 더 직관적으로 그려줄까?",
     "user_approval_required_for_change": true,
