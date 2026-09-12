@@ -1,0 +1,66 @@
+name: MASTER MARKET N/A Contract Finalize Once
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/master_market_na_contract_finalize_once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Apply approved MARKET contract patch
+        run: python maintenance/apply_master_market_na_recovery_contract_patch.py
+
+      - name: Validate separated score history and macro recovery contract
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('master_prompts/master_market_v1_2_current.md').read_text(encoding='utf-8')
+          c=json.loads(Path('state/master_market_v1_2_contract.json').read_text(encoding='utf-8'))
+          assert 'state/master_market_score_history.csv' in p
+          assert 'state/master_market_official_history.csv' in p
+          h=c['official_score_history']
+          assert h['file']=='state/master_market_score_history.csv'
+          assert h['legacy_final_decision_history']=='state/master_market_official_history.csv'
+          assert h['final_official_state_separate'] is True
+          sp=c['source_policy']
+          assert 'DX-Y.NYB' in sp['dxy_adapter']
+          assert 'CL=F' in sp['oil_adapter'] and 'BZ=F' in sp['oil_adapter']
+          print('MASTER_MARKET_NA_CONTRACT_FINALIZE=PASS')
+          PY
+
+      - name: Commit canonical and contract only
+        shell: bash
+        run: |
+          git config user.name "master-market-contract-bot"
+          git config user.email "master-market-contract-bot@users.noreply.github.com"
+          git add master_prompts/master_market_v1_2_current.md state/master_market_v1_2_contract.json
+          if git diff --cached --quiet; then
+            echo 'No canonical/contract changes required'
+            exit 0
+          fi
+          git commit -m "contract: finalize MASTER MARKET score-history and DXY/oil recovery"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Final result
+        run: echo 'MASTER_MARKET_NA_CONTRACT_FINALIZE=PASS'
