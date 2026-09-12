@@ -4,7 +4,7 @@
 **Scope:** USER-VISIBLE OUTPUT UI ONLY + ASSET ROUTING CONTRACT  
 **Locked at:** 2026-09-07 14:56 KST  
 **Asset-routing lock updated:** 2026-09-07 KST  
-**Latest user-approved UI update:** 2026-09-07 16:48 KST  
+**Latest user-approved UI update:** 2026-09-12 13:42 KST  
 **Applies to:** MASTER TRADING manual/on-demand reports for **any supported crypto asset identifiable from supplied charts**  
 **Canonical parent:** `master_prompts/master_trading_current.md`  
 **Engine version:** `CURRENT + TIME VALIDITY V2.1 OVERLAY`
@@ -45,7 +45,7 @@ If this UI spec conflicts with the analytical/execution canonical, the analytica
 ## 1. GLOBAL MOBILE OUTPUT RULES
 
 1. Mobile-first readability is the highest presentation priority.
-2. Default output is exactly **5 visual screens**, in the fixed order below.
+2. Default output is exactly **6 visual screens**, in the fixed order below.
 3. Each screen uses a compact table first, followed by **one concise 핵심 요약** line.
 4. Long trigger explanations, conditional prose, and repetitive reasons are minimized.
 5. Output is result-first. Supporting detail is shown only when execution-relevant.
@@ -59,6 +59,7 @@ If this UI spec conflicts with the analytical/execution canonical, the analytica
 13. **Never default to BTC** merely because MASTER TRADING historically analyzed BTC often.
 14. If external derivatives/context are queried, they must use the **detected asset**, not BTC by default.
 15. If multiple assets are attached together, first group coherent screenshots by asset/timeframe. Use the latest coherent chart set relevant to the user's command; do not mix prices/indicators across assets.
+16. **SCREEN 6 is additive-only. SCREEN 1~5의 기존 구조·필드·타점 산식·표시 순서는 절대 변경하지 않는다.**
 
 ---
 
@@ -269,6 +270,38 @@ TIME VALIDITY V2.1과의 관계:
 
 ---
 
+# SCREEN 6 — BEST 타점 7문항 검증
+
+목적: **기존 SCREEN 3 LONG ⭐ BEST와 SCREEN 4 SHORT ⭐ BEST를 변경하지 않고**, 각 BEST 타점이 실제 트레이드 플랜으로 성립하는지 동일한 7개 핵심질문으로 마지막에 검증한다.
+
+HARD RULE:
+- SCREEN 6은 **추가 검증 화면**이며 SCREEN 1~5를 절대 수정하거나 대체하지 않는다.
+- LONG은 SCREEN 3의 ⭐ BEST 1개만 사용한다.
+- SHORT은 SCREEN 4의 ⭐ BEST 1개만 사용한다.
+- 모든 지원 가능한 CRYPTO에 동일하게 적용한다.
+- LONG/SHORT을 서로 강제로 반대 판정하지 않는다. 각 방향을 독립 검증한다.
+- 진행봉은 `PROVISIONAL`; 반응 PASS는 15m/30m **완성봉**을 기준으로 한다.
+- R:R < 3:1이면 실제 ENTER Gate를 통과할 수 없다.
+- 기존 Entry / SL / TP / R:R / Trigger / Trade Frame을 SCREEN 6 때문에 이동·재계산·재해석하지 않는다.
+
+## 6-1. 고정 단일 테이블
+
+| 핵심질문 | LONG 판정 | LONG 타점 검증 | SHORT 판정 | SHORT 타점 검증 |
+|---|---|---|---|---|
+| **1. 시장 — 지금은 추세장인가, 횡보장인가?** | PASS / 조건부 / FAIL | 상위·실행 TF 시장상태와 LONG 적합성 | PASS / 조건부 / FAIL | 상위·실행 TF 시장상태와 SHORT 적합성 |
+| **2. 시간축 — 이 매매는 몇분, 몇시간, 며칠짜리인가?** | 확인 | Trade Frame + 예상 보유시간 | 확인 | Trade Frame + 예상 보유시간 |
+| **3. 자리 — 어떤 근거의 진입 구간인가?** | PASS / WAIT / FAIL | LONG BEST Entry + 지지·구조·EMA/MA·S/R 근거 | PASS / WAIT / FAIL | SHORT BEST Entry + 저항·구조·EMA/MA·S/R 근거 |
+| **4. 반응 — 캔들과 거래량이 실제로 확인되었는가?** | PASS / WAIT / FAIL | 15m/30m 완성봉 LONG Trigger + 거래량 확인 | PASS / WAIT / FAIL | 15m/30m 완성봉 SHORT Trigger + 거래량 확인 |
+| **5. 위험 — 틀리면 어디서 얼마를 잃는가? 손익비.** | PASS / FAIL | Entry → 구조적 SL / 손실폭 / 실제 핵심 R:R | PASS / FAIL | Entry → 구조적 SL / 손실폭 / 실제 핵심 R:R |
+| **6. 수익 — 맞으면 어디서 얼마를 분할로 수익을 내는가?** | PASS / 조건부 | TP1 / TP2 / TP3 + 각 R + 분할수익 계획 | PASS / 조건부 | TP1 / TP2 / TP3 + 각 R + 분할수익 계획 |
+| **7. 중단 — 언제 어떤 근거로 오늘 매매를 중단할 것인가? 무효화근거** | 명확 / 불명확 | LONG 가격·봉마감 무효화 + 당일 LONG 중단조건 | 명확 / 불명확 | SHORT 가격·봉마감 무효화 + 당일 SHORT 중단조건 |
+| **최종 Gate** | **ENTER / WAIT / AVOID** | LONG BEST 최종 실행 여부와 핵심 사유 | **ENTER / WAIT / AVOID** | SHORT BEST 최종 실행 여부와 핵심 사유 |
+
+### SCREEN 6 핵심 요약
+`LONG BEST: ___ / SHORT BEST: ___ / 실제 ENTER 가능 방향: ___ / 아직 WAIT라면 가장 먼저 필요한 조건: ___`
+
+---
+
 # FOOTER — 고정
 
 모든 정상 MASTER TRADING 출력은 아래 한 줄 형식을 사용한다.
@@ -313,20 +346,21 @@ HARD RULE:
 - 첨부 차트에서 자산명을 자동 식별한다.
 - 자산 식별이 가능하면 사용자가 종목명을 별도로 입력할 필요가 없다.
 - 감지된 자산에 **동일한 Main Scenario Engine V3.2 / Entry Engine / SL / TP / R:R / Trade Frame / 2-STAGE / Trigger / TIME V2.1 / Wave Context**를 적용한다.
-- 감지된 자산에 동일한 **SCREEN 1→5 UI**를 적용한다.
+- 감지된 자산에 동일한 **SCREEN 1→6 UI**를 적용한다.
 - BTC 전용 가격대/파생정보/상대강도/시나리오를 다른 자산에 재사용하지 않는다.
 - 외부 데이터 보강이 필요할 경우 감지된 ticker/pair를 조회한다.
 - 일부 파생/외부 데이터가 해당 자산에 없으면 `N/A` 또는 PARTIAL로 처리하며, BTC 데이터를 대체값으로 넣지 않는다.
 
 금지:
-- BTC는 5 SCREEN인데 ETH/SOL/XRP 등은 축약형으로 출력
+- BTC는 6 SCREEN인데 ETH/SOL/XRP 등은 축약형으로 출력
 - 자산별로 분석엔진/가중치/타점 산식 변경
 - 자산별로 타점표 열/행 순서 변경
 - 도달확률 누락
 - 시간 유효성 누락
 - 파동 시나리오 누락
+- SCREEN 6 누락
 - BTC를 암묵적 기본자산으로 간주
-- 사용자 승인 없이 화면을 4 SCREEN 또는 다른 구조로 되돌림
+- 사용자 승인 없이 화면을 5 SCREEN 또는 다른 구조로 되돌림
 
 ---
 
@@ -335,12 +369,13 @@ HARD RULE:
 차트가 첨부된 상태에서 사용자가 별다른 설명 없이 **`고`**를 입력하면:
 1. 첨부된 최신 coherent chart set에서 **자산/티커/거래쌍을 자동 식별**한다.
 2. 식별된 자산에 기존 MASTER TRADING 분석 엔진을 **그대로** 실행한다.
-3. 출력은 반드시 `MASTER-TRADING-UI-V2-FINAL`의 **SCREEN 1 → 5** 순서를 따른다.
+3. 출력은 반드시 `MASTER-TRADING-UI-V2-FINAL`의 **SCREEN 1 → 6** 순서를 따른다.
 4. BTC/ETH/SOL/XRP/기타 자산 모두 동일하다.
 5. 사용자가 자산명을 다시 말하도록 요구하지 않는다 — 차트에서 명확히 식별 가능하면 바로 실행한다.
 6. 화면을 줄인다는 이유로 필수 Screen/타점 필드를 생략하지 않는다.
 7. 데이터 부족은 `N/A`; 임의 추정값 생성 금지.
 8. 자산 식별이 정말 불가능한 경우에만 자산명 확인을 요청하며, 추정으로 다른 자산을 선택하지 않는다.
+9. SCREEN 6은 SCREEN 3/4의 ⭐ BEST를 **검증만** 하며 기존 타점을 변경하지 않는다.
 
 ---
 
@@ -358,13 +393,13 @@ Any future UI revision must record:
 `UI_VERSION | APPROVED_KST | CHANGED_SCREENS | ENGINE_CHANGE=false`
 
 Latest approved revision:
-`MASTER-TRADING-UI-V2-FINAL | 2026-09-07 16:48 KST | SCREEN 3 entry-zone ordering + SCREEN 4 entry-zone ordering + SCREEN 5 signal-light columns | ENGINE_CHANGE=false`
+`MASTER-TRADING-UI-V2-FINAL | 2026-09-12 13:42 KST | ADDITIVE SCREEN 6 BEST LONG/SHORT 7-question validation; SCREEN 1~5 unchanged | ENGINE_CHANGE=false`
 
 ---
 
 # FINAL ACCEPTANCE CHECK
 
-- [x] 5 SCREEN 순서 고정
+- [x] 6 SCREEN 순서 고정
 - [x] 모바일 우선
 - [x] Screen 1 장기/중기/단기 파동 + 확률 + 개별 무효화
 - [x] Screen 2 기존 V3.2 100점 분석축 표시
@@ -378,6 +413,10 @@ Latest approved revision:
 - [x] Screen 5 파생 + 파동 조합 결론 + 행동
 - [x] Screen 5 `판정신호등` 2열 고정
 - [x] Screen 5 LONG/SHORT 영향 열 제거
+- [x] Screen 6은 기존 타점 비파괴 추가 검증 화면
+- [x] Screen 6 열 = `핵심질문 | LONG 판정 | LONG 타점 검증 | SHORT 판정 | SHORT 타점 검증`
+- [x] Screen 6은 LONG/SHORT 각각 ⭐ BEST 1개만 검증
+- [x] Screen 6 핵심질문 = 시장 / 시간축 / 자리 / 반응 / 위험 / 수익 / 중단 + 최종 Gate
 - [x] **모든 지원 CRYPTO 동일 분석엔진 적용**
 - [x] **모든 지원 CRYPTO 동일 UI 적용**
 - [x] **`고` 입력 시 첨부 차트 자산 자동식별**
@@ -386,4 +425,4 @@ Latest approved revision:
 - [x] 후속 5번 Elliott 숫자/A-B-C 이미지 문구 고정
 - [x] 기존 Entry/SL/TP/R:R/Trigger/Trade Frame/2-STAGE/TIME V2.1 엔진 무변경
 
-**FINAL LOCK: `MASTER-TRADING-UI-V2-FINAL · ASSET AUTO-DETECT`**
+**FINAL LOCK: `MASTER-TRADING-UI-V2-FINAL · 6-SCREEN · ASSET AUTO-DETECT · SCREEN 6 BEST TRADE VALIDATION`**
