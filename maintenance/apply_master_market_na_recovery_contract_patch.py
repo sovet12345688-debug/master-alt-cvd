@@ -2,13 +2,12 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PROMPT = ROOT / "master_prompts/master_market_v1_2_current.md"
 CONTRACT = ROOT / "state/master_market_v1_2_contract.json"
-KST = timezone(timedelta(hours=9))
+PATCH_UPDATED_KST = "2026-09-12T21:26:00+09:00"
 MARKER = "## SCORE HISTORY SEPARATION + DXY/OIL RECOVERY — APPROVED 2026-09-12"
 
 OLD_HISTORY_LINE = "- `state/master_market_official_history.csv` is comparison/history only. It may supply prior/1D/3D/7D context after valid OFFICIAL observations accumulate, but it is never a current-score fallback."
@@ -60,7 +59,6 @@ def patch_prompt() -> bool:
 def patch_contract() -> bool:
     c = json.loads(CONTRACT.read_text(encoding="utf-8"))
     before = json.dumps(c, ensure_ascii=False, sort_keys=True)
-    c["updated_kst"] = datetime.now(KST).isoformat(timespec="seconds")
 
     schedule = c.setdefault("schedule", {})
     schedule["score_history_file"] = "state/master_market_score_history.csv"
@@ -95,8 +93,9 @@ def patch_contract() -> bool:
     hist["final_official_state_bridge"] = "official_state/process_market_inbox.py"
     hist["legacy_final_decision_history"] = "state/master_market_official_history.csv"
 
-    after = json.dumps(c, ensure_ascii=False, sort_keys=True)
-    if before != after:
+    after_without_timestamp = json.dumps(c, ensure_ascii=False, sort_keys=True)
+    if before != after_without_timestamp:
+        c["updated_kst"] = PATCH_UPDATED_KST
         CONTRACT.write_text(json.dumps(c, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         return True
     return False
