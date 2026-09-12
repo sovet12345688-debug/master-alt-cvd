@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-import argparse
 import csv
 import json
 from datetime import datetime, timedelta, timezone
@@ -44,15 +43,15 @@ def parse_utc(value: Any) -> datetime:
 
 def target_official_slot(generated_utc: datetime) -> datetime | None:
     generated_kst = generated_utc.astimezone(KST)
-    # Production scorer is scheduled at :58. The snapshot belongs to the next
-    # top-of-hour MASTER cycle. Only the six locked OFFICIAL hours persist.
-    target = (generated_kst + timedelta(minutes=2)).replace(minute=0, second=0, microsecond=0)
-    if target.hour not in OFFICIAL_HOURS:
+    # Scheduled scorer runs at :58, but GitHub can start a scheduled job a few
+    # minutes late. Accept a narrow fail-closed window around the top of hour.
+    if generated_kst.minute >= 45:
+        target = (generated_kst + timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
+    elif generated_kst.minute <= 15:
+        target = generated_kst.replace(minute=0, second=0, microsecond=0)
+    else:
         return None
-    # Fail closed if this is not the expected pre-hour snapshot window.
-    if generated_kst.minute < 50:
-        return None
-    return target
+    return target if target.hour in OFFICIAL_HOURS else None
 
 
 def score_value(doc: dict[str, Any], key: str) -> float:
@@ -85,10 +84,6 @@ def existing_run_ids() -> set[str]:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--force", action="store_true", help="test only: allow current snapshot if it maps to an OFFICIAL slot")
-    args = ap.parse_args()
-
     doc = load_json(SCORES)
     if doc.get("engine") != "MASTER_MARKET_SCORE_ENGINE_V1":
         raise SystemExit("SCORE_HISTORY_BLOCKED_ENGINE")
