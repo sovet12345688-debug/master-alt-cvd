@@ -1,0 +1,48 @@
+{
+  "schema_version": "0.1",
+  "master": "MASTER_ALT_FINAL20_CURRENT",
+  "run_type": "OFFICIAL",
+  "run_time_kst": "2026-09-07T21:45:00+09:00",
+  "run_time_utc": "2026-09-07T12:45:00Z",
+  "logging_only": true,
+  "backfill": false,
+  "master_logic_impact": false,
+  "cvd": {
+    "schema_version": "2.2.1",
+    "cvd_run_id": "CVD-2026-09-06-b015003e3e24",
+    "cvd_asof_utc": "2026-09-06",
+    "generated_at_utc": "2026-09-07T12:40:56.025584+00:00"
+  },
+  "derivatives": {
+    "venue": "Bitget USDT Futures",
+    "snapshot_time_utc": "2026-09-07T12:00:00Z",
+    "coverage": "21/21 OK"
+  },
+  "live_large_flow": {
+    "venue": "Binance Spot",
+    "target_completed_hour_utc": "2026-09-07T11:00:00Z",
+    "supported": "18/18",
+    "failures": 0
+  },
+  "decision": {
+    "direction": "LONG_BIAS",
+    "action": "WAIT",
+    "enter_count": 0,
+    "reason": "CORE4/15m30m structural ENTER hard-gate not fully verified this run"
+  },
+  "verified_reference_prices": {
+    "AVAXUSDT": 7.875,
+    "SUIUSDT": 0.8195,
+    "TAOUSDT": 265.52,
+    "ONDOUSDT": 0.389,
+    "ETHUSDT": 2490.89,
+    "SOLUSDT": 105.218,
+    "LINKUSDT": 13.218,
+    "MORPHOUSDT": 2.5478
+  },
+  "notes": [
+    "No historical backfill.",
+    "No N/A to zero conversion.",
+    "Snapshot is logging-only and does not alter MASTER score, Gate, schedule, ENTER or WAIT."
+  ]
+}

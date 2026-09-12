@@ -1,0 +1,37 @@
+{
+  "schema_version": "0.1",
+  "master": "MASTER ALT V2.2.1",
+  "alias": "ALT_FINAL20_CURRENT",
+  "run_type": "OFFICIAL",
+  "run_id": "20260907T0045Z",
+  "run_time_utc": "2026-09-07T00:45:00Z",
+  "run_time_kst": "2026-09-07T09:45:00+09:00",
+  "source_branch": "main",
+  "canonical_prompt": "master_prompts/master_alt_final20_current.md",
+  "cvd_run_id": "CVD-2026-09-05-d6a46394f93f",
+  "cvd_asof_utc": "2026-09-05",
+  "logging_only": true,
+  "affects_master_logic": false,
+  "backfill": false,
+  "final20": ["ETH","SOL","LINK","ONDO","CC","AAVE","MORPHO","TAO","HYPE","NEAR","SUI","AVAX","XRP","XLM","HBAR","UNI","ENA","SEI","CAKE","ZEC"],
+  "official_summary": {
+    "enter_count": 0,
+    "final_action": "WAIT",
+    "core4_full_recalculation": "WITHHELD_CORECOVERAGE_LT70_ACROSS_FULL20",
+    "top_cvd_observation": ["AVAX","XLM","SUI"],
+    "watch_risk": ["LINK","TAO","NEAR","MORPHO"]
+  },
+  "candidate_snapshots": [
+    {"ticker":"AVAX","flow":97.5,"stealth":99.1,"non_chase":true,"current_mark":7.949,"action":"WAIT"},
+    {"ticker":"XLM","flow":97.0,"stealth":96.9,"non_chase":true,"current_mark":null,"action":"WAIT"},
+    {"ticker":"SUI","flow":94.7,"stealth":92.2,"non_chase":true,"current_mark":0.8199,"action":"WAIT"},
+    {"ticker":"ONDO","flow":73.3,"stealth":90.7,"non_chase":true,"current_mark":0.3909,"action":"WAIT"},
+    {"ticker":"LINK","flow":88.8,"stealth":69.3,"non_chase":false,"current_mark":13.254,"action":"WAIT"},
+    {"ticker":"TAO","flow":95.2,"stealth":98.3,"non_chase":true,"current_mark":266.12,"action":"WAIT"}
+  ],
+  "notes": [
+    "Snapshot is forward-only and one-file-per-run per user instruction.",
+    "No missing value was replaced with zero.",
+    "Publishing is logging-only and does not alter scores, gates, schedule, ENTER or WAIT judgement."
+  ]
+}
