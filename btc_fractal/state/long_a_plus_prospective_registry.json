@@ -1,0 +1,29 @@
+{
+  "engine": "BTC_FRACTAL_LONG_A_PLUS_PROSPECTIVE_TRACKER",
+  "schema_version": "1.0",
+  "tracking_start_date": "2026-09-04",
+  "rule_source": "V0.7.2 frozen cycle-conditioned LONG A+",
+  "no_backfill": true,
+  "qualification": {
+    "raw_LONG_grade": "A",
+    "eligible_cycle_windows": [
+      "EARLY_POST_HALVING",
+      "PRE_HALVING_YEAR"
+    ],
+    "retrospective_stage_required": "PASS"
+  },
+  "maturity_horizons_days": [30, 90, 180, 365],
+  "primary_outcome": "+30% before -20%",
+  "upgrade_rule": {
+    "minimum_future_independent_matured_cases": 3,
+    "minimum_precision_pct": 67.0,
+    "gate_lowering_forbidden": true
+  },
+  "cases": [],
+  "current_status": {
+    "prospective_cases": 0,
+    "matured_cases": 0,
+    "validated_selective_LONG": false,
+    "note": "Tracking starts prospectively from 2026-09-04. No historical cases are backfilled."
+  }
+}
