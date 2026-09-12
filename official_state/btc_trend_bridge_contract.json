@@ -1,19 +1,24 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "bridge_id": "BTC_TREND_OFFICIAL_STATE_BRIDGE",
   "master_id": "btc_trend",
   "master_version": "V2.6 PRODUCTION",
   "status": "READY",
-  "purpose": "Persist only actual successful MASTER BTC TREND OFFICIAL runs without reconstructing missing history.",
+  "purpose": "Persist only actual successful MASTER BTC TREND OFFICIAL runs through one enforced producer-to-inbox-to-bridge path without reconstructing missing history.",
   "source_of_truth": {
     "registry": "money_master_os/registry/MASTER_REGISTRY.json",
     "manifest": "money_master_os/masters/btc_trend/manifest.json",
     "canonical": "master_prompts/master_btc_trend_v2_6_current.md",
     "machine_contract": "state/master_btc_trend_v2_6_contract.json",
     "official_state_schema": "official_state/schema.json",
-    "publisher": "official_state/publish_official_state.py"
+    "producer": "official_state/enqueue_btc_trend_official_state.py",
+    "publisher": "official_state/publish_official_state.py",
+    "consistency_validator": "official_state/check_btc_trend_persistence.py"
   },
   "transport": {
+    "single_path_required": true,
+    "producer": "official_state/enqueue_btc_trend_official_state.py",
+    "producer_write_target": "official_state/inbox/btc_trend/",
     "inbox": "official_state/inbox/btc_trend/",
     "accepted_file_patterns": [
       "MBTC-V26-YYYYMMDD-HH00-KST.json",
@@ -22,15 +27,33 @@
     "processor": "official_state/process_btc_trend_inbox.py",
     "workflow": ".github/workflows/btc_trend_official_state_bridge.yml",
     "trigger": "push_to_main_when_official_state/inbox/btc_trend/*.json_changes",
-    "rejected": "official_state/rejected/btc_trend/"
+    "rejected": "official_state/rejected/btc_trend/",
+    "direct_latest_write_forbidden": true,
+    "direct_history_write_forbidden": true,
+    "direct_index_write_forbidden": true
   },
   "publish_targets": {
     "latest": "official_state/latest/btc_trend.json",
     "history": "official_state/history/btc_trend/YYYY-MM.jsonl",
-    "index": "official_state/latest/index.json"
+    "index": "official_state/latest/index.json",
+    "owner": "btc_trend_official_state_bridge",
+    "must_commit_together": true,
+    "consistency_rule": "latest run_id/executed_kst/state_status must match index and the append-only history tail"
+  },
+  "guard": {
+    "workflow": ".github/workflows/btc_trend_persistence_guard.yml",
+    "protected_targets": [
+      "official_state/latest/btc_trend.json",
+      "official_state/latest/index.json",
+      "official_state/history/btc_trend/**"
+    ],
+    "unauthorized_direct_write": "revert_when_event_is_current_main_tip",
+    "safe_repair_exception": "latest-only repair is allowed only when the resulting latest exactly matches index and history tail",
+    "preexisting_inconsistency_blocks_new_publish": true
   },
   "runtime_rules": {
     "scheduled_basic_official_publish": true,
+    "scheduled_basic_official_must_enqueue_first": true,
     "manual_official_publish_only_when_user_explicitly_requests": true,
     "manual_precision_publish_only_when_user_explicitly_marks_official": true,
     "watch_publish_forbidden": true,
@@ -60,7 +83,13 @@
   "run_id_policy": {
     "scheduled_format": "MBTC-V26-YYYYMMDD-HH00-KST",
     "manual_explicit_format": "MBTC-V26-YYYYMMDD-MANUAL-HHMM-KST",
-    "official_slots_kst": ["05:00", "08:00", "13:00", "17:00", "21:00"],
+    "official_slots_kst": [
+      "05:00",
+      "08:00",
+      "13:00",
+      "17:00",
+      "21:00"
+    ],
     "manual_explicit_user_request_required": true,
     "duplicate_run_id_forbidden": true,
     "newer_than_latest_required": true
