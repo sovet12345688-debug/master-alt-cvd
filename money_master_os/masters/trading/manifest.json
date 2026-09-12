@@ -31,7 +31,7 @@
     "historical_identical_prompt_claim": false,
     "canonicalized_kst": "2026-09-07T11:33:00+09:00",
     "time_validity_research": "btc_backtest/output/time_validity_v2/summary.json",
-    "ui_canonicalized_kst": "2026-09-07T16:48:00+09:00"
+    "ui_canonicalized_kst": "2026-09-12T13:42:00+09:00"
   },
   "automation": {
     "mode": "MANUAL_ONLY",
@@ -40,7 +40,7 @@
   },
   "ui_policy": {
     "semantic_sections_preserved": 4,
-    "visual_screen_count": 5,
+    "visual_screen_count": 6,
     "ui_version": "MASTER-TRADING-UI-V2-FINAL",
     "ui_canonical_source": "money_master_os/masters/trading/MASTER-TRADING-UI-V2-FINAL.md",
     "screen_order_locked": true,
@@ -50,6 +50,12 @@
     "screen_5_columns": ["축", "판정신호등", "현재 판정"],
     "screen_5_signal_light_column_position": 2,
     "screen_5_long_short_impact_columns_visible": false,
+    "screen_6_name": "BEST 타점 7문항 검증",
+    "screen_6_columns": ["핵심질문", "LONG 판정", "LONG 타점 검증", "SHORT 판정", "SHORT 타점 검증"],
+    "screen_6_basis": "SCREEN 3 LONG BEST + SCREEN 4 SHORT BEST ONLY",
+    "screen_6_additive_only": true,
+    "screen_6_must_not_modify_screens_1_to_5": true,
+    "screen_6_asset_agnostic": true,
     "engine_change": false,
     "user_approval_required_for_change": true,
     "later_user_refinement_allowed": true,
