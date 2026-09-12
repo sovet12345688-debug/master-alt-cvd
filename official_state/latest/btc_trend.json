@@ -8,14 +8,14 @@
   "contract_path": "state/master_btc_trend_v2_6_contract.json",
   "run": {
     "run_type": "OFFICIAL",
-    "run_id": "MBTC-V26-20260913-0500-KST",
-    "executed_kst": "2026-09-13T05:01:00+09:00",
-    "updated_kst": "2026-09-13T05:01:00+09:00",
-    "prior_official_run_id": "MBTC-V26-20260912-0500-KST"
+    "run_id": "MBTC-V26-20260913-0800-KST",
+    "executed_kst": "2026-09-13T08:02:35+09:00",
+    "updated_kst": "2026-09-13T08:02:35+09:00",
+    "prior_official_run_id": "MBTC-V26-20260913-0500-KST"
   },
   "validity": {
     "valid_until_kst": null,
-    "next_official_run_kst": "2026-09-13T08:00:00+09:00",
+    "next_official_run_kst": "2026-09-13T13:00:00+09:00",
     "freshness_status": "CURRENT"
   },
   "data_quality": {
@@ -28,9 +28,12 @@
       "BOTTOM_CURRENT_ARTIFACT_UNVERIFIED",
       "TOP_CURRENT_ARTIFACT_UNVERIFIED",
       "FRACTAL_CURRENT_ARTIFACT_UNVERIFIED",
-      "SR_STRENGTH_CURRENT_REACTION_MODEL_UNVERIFIED"
+      "SR_STRENGTH_CURRENT_REACTION_MODEL_UNVERIFIED",
+      "DERIVATIVES_FRESH_UNDER_90M_SNAPSHOT_UNVERIFIED"
     ],
-    "stale_sources": [],
+    "stale_sources": [
+      "Bitget derivatives snapshot from prior OFFICIAL not reused"
+    ],
     "time_mismatch_warnings": [],
     "source_health_snapshot_pointer": "source_health/output/latest.json"
   },
@@ -47,12 +50,12 @@
   },
   "core_state": {
     "market_snapshot": {
-      "current_price_usdt": 77181.11,
+      "current_price_usdt": 77266.98,
       "price_source": "Binance Spot BTCUSDT",
-      "latest_completed_1h_close_usdt": 77126.24,
-      "latest_completed_4h_close_usdt": 77126.24,
-      "intraday_low_usdt": 76629.0,
-      "intraday_high_usdt": 77846.0
+      "latest_completed_1h_close_usdt": 77232.17,
+      "latest_completed_4h_close_usdt": 77232.17,
+      "latest_completed_1d_close_usdt": 77461.24,
+      "current_progressing_1d_price_usdt": 77266.98
     },
     "direction_ratio": {
       "long": null,
@@ -61,7 +64,7 @@
       "status": "CURRENT_MACHINE_RATIO_UNVERIFIED_DO_NOT_REUSE_PRIOR"
     },
     "trend": {
-      "state": "76.63K 저점 반등 중이나 77.606K 단기 저항 미회복",
+      "state": "77.23K대 반등 유지 중이나 77.606K 단기 저항 미회복",
       "strength": null,
       "trajectory": "단기 반등 · 중기 약세 구조 미해제"
     },
@@ -98,25 +101,12 @@
     },
     "derivatives": {
       "source": "Bitget USDT Futures BTC same venue/contract family",
-      "state_1h": "PRICE_UP_OI_UP",
-      "state_4h": "DELEVERAGING",
-      "state_24h": "PRICE_UP_OI_UP",
-      "oi_change_1h_pct": 0.670772,
-      "oi_change_4h_pct": -0.596012,
-      "oi_change_24h_pct": 2.819033,
-      "funding_rate": 8.9e-05
-    },
-    "microstructure": {
-      "cvd_1h_usdt": 10185000.0,
-      "taker_buy_ratio": 0.6151,
-      "taker_sell_ratio": 0.3849,
-      "long_short_position_ratio": 0.9732,
-      "depth_imbalance_0_5pct": -0.2336,
-      "state": "SHORT_TERM_BUY_REBOUND_WITH_HEAVIER_ASK_DEPTH"
+      "status": "N/A_FRESH_UNDER_90M_SNAPSHOT_UNVERIFIED"
     },
     "btc_leading_signal_engine": {
       "mode": "READ_ONLY_ZERO_WEIGHT",
       "selection_status": "CURRENT",
+      "logical_source_slot_kst": "2026-09-13T05:20:00+09:00",
       "current_user_state": "신호 없음 / 대기",
       "strict_detection_rows": 0,
       "strict_seeds": 0,
@@ -152,7 +142,7 @@
   },
   "lineage": {
     "state_origin": "ACTUAL_STORED_RUN",
-    "run_record_source": "BASIC_OFFICIAL_AUTOMATION_2026-09-13T05:01:00+09:00",
+    "run_record_source": "BASIC_OFFICIAL_AUTOMATION_2026-09-13T08:02:35+09:00",
     "history_pointer": "official_state/history/btc_trend/2026-09.jsonl",
     "canonical_identity_verified": true,
     "cross_master_decision_dependency": false
@@ -167,6 +157,7 @@
     "unverified current bottom/top score artifacts",
     "unverified current fractal artifact",
     "unverified S/R strength reaction artifact",
+    "unverified fresh derivatives snapshot",
     "private user account or position data"
   ]
 }
