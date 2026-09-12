@@ -2,7 +2,7 @@
   "engine": "MASTER_MARKET_SCORE_ENGINE_V1",
   "schema_version": "1.0",
   "status": "ACTIVE_OK",
-  "generated_at_utc": "2026-09-12T05:02:01.070894Z",
+  "generated_at_utc": "2026-09-12T06:02:17.295419Z",
   "activation_approval": {
     "explicit_user_approval": true,
     "approved_at_kst": "2026-09-11T10:04:10+09:00",
@@ -15,11 +15,11 @@
     ]
   },
   "source_age_minutes": {
-    "vault": 4.2,
-    "macro": 6.3,
-    "etf": 15.9,
-    "actors": 4.2,
-    "derivatives": 44.2
+    "vault": 4.0,
+    "macro": 6.5,
+    "etf": 17.7,
+    "actors": 4.0,
+    "derivatives": 45.6
   },
   "overall_coverage_pct": 90.0,
   "confidence_cap": null,
@@ -47,7 +47,7 @@
       }
     },
     "crypto_money_inflow": {
-      "score": 50.0,
+      "score": 53.8,
       "coverage_pct": 100.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
@@ -61,11 +61,11 @@
         "btc_whale_net": 25.0,
         "eth_whale_net": 50.0,
         "total_market_cap_1d": 50.0,
-        "market_volume_1d": 0.0
+        "market_volume_1d": 75.0
       }
     },
     "alt_money_inflow": {
-      "score": 67.5,
+      "score": 71.2,
       "coverage_pct": 100.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
@@ -77,22 +77,22 @@
         "eth_dominance_change": 75.0,
         "btc_dominance_inverse_change": 75.0,
         "total_market_cap_1d": 50.0,
-        "market_volume_1d": 0.0,
+        "market_volume_1d": 75.0,
         "stablecoin_total_7d": 50.0
       }
     },
     "market_positive": {
-      "score": 52.3,
+      "score": 51.0,
       "coverage_pct": 95.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
       "threshold_alert_allowed": true,
       "components": {
         "liquidity_lead": 51.4,
-        "crypto_money_inflow": 50.0,
-        "alt_money_inflow": 67.5,
+        "crypto_money_inflow": 53.8,
+        "alt_money_inflow": 71.2,
         "btc_whale_net": 25.0,
-        "btc_derivatives_state": 75.0,
+        "btc_derivatives_state": 50.0,
         "market_breadth_state": 50.0,
         "rates_macro_state": 50.0,
         "oil_geopolitical_state": null
