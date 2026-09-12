@@ -13,6 +13,7 @@ on:
       - 'market_scoring/validate_score_engine.py'
       - 'market_vault/dxy_adapter.py'
       - 'market_vault/oil_adapter.py'
+      - 'maintenance/apply_master_market_na_recovery_contract_patch.py'
       - 'state/master_market_score_history.csv'
       - '.github/workflows/master_market_score_engine_active.yml'
   push:
@@ -26,6 +27,7 @@ on:
       - 'market_scoring/validate_score_engine.py'
       - 'market_vault/dxy_adapter.py'
       - 'market_vault/oil_adapter.py'
+      - 'maintenance/apply_master_market_na_recovery_contract_patch.py'
       - '.github/workflows/master_market_score_engine_active.yml'
 
 permissions:
@@ -52,6 +54,31 @@ jobs:
 
       - name: Install requests
         run: pip install requests
+
+      - name: Validate migration patch syntax
+        run: python -m py_compile maintenance/apply_master_market_na_recovery_contract_patch.py
+
+      - name: Apply approved score-history and macro recovery contract patch
+        run: python maintenance/apply_master_market_na_recovery_contract_patch.py
+
+      - name: Validate canonical and contract split
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('master_prompts/master_market_v1_2_current.md').read_text(encoding='utf-8')
+          c=json.load(open('state/master_market_v1_2_contract.json',encoding='utf-8'))
+          assert 'SCORE HISTORY SEPARATION + DXY/OIL RECOVERY — APPROVED 2026-09-12' in p
+          assert 'state/master_market_score_history.csv' in p
+          assert 'state/master_market_official_history.csv' in p
+          h=c['official_score_history']
+          assert h['file']=='state/master_market_score_history.csv'
+          assert h['final_official_state_separate'] is True
+          assert h['legacy_final_decision_history']=='state/master_market_official_history.csv'
+          assert 'dxy_adapter' in c['source_policy']
+          assert 'oil_adapter' in c['source_policy']
+          print('MASTER_MARKET_SCORE_HISTORY_SEPARATION=PASS')
+          PY
 
       - name: Syntax
         run: |
@@ -104,6 +131,7 @@ jobs:
           # Final OFFICIAL state/direction remains owned by the separate state bridge.
           assert x['official_history_write_enabled'] is False
           assert x['watch_history_write_enabled'] is False
+          assert x['score_history_source']=='state/master_market_score_history.csv'
           assert x['anti_fallback']['last_known_score_reuse'] is False
           assert x['anti_fallback']['na_as_zero'] is False
           required=['liquidity_lead','crypto_money_inflow','alt_money_inflow','market_positive']
@@ -125,7 +153,7 @@ jobs:
           python - <<'PY'
           from datetime import datetime, timezone
           from market_scoring.persist_official_score_history import target_official_slot
-          # 11:58 UTC = 20:58 KST -> next 21:00 OFFICIAL.
+          # 11:58 UTC = 20:58 KST -> next 21:00 OFFICIAL score slot.
           t=target_official_slot(datetime(2026,9,12,11,58,tzinfo=timezone.utc))
           assert t is not None and t.hour == 21
           # A modest scheduler delay after the hour must still map to 21:00.
@@ -162,23 +190,28 @@ jobs:
         if: github.event_name == 'schedule' && github.ref == 'refs/heads/main'
         run: python market_scoring/persist_official_score_history.py
 
-      - name: Commit score and adapter outputs on main
+      - name: Restore Vault-owned summary before repository write
+        run: git checkout -- market_vault/output/latest_summary.json
+
+      - name: Commit score, adapters, history and approved contract patch on main
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         shell: bash
         run: |
           git config user.name "master-market-score-bot"
           git config user.email "master-market-score-bot@users.noreply.github.com"
           git add \
+            market_scoring/run_score_engine.py \
             market_scoring/output/latest_scores.json \
             state/master_market_score_history.csv \
-            market_vault/output/latest_summary.json \
+            master_prompts/master_market_v1_2_current.md \
+            state/master_market_v1_2_contract.json \
             market_vault/output/latest_dxy.json \
             market_vault/output/latest_oil.json
           if git diff --cached --quiet; then
-            echo "No score/adapter/history change"
+            echo "No score/adapter/history/contract change"
             exit 0
           fi
-          git commit -m "score: refresh MASTER MARKET active scores and macro adapters"
+          git commit -m "score: refresh MASTER MARKET score history and macro adapters"
           git pull --rebase origin main
           git push origin HEAD:main
 
