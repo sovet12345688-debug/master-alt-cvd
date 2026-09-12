@@ -7,7 +7,10 @@ on:
       - main
     paths:
       - 'official_state/inbox/btc_trend/*.json'
+      - 'official_state/enqueue_btc_trend_official_state.py'
       - 'official_state/process_btc_trend_inbox.py'
+      - 'official_state/check_btc_trend_persistence.py'
+      - 'official_state/publish_official_state.py'
       - 'official_state/btc_trend_bridge_contract.json'
       - '.github/workflows/btc_trend_official_state_bridge.yml'
 
@@ -34,8 +37,19 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Verify persistence consistency before publish
+        id: precheck
+        shell: bash
+        run: |
+          set +e
+          python official_state/check_btc_trend_persistence.py
+          rc=$?
+          echo "precheck_rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+
       - name: Capture queued BTC TREND run ids
         id: queued
+        if: steps.precheck.outputs.precheck_rc == '0'
         shell: bash
         run: |
           python - <<'PY' > /tmp/btc_run_ids.txt
@@ -55,6 +69,7 @@ jobs:
 
       - name: Process BTC TREND OFFICIAL inbox
         id: process
+        if: steps.precheck.outputs.precheck_rc == '0'
         shell: bash
         run: |
           set +e
@@ -63,41 +78,33 @@ jobs:
           echo "bridge_rc=$rc" >> "$GITHUB_OUTPUT"
           exit 0
 
-      - name: Verify BTC TREND publish targets
+      - name: Verify synchronized publish targets
         id: verify
-        if: always()
+        if: steps.precheck.outputs.precheck_rc == '0' && steps.process.outputs.bridge_rc == '0'
         shell: bash
         run: |
           set +e
           python - <<'PY'
-          import json, pathlib, sys
-          queued=[x.strip() for x in pathlib.Path('/tmp/btc_run_ids.txt').read_text().splitlines() if x.strip()]
-          if not queued:
-              print('BTC_TREND_TARGET_VERIFY=NO_INPUT_SMOKE_PASS')
-              sys.exit(0)
-          latest=json.load(open('official_state/latest/btc_trend.json', encoding='utf-8'))
-          index=json.load(open('official_state/latest/index.json', encoding='utf-8'))
-          rid=(latest.get('run') or {}).get('run_id')
-          expected=queued[-1]
-          assert latest.get('state_status') == 'STORED', latest.get('state_status')
-          assert rid == expected, (rid, expected)
-          ent=(index.get('masters') or {}).get('btc_trend') or {}
-          assert ent.get('state_status') == 'STORED', ent
-          assert ent.get('latest_official_run_id') == expected, ent
-          hp=((latest.get('lineage') or {}).get('history_pointer'))
-          assert hp, 'missing history_pointer'
-          hist=pathlib.Path(hp)
-          assert hist.exists(), hp
-          text=hist.read_text(encoding='utf-8')
-          assert f'"run_id":"{expected}"' in text or f'"run_id": "{expected}"' in text, expected
-          print(f'BTC_TREND_TARGET_VERIFY=PASS run_id={expected}')
+          import json, pathlib, subprocess, sys
+          queued_path=pathlib.Path('/tmp/btc_run_ids.txt')
+          queued=[x.strip() for x in queued_path.read_text().splitlines() if x.strip()] if queued_path.exists() else []
+          if queued:
+              latest=json.load(open('official_state/latest/btc_trend.json', encoding='utf-8'))
+              expected=queued[-1]
+              rid=(latest.get('run') or {}).get('run_id')
+              assert latest.get('state_status') == 'STORED', latest.get('state_status')
+              assert rid == expected, (rid, expected)
+          rc=subprocess.call([sys.executable, 'official_state/check_btc_trend_persistence.py'])
+          if rc:
+              raise SystemExit(rc)
+          print('BTC_TREND_TARGET_VERIFY=PASS' + (f' run_id={queued[-1]}' if queued else ' no_input=true'))
           PY
           rc=$?
           echo "verify_rc=$rc" >> "$GITHUB_OUTPUT"
           exit 0
 
-      - name: Commit material bridge changes
-        if: always()
+      - name: Commit successful synchronized publish
+        if: steps.precheck.outputs.precheck_rc == '0' && steps.process.outputs.bridge_rc == '0' && steps.verify.outputs.verify_rc == '0'
         shell: bash
         run: |
           git config user.name "btc-trend-official-state-bot"
@@ -105,7 +112,8 @@ jobs:
           git add \
             official_state/inbox/btc_trend \
             official_state/rejected/btc_trend \
-            official_state/latest \
+            official_state/latest/btc_trend.json \
+            official_state/latest/index.json \
             official_state/history/btc_trend 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "No material BTC TREND OFFICIAL state changes"
@@ -115,10 +123,31 @@ jobs:
             git push origin HEAD:main
           fi
 
+      - name: Preserve rejection evidence without partial targets
+        if: steps.precheck.outputs.precheck_rc == '0' && (steps.process.outputs.bridge_rc != '0' || steps.verify.outputs.verify_rc != '0')
+        shell: bash
+        run: |
+          git restore --source=HEAD --staged --worktree \
+            official_state/latest/btc_trend.json \
+            official_state/latest/index.json \
+            official_state/history/btc_trend 2>/dev/null || true
+          git config user.name "btc-trend-official-state-bot"
+          git config user.email "btc-trend-official-state-bot@users.noreply.github.com"
+          git add official_state/inbox/btc_trend official_state/rejected/btc_trend 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -m "state: reject BTC TREND OFFICIAL payload"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
       - name: Final bridge result
         if: always()
         shell: bash
         run: |
+          if [ "${{ steps.precheck.outputs.precheck_rc }}" != "0" ]; then
+            echo "BTC_TREND_OFFICIAL_STATE_BRIDGE=FAIL reason=PREEXISTING_PERSISTENCE_INCONSISTENCY"
+            exit 1
+          fi
           if [ "${{ steps.process.outputs.bridge_rc }}" != "0" ] || [ "${{ steps.verify.outputs.verify_rc }}" != "0" ]; then
             echo "BTC_TREND_OFFICIAL_STATE_BRIDGE=FAIL"
             exit 1

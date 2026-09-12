@@ -1,0 +1,117 @@
+name: MASTER BTC TREND Persistence Guard
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'official_state/latest/btc_trend.json'
+      - 'official_state/latest/index.json'
+      - 'official_state/history/btc_trend/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: btc-trend-persistence-guard
+  cancel-in-progress: false
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Classify protected-target write
+        id: classify
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha="${GITHUB_SHA}"
+          parent="$(git rev-parse "${sha}^")"
+          msg="$(git log -1 --pretty=%s "$sha")"
+          author="$(git log -1 --pretty=%an "$sha")"
+          mapfile -t changed < <(git diff --name-only "$parent" "$sha" -- \
+            official_state/latest/btc_trend.json \
+            official_state/latest/index.json \
+            official_state/history/btc_trend)
+          printf '%s\n' "${changed[@]}" > /tmp/protected_changed.txt
+          echo "message=$msg"
+          echo "author=$author"
+          printf 'protected changed: '; printf '%s ' "${changed[@]}"; echo
+
+          authorized=false
+          safe_repair=false
+          if [ "$msg" = "state: publish BTC TREND OFFICIAL run" ] && [ "$author" = "btc-trend-official-state-bot" ]; then
+            authorized=true
+          elif [ "$msg" = "guard: revert unauthorized BTC persistence direct write" ] && [ "$author" = "btc-trend-persistence-guard" ]; then
+            authorized=true
+          elif [ "$msg" = "state: repair BTC TREND persistence consistency" ] && [ "${#changed[@]}" -eq 1 ] && [ "${changed[0]}" = "official_state/latest/btc_trend.json" ]; then
+            safe_repair=true
+          fi
+          echo "authorized=$authorized" >> "$GITHUB_OUTPUT"
+          echo "safe_repair=$safe_repair" >> "$GITHUB_OUTPUT"
+
+      - name: Validate authorized or safe-repair state
+        if: github.event_name != 'push' || steps.classify.outputs.authorized == 'true' || steps.classify.outputs.safe_repair == 'true'
+        shell: bash
+        run: python official_state/check_btc_trend_persistence.py
+
+      - name: Revert unauthorized protected-target write
+        if: github.event_name == 'push' && steps.classify.outputs.authorized != 'true' && steps.classify.outputs.safe_repair != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          remote_tip="$(git rev-parse origin/main)"
+          if [ "$remote_tip" != "$GITHUB_SHA" ]; then
+            echo "GUARD_REVERT=BLOCKED reason=EVENT_NOT_CURRENT_MAIN_TIP"
+            exit 1
+          fi
+          parent="$(git rev-parse "${GITHUB_SHA}^")"
+          while IFS= read -r path; do
+            [ -n "$path" ] || continue
+            if git cat-file -e "$parent:$path" 2>/dev/null; then
+              git checkout "$parent" -- "$path"
+            else
+              rm -f -- "$path"
+            fi
+          done < /tmp/protected_changed.txt
+
+          python official_state/check_btc_trend_persistence.py
+
+          git config user.name "btc-trend-persistence-guard"
+          git config user.email "btc-trend-persistence-guard@users.noreply.github.com"
+          git add \
+            official_state/latest/btc_trend.json \
+            official_state/latest/index.json \
+            official_state/history/btc_trend 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "GUARD_REVERT=NO_CHANGES"
+            exit 1
+          fi
+          git commit -m "guard: revert unauthorized BTC persistence direct write"
+          git push origin HEAD:main
+          echo "GUARD_REVERT=PASS"
+
+      - name: Guard result
+        if: always()
+        shell: bash
+        run: |
+          if [ "${{ job.status }}" = "failure" ]; then
+            echo "BTC_TREND_PERSISTENCE_GUARD=FAIL"
+            exit 1
+          fi
+          echo "BTC_TREND_PERSISTENCE_GUARD=PASS"
