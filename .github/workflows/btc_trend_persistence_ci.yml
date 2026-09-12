@@ -1,0 +1,45 @@
+name: MASTER BTC TREND Persistence CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'official_state/**'
+      - '.github/workflows/btc_trend_official_state_bridge.yml'
+      - '.github/workflows/btc_trend_persistence_guard.yml'
+      - '.github/workflows/btc_trend_persistence_ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout tested ref
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compile persistence Python
+        shell: bash
+        run: |
+          python -m py_compile \
+            official_state/check_btc_trend_persistence.py \
+            official_state/enqueue_btc_trend_official_state.py \
+            official_state/process_btc_trend_inbox.py \
+            official_state/publish_official_state.py
+
+      - name: Validate BTC TREND latest/index/history consistency
+        run: python official_state/check_btc_trend_persistence.py
+
+      - name: Validate bridge contract JSON
+        run: python -m json.tool official_state/btc_trend_bridge_contract.json >/dev/null
