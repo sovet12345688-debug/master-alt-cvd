@@ -2,7 +2,7 @@
   "engine": "MASTER_MARKET_SCORE_ENGINE_V1",
   "schema_version": "1.0",
   "status": "ACTIVE_OK",
-  "generated_at_utc": "2026-09-12T20:02:02.509753Z",
+  "generated_at_utc": "2026-09-12T21:01:59.953012Z",
   "activation_approval": {
     "explicit_user_approval": true,
     "approved_at_kst": "2026-09-11T10:04:10+09:00",
@@ -16,10 +16,10 @@
   },
   "source_age_minutes": {
     "vault": 3.8,
-    "macro": 6.7,
-    "etf": 18.0,
+    "macro": 4.8,
+    "etf": 15.7,
     "actors": 3.8,
-    "derivatives": 47.2
+    "derivatives": 44.9
   },
   "overall_coverage_pct": 100.0,
   "confidence_cap": null,
@@ -29,16 +29,16 @@
   "score_history_source": "state/master_market_score_history.csv",
   "scores": {
     "liquidity_lead": {
-      "score": 53.8,
+      "score": 55.0,
       "coverage_pct": 100.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
       "threshold_alert_allowed": true,
       "components": {
         "us_net_liquidity": 50.0,
-        "tga_change": 75.0,
+        "tga_change": 50.0,
         "fed_reserves": 50.0,
-        "us10y_real_yield": 25.0,
+        "us10y_real_yield": 50.0,
         "dxy": 50.0,
         "treasury_qra": 50.0,
         "treasury_buyback": 50.0,
@@ -82,17 +82,17 @@
       }
     },
     "market_positive": {
-      "score": 55.6,
+      "score": 53.5,
       "coverage_pct": 100.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
       "threshold_alert_allowed": true,
       "components": {
-        "liquidity_lead": 53.8,
+        "liquidity_lead": 55.0,
         "crypto_money_inflow": 53.8,
         "alt_money_inflow": 60.0,
         "btc_whale_net": 25.0,
-        "btc_derivatives_state": 87.5,
+        "btc_derivatives_state": 62.5,
         "market_breadth_state": 50.0,
         "rates_macro_state": 50.0,
         "oil_geopolitical_state": 75.0
@@ -100,14 +100,14 @@
     }
   },
   "display": {
-    "liquidity_stage": "Neutral/Weak",
+    "liquidity_stage": "상승 초입 신호",
     "liquidity_thresholds": [
       55,
       65,
       75
     ],
     "liquidity_threshold_alert_allowed": true,
-    "market_positive_band": "약한 긍정"
+    "market_positive_band": "혼합"
   },
   "anti_fallback": {
     "last_known_score_reuse": false,
