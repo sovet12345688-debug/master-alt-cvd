@@ -38,6 +38,7 @@ jobs:
         run: pip install requests
 
       - name: Unit tests
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
         working-directory: btc_trend_v26
         run: |
           python -m unittest -v test_structure_engine_r22.py
