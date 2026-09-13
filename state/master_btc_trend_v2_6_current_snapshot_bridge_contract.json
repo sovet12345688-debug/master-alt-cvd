@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0",
+  "contract_id": "BTC_TREND_V26_CURRENT_SNAPSHOT_BRIDGE_V1",
+  "master_id": "BTC_TREND_CURRENT",
+  "production_version": "V2.6",
+  "status": "READY",
+  "purpose": "Give BASIC OFFICIAL a stable, fail-closed path to the latest verified limited-display engine outputs without reconstructing values from chat memory or expired artifacts.",
+  "workflow": {
+    "name": "BTC TREND V2.6 Current Snapshot Bridge",
+    "file": ".github/workflows/btc_trend_v26_current_snapshot_bridge.yml",
+    "schedule_kst": ["04:52", "07:52", "12:52", "16:52", "20:52"]
+  },
+  "sources": {
+    "trend": {
+      "path": "state/master_btc_trend_v2_6_trend_score_current.json",
+      "source_contract": "state/master_btc_trend_v2_6_trend_score_bridge_contract.json",
+      "max_age_minutes": 240,
+      "allowed_output_scope": ["LONG_SHORT_RATIO", "TREND_STRENGTH", "TREND_DOMINANT_STATE", "TREND_COVERAGE"]
+    },
+    "bottom": {
+      "path": "state/master_btc_trend_v2_6_bottom_score_current.json",
+      "source_contract": "state/master_btc_trend_v2_6_bottom_score_bridge_contract.json",
+      "max_age_minutes": 240,
+      "allowed_output_scope": ["BOTTOM_SCORE", "BOTTOM_BAND", "BOTTOM_COVERAGE", "BOTTOM_CONFIRMED_1D_TURN"]
+    },
+    "top": {
+      "path": "state/master_btc_trend_v2_6_top_score_current.json",
+      "source_contract": "state/master_btc_trend_v2_6_top_score_bridge_contract.json",
+      "max_age_minutes": 240,
+      "allowed_output_scope": ["TOP_SCORE", "TOP_BAND", "TOP_COVERAGE", "TOP_CONFIRMED_1D_TURN_DOWN"]
+    },
+    "accumulation": {
+      "path": "state/master_btc_trend_v2_6_accum_score_current.json",
+      "source_contract": "state/master_btc_trend_v2_6_accum_score_bridge_contract.json",
+      "max_age_minutes": 80,
+      "allowed_output_scope": ["ACCUMULATION_SCORE", "ACCUMULATION_BAND", "ACCUMULATION_COVERAGE", "ACCUMULATION_RAPID_RISE_PROXY"]
+    }
+  },
+  "selection_rules": {
+    "selection_status_required": "CURRENT",
+    "production_version_required": "V2.6",
+    "coverage_min_pct": 50,
+    "provenance_and_sha_verified_by_bridge": true,
+    "future_snapshot_forbidden": true,
+    "stale_snapshot_substitution_forbidden": true,
+    "chat_memory_backfill_forbidden": true,
+    "missing_or_invalid_behavior": "N/A"
+  },
+  "authority": {
+    "limited_display_only": true,
+    "below_70_strong_confirmation_forbidden": true,
+    "below_70_entry_gate_effect": 0,
+    "engine_direct_official_state_write_allowed": false,
+    "cross_engine_authority_forbidden": true,
+    "live_plan_change_forbidden": true
+  },
+  "derivatives_current_source": {
+    "summary": "derivatives/output/latest_summary.json",
+    "microstructure": "derivatives/output/latest_microstructure.json",
+    "collector_state": "derivatives/state/collector_state.json",
+    "required_venue": "Bitget USDT Futures",
+    "max_age_minutes": 90,
+    "same_venue_exact_windows_only": true,
+    "missing_or_stale_behavior": "N/A"
+  },
+  "fractal_and_sr_policy": {
+    "fractal": "Keep canonical btc-fractal-v26-build latest-successful-artifact rule. Do not manufacture a CURRENT value merely to remove N/A.",
+    "sr_strength": "Show a numeric strength only when canonical overlap + pass=true + REACTION_CONFIRMED_MODEL are satisfied; otherwise use strength waiting/N/A as semantically correct."
+  }
+}

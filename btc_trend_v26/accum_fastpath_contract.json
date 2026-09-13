@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.0",
+  "contract_id": "BTC_TREND_V26_ACCUM_FASTPATH_V1",
+  "master_id": "BTC_TREND_CURRENT",
+  "production_version": "V2.6",
+  "status": "READY_LIMITED_DISPLAY",
+  "purpose": "Coverage-gated ACCUMULATION partial score using only already-validated R2.2 structure features and current BTC ETF flow. This is a conservative transition/base proxy, not a full V2.6 accumulation model.",
+  "weights": {
+    "ACCUM_BASE_1D": 20,
+    "ACCUM_IMPROVEMENT_4H": 10,
+    "ACCUM_LOCATION_1W": 8,
+    "ACCUM_SPOT_ETF_FLOW": 15
+  },
+  "weight_total_available": 53,
+  "full_v26_accumulation_weight_total": 100,
+  "missing_policy": "EXCLUDE_AND_RENORMALIZE_VALID_WEIGHT",
+  "coverage_policy": {
+    "display_shadow_min_pct": 50,
+    "display_min_pct": 50,
+    "strong_confirmation_min_pct": 70,
+    "below_70_label": "부분산출",
+    "below_70_effect": "DISPLAY_ONLY_ZERO_GATE_EFFECT"
+  },
+  "evidence_values": {
+    "NONE": 0.0,
+    "WEAK": 0.25,
+    "MODERATE": 0.5,
+    "STRONG": 0.75,
+    "VERY_STRONG": 1.0
+  },
+  "base_1d_mapping": {
+    "STRONG_SHORT": "NONE",
+    "SHORT": "WEAK",
+    "NEUTRAL": "STRONG",
+    "LONG": "VERY_STRONG",
+    "STRONG_LONG": "MODERATE"
+  },
+  "improvement_4h_mapping": {
+    "STRONG_SHORT": "NONE",
+    "SHORT": "WEAK",
+    "NEUTRAL": "STRONG",
+    "LONG": "VERY_STRONG",
+    "STRONG_LONG": "STRONG"
+  },
+  "location_1w_mapping": {
+    "STRONG_SHORT": "WEAK",
+    "SHORT": "MODERATE",
+    "NEUTRAL": "STRONG",
+    "LONG": "MODERATE",
+    "STRONG_LONG": "WEAK"
+  },
+  "spot_etf_mapping": {
+    "STRONG_SHORT": "NONE",
+    "SHORT": "WEAK",
+    "NEUTRAL": "MODERATE",
+    "LONG": "STRONG",
+    "STRONG_LONG": "VERY_STRONG"
+  },
+  "rapid_rise_cap": {
+    "rule": "RAPID_RISE_PROXY_MAX_64",
+    "proxy": "STRUCTURE_1D_OR_4H_STRONG_LONG",
+    "max_score": 64,
+    "note": "Canonical V2.6 caps ACCUMULATION at 64 during rapid rise. Because ACCUM_NONCHASE_VALUE is not yet machine-approved, STRONG_LONG on 1D or 4H is used only as a conservative chase-risk proxy."
+  },
+  "bands": {
+    "0-39": "낮음",
+    "40-59": "가능성 관찰",
+    "60-74": "유의미",
+    "75-84": "강함",
+    "85-100": "매우 강함"
+  },
+  "proxy_limitations": {
+    "ACCUM_BASE_1D": "R2.2 directional structure is used as a base/transition proxy; exact compression and failed-low thresholds remain unapproved.",
+    "ACCUM_IMPROVEMENT_4H": "R2.2 directional structure is used as improvement proxy; exact momentum-improvement thresholds remain unapproved.",
+    "ACCUM_LOCATION_1W": "Weekly structure regime is used as a location proxy; exact distance-to-support thresholds remain unapproved.",
+    "excluded_unapproved_features": [
+      "ACCUM_VOLUME_LEAD",
+      "ACCUM_CVD_TAKER_DERIVATIVES",
+      "ACCUM_NONCHASE_VALUE",
+      "ACCUM_EMA_WAVE",
+      "ACCUM_MACRO"
+    ]
+  },
+  "validation_evidence": {
+    "shadow_workflow": "BTC TREND V2.6 ACCUM Fastpath Shadow",
+    "shadow_run_conclusion": "success",
+    "verified_coverage_pct": 53,
+    "verified_score_range": true,
+    "verified_same_run_artifact": true,
+    "verified_score_sha256_provenance": true,
+    "verified_zero_entry_gate_effect": true,
+    "verified_zero_cross_score_effects": true
+  },
+  "hard_safety": {
+    "engine_direct_official_state_write_allowed": false,
+    "basic_official_verified_display_allowed": true,
+    "historical_backfill_forbidden": true,
+    "entry_gate_effect": 0,
+    "long_short_effect": 0,
+    "trend_strength_effect": 0,
+    "live_plan_effect": 0,
+    "bottom_effect": 0,
+    "top_effect": 0,
+    "invent_missing_values": false,
+    "stale_substitution": false,
+    "cross_master_input": false,
+    "completed_candle_only": true
+  }
+}
