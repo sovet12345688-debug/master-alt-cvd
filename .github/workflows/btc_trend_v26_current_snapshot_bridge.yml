@@ -2,6 +2,12 @@ name: BTC TREND V2.6 Current Snapshot Bridge
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/btc_trend_v26_current_snapshot_bridge.yml'
+      - '.github/workflows/btc_trend_v26_accum_fastpath.yml'
   schedule:
     # KST 04:52 / 07:52 / 12:52 / 16:52 / 20:52 — after TOP/BOTTOM/ACCUM/Machine source runs.
     - cron: '52 3,7,11,19,22 * * *'
@@ -134,7 +140,6 @@ jobs:
               prov_path = locate(base, spec['prov'])
               score_path = locate(base, spec['score'])
               prov = json.loads(prov_path.read_text(encoding='utf-8'))
-              score = json.loads(score_path.read_text(encoding='utf-8'))
               run_id = int((base / 'workflow_run_id.txt').read_text().strip())
 
               if prov.get('provenance_contract') != spec['contract']:
@@ -178,8 +183,8 @@ jobs:
                       'entry_gate_effect': 0,
                       'live_plan_effect': 0,
                       'cross_engine_effect_forbidden': True,
-                      'official_state_direct_write_allowed': False,
-                  },
+                      'official_state_direct_write_allowed': False
+                  }
               }
               target = out_root / spec['target']
               target.write_text(json.dumps(snapshot, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
