@@ -8,105 +8,120 @@
   "contract_path": "state/master_btc_trend_v2_6_contract.json",
   "run": {
     "run_type": "OFFICIAL",
-    "run_id": "MBTC-V26-20260913-0800-KST",
-    "executed_kst": "2026-09-13T08:02:35+09:00",
-    "updated_kst": "2026-09-13T08:02:35+09:00",
-    "prior_official_run_id": "MBTC-V26-20260913-0500-KST"
+    "run_id": "MBTC-V26-20260913-1700-KST",
+    "executed_kst": "2026-09-13T17:02:26+09:00",
+    "updated_kst": "2026-09-13T17:02:26+09:00",
+    "prior_official_run_id": "MBTC-V26-20260913-0800-KST"
   },
   "validity": {
     "valid_until_kst": null,
-    "next_official_run_kst": "2026-09-13T13:00:00+09:00",
+    "next_official_run_kst": "2026-09-13T21:00:00+09:00",
     "freshness_status": "CURRENT"
   },
   "data_quality": {
     "coverage_pct": null,
     "confidence": null,
     "known_na": [
-      "CURRENT_LONG_SHORT_MACHINE_RATIO_UNVERIFIED",
-      "TREND_STRENGTH_CURRENT_MACHINE_SCORE_UNVERIFIED",
-      "ACCUMULATION_CURRENT_MACHINE_SCORE_UNAVAILABLE",
-      "BOTTOM_CURRENT_ARTIFACT_UNVERIFIED",
-      "TOP_CURRENT_ARTIFACT_UNVERIFIED",
       "FRACTAL_CURRENT_ARTIFACT_UNVERIFIED",
-      "SR_STRENGTH_CURRENT_REACTION_MODEL_UNVERIFIED",
-      "DERIVATIVES_FRESH_UNDER_90M_SNAPSHOT_UNVERIFIED"
+      "SR_STRENGTH_CURRENT_REACTION_MODEL_UNVERIFIED"
     ],
-    "stale_sources": [
-      "Bitget derivatives snapshot from prior OFFICIAL not reused"
-    ],
+    "stale_sources": [],
     "time_mismatch_warnings": [],
     "source_health_snapshot_pointer": "source_health/output/latest.json"
   },
   "decision": {
     "direction": "SHORT",
-    "permission_or_environment": "SHORT_STRUCTURE_BIAS_RATIO_UNVERIFIED_WAIT_NONCHASE",
+    "permission_or_environment": "SHORT_DOMINANT_GAP10_WAIT_NONCHASE",
     "action": "⏳ 아직 신규포지션 대기",
     "risk_veto": [],
     "invalidations": [
-      "77.606K 이상 completed 1H 재탈환·안착 시 단기 숏 구조 우세 약화",
-      "79.736~80.548K 상향 안착 시 중기 숏 구조 우세 약화",
+      "77.326~77.506K 상향 재탈환·안착 시 단기 숏 우세 약화",
+      "79.890K 상향 안착 시 중기 약세 구조 약화",
       "67.0K 하회 시 기존 LIVE LONG PLAN 구조 무효"
     ]
   },
   "core_state": {
     "market_snapshot": {
-      "current_price_usdt": 77266.98,
+      "current_price_usdt": 77124.0,
       "price_source": "Binance Spot BTCUSDT",
-      "latest_completed_1h_close_usdt": 77232.17,
-      "latest_completed_4h_close_usdt": 77232.17,
+      "latest_completed_1h_close_usdt": 77127.99,
+      "latest_completed_4h_close_usdt": 77122.35,
       "latest_completed_1d_close_usdt": 77461.24,
-      "current_progressing_1d_price_usdt": 77266.98
+      "current_progressing_1d_price_usdt": 77124.0
     },
     "direction_ratio": {
-      "long": null,
-      "short": null,
-      "dominant": "SHORT_STRUCTURE_BIAS_ONLY",
-      "status": "CURRENT_MACHINE_RATIO_UNVERIFIED_DO_NOT_REUSE_PRIOR"
+      "long": 45,
+      "short": 55,
+      "dominant": "SHORT",
+      "status": "CURRENT_LIMITED_DISPLAY_COVERAGE_68"
     },
     "trend": {
-      "state": "77.23K대 반등 유지 중이나 77.606K 단기 저항 미회복",
-      "strength": null,
-      "trajectory": "단기 반등 · 중기 약세 구조 미해제"
+      "state": "77.1K대 단기 지지권 횡보이나 1D·4H 반등 구조 약화",
+      "strength": 10,
+      "trajectory": "↓ 악화 중",
+      "coverage_pct": 68.0,
+      "coverage_grade": "C",
+      "strong_confirmation": false
     },
     "bottom": {
-      "score": null,
-      "band": "N/A_CURRENT_ARTIFACT_UNVERIFIED",
+      "score": 18,
+      "band": "낮음",
+      "coverage_pct": 57.0,
+      "coverage_grade": "C",
       "entry_gate_effect": 0
     },
     "top": {
-      "score": null,
-      "band": "N/A_CURRENT_ARTIFACT_UNVERIFIED",
+      "score": 53,
+      "band": "가능성 관찰",
+      "coverage_pct": 50.0,
+      "coverage_grade": "C",
       "entry_gate_effect": 0
     },
     "accumulation": {
-      "score": null,
-      "status": "N/A_CURRENT_MACHINE_SCORE_UNAVAILABLE"
+      "score": 36,
+      "status": "낮음",
+      "coverage_pct": 53.0,
+      "coverage_grade": "C",
+      "entry_gate_effect": 0
     },
     "support_resistance": {
       "short_term": {
-        "support": "76.23~76.40K",
-        "resistance": "77.606K",
+        "support": "77.058~77.092K",
+        "resistance": "77.326~77.506K",
         "strength": "N/A_CURRENT_REACTION_MODEL_UNVERIFIED"
       },
       "mid_term": {
-        "support": "74.5~75.2K",
-        "resistance": "79.736~80.548K",
+        "support": "76.883K",
+        "resistance": "79.890K",
         "strength": "N/A_CURRENT_REACTION_MODEL_UNVERIFIED"
       },
       "long_term": {
-        "support": "69.3~70.8K",
-        "resistance": "82.248~82.8K",
+        "support": "76.046K current-week low",
+        "resistance": "82.300K recent-week high",
         "strength": "1W_NOT_APPROVED_INSUFFICIENT_SAMPLE"
       }
     },
     "derivatives": {
       "source": "Bitget USDT Futures BTC same venue/contract family",
-      "status": "N/A_FRESH_UNDER_90M_SNAPSHOT_UNVERIFIED"
+      "snapshot_time_utc": "2026-09-13T07:00:00Z",
+      "status": "CURRENT_DELEVERAGING",
+      "mark_price": 77147.6,
+      "oi_change_1h_pct": -0.009608028624508158,
+      "oi_change_4h_pct": -0.09149229325235986,
+      "oi_change_24h_pct": 1.6396739531333582,
+      "funding_rate": 7.9e-05,
+      "microstructure_generated_at_utc": "2026-09-13T07:17:14.669805Z",
+      "cvd_notional_usdt": 3326000.5248500016,
+      "taker_buy_ratio": 0.5481835981808508,
+      "taker_sell_ratio": 0.4518164018191493,
+      "long_position_ratio": 0.4924,
+      "short_position_ratio": 0.5076,
+      "basis_bps": -3.980501309422957
     },
     "btc_leading_signal_engine": {
       "mode": "READ_ONLY_ZERO_WEIGHT",
       "selection_status": "CURRENT",
-      "logical_source_slot_kst": "2026-09-13T05:20:00+09:00",
+      "logical_source_slot_kst": "2026-09-13T13:20:00+09:00",
       "current_user_state": "신호 없음 / 대기",
       "strict_detection_rows": 0,
       "strict_seeds": 0,
@@ -142,7 +157,7 @@
   },
   "lineage": {
     "state_origin": "ACTUAL_STORED_RUN",
-    "run_record_source": "BASIC_OFFICIAL_AUTOMATION_2026-09-13T08:02:35+09:00",
+    "run_record_source": "BASIC_OFFICIAL_AUTOMATION_2026-09-13T17:02:26+09:00",
     "history_pointer": "official_state/history/btc_trend/2026-09.jsonl",
     "canonical_identity_verified": true,
     "cross_master_decision_dependency": false
@@ -152,12 +167,8 @@
     "public_repository_safe": true
   },
   "do_not_reconstruct": [
-    "unverified current machine ratio artifact",
-    "missing current accumulation score",
-    "unverified current bottom/top score artifacts",
     "unverified current fractal artifact",
     "unverified S/R strength reaction artifact",
-    "unverified fresh derivatives snapshot",
     "private user account or position data"
   ]
 }
