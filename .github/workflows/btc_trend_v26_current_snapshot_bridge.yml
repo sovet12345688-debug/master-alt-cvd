@@ -1,0 +1,219 @@
+name: BTC TREND V2.6 Current Snapshot Bridge
+
+on:
+  workflow_dispatch:
+  schedule:
+    # KST 04:52 / 07:52 / 12:52 / 16:52 / 20:52 — after TOP/BOTTOM/ACCUM/Machine source runs.
+    - cron: '52 3,7,11,19,22 * * *'
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: btc-trend-v26-current-snapshot-bridge
+  cancel-in-progress: false
+
+jobs:
+  bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Download latest successful source artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/btc-current-bridge
+          mkdir -p /tmp/btc-current-bridge
+
+          get_run() {
+            local workflow="$1"
+            gh run list --workflow "$workflow" --branch main --status success --limit 10 \
+              --json databaseId,updatedAt,status,conclusion,headBranch,event \
+              --jq '.[0].databaseId // empty'
+          }
+
+          download_one() {
+            local key="$1" workflow="$2" prefix="$3"
+            local rid
+            rid="$(get_run "$workflow")"
+            if [ -z "$rid" ]; then
+              echo "SOURCE_RUN_MISSING key=$key workflow=$workflow" >&2
+              return 1
+            fi
+            local dest="/tmp/btc-current-bridge/$key"
+            mkdir -p "$dest"
+            gh run download "$rid" -n "${prefix}-${rid}" -D "$dest"
+            echo "$rid" > "$dest/workflow_run_id.txt"
+            echo "SOURCE_ARTIFACT_DOWNLOADED key=$key run_id=$rid"
+          }
+
+          download_one trend "BTC TREND V2.6 Machine Ratio Bridge" "btc-trend-v26-machine-ratio"
+          download_one bottom "BTC TREND V2.6 BOTTOM Fastpath Shadow" "btc-trend-v26-bottom-fastpath"
+          download_one top "BTC TREND V2.6 TOP Fastpath Shadow" "btc-trend-v26-top-fastpath"
+          download_one accum "BTC TREND V2.6 ACCUM Fastpath Shadow" "btc-trend-v26-accum-fastpath"
+
+      - name: Validate provenance and build current snapshots
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from __future__ import annotations
+          import hashlib, json
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          root = Path('/tmp/btc-current-bridge')
+          out_root = Path('state')
+          now = datetime.now(timezone.utc)
+
+          specs = {
+              'trend': {
+                  'prov': 'bridge_provenance.json',
+                  'score': 'latest_score_r22.json',
+                  'contract': 'BTC_TREND_V26_MACHINE_RATIO_PROVENANCE_V1',
+                  'sha_key': 'score_sha256',
+                  'max_age': 240,
+                  'target': 'master_btc_trend_v2_6_trend_score_current.json',
+                  'required': ['long','short','trend_strength','coverage_pct','coverage_grade','dominant_state'],
+              },
+              'bottom': {
+                  'prov': 'bottom_bridge_provenance.json',
+                  'score': 'latest_bottom_fastpath.json',
+                  'contract': 'BTC_TREND_V26_BOTTOM_SCORE_PROVENANCE_V1',
+                  'sha_key': 'score_sha256',
+                  'max_age': 240,
+                  'target': 'master_btc_trend_v2_6_bottom_score_current.json',
+                  'required': ['bottom_score','band','coverage_pct','coverage_grade'],
+              },
+              'top': {
+                  'prov': 'top_bridge_provenance.json',
+                  'score': 'latest_top_fastpath.json',
+                  'contract': 'BTC_TREND_V26_TOP_SCORE_PROVENANCE_V1',
+                  'sha_key': 'score_sha256',
+                  'max_age': 240,
+                  'target': 'master_btc_trend_v2_6_top_score_current.json',
+                  'required': ['top_score','band','coverage_pct','coverage_grade'],
+              },
+              'accum': {
+                  'prov': 'accum_bridge_provenance.json',
+                  'score': 'latest_accum_fastpath.json',
+                  'contract': 'BTC_TREND_V26_ACCUM_SCORE_PROVENANCE_V1',
+                  'sha_key': 'score_sha256',
+                  'max_age': 80,
+                  'target': 'master_btc_trend_v2_6_accum_score_current.json',
+                  'required': ['accumulation_score','band','coverage_pct','coverage_grade'],
+              },
+          }
+
+          def locate(base: Path, name: str) -> Path:
+              hits = list(base.rglob(name))
+              if len(hits) != 1:
+                  raise RuntimeError(f'{base.name}: expected exactly one {name}, got {len(hits)}')
+              return hits[0]
+
+          def parse_iso(s: str) -> datetime:
+              return datetime.fromisoformat(s.replace('Z', '+00:00'))
+
+          for key, spec in specs.items():
+              base = root / key
+              prov_path = locate(base, spec['prov'])
+              score_path = locate(base, spec['score'])
+              prov = json.loads(prov_path.read_text(encoding='utf-8'))
+              score = json.loads(score_path.read_text(encoding='utf-8'))
+              run_id = int((base / 'workflow_run_id.txt').read_text().strip())
+
+              if prov.get('provenance_contract') != spec['contract']:
+                  raise RuntimeError(f'{key}: provenance contract mismatch')
+              if int(prov.get('workflow_run_id', -1)) != run_id:
+                  raise RuntimeError(f'{key}: workflow_run_id mismatch')
+              actual_sha = hashlib.sha256(score_path.read_bytes()).hexdigest()
+              if prov.get(spec['sha_key']) != actual_sha:
+                  raise RuntimeError(f'{key}: score sha256 mismatch')
+              generated = parse_iso(str(prov['generated_at_utc']))
+              age_min = (now - generated).total_seconds() / 60.0
+              if age_min < -5 or age_min > spec['max_age']:
+                  raise RuntimeError(f'{key}: stale/future snapshot age={age_min:.1f}m limit={spec["max_age"]}m')
+              if float(prov.get('coverage_pct', 0)) < 50.0:
+                  raise RuntimeError(f'{key}: coverage below display threshold')
+              for field in spec['required']:
+                  if field not in prov or prov[field] is None:
+                      raise RuntimeError(f'{key}: required field missing: {field}')
+
+              snapshot = {
+                  'schema_version': '1.0',
+                  'master_id': 'BTC_TREND_CURRENT',
+                  'production_version': 'V2.6',
+                  'bridge_layer': 'LIMITED_DISPLAY_READ_ONLY',
+                  'selection_status': 'CURRENT',
+                  'source_engine': key,
+                  'workflow_name': prov.get('workflow_name'),
+                  'workflow_run_id': run_id,
+                  'generated_at_utc': prov['generated_at_utc'],
+                  'verified_at_utc': now.isoformat().replace('+00:00','Z'),
+                  'age_minutes_at_bridge': round(age_min, 2),
+                  'max_age_minutes': spec['max_age'],
+                  'provenance_contract': prov['provenance_contract'],
+                  'score_sha256': actual_sha,
+                  'allowed_output_scope': prov.get('allowed_output_scope', []),
+                  'coverage_pct': prov.get('coverage_pct'),
+                  'coverage_grade': prov.get('coverage_grade'),
+                  'strong_confirmation_coverage_met': bool(prov.get('strong_confirmation_coverage_met', False)),
+                  'display': {k: prov[k] for k in spec['required']},
+                  'authority': {
+                      'entry_gate_effect': 0,
+                      'live_plan_effect': 0,
+                      'cross_engine_effect_forbidden': True,
+                      'official_state_direct_write_allowed': False,
+                  },
+              }
+              target = out_root / spec['target']
+              target.write_text(json.dumps(snapshot, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+              print(f'CURRENT_SNAPSHOT=PASS engine={key} age_min={age_min:.1f} target={target}')
+          PY
+
+      - name: Commit synchronized read-only snapshots
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "btc-trend-current-bridge-bot"
+          git config user.email "btc-trend-current-bridge-bot@users.noreply.github.com"
+          git add \
+            state/master_btc_trend_v2_6_trend_score_current.json \
+            state/master_btc_trend_v2_6_bottom_score_current.json \
+            state/master_btc_trend_v2_6_top_score_current.json \
+            state/master_btc_trend_v2_6_accum_score_current.json
+          if git diff --cached --quiet; then
+            echo "No snapshot changes"
+            exit 0
+          fi
+          git commit -m "data: refresh BTC TREND V2.6 current display snapshots"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              echo "BTC_TREND_CURRENT_SNAPSHOT_PUBLISH=PASS"
+              exit 0
+            fi
+            if [ "$attempt" -eq 5 ]; then
+              exit 1
+            fi
+            sleep $((attempt * 4))
+          done
