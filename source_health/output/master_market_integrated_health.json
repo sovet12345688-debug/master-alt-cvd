@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "system": "MASTER_MARKET_INTEGRATED_HEALTH",
-  "evaluated_at_utc": "2026-09-13T07:17:43.126875Z",
+  "evaluated_at_utc": "2026-09-13T08:19:13.139639Z",
   "overall_status": "HISTORY RECOVERING",
   "overall_icon": "🟡",
   "status_order": [
@@ -22,8 +22,8 @@
       "display_name": "Data Vault",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-13T06:59:36.359326Z",
-      "age_minutes": 18.1,
+      "timestamp_utc": "2026-09-13T07:58:13.320943Z",
+      "age_minutes": 21.0,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -38,8 +38,8 @@
       "display_name": "Stablecoin Windows",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-13T06:59:38.512599Z",
-      "age_minutes": 18.1,
+      "timestamp_utc": "2026-09-13T07:58:14.830797Z",
+      "age_minutes": 21.0,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -63,8 +63,8 @@
       "display_name": "Derivatives",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-13T07:17:05.019403Z",
-      "age_minutes": 0.6,
+      "timestamp_utc": "2026-09-13T08:18:47.795838Z",
+      "age_minutes": 0.4,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -79,8 +79,8 @@
       "display_name": "Actor Retail",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-13T06:59:38.730544Z",
-      "age_minutes": 18.1,
+      "timestamp_utc": "2026-09-13T07:58:15.055412Z",
+      "age_minutes": 21.0,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -102,7 +102,7 @@
       "status": "CURRENT OK",
       "icon": "🟢",
       "timestamp_utc": "2026-09-10T23:37:50.316423Z",
-      "age_minutes": 3339.9,
+      "age_minutes": 3401.4,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -121,20 +121,7 @@
       }
     }
   ],
-  "registered_market_alerts": [
-    {
-      "source_id": "market_treasury_buyback",
-      "display_name": "MARKET Treasury Buyback",
-      "impact": "OPTIONAL",
-      "status": "STALE",
-      "raw_source_health_status": "DEGRADED",
-      "reason_codes": [
-        "QUALITY_CHECK_FAILED"
-      ],
-      "state_age_minutes": 19.2,
-      "workflow_file": "market_macro_liquidity_free_hourly.yml"
-    }
-  ],
+  "registered_market_alerts": [],
   "policy": {
     "operational_health_only": true,
     "never_changes_master_score_or_direction": true,
