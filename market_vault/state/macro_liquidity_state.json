@@ -1,8 +1,8 @@
 {
   "engine": "MASTER_MARKET_FREE_MACRO_LIQUIDITY_V2",
   "schema_version": "2.0",
-  "last_run_utc": "2026-09-13T05:55:40.245689Z",
-  "snapshot_hour_utc": "2026-09-13T05:00:00Z",
+  "last_run_utc": "2026-09-13T06:58:28.244388Z",
+  "snapshot_hour_utc": "2026-09-13T06:00:00Z",
   "collected_metrics": [
     "FED_RESERVE_BALANCES",
     "FED_RRP_TOTAL",
@@ -13,10 +13,10 @@
     "QRA_NET_MARKETABLE_BORROWING_CURRENT_Q",
     "QRA_NET_MARKETABLE_BORROWING_NEXT_Q",
     "TGA_CLOSING_BALANCE",
-    "TREASURY_BUYBACK_ACTUAL_ACCEPTED",
-    "TREASURY_BUYBACK_ACTUAL_OFFERED",
     "US_NET_LIQUIDITY_PROXY"
   ],
-  "failures": {},
-  "history_rows": 1645
+  "failures": {
+    "BUYBACK_ACTUAL": "ReadTimeout: HTTPSConnectionPool(host='api.fiscaldata.treasury.gov', port=443): Read timed out. (read timeout=35)"
+  },
+  "history_rows": 1655
 }
