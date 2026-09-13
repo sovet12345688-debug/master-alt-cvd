@@ -1,17 +1,20 @@
 # MASTER MARKET 통합 건강판
 
-- 평가시각(UTC): `2026-09-13T06:27:05.844072Z`
+- 평가시각(UTC): `2026-09-13T07:17:43.126875Z`
 - 종합상태: 🟡 **HISTORY RECOVERING**
 - 상태 기준: 🟢 CURRENT OK / 🟡 HISTORY RECOVERING / 🟠 STALE / 🔴 FAILED
 - 이 건강판은 운영 진단용이며 MASTER MARKET 점수·롱/숏·WATCH 판단을 변경하지 않습니다.
 
 | 영역 | 상태 | 데이터 나이(분) | History | 핵심 원인 | 다음 조치 |
 |---|---|---:|---|---|---|
-| Data Vault | 🟢 CURRENT OK | 29.2 | OK | OK | 조치 없음 |
-| Stablecoin Windows | 🟡 HISTORY RECOVERING | 28.5 | PARTIAL_WINDOWS | CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE | 현재 공급량은 사용; 누락 비교창은 실제 history 축적 대기 |
-| Derivatives | 🟢 CURRENT OK | 70.3 | OK | OK | 조치 없음 |
-| Actor Retail | 🟡 HISTORY RECOVERING | 28.5 | PARTIAL_WINDOWS | CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE | 현재 Retail proxy는 사용; 누락 1D/3D/7D는 동일원천 history 축적 대기 |
-| Yen Carry | 🟢 CURRENT OK | 3289.3 | OK | OK | 조치 없음 |
+| Data Vault | 🟢 CURRENT OK | 18.1 | OK | OK | 조치 없음 |
+| Stablecoin Windows | 🟡 HISTORY RECOVERING | 18.1 | PARTIAL_WINDOWS | CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE | 현재 공급량은 사용; 누락 비교창은 실제 history 축적 대기 |
+| Derivatives | 🟢 CURRENT OK | 0.6 | OK | OK | 조치 없음 |
+| Actor Retail | 🟡 HISTORY RECOVERING | 18.1 | PARTIAL_WINDOWS | CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE | 현재 Retail proxy는 사용; 누락 1D/3D/7D는 동일원천 history 축적 대기 |
+| Yen Carry | 🟢 CURRENT OK | 3339.9 | OK | OK | 조치 없음 |
 
 ## 연관 MARKET Source Health 경보
-현재 별도 경보 없음.
+
+| Source | 영향도 | 상태 | 원인 | Workflow |
+|---|---|---|---|---|
+| MARKET Treasury Buyback | OPTIONAL | 🟠 STALE | QUALITY_CHECK_FAILED | market_macro_liquidity_free_hourly.yml |

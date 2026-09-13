@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "system": "MASTER_MARKET_INTEGRATED_HEALTH",
-  "evaluated_at_utc": "2026-09-13T06:27:05.844072Z",
+  "evaluated_at_utc": "2026-09-13T07:17:43.126875Z",
   "overall_status": "HISTORY RECOVERING",
   "overall_icon": "🟡",
   "status_order": [
@@ -22,8 +22,8 @@
       "display_name": "Data Vault",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-13T05:57:52.745217Z",
-      "age_minutes": 29.2,
+      "timestamp_utc": "2026-09-13T06:59:36.359326Z",
+      "age_minutes": 18.1,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -38,8 +38,8 @@
       "display_name": "Stablecoin Windows",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-13T05:58:37.730744Z",
-      "age_minutes": 28.5,
+      "timestamp_utc": "2026-09-13T06:59:38.512599Z",
+      "age_minutes": 18.1,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -49,8 +49,11 @@
       "source_path": "market_vault/output/latest_stablecoin_windows.json",
       "details": {
         "missing_windows": [
+          "USDT_SUPPLY:5D",
           "USDT_SUPPLY:20D",
+          "USDC_SUPPLY:5D",
           "USDC_SUPPLY:20D",
+          "STABLECOIN_TOTAL_SUPPLY:5D",
           "STABLECOIN_TOTAL_SUPPLY:20D"
         ]
       }
@@ -60,8 +63,8 @@
       "display_name": "Derivatives",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-13T05:16:48.522264Z",
-      "age_minutes": 70.3,
+      "timestamp_utc": "2026-09-13T07:17:05.019403Z",
+      "age_minutes": 0.6,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -76,8 +79,8 @@
       "display_name": "Actor Retail",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-13T05:58:37.905307Z",
-      "age_minutes": 28.5,
+      "timestamp_utc": "2026-09-13T06:59:38.730544Z",
+      "age_minutes": 18.1,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -99,7 +102,7 @@
       "status": "CURRENT OK",
       "icon": "🟢",
       "timestamp_utc": "2026-09-10T23:37:50.316423Z",
-      "age_minutes": 3289.3,
+      "age_minutes": 3339.9,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -118,7 +121,20 @@
       }
     }
   ],
-  "registered_market_alerts": [],
+  "registered_market_alerts": [
+    {
+      "source_id": "market_treasury_buyback",
+      "display_name": "MARKET Treasury Buyback",
+      "impact": "OPTIONAL",
+      "status": "STALE",
+      "raw_source_health_status": "DEGRADED",
+      "reason_codes": [
+        "QUALITY_CHECK_FAILED"
+      ],
+      "state_age_minutes": 19.2,
+      "workflow_file": "market_macro_liquidity_free_hourly.yml"
+    }
+  ],
   "policy": {
     "operational_health_only": true,
     "never_changes_master_score_or_direction": true,
