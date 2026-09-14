@@ -1,14 +1,14 @@
 {
   "schema_version": "1.0",
   "system": "MONEY_MASTER_OS_SOURCE_HEALTH",
-  "evaluated_at_utc": "2026-09-14T02:19:18.724220Z",
+  "evaluated_at_utc": "2026-09-14T03:19:43.118949Z",
   "repository": "sovet12345688-debug/master-alt-cvd",
-  "overall": "HEALTHY",
+  "overall": "DEGRADED",
   "counts": {
-    "HEALTHY": 11,
+    "HEALTHY": 8,
     "DEGRADED": 0,
     "STALE": 0,
-    "FAILED": 0,
+    "FAILED": 3,
     "MISSING": 0,
     "UNKNOWN": 0
   },
@@ -23,20 +23,20 @@
       "quality_details": [],
       "state_path": "market_vault/state/vault_state.json",
       "state_timestamp_field": "last_run_utc",
-      "state_timestamp_utc": "2026-09-14T01:59:36.845520Z",
-      "state_age_minutes": 19.7,
+      "state_timestamp_utc": "2026-09-14T02:58:56.095930Z",
+      "state_age_minutes": 20.8,
       "warn_after_minutes": 90,
       "stale_after_minutes": 150,
       "expected_interval_minutes": 60,
       "workflow_file": "market_data_vault_hourly.yml",
       "workflow": {
-        "latest_run_id": 34797685436,
+        "latest_run_id": 34800994278,
         "latest_status": "completed",
         "latest_conclusion": "success",
         "latest_event": "schedule",
-        "latest_started_at_utc": "2026-09-14T01:59:25Z",
-        "latest_completed_at_utc": "2026-09-14T01:59:43Z",
-        "last_success_at_utc": "2026-09-14T01:59:43Z",
+        "latest_started_at_utc": "2026-09-14T02:58:43Z",
+        "latest_completed_at_utc": "2026-09-14T02:59:25Z",
+        "last_success_at_utc": "2026-09-14T02:59:25Z",
         "api_error": null
       },
       "impact": {
@@ -47,8 +47,8 @@
         "trading": "CONTEXT"
       },
       "last_good": {
-        "state_timestamp_utc": "2026-09-14T01:59:36.845520Z",
-        "observed_healthy_at_utc": "2026-09-14T02:19:18.724220Z",
+        "state_timestamp_utc": "2026-09-14T02:58:56.095930Z",
+        "observed_healthy_at_utc": "2026-09-14T03:19:43.118949Z",
         "state_path": "market_vault/state/vault_state.json",
         "workflow_file": "market_data_vault_hourly.yml"
       }
@@ -56,26 +56,29 @@
     "market_macro_liquidity": {
       "source_id": "market_macro_liquidity",
       "display_name": "MARKET Macro Backbone",
-      "status": "HEALTHY",
+      "status": "FAILED",
       "reason_codes": [
-        "OK"
+        "QUALITY_CHECK_FAILED",
+        "LATEST_WORKFLOW_FAILED"
       ],
-      "quality_details": [],
+      "quality_details": [
+        "collected_metrics missing=['TGA_CLOSING_BALANCE']"
+      ],
       "state_path": "market_vault/state/macro_liquidity_state.json",
       "state_timestamp_field": "last_run_utc",
-      "state_timestamp_utc": "2026-09-14T01:57:34.666614Z",
-      "state_age_minutes": 21.7,
+      "state_timestamp_utc": "2026-09-14T02:57:18.837005Z",
+      "state_age_minutes": 22.4,
       "warn_after_minutes": 90,
       "stale_after_minutes": 150,
       "expected_interval_minutes": 60,
       "workflow_file": "market_macro_liquidity_free_hourly.yml",
       "workflow": {
-        "latest_run_id": 34797575240,
+        "latest_run_id": 34800912301,
         "latest_status": "completed",
-        "latest_conclusion": "success",
+        "latest_conclusion": "failure",
         "latest_event": "schedule",
-        "latest_started_at_utc": "2026-09-14T01:57:20Z",
-        "latest_completed_at_utc": "2026-09-14T01:57:41Z",
+        "latest_started_at_utc": "2026-09-14T02:57:06Z",
+        "latest_completed_at_utc": "2026-09-14T02:57:59Z",
         "last_success_at_utc": "2026-09-14T01:57:41Z",
         "api_error": null
       },
@@ -94,26 +97,26 @@
     "market_treasury_buyback": {
       "source_id": "market_treasury_buyback",
       "display_name": "MARKET Treasury Buyback",
-      "status": "HEALTHY",
+      "status": "FAILED",
       "reason_codes": [
-        "OK"
+        "LATEST_WORKFLOW_FAILED"
       ],
       "quality_details": [],
       "state_path": "market_vault/state/macro_liquidity_state.json",
       "state_timestamp_field": "last_run_utc",
-      "state_timestamp_utc": "2026-09-14T01:57:34.666614Z",
-      "state_age_minutes": 21.7,
+      "state_timestamp_utc": "2026-09-14T02:57:18.837005Z",
+      "state_age_minutes": 22.4,
       "warn_after_minutes": 90,
       "stale_after_minutes": 150,
       "expected_interval_minutes": 60,
       "workflow_file": "market_macro_liquidity_free_hourly.yml",
       "workflow": {
-        "latest_run_id": 34797575240,
+        "latest_run_id": 34800912301,
         "latest_status": "completed",
-        "latest_conclusion": "success",
+        "latest_conclusion": "failure",
         "latest_event": "schedule",
-        "latest_started_at_utc": "2026-09-14T01:57:20Z",
-        "latest_completed_at_utc": "2026-09-14T01:57:41Z",
+        "latest_started_at_utc": "2026-09-14T02:57:06Z",
+        "latest_completed_at_utc": "2026-09-14T02:57:59Z",
         "last_success_at_utc": "2026-09-14T01:57:41Z",
         "api_error": null
       },
@@ -139,20 +142,20 @@
       "quality_details": [],
       "state_path": "market_vault/state/etf_flow_state.json",
       "state_timestamp_field": "last_run_utc",
-      "state_timestamp_utc": "2026-09-14T01:46:20.098379Z",
-      "state_age_minutes": 33.0,
+      "state_timestamp_utc": "2026-09-14T02:47:14.684000Z",
+      "state_age_minutes": 32.5,
       "warn_after_minutes": 120,
       "stale_after_minutes": 180,
       "expected_interval_minutes": 60,
       "workflow_file": "market_etf_flows_hourly.yml",
       "workflow": {
-        "latest_run_id": 34796987427,
+        "latest_run_id": 34800361124,
         "latest_status": "completed",
         "latest_conclusion": "success",
         "latest_event": "schedule",
-        "latest_started_at_utc": "2026-09-14T01:46:07Z",
-        "latest_completed_at_utc": "2026-09-14T01:46:26Z",
-        "last_success_at_utc": "2026-09-14T01:46:26Z",
+        "latest_started_at_utc": "2026-09-14T02:47:02Z",
+        "latest_completed_at_utc": "2026-09-14T02:47:19Z",
+        "last_success_at_utc": "2026-09-14T02:47:19Z",
         "api_error": null
       },
       "impact": {
@@ -160,8 +163,8 @@
         "btc_trend": "OPTIONAL"
       },
       "last_good": {
-        "state_timestamp_utc": "2026-09-14T01:46:20.098379Z",
-        "observed_healthy_at_utc": "2026-09-14T02:19:18.724220Z",
+        "state_timestamp_utc": "2026-09-14T02:47:14.684000Z",
+        "observed_healthy_at_utc": "2026-09-14T03:19:43.118949Z",
         "state_path": "market_vault/state/etf_flow_state.json",
         "workflow_file": "market_etf_flows_hourly.yml"
       }
@@ -176,20 +179,20 @@
       "quality_details": [],
       "state_path": "market_whales/state/recorder_state.json",
       "state_timestamp_field": "last_run_utc",
-      "state_timestamp_utc": "2026-09-14T01:49:38.423419Z",
-      "state_age_minutes": 29.7,
+      "state_timestamp_utc": "2026-09-14T02:49:54.754724Z",
+      "state_age_minutes": 29.8,
       "warn_after_minutes": 90,
       "stale_after_minutes": 150,
       "expected_interval_minutes": 60,
       "workflow_file": "market_whale_validation.yml",
       "workflow": {
-        "latest_run_id": 34797083075,
+        "latest_run_id": 34800434143,
         "latest_status": "completed",
         "latest_conclusion": "success",
         "latest_event": "schedule",
-        "latest_started_at_utc": "2026-09-14T01:48:02Z",
-        "latest_completed_at_utc": "2026-09-14T01:49:46Z",
-        "last_success_at_utc": "2026-09-14T01:49:46Z",
+        "latest_started_at_utc": "2026-09-14T02:48:22Z",
+        "latest_completed_at_utc": "2026-09-14T02:50:05Z",
+        "last_success_at_utc": "2026-09-14T02:50:05Z",
         "api_error": null
       },
       "impact": {
@@ -197,8 +200,8 @@
         "btc_trend": "OPTIONAL"
       },
       "last_good": {
-        "state_timestamp_utc": "2026-09-14T01:49:38.423419Z",
-        "observed_healthy_at_utc": "2026-09-14T02:19:18.724220Z",
+        "state_timestamp_utc": "2026-09-14T02:49:54.754724Z",
+        "observed_healthy_at_utc": "2026-09-14T03:19:43.118949Z",
         "state_path": "market_whales/state/recorder_state.json",
         "workflow_file": "market_whale_validation.yml"
       }
@@ -214,19 +217,19 @@
       "state_path": "derivatives/state/collector_state.json",
       "state_timestamp_field": "last_run_utc",
       "state_timestamp_utc": "2026-09-14T02:18:19.042004Z",
-      "state_age_minutes": 1.0,
+      "state_age_minutes": 61.4,
       "warn_after_minutes": 90,
       "stale_after_minutes": 150,
       "expected_interval_minutes": 60,
       "workflow_file": "derivatives_hourly.yml",
       "workflow": {
-        "latest_run_id": 34798757375,
+        "latest_run_id": 34802191217,
         "latest_status": "completed",
         "latest_conclusion": "success",
         "latest_event": "schedule",
-        "latest_started_at_utc": "2026-09-14T02:18:08Z",
-        "latest_completed_at_utc": "2026-09-14T02:18:44Z",
-        "last_success_at_utc": "2026-09-14T02:18:44Z",
+        "latest_started_at_utc": "2026-09-14T03:19:03Z",
+        "latest_completed_at_utc": "2026-09-14T03:19:44Z",
+        "last_success_at_utc": "2026-09-14T03:19:44Z",
         "api_error": null
       },
       "impact": {
@@ -237,7 +240,7 @@
       },
       "last_good": {
         "state_timestamp_utc": "2026-09-14T02:18:19.042004Z",
-        "observed_healthy_at_utc": "2026-09-14T02:19:18.724220Z",
+        "observed_healthy_at_utc": "2026-09-14T03:19:43.118949Z",
         "state_path": "derivatives/state/collector_state.json",
         "workflow_file": "derivatives_hourly.yml"
       }
@@ -245,26 +248,26 @@
     "alt2_live_large_flow": {
       "source_id": "alt2_live_large_flow",
       "display_name": "ALT2 Live Large Flow",
-      "status": "HEALTHY",
+      "status": "FAILED",
       "reason_codes": [
-        "OK"
+        "LATEST_WORKFLOW_FAILED"
       ],
       "quality_details": [],
       "state_path": "live_flow/state/collector_state.json",
       "state_timestamp_field": "last_run_utc",
       "state_timestamp_utc": "2026-09-14T01:34:25.828107Z",
-      "state_age_minutes": 44.9,
+      "state_age_minutes": 105.3,
       "warn_after_minutes": 120,
       "stale_after_minutes": 180,
       "expected_interval_minutes": 60,
       "workflow_file": "live_large_flow_hourly.yml",
       "workflow": {
-        "latest_run_id": 34796320894,
+        "latest_run_id": 34799700412,
         "latest_status": "completed",
-        "latest_conclusion": "success",
+        "latest_conclusion": "failure",
         "latest_event": "schedule",
-        "latest_started_at_utc": "2026-09-14T01:33:54Z",
-        "latest_completed_at_utc": "2026-09-14T01:34:31Z",
+        "latest_started_at_utc": "2026-09-14T02:35:09Z",
+        "latest_completed_at_utc": "2026-09-14T02:35:44Z",
         "last_success_at_utc": "2026-09-14T01:34:31Z",
         "api_error": null
       },
@@ -288,20 +291,20 @@
       "quality_details": [],
       "state_path": "stablecoin_flow/state/collector_state.json",
       "state_timestamp_field": "last_run_utc",
-      "state_timestamp_utc": "2026-09-14T01:27:43.378026Z",
-      "state_age_minutes": 51.6,
+      "state_timestamp_utc": "2026-09-14T02:29:05.493647Z",
+      "state_age_minutes": 50.6,
       "warn_after_minutes": 120,
       "stale_after_minutes": 180,
       "expected_interval_minutes": 60,
       "workflow_file": "stablecoin_flow_hourly.yml",
       "workflow": {
-        "latest_run_id": 34795971277,
+        "latest_run_id": 34799347875,
         "latest_status": "completed",
         "latest_conclusion": "success",
         "latest_event": "schedule",
-        "latest_started_at_utc": "2026-09-14T01:27:22Z",
-        "latest_completed_at_utc": "2026-09-14T01:27:48Z",
-        "last_success_at_utc": "2026-09-14T01:27:48Z",
+        "latest_started_at_utc": "2026-09-14T02:28:52Z",
+        "latest_completed_at_utc": "2026-09-14T02:29:09Z",
+        "last_success_at_utc": "2026-09-14T02:29:09Z",
         "api_error": null
       },
       "impact": {
@@ -309,8 +312,8 @@
         "alt_final20": "OPTIONAL"
       },
       "last_good": {
-        "state_timestamp_utc": "2026-09-14T01:27:43.378026Z",
-        "observed_healthy_at_utc": "2026-09-14T02:19:18.724220Z",
+        "state_timestamp_utc": "2026-09-14T02:29:05.493647Z",
+        "observed_healthy_at_utc": "2026-09-14T03:19:43.118949Z",
         "state_path": "stablecoin_flow/state/collector_state.json",
         "workflow_file": "stablecoin_flow_hourly.yml"
       }
@@ -325,20 +328,20 @@
       "quality_details": [],
       "state_path": "net_liquidity/state/collector_state.json",
       "state_timestamp_field": "last_run_utc",
-      "state_timestamp_utc": "2026-09-14T01:34:00.419315Z",
-      "state_age_minutes": 45.3,
+      "state_timestamp_utc": "2026-09-14T02:35:26.930101Z",
+      "state_age_minutes": 44.3,
       "warn_after_minutes": 120,
       "stale_after_minutes": 180,
       "expected_interval_minutes": 60,
       "workflow_file": "net_liquidity_hourly.yml",
       "workflow": {
-        "latest_run_id": 34796316181,
+        "latest_run_id": 34799708508,
         "latest_status": "completed",
         "latest_conclusion": "success",
         "latest_event": "schedule",
-        "latest_started_at_utc": "2026-09-14T01:33:48Z",
-        "latest_completed_at_utc": "2026-09-14T01:34:05Z",
-        "last_success_at_utc": "2026-09-14T01:34:05Z",
+        "latest_started_at_utc": "2026-09-14T02:35:16Z",
+        "latest_completed_at_utc": "2026-09-14T02:35:31Z",
+        "last_success_at_utc": "2026-09-14T02:35:31Z",
         "api_error": null
       },
       "impact": {
@@ -346,8 +349,8 @@
         "btc_trend": "CONTEXT"
       },
       "last_good": {
-        "state_timestamp_utc": "2026-09-14T01:34:00.419315Z",
-        "observed_healthy_at_utc": "2026-09-14T02:19:18.724220Z",
+        "state_timestamp_utc": "2026-09-14T02:35:26.930101Z",
+        "observed_healthy_at_utc": "2026-09-14T03:19:43.118949Z",
         "state_path": "net_liquidity/state/collector_state.json",
         "workflow_file": "net_liquidity_hourly.yml"
       }
@@ -363,7 +366,7 @@
       "state_path": "state/collector_state.json",
       "state_timestamp_field": "updated_at",
       "state_timestamp_utc": "2026-09-14T00:40:41.131481Z",
-      "state_age_minutes": 98.6,
+      "state_age_minutes": 159.0,
       "warn_after_minutes": 720,
       "stale_after_minutes": 1800,
       "expected_interval_minutes": 360,
@@ -383,7 +386,7 @@
       },
       "last_good": {
         "state_timestamp_utc": "2026-09-14T00:40:41.131481Z",
-        "observed_healthy_at_utc": "2026-09-14T02:19:18.724220Z",
+        "observed_healthy_at_utc": "2026-09-14T03:19:43.118949Z",
         "state_path": "state/collector_state.json",
         "workflow_file": "cvd_update.yml"
       }
@@ -398,28 +401,28 @@
       "quality_details": [],
       "state_path": "polymarket/state/collector_state.json",
       "state_timestamp_field": "generated_at_utc",
-      "state_timestamp_utc": "2026-09-14T01:50:30Z",
-      "state_age_minutes": 28.8,
+      "state_timestamp_utc": "2026-09-14T02:51:05Z",
+      "state_age_minutes": 28.6,
       "warn_after_minutes": 120,
       "stale_after_minutes": 180,
       "expected_interval_minutes": 60,
       "workflow_file": "polymarket_hourly.yml",
       "workflow": {
-        "latest_run_id": 34797200149,
+        "latest_run_id": 34800569205,
         "latest_status": "completed",
         "latest_conclusion": "success",
         "latest_event": "schedule",
-        "latest_started_at_utc": "2026-09-14T01:50:18Z",
-        "latest_completed_at_utc": "2026-09-14T01:50:49Z",
-        "last_success_at_utc": "2026-09-14T01:50:49Z",
+        "latest_started_at_utc": "2026-09-14T02:50:53Z",
+        "latest_completed_at_utc": "2026-09-14T02:51:26Z",
+        "last_success_at_utc": "2026-09-14T02:51:26Z",
         "api_error": null
       },
       "impact": {
         "market": "CONTEXT"
       },
       "last_good": {
-        "state_timestamp_utc": "2026-09-14T01:50:30Z",
-        "observed_healthy_at_utc": "2026-09-14T02:19:18.724220Z",
+        "state_timestamp_utc": "2026-09-14T02:51:05Z",
+        "observed_healthy_at_utc": "2026-09-14T03:19:43.118949Z",
         "state_path": "polymarket/state/collector_state.json",
         "workflow_file": "polymarket_hourly.yml"
       }
@@ -427,11 +430,11 @@
   },
   "masters": {
     "market": {
-      "registered_source_availability": "GOOD",
-      "registered_source_health_pct": 100.0,
+      "registered_source_availability": "POOR",
+      "registered_source_health_pct": 70.7,
       "registered_source_count": 8,
-      "core_bad": 0,
-      "non_context_bad": 0,
+      "core_bad": 1,
+      "non_context_bad": 2,
       "sources": [
         {
           "source_id": "market_data_vault",
@@ -444,17 +447,18 @@
         {
           "source_id": "market_macro_liquidity",
           "impact": "CORE",
-          "status": "HEALTHY",
+          "status": "FAILED",
           "reason_codes": [
-            "OK"
+            "QUALITY_CHECK_FAILED",
+            "LATEST_WORKFLOW_FAILED"
           ]
         },
         {
           "source_id": "market_treasury_buyback",
           "impact": "OPTIONAL",
-          "status": "HEALTHY",
+          "status": "FAILED",
           "reason_codes": [
-            "OK"
+            "LATEST_WORKFLOW_FAILED"
           ]
         },
         {
@@ -503,7 +507,7 @@
     },
     "btc_trend": {
       "registered_source_availability": "GOOD",
-      "registered_source_health_pct": 100.0,
+      "registered_source_health_pct": 87.5,
       "registered_source_count": 7,
       "core_bad": 0,
       "non_context_bad": 0,
@@ -519,17 +523,18 @@
         {
           "source_id": "market_macro_liquidity",
           "impact": "CONTEXT",
-          "status": "HEALTHY",
+          "status": "FAILED",
           "reason_codes": [
-            "OK"
+            "QUALITY_CHECK_FAILED",
+            "LATEST_WORKFLOW_FAILED"
           ]
         },
         {
           "source_id": "market_treasury_buyback",
           "impact": "CONTEXT",
-          "status": "HEALTHY",
+          "status": "FAILED",
           "reason_codes": [
-            "OK"
+            "LATEST_WORKFLOW_FAILED"
           ]
         },
         {
@@ -596,11 +601,11 @@
       "policy": "DATA HEALTH ONLY; not direction, score, permission or execution gate"
     },
     "alt_final20": {
-      "registered_source_availability": "GOOD",
-      "registered_source_health_pct": 100.0,
+      "registered_source_availability": "PARTIAL",
+      "registered_source_health_pct": 76.5,
       "registered_source_count": 5,
       "core_bad": 0,
-      "non_context_bad": 0,
+      "non_context_bad": 1,
       "sources": [
         {
           "source_id": "market_data_vault",
@@ -621,9 +626,9 @@
         {
           "source_id": "alt2_live_large_flow",
           "impact": "OPTIONAL",
-          "status": "HEALTHY",
+          "status": "FAILED",
           "reason_codes": [
-            "OK"
+            "LATEST_WORKFLOW_FAILED"
           ]
         },
         {
@@ -648,7 +653,7 @@
     },
     "trading": {
       "registered_source_availability": "GOOD",
-      "registered_source_health_pct": 100.0,
+      "registered_source_health_pct": 71.4,
       "registered_source_count": 4,
       "core_bad": 0,
       "non_context_bad": 0,
@@ -664,17 +669,18 @@
         {
           "source_id": "market_macro_liquidity",
           "impact": "CONTEXT",
-          "status": "HEALTHY",
+          "status": "FAILED",
           "reason_codes": [
-            "OK"
+            "QUALITY_CHECK_FAILED",
+            "LATEST_WORKFLOW_FAILED"
           ]
         },
         {
           "source_id": "market_treasury_buyback",
           "impact": "CONTEXT",
-          "status": "HEALTHY",
+          "status": "FAILED",
           "reason_codes": [
-            "OK"
+            "LATEST_WORKFLOW_FAILED"
           ]
         },
         {
