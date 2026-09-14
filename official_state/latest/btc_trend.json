@@ -8,14 +8,14 @@
   "contract_path": "state/master_btc_trend_v2_6_contract.json",
   "run": {
     "run_type": "OFFICIAL",
-    "run_id": "MBTC-V26-20260914-1700-KST",
-    "executed_kst": "2026-09-14T17:00:00+09:00",
-    "updated_kst": "2026-09-14T17:00:00+09:00",
-    "prior_official_run_id": "MBTC-V26-20260914-1300-KST"
+    "run_id": "MBTC-V26-20260914-2100-KST",
+    "executed_kst": "2026-09-14T21:00:00+09:00",
+    "updated_kst": "2026-09-14T21:00:00+09:00",
+    "prior_official_run_id": "MBTC-V26-20260914-1700-KST"
   },
   "validity": {
     "valid_until_kst": null,
-    "next_official_run_kst": "2026-09-14T21:00:00+09:00",
+    "next_official_run_kst": "2026-09-15T05:00:00+09:00",
     "freshness_status": "CURRENT"
   },
   "data_quality": {
@@ -25,42 +25,41 @@
       "FRACTAL_CURRENT_ARTIFACT_UNVERIFIED",
       "SR_STRENGTH_CURRENT_REACTION_MODEL_UNVERIFIED"
     ],
-    "stale_sources": [
-      "BTC_LEADING_SIGNAL_EXPECTED_1320_UNVERIFIED_USING_0820_STALE_FALLBACK"
-    ],
+    "stale_sources": [],
     "time_mismatch_warnings": [],
     "source_health_snapshot_pointer": "source_health/output/latest.json"
   },
   "decision": {
     "direction": "NEUTRAL",
-    "permission_or_environment": "NEUTRAL_GAP2_WAIT_NONCHASE",
+    "permission_or_environment": "NEUTRAL_GAP4_WAIT_NONCHASE",
     "action": "⏳ 아직 신규포지션 대기",
     "risk_veto": [],
     "invalidations": [
-      "79.890K 상향 안착 시 중기 약세 구조 추가 약화",
-      "76.389K 하회 시 현재 반등 구조 약화",
+      "78.374K 상향 안착 시 단기 상승 구조 강화",
+      "77.594K 하회 시 단기 반등 구조 약화",
+      "76.389K 하회 시 현재 반등 구조 훼손",
       "67.0K 하회 시 기존 LIVE LONG PLAN 구조 무효"
     ]
   },
   "core_state": {
     "market_snapshot": {
-      "current_price_usdt": 77892.23,
+      "current_price_usdt": 77730.0,
       "price_source": "Binance Spot BTCUSDT",
-      "latest_completed_1h_close_usdt": 77892.24,
-      "latest_completed_4h_close_usdt": 77892.24,
-      "latest_completed_1d_close_usdt": 76842.01,
-      "current_progressing_1d_price_usdt": 77892.23
+      "latest_completed_1h_close_usdt": 77747.79,
+      "latest_completed_4h_close_usdt": 77746.01,
+      "latest_completed_1d_close_usdt": 77216.01,
+      "current_progressing_1d_price_usdt": 77730.0
     },
     "direction_ratio": {
-      "long": 49,
-      "short": 51,
+      "long": 52,
+      "short": 48,
       "dominant": "NEUTRAL",
       "status": "CURRENT_LIMITED_DISPLAY_COVERAGE_68"
     },
     "trend": {
-      "state": "76.389K 저점 반등 후 77.89K 재시험, LONG:SHORT 49:51로 방향 우세가 사실상 중립화",
-      "strength": 2,
-      "trajectory": "↑ 약세 우세 해소 · 중립화",
+      "state": "76.389K 저점 반등 후 78.374K 고점 형성, 77.7K대에서 상승분 일부 유지하며 LONG:SHORT 52:48 중립",
+      "strength": 4,
+      "trajectory": "↑ LONG 쪽으로 추가 이동 · 중립 유지",
       "coverage_pct": 68.0,
       "coverage_grade": "C",
       "strong_confirmation": false
@@ -88,8 +87,8 @@
     },
     "support_resistance": {
       "short_term": {
-        "support": "77.52K recent completed-1H low",
-        "resistance": "77.90K current-day high",
+        "support": "77.594K recent completed-4H low",
+        "resistance": "78.374K current-day high",
         "strength": "N/A_CURRENT_REACTION_MODEL_UNVERIFIED"
       },
       "mid_term": {
@@ -98,32 +97,32 @@
         "strength": "N/A_CURRENT_REACTION_MODEL_UNVERIFIED"
       },
       "long_term": {
-        "support": "76.046K current-week low",
+        "support": "76.046K recent weekly low",
         "resistance": "82.300K recent swing high",
         "strength": "1W_NOT_APPROVED_INSUFFICIENT_SAMPLE"
       }
     },
     "derivatives": {
       "source": "Bitget USDT Futures BTC same venue/contract family",
-      "snapshot_time_utc": "2026-09-14T07:00:00Z",
-      "status": "PRICE_DOWN_OI_UP_BEARISH_BUILD",
-      "mark_price": 77684.6,
-      "oi_change_1h_pct": 0.370323118291771,
-      "oi_change_4h_pct": 0.22784773150834603,
-      "oi_change_24h_pct": 0.3680894259312062,
+      "snapshot_time_utc": "2026-09-14T11:00:00Z",
+      "status": "MIXED_HIGH_HOLD_WITH_MILD_SELL_PRESSURE",
+      "mark_price": 77760.1,
+      "oi_change_1h_pct": -0.03999438810662337,
+      "oi_change_4h_pct": 0.5592550505404636,
+      "oi_change_24h_pct": -0.510205169982203,
       "funding_rate": 4.9e-05,
-      "microstructure_generated_at_utc": "2026-09-14T07:20:28.947331Z",
-      "cvd_notional_usdt": -4049165.3500699997,
-      "taker_buy_ratio": 0.47362964831827536,
-      "taker_sell_ratio": 0.5263703516817246,
-      "long_position_ratio": 0.4932,
-      "short_position_ratio": 0.5068,
-      "basis_bps": -4.456868483977416
+      "microstructure_generated_at_utc": "2026-09-14T11:19:09.857779Z",
+      "cvd_notional_usdt": -3699064.46438,
+      "taker_buy_ratio": 0.47308633119693355,
+      "taker_sell_ratio": 0.5269136688030664,
+      "long_position_ratio": 0.4934,
+      "short_position_ratio": 0.5066,
+      "basis_bps": -3.90998317843394
     },
     "btc_leading_signal_engine": {
       "mode": "READ_ONLY_ZERO_WEIGHT",
-      "selection_status": "STALE_FALLBACK",
-      "logical_source_slot_kst": "2026-09-14T08:20:00+09:00",
+      "selection_status": "CURRENT",
+      "logical_source_slot_kst": "2026-09-14T17:20:00+09:00",
       "current_user_state": "신호 없음 / 대기",
       "strict_detection_rows": 0,
       "strict_seeds": 0,
@@ -131,7 +130,7 @@
       "ledger_integrity": "PASS",
       "frozen_identity": "PASS",
       "production_weight": 0,
-      "verification_note": "Expected 13:20 logical slot was not verifiable before 17:00. Fell back to immediately previous verifiable 08:20 run; workflow success, same-run artifact, latest.md/state.json hashes, recomputed snapshot hash, ledger integrity and frozen identity all passed."
+      "verification_note": "Expected 17:20 logical slot verified: workflow completed success before 21:00, same-run artifact matched, latest.md/state.json file hashes and recomputed snapshot hash matched provenance, ledger integrity passed, frozen identity checks passed."
     },
     "fractal": {
       "current_status": "N/A_CURRENT_ARTIFACT_UNVERIFIED",
@@ -160,7 +159,7 @@
   },
   "lineage": {
     "state_origin": "ACTUAL_STORED_RUN",
-    "run_record_source": "BASIC_OFFICIAL_AUTOMATION_2026-09-14T17:00:00+09:00",
+    "run_record_source": "BASIC_OFFICIAL_AUTOMATION_2026-09-14T21:00:00+09:00",
     "history_pointer": "official_state/history/btc_trend/2026-09.jsonl",
     "canonical_identity_verified": true,
     "cross_master_decision_dependency": false
@@ -172,7 +171,6 @@
   "do_not_reconstruct": [
     "unverified current fractal artifact",
     "unverified S/R strength reaction artifact",
-    "unverified expected 13:20 BTC leading-signal run",
     "private user account or position data"
   ]
 }
