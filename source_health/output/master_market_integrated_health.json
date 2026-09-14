@@ -1,9 +1,9 @@
 {
   "schema_version": "1.0",
   "system": "MASTER_MARKET_INTEGRATED_HEALTH",
-  "evaluated_at_utc": "2026-09-13T23:16:35.513613Z",
-  "overall_status": "FAILED",
-  "overall_icon": "🔴",
+  "evaluated_at_utc": "2026-09-14T00:26:50.825707Z",
+  "overall_status": "HISTORY RECOVERING",
+  "overall_icon": "🟡",
   "status_order": [
     "CURRENT OK",
     "HISTORY RECOVERING",
@@ -11,8 +11,8 @@
     "FAILED"
   ],
   "counts": {
-    "CURRENT OK": 3,
-    "HISTORY RECOVERING": 2,
+    "CURRENT OK": 4,
+    "HISTORY RECOVERING": 1,
     "STALE": 0,
     "FAILED": 0
   },
@@ -22,8 +22,8 @@
       "display_name": "Data Vault",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-13T22:58:15.226591Z",
-      "age_minutes": 18.3,
+      "timestamp_utc": "2026-09-13T23:58:02.249190Z",
+      "age_minutes": 28.8,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -38,8 +38,8 @@
       "display_name": "Stablecoin Windows",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-13T22:58:17.245702Z",
-      "age_minutes": 18.3,
+      "timestamp_utc": "2026-09-13T23:58:04.537178Z",
+      "age_minutes": 28.8,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -64,7 +64,7 @@
       "status": "CURRENT OK",
       "icon": "🟢",
       "timestamp_utc": "2026-09-13T23:15:51.271179Z",
-      "age_minutes": 0.7,
+      "age_minutes": 71.0,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -77,32 +77,26 @@
     {
       "component_id": "actor_retail",
       "display_name": "Actor Retail",
-      "status": "HISTORY RECOVERING",
-      "icon": "🟡",
-      "timestamp_utc": "2026-09-13T22:58:17.436313Z",
-      "age_minutes": 18.3,
-      "history_status": "PARTIAL_WINDOWS",
+      "status": "CURRENT OK",
+      "icon": "🟢",
+      "timestamp_utc": "2026-09-13T23:58:04.775491Z",
+      "age_minutes": 28.8,
+      "history_status": "OK",
       "reason_codes": [
-        "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
+        "OK"
       ],
-      "next_action": "현재 Retail proxy는 사용; 누락 1D/3D/7D는 동일원천 history 축적 대기",
+      "next_action": "조치 없음",
       "auto_recovery_expected": true,
       "source_path": "market_vault/output/latest_actor_flows.json",
-      "details": {
-        "missing_windows": [
-          "BTC:7D",
-          "ETH:7D"
-        ],
-        "retail_proxy_status": "OK"
-      }
+      "details": {}
     },
     {
       "component_id": "yen_carry",
       "display_name": "Yen Carry",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-10T23:37:50.316423Z",
-      "age_minutes": 4298.8,
+      "timestamp_utc": "2026-09-13T23:38:41.198576Z",
+      "age_minutes": 48.2,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -121,33 +115,7 @@
       }
     }
   ],
-  "registered_market_alerts": [
-    {
-      "source_id": "market_macro_liquidity",
-      "display_name": "MARKET Macro Backbone",
-      "impact": "CORE",
-      "status": "FAILED",
-      "raw_source_health_status": "FAILED",
-      "reason_codes": [
-        "QUALITY_CHECK_FAILED",
-        "LATEST_WORKFLOW_FAILED"
-      ],
-      "state_age_minutes": 20.7,
-      "workflow_file": "market_macro_liquidity_free_hourly.yml"
-    },
-    {
-      "source_id": "market_treasury_buyback",
-      "display_name": "MARKET Treasury Buyback",
-      "impact": "OPTIONAL",
-      "status": "FAILED",
-      "raw_source_health_status": "FAILED",
-      "reason_codes": [
-        "LATEST_WORKFLOW_FAILED"
-      ],
-      "state_age_minutes": 20.7,
-      "workflow_file": "market_macro_liquidity_free_hourly.yml"
-    }
-  ],
+  "registered_market_alerts": [],
   "policy": {
     "operational_health_only": true,
     "never_changes_master_score_or_direction": true,
