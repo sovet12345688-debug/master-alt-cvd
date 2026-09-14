@@ -1,0 +1,17 @@
+{
+  "system_id": "youtuber_view",
+  "display_name": "유튜버 관점방",
+  "status": "SHADOW_READY_RULES_CANONICALIZED",
+  "canonical_source": "money_os_work_v3/systems/youtuber_view/CANONICAL_RULES.md",
+  "isolation_overlay": "money_os_work_v3/overlays/RUNTIME_ISOLATION_OVERLAY.md",
+  "ui": "CURRENT_ROOM_VISIBLE_UI_FROZEN_NO_REDESIGN",
+  "runtime_owner": "youtuber_view_only",
+  "runtime_root": "money_os_work_v3/systems/youtuber_view/runtime",
+  "local_stores": ["source_health", "latest", "history/forecasts", "history/outcomes", "snapshots", "inputs", "artifacts"],
+  "cross_system_read": false,
+  "cross_system_write": false,
+  "legacy_global_runtime_after_cutover": "FORBIDDEN",
+  "manual_chart_input": "VIEWPOINT_AND_CHART_VALIDATION",
+  "schedule": {"mode": "MANUAL_EVENT_DRIVEN"},
+  "history_policy": "PROSPECTIVE_ONLY_NO_BACKFILL"
+}
