@@ -1,0 +1,16 @@
+{
+  "system_id": "market",
+  "display_name": "MASTER MARKET V1.2",
+  "status": "SHADOW_READY",
+  "canonical_source": "master_prompts/master_market_v1_2_current.md",
+  "machine_contract": "state/master_market_v1_2_contract.json",
+  "isolation_overlay": "money_os_work_v3/overlays/RUNTIME_ISOLATION_OVERLAY.md",
+  "ui": "EXISTING_5_SCREEN_UI_FROZEN",
+  "runtime_owner": "market_only",
+  "runtime_root": "money_os_work_v3/systems/market/runtime",
+  "local_stores": ["source_health", "latest", "history/official", "history/watch", "snapshots", "artifacts"],
+  "cross_system_read": false,
+  "cross_system_write": false,
+  "legacy_global_runtime_after_cutover": "FORBIDDEN",
+  "schedule": {"cadence": "hourly_HH00", "official_kst": ["01:00", "05:00", "09:00", "13:00", "17:00", "21:00"], "other_slots": "WATCH_ONLY"}
+}
