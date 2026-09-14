@@ -22,6 +22,7 @@ Updated: 2026-09-14 KST
 | Shadow bootstrap branch precedence hardening | PASS · V3 control from shadow / current canonicals from main |
 | V3 isolation validator | PASS |
 | V3 dedicated Guard workflow | UPDATED · isolation + six workers + unit tests |
+| Existing MASTER MARKET Contract Guard | REPAIRED · stale UI tokens replaced with current canonical equivalents |
 | Work shadow initiation decision | GO |
 | Six Worker Shadow packages | BUILT · per-system prompt/manifest/runtime contract |
 | Six source-chat ↔ canonical ↔ worker parity checks | PASS; MARKET current-main remains explicit HOLD |
