@@ -1,0 +1,18 @@
+{
+  "system_id": "trading",
+  "display_name": "MASTER TRADING",
+  "status": "SHADOW_READY",
+  "canonical_source": "master_prompts/master_trading_current.md",
+  "machine_contract": "state/master_trading_current_contract.json",
+  "isolation_overlay": "money_os_work_v3/overlays/RUNTIME_ISOLATION_OVERLAY.md",
+  "ui": "EXISTING_4_SECTION_UI_FROZEN",
+  "runtime_owner": "trading_only",
+  "runtime_root": "money_os_work_v3/systems/trading/runtime",
+  "local_stores": ["source_health", "latest", "history/manual", "snapshots", "inputs", "artifacts", "outcome"],
+  "cross_system_read": false,
+  "cross_system_write": false,
+  "legacy_global_runtime_after_cutover": "FORBIDDEN",
+  "manual_chart_input": "EXECUTION_ENTRY_STOP_TARGET_VALIDATION",
+  "schedule": {"mode": "MANUAL_ONLY"},
+  "private_account_data_public_repo": "FORBIDDEN"
+}
