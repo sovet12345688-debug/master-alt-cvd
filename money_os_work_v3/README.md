@@ -1,6 +1,6 @@
 # MONEY OS WORK V3 — 6-SYSTEM ABSOLUTE ISOLATION
 
-Status: SHADOW / REVIEW READY
+Status: SHADOW / VERSION AUDIT PASS / WORK SHADOW GO
 Created: 2026-09-14 KST
 Target runtime: ChatGPT Work
 Production cutover: NOT APPROVED / NOT ACTIVE
@@ -43,6 +43,8 @@ For every system:
 - no historical value is reconstructed when it was not actually stored;
 - N/A is never converted to zero or silently backfilled;
 - a persistence failure does not authorize invented history.
+
+During shadow validation, V3 control/policy files come from the shadow branch, while the five existing production canonicals are resolved from the current `main` head before each run. This prevents scheduled data updates on `main` from making the shadow worker stale. `youtuber_view` is the only exception because it had no prior durable main canonical; its V3 canonical must pass a manual parity run before cutover.
 
 ## 4. UI FREEZE
 The six existing user-visible output/UI contracts are immutable during this migration.
@@ -100,7 +102,13 @@ Logical subpaths:
 
 A system may read only its own namespace plus its own canonical/contract files and direct external public sources.
 
-## 9. CUTOVER SAFETY
+## 9. VERSION AUDIT
+Latest-version verification is recorded in `audit/LATEST_VERSION_AUDIT_20260914.md`.
+Result = `WORK SHADOW GO`.
+
+Five pre-existing production canonical blobs were verified identical between current main and the shadow fork at audit time. BTC remains V2.6 production with V3.0 research-only. YouTuber's latest known Scorecard V1 rules are captured for shadow but require first manual parity validation.
+
+## 10. CUTOVER SAFETY
 This V3 branch is additive and reversible. It does not disable current automations and does not modify main.
 Final cutover requires explicit user approval only after shadow validation confirms:
 - all six systems load the correct canonical;
