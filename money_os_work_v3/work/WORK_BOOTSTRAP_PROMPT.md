@@ -18,15 +18,33 @@ Before booting a worker, compare the current `main` canonical blob with `money_o
 
 The exception is `youtuber_view`, which had no prior durable `main` canonical. During shadow it uses `money_os_work_v3/systems/youtuber_view/CANONICAL_RULES.md` from the V3 branch and must pass a manual parity run before production cutover.
 
+## SOURCE CHAT PARITY — MANDATORY
+The user supplied one exact source conversation for each of the six systems. Read `money_os_work_v3/audit/CHAT_SOURCE_LINKS_20260914.md` from the V3 branch and inspect each linked conversation in full before that worker can be declared cutover-ready.
+
+For each system compare:
+- latest approved version/identity;
+- latest UI/output lock;
+- schedule/manual mode;
+- scoring/formulas/gates;
+- data source/N/A/freshness behavior;
+- history/persistence/no-backfill rules;
+- later approved overlays/patches that did not cause a version bump;
+- research-only material that must not replace production;
+- manual image/chart workflow;
+- footer/follow-up behavior.
+
+If a source chat conflicts with GitHub canonical or the V3 manifest, mark `CHAT↔CANONICAL CONFLICT`, stop only that worker's cutover, and prepare a reversible system-scoped patch. Never use another worker to resolve or fill the conflict.
+
 Read V3 control files first, from `money-os-work-v3-isolated-20260914`, in this order:
 1. `money_os_work_v3/README.md`
 2. `money_os_work_v3/registry/SYSTEM_REGISTRY.json`
 3. `money_os_work_v3/registry/ISOLATION_POLICY.json`
 4. `money_os_work_v3/audit/LATEST_VERSION_AUDIT_20260914.md`
-5. `money_os_work_v3/work/MONEY_OS_WORK_INSTRUCTIONS.md`
-6. `money_os_work_v3/overlays/RUNTIME_ISOLATION_OVERLAY.md`
-7. `money_os_work_v3/work/WORK_TASK_BLUEPRINTS.md`
-8. `money_os_work_v3/work/CHANGE_SYNC_POLICY.md`
+5. `money_os_work_v3/audit/CHAT_SOURCE_LINKS_20260914.md`
+6. `money_os_work_v3/work/MONEY_OS_WORK_INSTRUCTIONS.md`
+7. `money_os_work_v3/overlays/RUNTIME_ISOLATION_OVERLAY.md`
+8. `money_os_work_v3/work/WORK_TASK_BLUEPRINTS.md`
+9. `money_os_work_v3/work/CHANGE_SYNC_POLICY.md`
 
 Then prepare the following seven user surfaces without changing any existing system UI:
 - `MONEY OS · CONTROL` — routing/status only, no market data
