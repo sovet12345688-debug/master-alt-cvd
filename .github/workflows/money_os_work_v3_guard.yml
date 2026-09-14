@@ -1,0 +1,33 @@
+name: MONEY OS WORK V3 Isolation Guard
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'money_os_work_v3/**'
+      - '.github/workflows/money_os_work_v3_guard.yml'
+  push:
+    branches:
+      - 'money-os-work-v3-isolated-20260914'
+    paths:
+      - 'money_os_work_v3/**'
+      - '.github/workflows/money_os_work_v3_guard.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-v3-isolation-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate six-system absolute runtime isolation
+        run: python money_os_work_v3/tools/validate_v3_isolation.py
+
+# Deliberately does NOT call legacy five-MASTER integration,
+# Shared Fact Vault, global Source Health, global WATCH, global OFFICIAL State,
+# or another system's runtime health. This guard validates only the V3 isolation contract.
