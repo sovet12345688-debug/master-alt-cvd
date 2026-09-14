@@ -2,6 +2,8 @@
 
 Mode: NON-DESTRUCTIVE SHADOW MIGRATION
 
+Execution snapshot (2026-09-14): Phases 1–3 are complete at the Worker-package/contract-smoke level. Six system-local prompts and runtime contracts pass, all six SOURCE CHAT parity audits are complete, and the seven surface specs remain inactive. No live schedule, notification, Production write, legacy disablement, merge, or cutover has occurred. MARKET remains current-main blocked pending approval of its label-only Shadow candidate.
+
 ## Phase 0 — completed in this branch
 - Preserve existing production main branch.
 - Preserve current Chat automations.

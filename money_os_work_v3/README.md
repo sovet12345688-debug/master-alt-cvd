@@ -1,6 +1,6 @@
 # MONEY OS WORK V3 — 6-SYSTEM ABSOLUTE ISOLATION
 
-Status: SHADOW / VERSION AUDIT PASS / WORK SHADOW GO
+Status: SIX WORKER SHADOW PACKAGES BUILT AND VALIDATED / PRODUCTION CUTOVER HOLD
 Created: 2026-09-14 KST
 Target runtime: ChatGPT Work
 Production cutover: NOT APPROVED / NOT ACTIVE
@@ -12,7 +12,7 @@ MONEY OS WORK V3 is a top-level operating shell for six existing MONEY systems:
 2. `alt_final20` — ALT 2
 3. `market` — MASTER MARKET
 4. `btc_trend` — MASTER BTC TREND
-5. `youtuber_view` — 유튜버 관점방
+5. `youtuber_view` — YOUTUBER VIEW INTELLIGENCE & FORECAST TRACKER V2
 6. `trading` — MASTER TRADING
 
 The top-level MONEY OS is **control-plane only**. It may route a request to one system and report whether that system finished, but it must never become a shared market-data, shared-score, shared-history, shared-state, shared-source-health, or shared-conclusion layer.
@@ -102,14 +102,24 @@ Logical subpaths:
 
 A system may read only its own namespace plus its own canonical/contract files and direct external public sources.
 
-## 9. VERSION AUDIT
-Latest-version verification is recorded in `audit/LATEST_VERSION_AUDIT_20260914.md`.
-Result = `WORK SHADOW GO`.
+## 9. SOURCE PARITY AND WORKER SHADOWS
+Full six-chat verification is recorded in `audit/SOURCE_CHAT_PARITY_20260914.md` and its machine-readable JSON. Every source was inspected in full against the ten mandatory axes.
 
-Five pre-existing production canonical blobs were verified identical between current main and the shadow fork at audit time. BTC remains V2.6 production with V3.0 research-only. YouTuber's latest known Scorecard V1 rules are captured for shadow but require first manual parity validation.
+Each system now has:
+- a system-local `WORKER_SHADOW_PROMPT.md`;
+- a system-local `runtime/RUNTIME_CONTRACT.json`;
+- manifest-pinned canonical, prompt, runtime-contract and source-chat evidence;
+- fail-closed bootstrap validation and temporary local-persistence smoke coverage.
+
+ALT1, ALT2, BTC, YouTuber and TRADING pass. MARKET passes with the reversible Shadow candidate but remains blocked against current `main` because its latest approved five easy-Korean SCREEN4 labels are not yet merged. No formula, threshold, source identifier, or score weight changed.
+
+Validation commands:
+`python money_os_work_v3/tools/validate_v3_isolation.py`
+`python money_os_work_v3/tools/validate_worker_shadows.py`
+`python -m unittest discover -s money_os_work_v3/tests -v`
 
 ## 10. CUTOVER SAFETY
-This V3 branch is additive and reversible. It does not disable current automations and does not modify main.
+This V3 branch is additive and reversible. It does not disable current automations, activate Work schedules, or modify `main`.
 Final cutover requires explicit user approval only after shadow validation confirms:
 - all six systems load the correct canonical;
 - UI is unchanged;

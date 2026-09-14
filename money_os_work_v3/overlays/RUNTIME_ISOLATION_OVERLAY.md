@@ -32,12 +32,12 @@ Backend override after cutover:
 - no MARKET/ALT/TRADING/YouTuber data may be read.
 
 ## YOUTUBER VIEW
-Use `systems/youtuber_view/CANONICAL_RULES.md` for durable scorecard/history rules while keeping current room-visible UI frozen.
+Use `systems/youtuber_view/CANONICAL_RULES.md` for the V2 intelligence/forecast wrapper and retained SCORECARD V1 formulas while keeping current room-visible UI frozen.
 All forecast/outcome/input records remain under `systems/youtuber_view/runtime/`.
 No other MONEY system may be read for counter-analysis; current counterevidence must be collected directly inside this system.
 
 ## TRADING
-Preserve `master_prompts/master_trading_current.md` analytical gates and 4-section UI exactly.
+Preserve `master_prompts/master_trading_current.md` analytical gates, its 4 semantic sections, and the exact 6-screen presentation in `money_master_os/masters/trading/MASTER-TRADING-UI-V2-FINAL.md`.
 Backend isolation override supersedes only its older shared-fact permission:
 - another MASTER's stored public fact is not reusable;
 - all Current/Entry/Trigger/SL/TP/R:R and optional context must be independently revalidated by TRADING from direct sources or TRADING-owned artifacts;

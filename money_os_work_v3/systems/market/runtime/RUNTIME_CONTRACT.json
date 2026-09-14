@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "system_id": "market",
+  "worker_instance": "money_os_work_v3_market_shadow",
+  "runtime_root": "money_os_work_v3/systems/market/runtime",
+  "stores": ["source_health", "latest", "history/official", "history/watch", "snapshots", "artifacts"],
+  "read_scope": "OWN_RUNTIME_DIRECT_EXTERNAL_AND_APPROVED_OWN_CANONICAL_ONLY",
+  "write_scope": "OWN_RUNTIME_ONLY",
+  "history": {"prospective_only": true, "backfill": false, "official_watch_separated": true},
+  "missing_data": {"na_to_zero": false, "guessing": false, "silent_stale_reuse": false, "consolidated_na_required": true},
+  "schedule": {"timezone": "Asia/Seoul", "cadence": "hourly_HH00", "official_kst": ["01:00", "05:00", "09:00", "13:00", "17:00", "21:00"], "other_slots": "WATCH_ONLY"},
+  "shadow": {"enabled": true, "candidate_mode_required": true, "notifications_enabled": false, "production_writes_enabled": false, "schedule_activation_enabled": false, "cutover_enabled": false}
+}

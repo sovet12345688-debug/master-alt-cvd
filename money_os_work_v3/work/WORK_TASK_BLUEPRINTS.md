@@ -42,12 +42,12 @@ Canonical: `master_prompts/master_btc_trend_v2_6_current.md` plus its current ma
 Keep V2.6 production and V3.0 research separation. Keep exact 3-screen BASIC OFFICIAL. No hourly WATCH. Precision report starts when the user supplies the currently required chart images/manual request; images belong to BTC only.
 
 ## YouTuber View Work task
-Canonical: `money_os_work_v3/systems/youtuber_view/CANONICAL_RULES.md` plus current room-visible UI as frozen presentation.
-Manual/event-driven. Every new forecast is stored before outcome resolution. Later outcome scoring uses only subsequent data. No retroactive records. User-supplied screenshots/charts belong only to this system.
+Canonical: `money_os_work_v3/systems/youtuber_view/CANONICAL_RULES.md` V2 wrapper plus current room-visible UI as frozen presentation.
+Manual/event-driven. Every new forecast is stored before outcome resolution. View changes append rather than overwrite. Creator View and MY VIEW stay separate. Later outcome scoring uses only subsequent data. No retroactive records. User-supplied screenshots/charts belong only to this system.
 
 ## TRADING Work task
-Canonical: `master_prompts/master_trading_current.md` plus machine contract.
-Manual only. No recurring schedule. Directly validate Current/Entry/Trigger/SL/TP/R:R and preserve exact current 4-section visible format. Never use another MONEY system's conclusion or stored market fact as an execution gate or fallback.
+Canonical: `master_prompts/master_trading_current.md` plus machine contract and `money_master_os/masters/trading/MASTER-TRADING-UI-V2-FINAL.md`.
+Manual only. No recurring schedule. Directly validate Current/Entry/Trigger/SL/TP/R:R and preserve the exact 4-semantic-section/6-visual-screen format. Never use another MONEY system's conclusion or stored market fact as an execution gate or fallback.
 
 ## MONEY OS CONTROL Work conversation
 This surface is not a seventh analytical system. It may:

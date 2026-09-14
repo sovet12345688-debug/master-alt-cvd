@@ -2,6 +2,8 @@
 
 Use this in a new ChatGPT Work conversation inside the MONEY project after the V3 review branch is approved for shadow operation.
 
+Shadow package state as of 2026-09-14: all six SOURCE CHAT bodies have been inspected, six per-system Worker Shadow packages pass validation, and seven inactive Work surface specs are prepared. Verify `audit/SOURCE_CHAT_PARITY_20260914.json` and `audit/WORKER_SHADOW_VALIDATION_20260914.json` before launch. Do not reinterpret this prepared state as schedule activation or Production cutover.
+
 ---
 
 Build and operate `MONEY OS` from GitHub repository `sovet12345688-debug/master-alt-cvd`.

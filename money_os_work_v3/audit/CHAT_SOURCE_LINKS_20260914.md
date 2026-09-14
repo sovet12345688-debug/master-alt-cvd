@@ -30,3 +30,7 @@ Required comparison axes:
 If source-chat content conflicts with a GitHub canonical, do not guess. Mark `CHAT↔CANONICAL CONFLICT`, stop that worker's cutover, and prepare a system-scoped reversible patch for review. Do not propagate the conflict to another worker.
 
 No Production cutover for a system until its source-chat parity result is PASS.
+
+## Completion record
+
+All six conversations were inspected in full on 2026-09-14. Extraction metadata, SHA-256 evidence, ten-axis findings, reversible fixes, and per-worker results are recorded in `SOURCE_CHAT_PARITY_20260914.md` and `SOURCE_CHAT_PARITY_20260914.json`. MARKET passes only with the Shadow candidate and remains a current-main cutover hold.

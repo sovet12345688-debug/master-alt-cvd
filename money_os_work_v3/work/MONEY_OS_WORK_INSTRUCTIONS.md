@@ -49,7 +49,9 @@ The migration is backend-only.
 The system's existing canonical user-visible format is authoritative and must be reproduced exactly in semantic structure.
 Do not simplify, reorder, rename, add screens, remove screens, change score formulas, change thresholds, or redesign tables during migration.
 
-For `youtuber_view`, current room-visible UI is frozen. The new canonical file standardizes storage/scoring constraints only and is not permission to redesign the room.
+For `youtuber_view`, current room-visible UI is frozen. The V2 canonical wrapper standardizes evidence classes, append-only view changes, MY VIEW separation, and storage/scoring constraints; it is not permission to redesign the room.
+
+For `trading`, the four canonical semantic sections render through the locked six-screen `MASTER-TRADING-UI-V2-FINAL` presentation. Neither count may be simplified or treated as a conflict.
 
 ## E. MANUAL CHART INPUTS
 The user continues to upload chart images manually for:
