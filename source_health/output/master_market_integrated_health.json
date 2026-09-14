@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "system": "MASTER_MARKET_INTEGRATED_HEALTH",
-  "evaluated_at_utc": "2026-09-14T04:20:03.032834Z",
+  "evaluated_at_utc": "2026-09-14T05:18:31.918943Z",
   "overall_status": "FAILED",
   "overall_icon": "🔴",
   "status_order": [
@@ -22,8 +22,8 @@
       "display_name": "Data Vault",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-14T03:59:43.654928Z",
-      "age_minutes": 20.3,
+      "timestamp_utc": "2026-09-14T04:59:27.928128Z",
+      "age_minutes": 19.1,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -38,8 +38,8 @@
       "display_name": "Stablecoin Windows",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-14T03:59:46.392513Z",
-      "age_minutes": 20.3,
+      "timestamp_utc": "2026-09-14T04:59:30.876970Z",
+      "age_minutes": 19.0,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -63,8 +63,8 @@
       "display_name": "Derivatives",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-14T03:19:17.731665Z",
-      "age_minutes": 60.8,
+      "timestamp_utc": "2026-09-14T04:19:42.572237Z",
+      "age_minutes": 58.8,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -79,8 +79,8 @@
       "display_name": "Actor Retail",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-14T03:59:46.630416Z",
-      "age_minutes": 20.3,
+      "timestamp_utc": "2026-09-14T04:59:31.117839Z",
+      "age_minutes": 19.0,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -96,7 +96,7 @@
       "status": "CURRENT OK",
       "icon": "🟢",
       "timestamp_utc": "2026-09-13T23:38:41.198576Z",
-      "age_minutes": 281.4,
+      "age_minutes": 339.8,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -117,16 +117,28 @@
   ],
   "registered_market_alerts": [
     {
-      "source_id": "market_etf_flows",
-      "display_name": "MARKET BTC/ETH ETF Flows",
+      "source_id": "market_macro_liquidity",
+      "display_name": "MARKET Macro Backbone",
       "impact": "CORE",
       "status": "FAILED",
       "raw_source_health_status": "FAILED",
       "reason_codes": [
         "LATEST_WORKFLOW_FAILED"
       ],
-      "state_age_minutes": 92.7,
-      "workflow_file": "market_etf_flows_hourly.yml"
+      "state_age_minutes": 80.4,
+      "workflow_file": "market_macro_liquidity_free_hourly.yml"
+    },
+    {
+      "source_id": "market_treasury_buyback",
+      "display_name": "MARKET Treasury Buyback",
+      "impact": "OPTIONAL",
+      "status": "FAILED",
+      "raw_source_health_status": "FAILED",
+      "reason_codes": [
+        "LATEST_WORKFLOW_FAILED"
+      ],
+      "state_age_minutes": 80.4,
+      "workflow_file": "market_macro_liquidity_free_hourly.yml"
     }
   ],
   "policy": {
