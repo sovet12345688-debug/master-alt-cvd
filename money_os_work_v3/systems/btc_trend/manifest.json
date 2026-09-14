@@ -1,0 +1,18 @@
+{
+  "system_id": "btc_trend",
+  "display_name": "MASTER BTC TREND V2.6",
+  "status": "SHADOW_READY",
+  "canonical_source": "master_prompts/master_btc_trend_v2_6_current.md",
+  "machine_contract": "state/master_btc_trend_v2_6_contract.json",
+  "ui_contract": "master_prompts/master_btc_trend_v2_6_ui_final.md",
+  "isolation_overlay": "money_os_work_v3/overlays/RUNTIME_ISOLATION_OVERLAY.md",
+  "ui": "EXISTING_3_SCREEN_UI_FROZEN",
+  "runtime_owner": "btc_trend_only",
+  "runtime_root": "money_os_work_v3/systems/btc_trend/runtime",
+  "local_stores": ["source_health", "latest", "history/official", "snapshots", "inputs", "artifacts", "outcome"],
+  "cross_system_read": false,
+  "cross_system_write": false,
+  "legacy_global_runtime_after_cutover": "FORBIDDEN",
+  "manual_chart_input": "PRECISION_REPORT",
+  "schedule": {"official_kst": ["05:00", "08:00", "13:00", "17:00", "21:00"], "watch": "NONE"}
+}
