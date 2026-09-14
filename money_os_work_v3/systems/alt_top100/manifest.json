@@ -1,0 +1,15 @@
+{
+  "system_id": "alt_top100",
+  "display_name": "MASTER ALT 1 · TOP100 V4.8",
+  "status": "SHADOW_READY",
+  "canonical_source": "master_prompts/master_alt_top100_v4_8_current.md",
+  "isolation_overlay": "money_os_work_v3/overlays/RUNTIME_ISOLATION_OVERLAY.md",
+  "ui": "EXISTING_4_SCREEN_UI_FROZEN",
+  "runtime_owner": "alt_top100_only",
+  "runtime_root": "money_os_work_v3/systems/alt_top100/runtime",
+  "local_stores": ["source_health", "latest", "history/official", "history/watch", "snapshots", "artifacts", "outcome"],
+  "cross_system_read": false,
+  "cross_system_write": false,
+  "legacy_global_runtime_after_cutover": "FORBIDDEN",
+  "schedule": {"cadence": "hourly_HH30", "official_kst": ["10:30"], "other_slots": "WATCH_ONLY"}
+}
