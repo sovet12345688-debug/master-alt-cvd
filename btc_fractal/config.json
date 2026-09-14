@@ -1,0 +1,113 @@
+{
+  "engine": "BTC_HISTORICAL_REGIME_OUTCOME_V0_4_0",
+  "schema_version": "0.4.0",
+  "start_date": "2011-01-01",
+  "feature_windows_days": [7, 30, 90, 180, 365],
+  "up_targets_pct": [30, 50, 100, 150, 200],
+  "down_targets_pct": [-20, -30, -50, -70],
+  "outcome_horizons_days": [30, 90, 180, 365],
+  "analog_top_k": 12,
+  "analog_min_separation_days": 21,
+  "episode_reversal_pct": 0.2,
+  "episode_max_days": 365,
+  "min_complete_features": 8,
+  "min_analog_episodes_high_confidence": 8,
+  "min_distinct_years_high_confidence": 5,
+  "community_asset_metrics": ["PriceUSD", "CapMVRVCur", "CapMrktCurUSD", "SplyCur", "CapMVRVZ", "CapRealUSD", "SOPR", "AdrActCnt", "TxCnt", "HashRate"],
+  "feature_group_weights": {"price_state": 0.2, "price_path": 0.4, "onchain_state": 0.15, "onchain_path": 0.1, "macro": 0.15},
+  "high_confidence_min_score": 75,
+  "confirmation_acceptance": {"min_confirmed_cases": 20, "min_confirmed_accuracy_gain_pp": 3.0, "min_conflict_cases": 10, "max_conflict_accuracy_gap_pp": -3.0, "min_both_confirmed_cases": 10, "min_both_confirmed_accuracy_gain_pp": 6.0},
+  "confidence_calibration_acceptance": {"min_high_cases": 10, "min_medium_cases": 10, "min_high_accuracy_gain_pp": 5.0, "max_high_coverage_pct": 50.0, "monotonic_tolerance_pp": 2.0},
+  "v032": {
+    "class_prior_exponent": 0.5, "similarity_weight_power": 2.0, "abstain_support_margin": 0.1, "conditional_price_pool_k": 36, "conditional_min_pool": 12,
+    "core_acceptance": {"min_independent_episodes": 30, "min_coverage_pct": 60.0, "min_balanced_accuracy": 55.0, "min_balanced_gain_vs_old_pp": 3.0, "min_accuracy_gap_vs_naive_pp": -2.0, "min_each_class_recall_pct": 35.0, "min_minority_prediction_pct": 10.0},
+    "confidence_acceptance": {"min_high_cases": 8, "min_high_gain_pp": 7.0, "max_high_coverage_pct": 35.0, "monotonic_tolerance_pp": 3.0},
+    "domain_acceptance": {"min_agree_cases": 10, "min_conflict_cases": 8, "min_agree_gain_pp": 3.0, "max_conflict_gap_pp": -3.0}
+  },
+  "v033": {
+    "balanced_per_class_k": 5, "min_per_class": 5, "min_class_score_gap": 0.75, "min_pair_wins": 3, "min_metric_wins": 2,
+    "confidence_grade": {"medium_min_gap": 1.5, "high_min_gap": 3.0, "medium_min_pair_wins": 4, "high_min_pair_wins": 5, "medium_min_score": 55, "high_min_score": 75, "high_min_distinct_years": 6},
+    "core_acceptance": {"min_independent_episodes": 30, "min_coverage_pct": 50.0, "min_balanced_accuracy": 55.0, "min_balanced_gain_vs_v032_pp": 3.0, "min_accuracy_gap_vs_always_up_pp": -2.0, "min_each_class_recall_pct": 35.0, "min_minority_prediction_pct": 25.0},
+    "confidence_acceptance": {"min_high_cases": 5, "min_high_gain_pp": 7.0, "max_high_coverage_pct": 30.0, "monotonic_tolerance_pp": 3.0}
+  },
+  "v034": {
+    "top_k_per_regime": 5, "min_regime_representatives": 4, "global_neighbor_k": 24, "full_support_representatives": 10, "full_support_years": 5,
+    "score_weights": {"absolute": 0.4, "normalized": 0.4, "enrichment": 0.2},
+    "direction_min_score_gap": 4.0, "direction_balance_temperature": 9.0,
+    "acceptance": {"min_independent_episodes": 30, "min_direction_coverage_pct": 50.0, "min_balanced_accuracy": 55.0, "min_each_class_recall_pct": 35.0, "min_minority_prediction_pct": 20.0, "min_regime_exact_accuracy": 24.0, "min_regime_top2_accuracy": 45.0}
+  },
+  "v035": {
+    "top_k_per_regime": 5, "min_regime_representatives": 4, "full_support_representatives": 10, "full_support_years": 5,
+    "score_weights": {"absolute": 0.45, "normalized": 0.55},
+    "direction_min_regime_margin": 3.0, "direction_balance_temperature": 8.0,
+    "acceptance": {"min_independent_episodes": 30, "min_regime_exact_accuracy": 40.0, "min_exact_gain_vs_naive_pp": 3.0, "min_balanced_top1_recall": 30.0, "min_balanced_top2_recall": 50.0, "min_direction_coverage_pct": 45.0, "min_direction_balanced_accuracy": 55.0, "min_each_direction_recall_pct": 35.0, "min_minority_direction_pct": 20.0}
+  },
+  "v036": {"price_pool_k": 40, "domain_per_class_k": 5, "domain_min_per_class": 4, "domain_min_score_gap": 1.25, "domain_min_pair_wins": 3},
+  "v037": {
+    "outcome_horizon_days": 180,
+    "bottom_up_target": 0.30,
+    "bottom_adverse_target": -0.15,
+    "bottom_min_drawdown": -0.18,
+    "top_down_target": -0.20,
+    "top_adverse_target": 0.20,
+    "top_max_drawdown_from_high": -0.12,
+    "top_min_ret90": 0.25,
+    "zone_cluster_gap_days": 14,
+    "analog_k": 6,
+    "min_positive_anchors": 5,
+    "gap_scale": 6.0,
+    "full_support_anchors": 12,
+    "high_score_quantile": 0.75,
+    "acceptance": {"min_positive_cases": 6, "min_auc": 65.0, "min_top_quartile_lift": 1.5}
+  },
+  "v040": {
+    "history_start": "2019-09-08",
+    "download_workers": 20,
+    "min_query_features": 6,
+    "price_pool_k": 40,
+    "per_class_k": 5,
+    "min_per_class": 4,
+    "min_score_gap": 2.0,
+    "min_pair_wins": 3,
+    "acceptance": {
+      "min_modern_evaluable": 12,
+      "min_signal_cases": 10,
+      "min_signal_coverage_pct": 40.0,
+      "min_balanced_accuracy": 55.0,
+      "min_each_recall_pct": 30.0,
+      "min_minority_prediction_pct": 20.0,
+      "min_utility_cases": 6,
+      "min_confirm_gain_pp": 5.0,
+      "max_conflict_gap_pp": -5.0
+    }
+  },
+  "v050": {
+    "source_url": "https://farside.co.uk/bitcoin-etf-flow-all-data/",
+    "min_trading_days_for_state": 20,
+    "up_positive_share_20d": 0.55,
+    "down_positive_share_20d": 0.45,
+    "acceptance": {
+      "min_independent_evaluable": 10,
+      "min_signal_cases": 6,
+      "min_signal_coverage_pct": 40.0,
+      "min_balanced_accuracy": 55.0,
+      "min_each_recall_pct": 30.0,
+      "min_minority_prediction_pct": 20.0,
+      "min_utility_cases": 4,
+      "min_confirm_gain_pp": 5.0,
+      "max_conflict_gap_pp": -5.0
+    }
+  },
+  "notes": [
+    "V0.3.5 remains the frozen FULL_PASS six-regime price core and secondary direction layer.",
+    "V0.3.6 showed on-chain/macro do not add validated confirmation utility; they remain context-only and cannot alter core direction.",
+    "V0.3.7 bottom/top specialists are experimental: bottom narrowly missed the locked AUC gate and top failed AUC/lift; neither is validated or integrated.",
+    "V0.4.2 corrected the Layer B validation denominator to the same derivatives era; Layer B still failed locked signal coverage, balanced-accuracy and utility gates and remains shadow/read-only.",
+    "V0.5.0 Layer C uses Farside US spot-BTC ETF daily net-flow history beginning in the institutional ETF era.",
+    "Layer C uses only ETF flow observations strictly before the BTC query date, so same-day unpublished/final flow cannot leak into the decision.",
+    "ETF history is intentionally treated as context/confirmation until at least 10 independent evaluable OOS episodes exist; a short ETF era cannot create a strong standalone probability.",
+    "Layer C directional state is pre-locked: UP requires both 5-trading-day and 20-trading-day total net flow positive plus >=55% positive-flow days over 20 trading days; DOWN is the symmetric negative case with <=45% positive days; otherwise ABSTAIN.",
+    "Score maximization means improving validated discrimination, coverage, stability and calibration, never inflating numbers or lowering gates.",
+    "No future leakage, no N/A zero-fill, no current-outcome tuning, and MASTER BTC TREND remains untouched."
+  ]
+}
