@@ -1,0 +1,91 @@
+{
+  "schema_version": "1.0",
+  "state_status": "STORED",
+  "master_id": "btc_trend",
+  "display_name": "MASTER BTC TREND",
+  "master_version": "V2.6 PRODUCTION",
+  "source_path": "master_prompts/master_btc_trend_v2_6_current.md",
+  "contract_path": "state/master_btc_trend_v2_6_contract.json",
+  "run": {
+    "run_type": "OFFICIAL",
+    "run_id": "MBTC-V26-20260916-0500-KST",
+    "executed_kst": "2026-09-16T05:00:00+09:00",
+    "updated_kst": "2026-09-16T05:00:00+09:00"
+  },
+  "validity": {
+    "valid_until_kst": null,
+    "next_official_run_kst": "2026-09-16T08:00:00+09:00",
+    "freshness_status": "CURRENT"
+  },
+  "data_quality": {
+    "coverage_pct": 60.0,
+    "confidence": null,
+    "known_na": ["FRACTAL_CURRENT_ARTIFACT_UNVERIFIED", "SR_STRENGTH_CURRENT_REACTION_MODEL_UNVERIFIED", "BTC_LEADING_SIGNAL_EXPECTED_SLOT_UNVERIFIABLE_STALE_FALLBACK"],
+    "stale_sources": [],
+    "time_mismatch_warnings": []
+  },
+  "decision": {
+    "direction": "SHORT",
+    "permission_or_environment": "SHORT_DOMINANT_GAP12_WAIT_NONCHASE",
+    "action": "⏳ 아직 신규포지션 대기",
+    "risk_veto": [],
+    "invalidations": ["67.0K 하회 시 기존 LIVE LONG PLAN 구조 무효"]
+  },
+  "core_state": {
+    "market_snapshot": {
+      "current_price_usdt": 76220.3,
+      "price_source": "Bitget USDT Futures current validated microstructure"
+    },
+    "direction_ratio": {"long": 44, "short": 56, "dominant": "SHORT", "status": "CURRENT_LIMITED_DISPLAY_COVERAGE_60"},
+    "trend": {"state": "SHORT 12pt 우세", "strength": 12, "coverage_pct": 60.0, "coverage_grade": "C", "strong_confirmation": false},
+    "bottom": {"score": 29, "band": "낮음", "coverage_pct": 57.0, "coverage_grade": "C", "entry_gate_effect": 0},
+    "top": {"score": 43, "band": "가능성 관찰", "coverage_pct": 50.0, "coverage_grade": "C", "entry_gate_effect": 0},
+    "accumulation": {"score": 45, "status": "가능성 관찰", "coverage_pct": 53.0, "coverage_grade": "C", "entry_gate_effect": 0},
+    "support_resistance": {
+      "short_term": {"support": null, "resistance": null, "strength": "N/A_CURRENT_REACTION_MODEL_UNVERIFIED"},
+      "mid_term": {"support": null, "resistance": null, "strength": "N/A_CURRENT_REACTION_MODEL_UNVERIFIED"},
+      "long_term": {"support": null, "resistance": null, "strength": "1W_NOT_APPROVED_INSUFFICIENT_SAMPLE"}
+    },
+    "derivatives": {
+      "source": "Bitget USDT Futures BTC same venue/contract family",
+      "snapshot_time_utc": "2026-09-15T19:00:00Z",
+      "status": "DELEVERAGING",
+      "mark_price": 75969.9,
+      "oi_change_1h_pct": -3.56469845426145,
+      "oi_change_4h_pct": -3.9060912081949506,
+      "oi_change_24h_pct": -5.99750835366507,
+      "funding_rate": 0.000042,
+      "microstructure_generated_at_utc": "2026-09-15T19:19:00.425217Z",
+      "cvd_notional_usdt": -54525159.087059975,
+      "taker_buy_ratio": 0.4636727816738508,
+      "taker_sell_ratio": 0.5363272183261493,
+      "long_position_ratio": 0.3121,
+      "short_position_ratio": 0.6879,
+      "basis_bps": -3.699290962567714
+    },
+    "btc_leading_signal_engine": {
+      "mode": "READ_ONLY_ZERO_WEIGHT",
+      "selection_status": "STALE_FALLBACK",
+      "logical_source_slot_kst": "2026-09-15T17:20:00+09:00",
+      "current_user_state": "롱 조기신호 / 대기",
+      "strict_detection_rows": 1,
+      "strict_seeds": 0,
+      "positions": 0,
+      "ledger_integrity": "PASS",
+      "frozen_identity": "PASS",
+      "production_weight": 0
+    },
+    "fractal": {"current_status": "N/A_CURRENT_ARTIFACT_UNVERIFIED", "master_weight": 0},
+    "live_long_plan": {
+      "plan_id": "BTC-SWING-20260902-03",
+      "T1": "76.3~76.8K / 2%",
+      "T2": "74.5~75.2K / 4%",
+      "T3": "69.3~70.8K / 6%",
+      "structural_sl": "67.0K",
+      "targets": ["79.3K", "81.5K", "82.8K"],
+      "status": "CARRIED_FORWARD_NOT_INVALIDATED"
+    }
+  },
+  "lineage": {"state_origin": "ACTUAL_STORED_RUN", "canonical_identity_verified": true, "cross_master_decision_dependency": false},
+  "privacy": {"contains_personal_account_data": false, "public_repository_safe": true}
+}
