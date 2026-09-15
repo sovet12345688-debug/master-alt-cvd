@@ -1,0 +1,239 @@
+{
+  "method": "Point-in-time reproducible execution proxy; not reconstructed historical MASTER signals",
+  "window": {
+    "start": "2023-10-01 00:00:00+00:00",
+    "train": "2024",
+    "validation": "2025",
+    "oos": "2026-01-01..2026-08-31"
+  },
+  "assets": [
+    "BTCUSDT",
+    "ETHUSDT"
+  ],
+  "chosen_atr_buffers": {
+    "V3_NOFIB": 0.1,
+    "V3_FIB": 0.1
+  },
+  "download_failures": [],
+  "missed_counts": {
+    "BTCUSDT:BASELINE": 806,
+    "BTCUSDT:V3_NOFIB:0.1": 31,
+    "BTCUSDT:V3_FIB:0.1": 67,
+    "ETHUSDT:BASELINE": 780,
+    "ETHUSDT:V3_NOFIB:0.1": 28,
+    "ETHUSDT:V3_FIB:0.1": 59
+  },
+  "oos_summary": {
+    "BASELINE": {
+      "n": 0
+    },
+    "V3_NOFIB": {
+      "n": 0
+    },
+    "V3_FIB": {
+      "n": 2,
+      "expectancy_R": 1.7322687208482672,
+      "PF": Infinity,
+      "maxDD_R": 0.0,
+      "win_rate": 1.0,
+      "sl_rate": 0.0,
+      "false_start_rate": 0.0,
+      "avg_MFE_R": 2.6111125283490066,
+      "avg_MAE_R": 1.4244488694343718,
+      "tp1_rate": 0.5,
+      "tp2_rate": 0.5,
+      "tp3_rate": 0.0,
+      "avg_coverage": 0.77
+    }
+  },
+  "asset_metrics": {
+    "BTCUSDT": {
+      "BASELINE": {
+        "n": 0
+      },
+      "V3_NOFIB": {
+        "n": 0
+      },
+      "V3_FIB": {
+        "n": 1,
+        "expectancy_R": 0.44755757820638964,
+        "PF": Infinity,
+        "maxDD_R": 0.0,
+        "win_rate": 1.0,
+        "sl_rate": 0.0,
+        "false_start_rate": 0.0,
+        "avg_MFE_R": 1.6439737690358127,
+        "avg_MAE_R": 0.4818305708712865,
+        "tp1_rate": 0.0,
+        "tp2_rate": 0.0,
+        "tp3_rate": 0.0,
+        "avg_coverage": 0.76
+      }
+    },
+    "ETHUSDT": {
+      "BASELINE": {
+        "n": 0
+      },
+      "V3_NOFIB": {
+        "n": 0
+      },
+      "V3_FIB": {
+        "n": 1,
+        "expectancy_R": 3.016979863490145,
+        "PF": Infinity,
+        "maxDD_R": 0.0,
+        "win_rate": 1.0,
+        "sl_rate": 0.0,
+        "false_start_rate": 0.0,
+        "avg_MFE_R": 3.5782512876622,
+        "avg_MAE_R": 2.367067167997457,
+        "tp1_rate": 1.0,
+        "tp2_rate": 1.0,
+        "tp3_rate": 0.0,
+        "avg_coverage": 0.7799999999999999
+      }
+    }
+  },
+  "regime_metrics": {
+    "BEAR_TREND": {
+      "BASELINE": {
+        "n": 0
+      },
+      "V3_NOFIB": {
+        "n": 0
+      },
+      "V3_FIB": {
+        "n": 1,
+        "expectancy_R": 0.44755757820638964,
+        "PF": Infinity,
+        "maxDD_R": 0.0,
+        "win_rate": 1.0,
+        "sl_rate": 0.0,
+        "false_start_rate": 0.0,
+        "avg_MFE_R": 1.6439737690358127,
+        "avg_MAE_R": 0.4818305708712865,
+        "tp1_rate": 0.0,
+        "tp2_rate": 0.0,
+        "tp3_rate": 0.0,
+        "avg_coverage": 0.76
+      }
+    },
+    "BULL_TREND": {
+      "BASELINE": {
+        "n": 0
+      },
+      "V3_NOFIB": {
+        "n": 0
+      },
+      "V3_FIB": {
+        "n": 1,
+        "expectancy_R": 3.016979863490145,
+        "PF": Infinity,
+        "maxDD_R": 0.0,
+        "win_rate": 1.0,
+        "sl_rate": 0.0,
+        "false_start_rate": 0.0,
+        "avg_MFE_R": 3.5782512876622,
+        "avg_MAE_R": 2.367067167997457,
+        "tp1_rate": 1.0,
+        "tp2_rate": 1.0,
+        "tp3_rate": 0.0,
+        "avg_coverage": 0.7799999999999999
+      }
+    }
+  },
+  "direction_metrics": {
+    "LONG": {
+      "BASELINE": {
+        "n": 0
+      },
+      "V3_NOFIB": {
+        "n": 0
+      },
+      "V3_FIB": {
+        "n": 1,
+        "expectancy_R": 3.016979863490145,
+        "PF": Infinity,
+        "maxDD_R": 0.0,
+        "win_rate": 1.0,
+        "sl_rate": 0.0,
+        "false_start_rate": 0.0,
+        "avg_MFE_R": 3.5782512876622,
+        "avg_MAE_R": 2.367067167997457,
+        "tp1_rate": 1.0,
+        "tp2_rate": 1.0,
+        "tp3_rate": 0.0,
+        "avg_coverage": 0.7799999999999999
+      }
+    },
+    "SHORT": {
+      "BASELINE": {
+        "n": 0
+      },
+      "V3_NOFIB": {
+        "n": 0
+      },
+      "V3_FIB": {
+        "n": 1,
+        "expectancy_R": 0.44755757820638964,
+        "PF": Infinity,
+        "maxDD_R": 0.0,
+        "win_rate": 1.0,
+        "sl_rate": 0.0,
+        "false_start_rate": 0.0,
+        "avg_MFE_R": 1.6439737690358127,
+        "avg_MAE_R": 0.4818305708712865,
+        "tp1_rate": 0.0,
+        "tp2_rate": 0.0,
+        "tp3_rate": 0.0,
+        "avg_coverage": 0.76
+      }
+    }
+  },
+  "bootstrap_v3fib_minus_baseline": {
+    "n_a": 2,
+    "n_b": 0,
+    "mean_diff": null,
+    "ci95": null,
+    "p_gt_0": null
+  },
+  "bootstrap_fib_minus_nofib": {
+    "n_a": 2,
+    "n_b": 0,
+    "mean_diff": null,
+    "ci95": null,
+    "p_gt_0": null
+  },
+  "fib_verdict": "FIB_NEUTRAL_OR_SAMPLE_INSUFFICIENT",
+  "final_verdict": "V3 PARTIAL \u2014 MORE VALIDATION REQUIRED",
+  "verdict_reasons": [
+    "OOS sample below 30 trades in baseline or V3"
+  ],
+  "historical_na": [
+    "OI history beyond provider retention",
+    "orderbook depth history",
+    "price-level liquidation heatmap history",
+    "on-chain point-in-time series",
+    "ETF/whale/options intraday history"
+  ],
+  "validated_engine_spec": {
+    "engine": "DAILY ENTRY ENGINE V3",
+    "frame_stack": "1D context -> 4H regime -> 1H setup -> 15m trigger",
+    "fib_price": "FIB_NEUTRAL_OR_SAMPLE_INSUFFICIENT",
+    "fib_time": "OFF",
+    "chosen_atr_buffer": 0.1,
+    "hard_gate": [
+      "fresh current",
+      "locked frame",
+      "structural entry/retest",
+      "completed trigger",
+      "participation",
+      "non-chase",
+      "structural SL",
+      "TP1/2/3",
+      "core RR>=3",
+      "no severe risk veto",
+      "time-validity"
+    ]
+  }
+}
