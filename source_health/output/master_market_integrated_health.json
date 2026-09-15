@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "system": "MASTER_MARKET_INTEGRATED_HEALTH",
-  "evaluated_at_utc": "2026-09-15T01:21:29.181009Z",
+  "evaluated_at_utc": "2026-09-15T02:20:33.645116Z",
   "overall_status": "HISTORY RECOVERING",
   "overall_icon": "🟡",
   "status_order": [
@@ -11,8 +11,8 @@
     "FAILED"
   ],
   "counts": {
-    "CURRENT OK": 3,
-    "HISTORY RECOVERING": 2,
+    "CURRENT OK": 4,
+    "HISTORY RECOVERING": 1,
     "STALE": 0,
     "FAILED": 0
   },
@@ -20,32 +20,26 @@
     {
       "component_id": "data_vault",
       "display_name": "Data Vault",
-      "status": "HISTORY RECOVERING",
-      "icon": "🟡",
-      "timestamp_utc": "2026-09-15T01:00:43.297382Z",
-      "age_minutes": 20.8,
-      "history_status": "DEGRADED_HISTORY",
+      "status": "CURRENT OK",
+      "icon": "🟢",
+      "timestamp_utc": "2026-09-15T02:00:54.024739Z",
+      "age_minutes": 19.7,
+      "history_status": "OK",
       "reason_codes": [
-        "CURRENT_OK_HISTORY_INCOMPLETE"
+        "OK"
       ],
-      "next_action": "현재값은 사용; 실제 동일원천 history 자동 축적 대기, backfill 금지",
+      "next_action": "조치 없음",
       "auto_recovery_expected": true,
       "source_path": "market_vault/state/vault_state.json",
-      "details": {
-        "history_issues": [
-          "production timestamps <20 in ~26H (19)"
-        ],
-        "recent_timestamp_count_26h": 19,
-        "history_24h_comparison_count": 6
-      }
+      "details": {}
     },
     {
       "component_id": "stablecoin_windows",
       "display_name": "Stablecoin Windows",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-15T01:00:45.960694Z",
-      "age_minutes": 20.7,
+      "timestamp_utc": "2026-09-15T02:00:55.992227Z",
+      "age_minutes": 19.6,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -67,7 +61,7 @@
       "status": "CURRENT OK",
       "icon": "🟢",
       "timestamp_utc": "2026-09-15T01:20:24.785611Z",
-      "age_minutes": 1.1,
+      "age_minutes": 60.1,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -82,8 +76,8 @@
       "display_name": "Actor Retail",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-15T01:00:46.224746Z",
-      "age_minutes": 20.7,
+      "timestamp_utc": "2026-09-15T02:00:56.275653Z",
+      "age_minutes": 19.6,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -99,7 +93,7 @@
       "status": "CURRENT OK",
       "icon": "🟢",
       "timestamp_utc": "2026-09-14T23:38:05.603166Z",
-      "age_minutes": 103.4,
+      "age_minutes": 162.5,
       "history_status": "OK",
       "reason_codes": [
         "OK"
