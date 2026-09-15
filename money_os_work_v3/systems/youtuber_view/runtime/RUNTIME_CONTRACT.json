@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "system_id": "youtuber_view",
+  "worker_instance": "money_os_work_v3_youtuber_view_shadow",
+  "runtime_root": "money_os_work_v3/systems/youtuber_view/runtime",
+  "stores": ["source_health", "latest", "history/forecasts", "history/outcomes", "history/view_changes", "snapshots", "inputs", "artifacts"],
+  "read_scope": "OWN_RUNTIME_DIRECT_EXTERNAL_AND_APPROVED_OWN_CANONICAL_ONLY",
+  "write_scope": "OWN_RUNTIME_ONLY",
+  "history": {"prospective_only": true, "backfill": false, "view_changes_append_only": true, "audit_fixtures_are_history": false},
+  "missing_data": {"na_to_zero": false, "guessing": false, "unreadable_evidence": "N/A"},
+  "schedule": {"mode": "MANUAL_EVENT_DRIVEN"},
+  "manual_input": {"enabled": true, "purpose": "VIEWPOINT_AND_CHART_VALIDATION", "scope": "YOUTUBER_VIEW_ONLY"},
+  "shadow": {"enabled": true, "notifications_enabled": false, "production_writes_enabled": false, "schedule_activation_enabled": false, "cutover_enabled": false}
+}

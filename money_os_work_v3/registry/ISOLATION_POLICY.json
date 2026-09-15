@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0",
+  "policy": "ABSOLUTE_RUNTIME_ISOLATION",
+  "controller": {
+    "allowed_read": [
+      "money_os_work_v3/registry/SYSTEM_REGISTRY.json",
+      "money_os_work_v3/registry/ISOLATION_POLICY.json"
+    ],
+    "allowed_write": [
+      "money_os_work_v3/control/**"
+    ],
+    "forbidden_content_in_control": [
+      "market_price",
+      "score",
+      "direction",
+      "permission",
+      "entry",
+      "stop_loss",
+      "take_profit",
+      "whale_position",
+      "funding",
+      "oi",
+      "cvd"
+    ]
+  },
+  "systems": {
+    "market": {
+      "allowed_runtime_read": ["money_os_work_v3/systems/market/**"],
+      "allowed_runtime_write": ["money_os_work_v3/systems/market/runtime/**"],
+      "allowed_canonical_read": ["master_prompts/master_market_v1_2_current.md", "state/master_market_v1_2_contract.json"],
+      "forbidden_runtime_read": ["money_os_work_v3/systems/alt_top100/**", "money_os_work_v3/systems/alt_final20/**", "money_os_work_v3/systems/btc_trend/**", "money_os_work_v3/systems/youtuber_view/**", "money_os_work_v3/systems/trading/**", "shared_fact_vault/**", "source_health/**", "official_state/**", "watch_events/**"]
+    },
+    "btc_trend": {
+      "allowed_runtime_read": ["money_os_work_v3/systems/btc_trend/**"],
+      "allowed_runtime_write": ["money_os_work_v3/systems/btc_trend/runtime/**"],
+      "allowed_canonical_read": ["master_prompts/master_btc_trend_v2_6_current.md", "state/master_btc_trend_v2_6_contract.json", "master_prompts/master_btc_trend_v2_6_ui_final.md"],
+      "forbidden_runtime_read": ["money_os_work_v3/systems/alt_top100/**", "money_os_work_v3/systems/alt_final20/**", "money_os_work_v3/systems/market/**", "money_os_work_v3/systems/youtuber_view/**", "money_os_work_v3/systems/trading/**", "shared_fact_vault/**", "source_health/**", "official_state/**", "watch_events/**"]
+    },
+    "alt_top100": {
+      "allowed_runtime_read": ["money_os_work_v3/systems/alt_top100/**"],
+      "allowed_runtime_write": ["money_os_work_v3/systems/alt_top100/runtime/**"],
+      "allowed_canonical_read": ["master_prompts/master_alt_top100_v4_8_current.md"],
+      "forbidden_runtime_read": ["money_os_work_v3/systems/alt_final20/**", "money_os_work_v3/systems/market/**", "money_os_work_v3/systems/btc_trend/**", "money_os_work_v3/systems/youtuber_view/**", "money_os_work_v3/systems/trading/**", "shared_fact_vault/**", "source_health/**", "official_state/**", "watch_events/**"]
+    },
+    "alt_final20": {
+      "allowed_runtime_read": ["money_os_work_v3/systems/alt_final20/**"],
+      "allowed_runtime_write": ["money_os_work_v3/systems/alt_final20/runtime/**"],
+      "allowed_canonical_read": ["master_prompts/master_alt_final20_current.md"],
+      "forbidden_runtime_read": ["money_os_work_v3/systems/alt_top100/**", "money_os_work_v3/systems/market/**", "money_os_work_v3/systems/btc_trend/**", "money_os_work_v3/systems/youtuber_view/**", "money_os_work_v3/systems/trading/**", "shared_fact_vault/**", "source_health/**", "official_state/**", "watch_events/**"]
+    },
+    "youtuber_view": {
+      "allowed_runtime_read": ["money_os_work_v3/systems/youtuber_view/**"],
+      "allowed_runtime_write": ["money_os_work_v3/systems/youtuber_view/runtime/**"],
+      "allowed_canonical_read": ["money_os_work_v3/systems/youtuber_view/CANONICAL_RULES.md"],
+      "forbidden_runtime_read": ["money_os_work_v3/systems/alt_top100/**", "money_os_work_v3/systems/alt_final20/**", "money_os_work_v3/systems/market/**", "money_os_work_v3/systems/btc_trend/**", "money_os_work_v3/systems/trading/**", "shared_fact_vault/**", "source_health/**", "official_state/**", "watch_events/**"]
+    },
+    "trading": {
+      "allowed_runtime_read": ["money_os_work_v3/systems/trading/**"],
+      "allowed_runtime_write": ["money_os_work_v3/systems/trading/runtime/**"],
+      "allowed_canonical_read": ["master_prompts/master_trading_current.md", "state/master_trading_current_contract.json", "money_master_os/masters/trading/MASTER-TRADING-UI-V2-FINAL.md"],
+      "forbidden_runtime_read": ["money_os_work_v3/systems/alt_top100/**", "money_os_work_v3/systems/alt_final20/**", "money_os_work_v3/systems/market/**", "money_os_work_v3/systems/btc_trend/**", "money_os_work_v3/systems/youtuber_view/**", "shared_fact_vault/**", "source_health/**", "official_state/**", "watch_events/**"]
+    }
+  },
+  "note": "Direct external public-source collection is allowed independently per system and is not cross-system sharing. BTC-owned research artifacts may be added to btc_trend allowed_canonical_read only when they are explicitly part of BTC's own approved canonical contract, never because another MONEY system produced them."
+}

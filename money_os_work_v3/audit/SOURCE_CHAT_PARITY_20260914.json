@@ -1,0 +1,176 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "MONEY_OS_SIX_SOURCE_CHAT_PARITY_20260914",
+  "audited_at_utc": "2026-09-14T09:13:06Z",
+  "shadow_branch": "money-os-work-v3-isolated-20260914",
+  "shadow_base_commit": "2404c88927654a49e296c76bf5640c063cbf9543",
+  "audited_main_head": "3985bff6b73d8ac43ab42f26240555fe5b5b07c3",
+  "main_revalidation": {
+    "revalidated_at_utc": "2026-09-14T09:32:34Z",
+    "head": "727f296e915f518acbdf948f758a0ffce650ce9b",
+    "change_since_audit": "DATA_ONLY",
+    "all_pinned_canonical_blobs_unchanged": true
+  },
+  "method": {
+    "source_chat_inspection": "FULL_ORDERED_VISIBLE_CONVERSATION_BODY_IN_AUTHENTICATED_BROWSER",
+    "raw_chat_committed": false,
+    "retained_evidence": "URL_TITLE_MESSAGE_COUNTS_VISIBLE_CHARACTER_COUNT_SHA256_AND_PARITY_FINDINGS_ONLY",
+    "chat_memory_used_as_authority": false
+  },
+  "required_axes": [
+    "latest_approved_version_identity",
+    "latest_ui_output_lock",
+    "schedule_or_manual_mode",
+    "scoring_formulas_gates_thresholds",
+    "data_source_na_freshness",
+    "history_persistence_no_backfill",
+    "later_approved_overlays_without_version_bump",
+    "research_only_boundary",
+    "manual_image_chart_workflow",
+    "follow_up_footer_behavior"
+  ],
+  "systems": {
+    "alt_top100": {
+      "source_chat": "https://chatgpt.com/share/6aa75306-9b30-83e8-bc35-b936e6b5cb44",
+      "extraction": {"title": "ALT V1", "messages": 4, "user_messages": 1, "assistant_messages": 3, "visible_characters": 8162, "sha256": "8a95e432e294a26062da89c57e64bd7f734c91739f2dc5e3a9865eccf49d217b"},
+      "canonical": {"path": "master_prompts/master_alt_top100_v4_8_current.md", "resolution": "CURRENT_MAIN", "blob": "27af5ac7f9acf4250f08ce06b601459e644da726"},
+      "worker": {"manifest": "money_os_work_v3/systems/alt_top100/manifest.json", "prompt": "money_os_work_v3/systems/alt_top100/WORKER_SHADOW_PROMPT.md", "runtime_contract": "money_os_work_v3/systems/alt_top100/runtime/RUNTIME_CONTRACT.json"},
+      "axes": {
+        "latest_approved_version_identity": "PASS_TOP100_V4_8",
+        "latest_ui_output_lock": "PASS_EXACT_4_SCREEN_OFFICIAL_AND_WATCH",
+        "schedule_or_manual_mode": "PASS_HH30_WITH_1030_DAILY_OFFICIAL",
+        "scoring_formulas_gates_thresholds": "PASS",
+        "data_source_na_freshness": "PASS_DIRECT_SOURCE_AND_COVERAGE",
+        "history_persistence_no_backfill": "PASS",
+        "later_approved_overlays_without_version_bump": "PASS",
+        "research_only_boundary": "PASS_NO_REPLACEMENT",
+        "manual_image_chart_workflow": "PASS_NOT_REQUIRED",
+        "follow_up_footer_behavior": "PASS"
+      },
+      "result": "PASS",
+      "production_cutover": "HOLD_GLOBAL_FINAL_APPROVAL"
+    },
+    "alt_final20": {
+      "source_chat": "https://chatgpt.com/share/6aa75505-05a4-83ee-b68b-08c60340146a",
+      "extraction": {"title": "ALT V2", "messages": 4, "user_messages": 1, "assistant_messages": 3, "visible_characters": 12505, "sha256": "7bc9ceaf3b68f71eef084b01d62790cd19f27a987cc176a91a43031e4fb89d35"},
+      "canonical": {"path": "master_prompts/master_alt_final20_current.md", "resolution": "CURRENT_MAIN", "blob": "426912cd37bd754c4bc246252fa351871e1143f7"},
+      "worker": {"manifest": "money_os_work_v3/systems/alt_final20/manifest.json", "prompt": "money_os_work_v3/systems/alt_final20/WORKER_SHADOW_PROMPT.md", "runtime_contract": "money_os_work_v3/systems/alt_final20/runtime/RUNTIME_CONTRACT.json"},
+      "axes": {
+        "latest_approved_version_identity": "PASS_FINAL20_V2_2_1",
+        "latest_ui_output_lock": "PASS_EXACT_4_SCREEN_AND_FIXED_GITHUB_APPENDIX",
+        "schedule_or_manual_mode": "PASS_HH45_WITH_SIX_OFFICIAL_SLOTS",
+        "scoring_formulas_gates_thresholds": "PASS",
+        "data_source_na_freshness": "PASS_CVD_DERIVATIVES_LIVE_FLOW_AND_COVERAGE",
+        "history_persistence_no_backfill": "PASS_BASELINE_OUTCOME_PROSPECTIVE_ONLY",
+        "later_approved_overlays_without_version_bump": "PASS",
+        "research_only_boundary": "PASS_NO_REPLACEMENT",
+        "manual_image_chart_workflow": "PASS_NOT_REQUIRED",
+        "follow_up_footer_behavior": "PASS"
+      },
+      "result": "PASS",
+      "production_cutover": "HOLD_GLOBAL_FINAL_APPROVAL"
+    },
+    "market": {
+      "source_chat": "https://chatgpt.com/share/6aa7551d-a41c-83e8-bba8-45349f6fe6db",
+      "extraction": {"title": "MASTER MARKET V1.2", "messages": 3, "user_messages": 0, "assistant_messages": 3, "visible_characters": 15910, "sha256": "2285b402e76d512e1bdb07eae619b6c728aa19d9d78da86d4194dfd7049ea651"},
+      "canonical": {
+        "paths": ["master_prompts/master_market_v1_2_current.md", "state/master_market_v1_2_contract.json"],
+        "resolution": "CURRENT_MAIN_WITH_SHADOW_REVIEW_CANDIDATE",
+        "main_blobs": ["46f841bc15b34f0aa3bda8ec822db19055599e0b", "78abc5cda70a1fbddd1e7e540514d6e4267936c2"],
+        "shadow_candidate_blobs": ["6c491fdf230fe37415a2e10205ccf88157a30e63", "5f326bed1d5765c290b1229b6ed8a4af6e5dd075"]
+      },
+      "worker": {"manifest": "money_os_work_v3/systems/market/manifest.json", "prompt": "money_os_work_v3/systems/market/WORKER_SHADOW_PROMPT.md", "runtime_contract": "money_os_work_v3/systems/market/runtime/RUNTIME_CONTRACT.json"},
+      "axes": {
+        "latest_approved_version_identity": "PASS_MASTER_MARKET_V1_2",
+        "latest_ui_output_lock": "PASS_SHADOW_PATCH__CURRENT_MAIN_CONFLICT_EASY_KOREAN_FIVE_ROW_LABELS",
+        "schedule_or_manual_mode": "PASS_HH00_WITH_SIX_OFFICIAL_SLOTS",
+        "scoring_formulas_gates_thresholds": "PASS_UNCHANGED",
+        "data_source_na_freshness": "PASS",
+        "history_persistence_no_backfill": "PASS",
+        "later_approved_overlays_without_version_bump": "PASS_SHADOW_PATCH_PREPARED",
+        "research_only_boundary": "PASS_SCORE_WEIGHT_ZERO_PROXY_BOUNDARY",
+        "manual_image_chart_workflow": "PASS_NOT_REQUIRED",
+        "follow_up_footer_behavior": "PASS_CANONICAL_FOOTER_RETAINS_CLOCK_PREFIX"
+      },
+      "result": "PASS_SHADOW_CANDIDATE__CURRENT_MAIN_CONFLICT",
+      "production_cutover": "HOLD_UNTIL_CANDIDATE_MERGE_IS_EXPLICITLY_APPROVED"
+    },
+    "btc_trend": {
+      "source_chat": "https://chatgpt.com/share/6aa75536-cc28-83e9-90a1-b654d737a310",
+      "extraction": {"title": "MASTER BTC TREND V2.6 [3-SCREEN · FRACTAL+S/R STRENGTH · FINAL]", "messages": 5, "user_messages": 2, "assistant_messages": 3, "visible_characters": 13133, "sha256": "1a7b5818e0c9542f3b439bd5f8db9099e19aeee0fdcaad5f1634996fc0f4b55b"},
+      "canonical": {"path": "master_prompts/master_btc_trend_v2_6_current.md", "machine_contract": "state/master_btc_trend_v2_6_contract.json", "ui_contract": "master_prompts/master_btc_trend_v2_6_ui_final.md", "resolution": "CURRENT_MAIN", "blobs": ["19baf8b42bbc74e98a256f92f36b47eeff31200e", "608995d69b63f9ccefa9720cde3f2aa3f7f01a7c", "9e60d2e02cbeac7e3c31b378c0e0f4f7193c81f3"]},
+      "worker": {"manifest": "money_os_work_v3/systems/btc_trend/manifest.json", "prompt": "money_os_work_v3/systems/btc_trend/WORKER_SHADOW_PROMPT.md", "runtime_contract": "money_os_work_v3/systems/btc_trend/runtime/RUNTIME_CONTRACT.json"},
+      "axes": {
+        "latest_approved_version_identity": "PASS_V2_6_PRODUCTION",
+        "latest_ui_output_lock": "PASS_EXACT_3_SCREEN_BASIC",
+        "schedule_or_manual_mode": "PASS_FIVE_OFFICIAL_SLOTS_NO_WATCH",
+        "scoring_formulas_gates_thresholds": "PASS",
+        "data_source_na_freshness": "PASS",
+        "history_persistence_no_backfill": "PASS",
+        "later_approved_overlays_without_version_bump": "PASS",
+        "research_only_boundary": "PASS_V3_0_AND_WAVE_ENERGY_RESEARCH_ONLY",
+        "manual_image_chart_workflow": "PASS_PRECISION_ONLY",
+        "follow_up_footer_behavior": "PASS"
+      },
+      "result": "PASS",
+      "production_cutover": "HOLD_GLOBAL_FINAL_APPROVAL"
+    },
+    "youtuber_view": {
+      "source_chat": "https://chatgpt.com/share/6aa75553-eee8-83ee-acd5-9e532996d85f",
+      "extraction": {"title": "유튜버 관점방 V2 운영 Migration", "messages": 8, "user_messages": 4, "assistant_messages": 4, "visible_characters": 5246, "sha256": "ce1583ea47ac2a9b95aebb14c8893c2af9f9af6472bfdbebab0ce86ba8110b0c"},
+      "canonical": {"path": "money_os_work_v3/systems/youtuber_view/CANONICAL_RULES.md", "resolution": "SHADOW_BRANCH_NO_PRIOR_MAIN_CANONICAL", "blob": "8d6da5905744ebb65209ec8d57f592df5893a7a9"},
+      "worker": {"manifest": "money_os_work_v3/systems/youtuber_view/manifest.json", "prompt": "money_os_work_v3/systems/youtuber_view/WORKER_SHADOW_PROMPT.md", "runtime_contract": "money_os_work_v3/systems/youtuber_view/runtime/RUNTIME_CONTRACT.json"},
+      "axes": {
+        "latest_approved_version_identity": "PASS_AFTER_V2_SHADOW_CANONICALIZATION",
+        "latest_ui_output_lock": "PASS_CURRENT_ROOM_UI_FROZEN",
+        "schedule_or_manual_mode": "PASS_MANUAL_EVENT_DRIVEN",
+        "scoring_formulas_gates_thresholds": "PASS_SCORECARD_V1_FORMULAS_RETAINED",
+        "data_source_na_freshness": "PASS_EVIDENCE_CLASS_AND_INDEPENDENT_VERIFICATION",
+        "history_persistence_no_backfill": "PASS_FORECAST_AND_VIEW_CHANGE_APPEND_ONLY",
+        "later_approved_overlays_without_version_bump": "PASS_V2_WRAPPER_CAPTURED",
+        "research_only_boundary": "PASS_PARITY_FIXTURES_NOT_SCORED_HISTORY",
+        "manual_image_chart_workflow": "PASS_SYSTEM_LOCAL",
+        "follow_up_footer_behavior": "PASS_FIVE_FOLLOW_UPS"
+      },
+      "result": "PASS_AFTER_V2_SHADOW_CANONICALIZATION",
+      "production_cutover": "HOLD_GLOBAL_FINAL_APPROVAL"
+    },
+    "trading": {
+      "source_chat": "https://chatgpt.com/share/6aa75566-7a70-83e8-9537-e11634a8be5e",
+      "extraction": {"title": "Trading☆", "messages": 17, "user_messages": 13, "assistant_messages": 4, "visible_characters": 12786, "sha256": "89ef6a0c50b9bb35328362c4f5cbd3d332fc495109c72387b8ce2983cd15dfd1"},
+      "canonical": {"path": "master_prompts/master_trading_current.md", "machine_contract": "state/master_trading_current_contract.json", "ui_contract": "money_master_os/masters/trading/MASTER-TRADING-UI-V2-FINAL.md", "resolution": "CURRENT_MAIN", "blobs": ["38506532184284f76c1356ed0c8f70a015887340", "aa62814aba0f8d8f92e097af8f86d34f72098216", "b6604a1214b0adb74394b4d4331560048a20f421"]},
+      "worker": {"manifest": "money_os_work_v3/systems/trading/manifest.json", "prompt": "money_os_work_v3/systems/trading/WORKER_SHADOW_PROMPT.md", "runtime_contract": "money_os_work_v3/systems/trading/runtime/RUNTIME_CONTRACT.json"},
+      "axes": {
+        "latest_approved_version_identity": "PASS_CURRENT_PLUS_TIME_VALIDITY_V2_1",
+        "latest_ui_output_lock": "PASS_AFTER_METADATA_FIX_4_SEMANTIC_SECTIONS_6_VISUAL_SCREENS",
+        "schedule_or_manual_mode": "PASS_MANUAL_ONLY",
+        "scoring_formulas_gates_thresholds": "PASS",
+        "data_source_na_freshness": "PASS_DIRECT_REVALIDATION_REQUIRED",
+        "history_persistence_no_backfill": "PASS",
+        "later_approved_overlays_without_version_bump": "PASS_UI_V2_FINAL_AND_ASSET_AUTODETECT",
+        "research_only_boundary": "PASS_WAVE_ENERGY_CONTEXT_ONLY_FIBONACCI_TIME_OFF",
+        "manual_image_chart_workflow": "PASS_ASSET_AUTODETECT_AND_QUICK_GO",
+        "follow_up_footer_behavior": "PASS_EXACT_FIVE_AND_FIXED_FIFTH"
+      },
+      "result": "PASS_AFTER_4_SEMANTIC_6_SCREEN_METADATA_FIX",
+      "production_cutover": "HOLD_GLOBAL_FINAL_APPROVAL"
+    }
+  },
+  "attached_research_boundary": {
+    "filename": "Wave_Energy_Theory_Money_Project_Source_2025(1).pdf",
+    "sha256": "b664c61cb36ea10a66c22ac8af948fc91646f95252af9c6ef8103cbf29d02a01",
+    "pages": 16,
+    "classification": "RESEARCH_CONTEXT_ONLY",
+    "finding": "Wave Energy may validate direction, time, and energy context; actual Entry, SL, TP, R:R, and Trigger remain owned by the production entry engine. Empirical claims require validation and no automatic production weighting follows from this source.",
+    "parity_effect": "PASS_NO_PRODUCTION_REPLACEMENT"
+  },
+  "overall": {
+    "source_chats_fully_inspected": 6,
+    "worker_shadow_specs_built": 6,
+    "parity_pass_or_shadow_candidate_pass": 6,
+    "current_main_conflicts": ["market"],
+    "production_merge_performed": false,
+    "production_cutover_performed": false,
+    "decision": "WORKER_SHADOW_BUILT__PRODUCTION_CUTOVER_HOLD"
+  }
+}

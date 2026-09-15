@@ -1,0 +1,49 @@
+name: TRADING V3 Shadow Backtest
+on:
+  push:
+    branches:
+      - money-os-work-v3-isolated-20260914
+    paths:
+      - 'research/trading_v3_shadow_backtest/run_v3_shadow_backtest.py'
+      - 'research/trading_v3_shadow_backtest/run_v3_shadow_backtest_fast.py'
+      - '.github/workflows/trading-v3-shadow-backtest.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'research/trading_v3_shadow_backtest/run_v3_shadow_backtest.py'
+      - 'research/trading_v3_shadow_backtest/run_v3_shadow_backtest_fast.py'
+      - '.github/workflows/trading-v3-shadow-backtest.yml'
+permissions:
+  contents: write
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install numpy pandas requests
+      - name: Run BTC ETH V3 shadow backtest
+        run: python research/trading_v3_shadow_backtest/run_v3_shadow_backtest_fast.py
+      - name: Commit durable outputs on direct push only
+        if: github.event_name == 'push'
+        run: |
+          git config user.name 'money-os-shadow-bot'
+          git config user.email 'money-os-shadow-bot@users.noreply.github.com'
+          git add research/trading_v3_shadow_backtest/output
+          if git diff --cached --quiet; then
+            echo 'No output changes'
+          else
+            git commit -m 'research: store BTC ETH trading V3 shadow backtest outputs'
+            git push
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: trading-v3-shadow-backtest
+          path: research/trading_v3_shadow_backtest/output

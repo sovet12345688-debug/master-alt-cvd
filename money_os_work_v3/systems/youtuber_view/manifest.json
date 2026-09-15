@@ -1,0 +1,31 @@
+{
+  "system_id": "youtuber_view",
+  "display_name": "YOUTUBER VIEW INTELLIGENCE & FORECAST TRACKER V2",
+  "status": "WORKER_SHADOW_BUILT_V2_CANONICALIZED",
+  "canonical_source": "money_os_work_v3/systems/youtuber_view/CANONICAL_RULES.md",
+  "isolation_overlay": "money_os_work_v3/overlays/RUNTIME_ISOLATION_OVERLAY.md",
+  "ui": "CURRENT_ROOM_VISIBLE_UI_FROZEN_NO_REDESIGN",
+  "runtime_owner": "youtuber_view_only",
+  "runtime_root": "money_os_work_v3/systems/youtuber_view/runtime",
+  "local_stores": ["source_health", "latest", "history/forecasts", "history/outcomes", "history/view_changes", "snapshots", "inputs", "artifacts"],
+  "worker_shadow": {
+    "prompt": "money_os_work_v3/systems/youtuber_view/WORKER_SHADOW_PROMPT.md",
+    "prompt_blob": "6580ade46aa340295eaeda7912595b25c6b58bf9",
+    "runtime_contract": "money_os_work_v3/systems/youtuber_view/runtime/RUNTIME_CONTRACT.json",
+    "runtime_contract_blob": "8ded0b4aa9f7cfdd36cd9d89094d70263b0f5a13",
+    "canonical_resolution": "SHADOW_BRANCH_NO_PRIOR_MAIN_CANONICAL",
+    "canonical_blob": "8d6da5905744ebb65209ec8d57f592df5893a7a9",
+    "source_chat": "https://chatgpt.com/share/6aa75553-eee8-83ee-acd5-9e532996d85f",
+    "source_chat_sha256": "ce1583ea47ac2a9b95aebb14c8893c2af9f9af6472bfdbebab0ce86ba8110b0c",
+    "parity_audit": "money_os_work_v3/audit/SOURCE_CHAT_PARITY_20260914.json",
+    "parity_status": "PASS_AFTER_V2_SHADOW_CANONICALIZATION",
+    "notifications_enabled": false,
+    "production_cutover": false
+  },
+  "cross_system_read": false,
+  "cross_system_write": false,
+  "legacy_global_runtime_after_cutover": "FORBIDDEN",
+  "manual_chart_input": "VIEWPOINT_AND_CHART_VALIDATION",
+  "schedule": {"mode": "MANUAL_EVENT_DRIVEN"},
+  "history_policy": "PROSPECTIVE_ONLY_NO_BACKFILL"
+}

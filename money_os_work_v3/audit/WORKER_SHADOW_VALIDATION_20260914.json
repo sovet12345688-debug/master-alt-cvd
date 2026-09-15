@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "validated_at_utc": "2026-09-14T09:41:37Z",
+  "branch": "money-os-work-v3-isolated-20260914",
+  "origin_main_head": "727f296e915f518acbdf948f758a0ffce650ce9b",
+  "checks": {
+    "validate_v3_isolation.py": "PASS",
+    "validate_worker_shadows.py": "PASS",
+    "master_market_contract_guard": "PASS_AFTER_STALE_UI_TOKEN_REPAIR",
+    "unittest_count": 6,
+    "unittest_result": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "worker_shadow_bootstrap": {
+    "alt_top100": {"canonical_mode": "main", "status": "PASS"},
+    "alt_final20": {"canonical_mode": "main", "status": "PASS"},
+    "market": {"canonical_mode": "candidate", "status": "PASS"},
+    "btc_trend": {"canonical_mode": "main", "status": "PASS"},
+    "youtuber_view": {"canonical_mode": "candidate", "status": "PASS"},
+    "trading": {"canonical_mode": "main", "status": "PASS"}
+  },
+  "negative_gate": {
+    "market_current_main": "HOLD_CURRENT_MAIN_SOURCE_CHAT_CONFLICT",
+    "purpose": "Prove that the unresolved current-main wording conflict cannot silently pass."
+  },
+  "ci_repair": {
+    "initial_market_guard_run": 34828990164,
+    "initial_result": "FAIL_STALE_PRE_MOBILE_UI_TOKEN_EXPECTATIONS",
+    "repair_scope": "WORKFLOW_ASSERTIONS_ONLY",
+    "analytical_contract_change": false,
+    "local_exact_workflow_block_after_repair": "PASS"
+  },
+  "runtime_smoke": {
+    "mode": "TEMPORARY_SYSTEM_LOCAL_LAYOUT",
+    "cross_system_reads": 0,
+    "cross_system_writes": 0,
+    "repository_runtime_data_written": false
+  },
+  "activation": {
+    "notifications_enabled": false,
+    "production_writes_enabled": false,
+    "schedules_enabled": false,
+    "legacy_automations_disabled": false,
+    "production_merge_performed": false,
+    "production_cutover_performed": false
+  },
+  "result": "SIX_WORKER_SHADOW_PACKAGES_PASS__PRODUCTION_CUTOVER_HOLD"
+}
