@@ -38,6 +38,6 @@ jobs:
           if git diff --cached --quiet; then
             echo 'No output changes to commit'
           else
-            git commit -m 'research: persist trading V3 quick shadow results'
+            git commit -m 'research: persist V3 quick screen results [skip ci]'
             git push origin HEAD:trading-v3-shadow-bt-20260915
           fi
