@@ -5,6 +5,13 @@ import numpy as np
 
 import run_daily_entry_v3_shadow as bt
 
+# QUICK SHADOW MODE
+# - Production canonical/UI unchanged.
+# - Same historical window and analytical rules.
+# - Keep only one fixed ATR buffer so the first-pass backtest is much faster.
+# - Full 4-buffer research can still be run with run_daily_entry_v3_shadow.py.
+bt.ATR_BUFFERS = [0.10]
+
 # Performance-only monkey patches. Analytical rules are unchanged.
 _PIV = {}
 _AVW = {}
@@ -42,14 +49,6 @@ def fast_anchored_vwap(h1,pos,pivot_time):
     num=pv[pos]-(pv[p0-1] if p0>0 else 0.0)
     den=vv[pos]-(vv[p0-1] if p0>0 else 0.0)
     return float(num/den) if den>0 else np.nan
-
-
-def cached_vpoc(h1,pos,bins=24):
-    key=(id(h1),int(pos),int(bins))
-    if key in _VPOC: return _VPOC[key]
-    v=bt.rolling_vpoc.__wrapped__(h1,pos,bins) if hasattr(bt.rolling_vpoc,'__wrapped__') else _orig_vpoc(h1,pos,bins)
-    _VPOC[key]=v
-    return v
 
 
 _orig_vpoc=bt.rolling_vpoc
