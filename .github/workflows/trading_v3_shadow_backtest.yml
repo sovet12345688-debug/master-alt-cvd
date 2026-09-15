@@ -1,0 +1,39 @@
+name: Trading V3 Shadow Backtest
+
+on:
+  push:
+    branches: [trading-v3-shadow-bt-20260915]
+    paths:
+      - 'research/trading_v3_shadow_backtest/**'
+      - '.github/workflows/trading_v3_shadow_backtest.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: trading-v3-shadow-bt-20260915
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install pandas numpy requests
+      - name: Run BTC ETH V3 shadow backtest
+        run: python research/trading_v3_shadow_backtest/run_daily_entry_v3_shadow.py
+      - name: Persist research outputs on isolated branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add research/trading_v3_shadow_backtest/output
+          if git diff --cached --quiet; then
+            echo 'No output changes to commit'
+          else
+            git commit -m 'research: persist trading V3 shadow backtest results'
+            git push origin HEAD:trading-v3-shadow-bt-20260915
+          fi
