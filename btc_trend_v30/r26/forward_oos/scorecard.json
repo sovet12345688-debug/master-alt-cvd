@@ -2,7 +2,7 @@
   "model": "MASTER_BTC_TREND_V3_R2_6",
   "scorecard": "R26_FORWARD_SCORECARD_V1",
   "promotion_spec": "R26_FORWARD_PROMOTION_SPEC_V1",
-  "asof_utc": "2026-09-14T23:26:43.111332+00:00",
+  "asof_utc": "2026-09-15T04:31:48.042594+00:00",
   "strict_forward_start": "2026-09-08T04:00:00+00:00",
   "automated_assessment": "HOLD_COLLECTING",
   "production_decision": "HOLD",
@@ -10,7 +10,7 @@
   "formal_review_required": true,
   "eligibility": {
     "complete": false,
-    "strict_calendar_days": 6,
+    "strict_calendar_days": 7,
     "minimum_strict_calendar_days": 365,
     "resolved_total": 0,
     "minimum_resolved_total": 12,
@@ -26,7 +26,7 @@
     "minimum_state_n": 10,
     "items": {
       "calendar": {
-        "value": 6,
+        "value": 7,
         "minimum": 365,
         "status": "WAIT"
       },
@@ -117,15 +117,15 @@
     "result": "N/A_NOT_MATURE"
   },
   "early_detection": {
-    "strict_chains": 0,
-    "early_chains": 0,
+    "strict_chains": 1,
+    "early_chains": 1,
     "priority_chains": 0,
     "raw_seed_chains": 0,
     "executed_chains": 0,
-    "early_to_seed_conversion": null,
-    "early_to_executed_conversion": null,
+    "early_to_seed_conversion": 0.0,
+    "early_to_executed_conversion": 0.0,
     "priority_to_seed_conversion": null,
-    "noise_chain_rate": null,
+    "noise_chain_rate": 1.0,
     "explicit_early_to_executed_n": 0,
     "median_explicit_early_lead_hours": null,
     "lead_result": "N/A_NOT_MATURE"
@@ -201,7 +201,7 @@
         "pass": true
       },
       "phase_firewall_detections": {
-        "rows": 13,
+        "rows": 14,
         "unknown_phase": 0,
         "strict_before_start": 0,
         "bridge_at_or_after_start": 0,
