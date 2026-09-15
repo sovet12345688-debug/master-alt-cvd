@@ -1,4 +1,4 @@
-name: Trading V3 Quick Shadow Backtest
+name: Trading V3 Quick A-B Backtest
 
 on:
   push:
@@ -18,7 +18,7 @@ concurrency:
 jobs:
   backtest:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
@@ -28,16 +28,16 @@ jobs:
           python-version: '3.12'
       - name: Install dependencies
         run: pip install pandas numpy requests
-      - name: Run BTC ETH V3 quick shadow backtest
-        run: python research/trading_v3_shadow_backtest/run_daily_entry_v3_shadow_fast.py
-      - name: Persist research outputs on isolated branch
+      - name: Run BTC ETH V3 quick paired A-B backtest
+        run: python research/trading_v3_shadow_backtest/run_v3_ab_quick.py
+      - name: Persist quick A-B outputs
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add research/trading_v3_shadow_backtest/output
+          git add research/trading_v3_shadow_backtest/ab_quick_output
           if git diff --cached --quiet; then
             echo 'No output changes to commit'
           else
-            git commit -m 'research: persist V3 quick screen results [skip ci]'
+            git commit -m 'research: persist V3 quick A-B results [skip ci]'
             git push origin HEAD:trading-v3-shadow-bt-20260915
           fi
