@@ -1,0 +1,21 @@
+{
+  "status": "CANDIDATE_ONLY",
+  "score_threshold": 70,
+  "atr_buffer_x_1hATR": 0.2,
+  "fib_enabled": false,
+  "fib_score_cap": 1,
+  "fibonacci_time": "OFF",
+  "frames": "1D context -> 4H regime -> 1H setup -> 30m trigger",
+  "hard_gate": [
+    "CurrentFresh",
+    "TradeFrameLocked",
+    "StructuralEntryOrRetest",
+    "Completed30mTrigger",
+    "Participation",
+    "NonChasing",
+    "StructuralSL",
+    "TP1TP2TP3",
+    "RR>=3",
+    "NoSevereRiskVeto"
+  ]
+}
