@@ -2,7 +2,7 @@
   "engine": "MASTER_MARKET_SCORE_ENGINE_V1",
   "schema_version": "1.0",
   "status": "ACTIVE_OK",
-  "generated_at_utc": "2026-09-15T08:03:19.168440Z",
+  "generated_at_utc": "2026-09-15T09:04:24.796577Z",
   "activation_approval": {
     "explicit_user_approval": true,
     "approved_at_kst": "2026-09-11T10:04:10+09:00",
@@ -15,13 +15,13 @@
     ]
   },
   "source_age_minutes": {
-    "vault": 3.3,
-    "macro": 5.0,
-    "etf": 14.0,
-    "actors": 3.3,
-    "derivatives": 41.8
+    "vault": 2.3,
+    "macro": 4.4,
+    "etf": 13.7,
+    "actors": 2.3,
+    "derivatives": 42.5
   },
-  "overall_coverage_pct": 100.0,
+  "overall_coverage_pct": 90.0,
   "confidence_cap": null,
   "official_persistence_eligible": true,
   "official_history_write_enabled": false,
@@ -47,8 +47,8 @@
       }
     },
     "crypto_money_inflow": {
-      "score": 61.2,
-      "coverage_pct": 100.0,
+      "score": 62.5,
+      "coverage_pct": 90.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
       "threshold_alert_allowed": true,
@@ -57,7 +57,7 @@
         "btc_etf_3d": 50.0,
         "eth_etf_1d": 75.0,
         "stablecoin_total_1d": 50.0,
-        "stablecoin_total_7d": 50.0,
+        "stablecoin_total_7d": null,
         "btc_whale_net": 50.0,
         "eth_whale_net": 50.0,
         "total_market_cap_1d": 50.0,
@@ -65,8 +65,8 @@
       }
     },
     "alt_money_inflow": {
-      "score": 63.8,
-      "coverage_pct": 100.0,
+      "score": 65.3,
+      "coverage_pct": 90.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
       "threshold_alert_allowed": true,
@@ -78,19 +78,19 @@
         "btc_dominance_inverse_change": 100.0,
         "total_market_cap_1d": 50.0,
         "market_volume_1d": 100.0,
-        "stablecoin_total_7d": 50.0
+        "stablecoin_total_7d": null
       }
     },
     "market_positive": {
-      "score": 52.4,
+      "score": 52.9,
       "coverage_pct": 100.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
       "threshold_alert_allowed": true,
       "components": {
         "liquidity_lead": 52.5,
-        "crypto_money_inflow": 61.2,
-        "alt_money_inflow": 63.8,
+        "crypto_money_inflow": 62.5,
+        "alt_money_inflow": 65.3,
         "btc_whale_net": 50.0,
         "btc_derivatives_state": 25.0,
         "market_breadth_state": 50.0,
