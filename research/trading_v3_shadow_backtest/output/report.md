@@ -1,6 +1,6 @@
 # MASTER TRADING · DAILY ENTRY ENGINE V3 SHADOW BACKTEST
 
-**FINAL VERDICT: V3 PARTIAL — MORE VALIDATION REQUIRED**
+**FINAL VERDICT: QUICK INCONCLUSIVE — SAMPLE STILL LOW**
 
 ## Method
 - Point-in-time OHLCV + Binance futures taker-buy quote from 15m bars; 30m/1H/4H/1D derived without look-ahead.
@@ -16,15 +16,15 @@
 | Version | n | Exp R | PF | MaxDD R | False-start | MFE | MAE | TP2 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | BASELINE | 0 | nan | nan | nan | nan% | nan | nan | nan% |
-| V3_NOFIB | 0 | nan | nan | nan | nan% | nan | nan | nan% |
-| V3_FIB | 2 | 1.732 | inf | 0.00 | 0.0% | 2.61 | 1.42 | 50.0% |
+| V3_NOFIB | 1 | -1.000 | 0.00 | 0.00 | 0.0% | 2.42 | 8.51 | 0.0% |
+| V3_FIB | 8 | 0.318 | 1.85 | -2.00 | 12.5% | 1.62 | 2.37 | 12.5% |
 
 ## Fib ablation
 - Verdict: **FIB_NEUTRAL_OR_SAMPLE_INSUFFICIENT**
-- Bootstrap V3_FIB - V3_NOFIB: {"n_a": 2, "n_b": 0, "mean_diff": null, "ci95": null, "p_gt_0": null}
+- Bootstrap V3_FIB - V3_NOFIB: {"n_a": 8, "n_b": 1, "mean_diff": null, "ci95": null, "p_gt_0": null}
 
 ## Promotion reasons
-- OOS sample below 30 trades in baseline or V3
+- OOS samples baseline=0, V3_FIB=8
 
 ## Important limitations
 - OI history from Binance public endpoint is retention-limited; not backfilled beyond available point-in-time history.
