@@ -17,14 +17,14 @@
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | BASELINE | 0 | nan | nan | nan | nan% | nan | nan | nan% |
 | V3_NOFIB | 1 | -1.000 | 0.00 | 0.00 | 0.0% | 2.42 | 8.51 | 0.0% |
-| V3_FIB | 8 | 0.318 | 1.85 | -2.00 | 12.5% | 1.62 | 2.37 | 12.5% |
+| V3_FIB | 1 | -1.000 | 0.00 | 0.00 | 0.0% | 2.42 | 8.51 | 0.0% |
 
 ## Fib ablation
 - Verdict: **FIB_NEUTRAL_OR_SAMPLE_INSUFFICIENT**
-- Bootstrap V3_FIB - V3_NOFIB: {"n_a": 8, "n_b": 1, "mean_diff": null, "ci95": null, "p_gt_0": null}
+- Bootstrap V3_FIB - V3_NOFIB: {"n_a": 1, "n_b": 1, "mean_diff": null, "ci95": null, "p_gt_0": null}
 
 ## Promotion reasons
-- OOS samples baseline=0, V3_FIB=8
+- OOS samples baseline=0, V3_FIB=1
 
 ## Important limitations
 - OI history from Binance public endpoint is retention-limited; not backfilled beyond available point-in-time history.
