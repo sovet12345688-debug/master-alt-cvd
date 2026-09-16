@@ -1,6 +1,6 @@
 # MASTER BTC TREND V3 R2.6 — Forward OOS
 
-- As-of UTC: `2026-09-16T04:30:22.702302+00:00`
+- As-of UTC: `2026-09-16T08:31:28.872149+00:00`
 - Policy OOS start: `2026-09-05T00:00:00+00:00`
 - R2.6 final freeze: `2026-09-08T02:40:15+00:00`
 - Strict forward start: `2026-09-08T04:00:00+00:00`
@@ -8,7 +8,7 @@
 - Production decision: **HOLD**
 
 ## Strict forward snapshot
-- Detection rows: 3
+- Detection rows: 4
 - Seeds: 0
 - Episodes: 0 / resolved 0 / open 0
 - Resolved mean R: None
