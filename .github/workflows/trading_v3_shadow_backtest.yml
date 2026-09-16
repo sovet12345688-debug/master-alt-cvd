@@ -1,4 +1,4 @@
-name: Trading BTC Baseline Plus Edge Audit
+name: Trading BTC V3 Feature Attribution
 
 on:
   push:
@@ -28,16 +28,16 @@ jobs:
           python-version: '3.12'
       - name: Install dependencies
         run: pip install pandas numpy requests
-      - name: Run BTC baseline plus V3 edge tier audit
-        run: python research/trading_v3_shadow_backtest/run_btc_baseline_plus_tier_audit.py
-      - name: Persist baseline plus outputs
+      - name: Run BTC V3 feature attribution audit
+        run: python research/trading_v3_shadow_backtest/run_btc_v3_feature_attribution.py
+      - name: Persist feature attribution outputs
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add research/trading_v3_shadow_backtest/baseline_plus_output
+          git add research/trading_v3_shadow_backtest/feature_attribution_output
           if git diff --cached --quiet; then
             echo 'No output changes to commit'
           else
-            git commit -m 'research: persist BTC baseline-plus tier audit [skip ci]'
+            git commit -m 'research: persist BTC V3 feature attribution [skip ci]'
             git push origin HEAD:trading-v3-shadow-bt-20260915
           fi
