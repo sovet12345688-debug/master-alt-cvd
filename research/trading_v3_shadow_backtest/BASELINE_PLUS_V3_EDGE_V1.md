@@ -1,100 +1,160 @@
-# MASTER TRADING — BASELINE+ V3 EDGE V1 (BTC DAILY)
+# MASTER TRADING — BASELINE+ V3 EDGE V1.1 (BTC DAILY)
 
 Status: RESEARCH / SHADOW ONLY
 Production canonical/UI: UNCHANGED
-Purpose: keep CURRENT MASTER TRADING as the authoritative setup/execution engine, and import only the BTC advantages demonstrated by V3 research.
+Purpose: keep CURRENT MASTER TRADING as the authoritative setup/execution engine and import only V3-derived components that showed positive BTC OOS separation.
 
-## 1. Why baseline remains primary
-BTC OOS comparison showed CURRENT baseline had slightly better win rate, lower SL rate, and lower average MAE, while V3 had higher expectancy, PF, MFE and lower cumulative drawdown with far fewer trades. Therefore V3 must NOT replace the baseline generator/gates.
+## 1. Why CURRENT baseline remains primary
+BTC OOS baseline remained better on win rate / SL rate / average MAE, while the full V3 filter improved expectancy / PF / MFE but discarded ~75% of baseline opportunities. A tier audit also showed the full V3 composite score was NON-MONOTONIC: low-score setups sometimes outperformed high-score setups. Therefore:
+- do NOT replace CURRENT with V3,
+- do NOT use the full V3 score as a hard gate,
+- do NOT delete baseline setups because of a V3 score.
 
 Baseline continues to own:
 - direction/scenario engine
 - Entry Zone outer structure
 - Trade Frame Lock
 - Structural SL / invalidation
-- TP1/TP2/TP3 and >=3R gate
+- TP1 / TP2 / TP3 and >=3R gate
 - 15m/30m completed-candle Trigger
 - SMALL ENTER -> ADD logic
 - Non-Chasing / Risk Veto / Time Validity
 - Screen 1~6 UI
 
-## 2. V3 components promoted into a non-destructive EDGE OVERLAY
-Only the following V3 strengths are imported.
+## 2. BTC feature attribution — what is actually worth importing
+2026 BTC OOS attribution on the preserved baseline universe found these components with positive Expectancy AND PF separation with adequate pass/fail sample:
 
-### A. Setup quality ranking — internal 20 points
-This score does not create or cancel a baseline setup.
-- MTF structure/location quality: 6
-- Volume + CVD/Taker participation: 5
-- Session VWAP / AVWAP / PDH-PDL / value confluence: 4
-- ATR / extension / non-chase quality: 3
-- direction-specific flow alignment: 2
-- Fibonacci: 0 points, context-only
+### PROMOTE
+1. Daily direction alignment
+   - pass ExpR ~0.200 vs fail ~0.011
+   - PF ~1.45 vs ~1.02
+   - role: scenario confidence / execution strictness
 
-### B. Preferred Entry Pocket inside the existing baseline Entry Zone
-The baseline Entry Zone is never moved or expanded by the overlay.
-Within that zone, select a preferred pocket when verified confluence exists:
-1) baseline S/R / swing structure,
-2) session VWAP or anchored VWAP,
-3) PDH/PDL/previous close/session open,
-4) Volume Profile POC/HVN/LVN when available,
-5) 15m/30m completed reaction,
-6) aligned CVD/Taker/volume participation.
+2. 1H EMA20-MA50 directional alignment
+   - pass ExpR ~0.192 vs fail ~0.075
+   - PF ~1.44 vs ~1.13
+   - materially lower MAE on aligned setups
+   - role: entry quality / BEST ranking
 
-The existing 1st/2nd entry prices may be placed preferentially inside this verified pocket, but the outer structural Entry Zone and Structural SL remain baseline-owned.
+3. Relative Volume participation
+   - RV >=1.0: ExpR ~0.236 vs ~0.148, PF ~1.60 vs ~1.31
+   - RV >=0.8 also positive but is the weaker version
+   - role: participation confirmation
+   - do not double count RV>=0.8 and RV>=1.0
 
-### C. Action strictness instead of hard filtering
-EDGE >=14/20: HIGH QUALITY. Existing baseline setup may receive BEST priority. SMALL ENTER remains allowed only if the canonical E1 gate already passes.
-EDGE 9~13: STANDARD. Keep baseline treatment; completed trigger preferred.
-EDGE <=8: LOW QUALITY. Do not delete the setup; require completed 15m/30m trigger + participation before execution. Default WATCH/WAIT until confirmation.
+4. MACD directional alignment
+   - pass ExpR ~0.207 vs ~0.153
+   - PF ~1.62 vs ~1.27
+   - lower MAE, but lower MFE
+   - role: timing/entry-quality confirmation, not trend target expansion
 
-This preserves opportunity count while using V3 information to concentrate conviction.
+5. MA50 proximity
+   - pass ExpR ~0.243 vs ~0.166, PF modestly better
+   - BUT MAE / SL behavior is worse
+   - role: secondary confluence only; never a standalone entry signal or hard gate
 
-## 3. Preserve baseline strengths
-Because V3 did not improve BTC win rate / SL rate / MAE, the following are explicitly NOT imported from the V3 proxy:
-- next-15m-open proxy entry
-- any hard V3 >=70 filter
-- wider stop or new stop formula
-- V3 score as ENTER permission
-- Fib score contribution
-- any rule that bypasses the baseline 15m/30m completed Trigger
+### WATCH-ONLY RESEARCH SIGNAL
+- 4H EMA20 proximity showed very strong results but only 24 pass samples; sample is too small for promotion. Track prospectively but do not hard-code as a gate.
 
-## 4. Fibonacci final rule
-Fibonacci Retracement / Extension stay visible as context only.
+## 3. V3 features NOT promoted into baseline execution
+These were negative or not proven in the BTC proxy and therefore must NOT become positive hard filters:
+- Taker alignment by itself
+- CVD alignment by itself
+- both Taker+CVD alignment as a bullish/bearish yes/no gate
+- session VWAP proximity as a standalone positive gate
+- EMA20 proximity as a standalone positive gate
+- ATR mid-range regime as a positive gate
+- extension <=0.6ATR as a positive gate
+- RSI quality as a scoring booster
+- KDJ non-hot as a scoring booster
+- Fibonacci score
+
+Important: CVD/Taker/VWAP/ATR/RSI/KDJ remain useful CONTEXT, divergence, trap and trigger-confirmation information. The finding only says that simplistic `aligned = good` scoring did not improve this BTC OOS proxy.
+
+## 4. BASELINE+ EDGE OVERLAY — no composite V3 score
+Replace the old V3 100-point/filter concept with evidence tags layered on CURRENT.
+
+### Evidence tags
+- D1_ALIGN: Daily direction agrees with setup
+- H1_TREND_ALIGN: 1H EMA20/MA50 directional alignment
+- RV_CONFIRM: Relative Volume >=1.0 preferred; >=0.8 secondary
+- MACD_CONFIRM: MACD histogram aligned with direction
+- MA50_CONFLUENCE: price/entry structure near MA50, secondary only
+- H4_EMA20_RESEARCH: context badge only until more samples exist
+
+No numeric total is required for ENTER.
+No tag can create Entry/SL/TP by itself.
+
+### Execution use
+A) Baseline setup + D1_ALIGN + H1_TREND_ALIGN + RV_CONFIRM
+- mark as higher execution quality
+- candidate for ⭐BEST among already-valid baseline setups
+- SMALL ENTER still requires every existing canonical E1 condition
+
+B) Baseline setup with one or more alignment gaps
+- setup is preserved
+- do not delete it
+- require stronger 15m/30m closed Trigger and participation before execution
+- default WAIT/WATCH until reaction proves the setup
+
+C) MACD_CONFIRM
+- helps choose between competing baseline setups / preferred timing
+- cannot compensate for missing structure, Trigger, SL, >=3R or Risk Veto
+
+D) MA50_CONFLUENCE
+- bonus context only when it overlaps actual structural S/R
+- because MAE worsened in the proxy, do not tighten SL or market-enter merely due to MA50 proximity
+
+## 5. Preferred Entry Pocket — baseline zone preserved
+Do not move or expand the baseline Entry Zone.
+Inside the already-derived baseline zone, prefer the 1st/2nd entry placement where these coincide:
+1) structural S/R / swing / reclaim,
+2) D1 + H1 trend alignment,
+3) adequate relative volume at reaction,
+4) 15m/30m completed trigger,
+5) optional MACD timing confirmation,
+6) VWAP/AVWAP/Volume Profile/Fib only as secondary confluence.
+
+CVD/Taker must be interpreted contextually (absorption/divergence/participation), not as a simple same-direction mandatory gate.
+
+## 6. Fibonacci final rule
+Fibonacci Retracement / Extension remain context-only.
 - score contribution: 0
 - never create Entry, SL or TP
-- useful only when overlapping baseline structure/SR/VWAP/Volume Profile/liquidity target
+- useful when overlapping baseline S/R / VWAP / Volume Profile / liquidity target
 - Fibonacci Time remains OFF
 
-## 5. Internal execution order
+## 7. Internal execution order
 1D context
 -> 4H regime
 -> CURRENT baseline setup generation
 -> 1H structural Entry Zone / Structural SL / TP map
--> V3 EDGE OVERLAY quality ranking
--> Preferred Entry Pocket inside baseline zone
+-> evidence tags (D1/H1/RV/MACD/MA50)
+-> preferred entry pocket inside baseline zone
 -> 15m/30m completed Trigger
--> volume/CVD/Taker participation confirmation
+-> contextual Volume/CVD/Taker reaction check
 -> Non-Chasing / Risk Veto / Time Validity
 -> R:R >=3
 -> ENTER / SMALL ENTER / WATCH / WAIT / AVOID
 
-## 6. UI behavior
+## 8. UI behavior
 Existing SCREEN 1~6 remains unchanged.
-No new mandatory visible table is added for the daily engine.
-The overlay may only affect existing fields:
-- which setup is marked ⭐ BEST
-- 1차 / 2차 preference inside the already-derived Entry Zone
-- 핵심 근거
+The overlay may only influence existing fields:
+- which already-valid setup is marked ⭐BEST
+- 1차 / 2차 preference inside existing Entry Zone
 - Entry Quality
+- 핵심 근거
 - Action strictness
-It must not alter the locked screen order/labels.
+It must not alter locked screen order/labels or rewrite historical values.
 
-## 7. BTC evidence target
-The overlay is considered useful if BTC OOS score tiers show monotonic or materially higher Expectancy/PF/MFE in higher-quality tiers while the baseline universe is preserved. This is a ranking validation, NOT a replacement-engine promotion test.
+## 9. Evidence files
+- final V3 comparison: `ab_quick_output/summary.json`
+- baseline-preserving tier audit: `baseline_plus_output/summary.json`
+- BTC feature attribution: `feature_attribution_output/summary.json`
 
-## 8. Final intended architecture
+## 10. Final intended architecture
 CURRENT MASTER TRADING = authoritative engine
-V3 EDGE = quality/ranking/entry-pocket overlay
+BASELINE+ EDGE = selective evidence overlay only
 Fib = context-only
 
-Principle: preserve the baseline's win-rate/entry-discipline advantages, while importing V3's setup-selection and move-capture advantages without discarding most baseline opportunities.
+Principle: keep the baseline's win-rate/SL/MAE discipline and opportunity coverage, while selectively importing only the V3-derived features that demonstrated positive BTC OOS separation.
