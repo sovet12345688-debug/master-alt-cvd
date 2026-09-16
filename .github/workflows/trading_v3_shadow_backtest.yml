@@ -1,4 +1,4 @@
-name: Trading V3 Quick A-B Backtest
+name: Trading BTC Baseline Plus Edge Audit
 
 on:
   push:
@@ -28,16 +28,16 @@ jobs:
           python-version: '3.12'
       - name: Install dependencies
         run: pip install pandas numpy requests
-      - name: Run BTC ETH V3 quick paired A-B backtest
-        run: python research/trading_v3_shadow_backtest/run_v3_ab_quick.py
-      - name: Persist quick A-B outputs
+      - name: Run BTC baseline plus V3 edge tier audit
+        run: python research/trading_v3_shadow_backtest/run_btc_baseline_plus_tier_audit.py
+      - name: Persist baseline plus outputs
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add research/trading_v3_shadow_backtest/ab_quick_output
+          git add research/trading_v3_shadow_backtest/baseline_plus_output
           if git diff --cached --quiet; then
             echo 'No output changes to commit'
           else
-            git commit -m 'research: persist V3 quick A-B results [skip ci]'
+            git commit -m 'research: persist BTC baseline-plus tier audit [skip ci]'
             git push origin HEAD:trading-v3-shadow-bt-20260915
           fi
