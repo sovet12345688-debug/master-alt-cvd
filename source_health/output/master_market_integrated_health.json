@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "system": "MASTER_MARKET_INTEGRATED_HEALTH",
-  "evaluated_at_utc": "2026-09-16T10:20:15.472403Z",
+  "evaluated_at_utc": "2026-09-16T11:19:00.492208Z",
   "overall_status": "HISTORY RECOVERING",
   "overall_icon": "🟡",
   "status_order": [
@@ -22,8 +22,8 @@
       "display_name": "Data Vault",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-16T09:59:04.555230Z",
-      "age_minutes": 21.2,
+      "timestamp_utc": "2026-09-16T10:58:43.110900Z",
+      "age_minutes": 20.3,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -38,8 +38,8 @@
       "display_name": "Stablecoin Windows",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-16T09:59:06.510368Z",
-      "age_minutes": 21.1,
+      "timestamp_utc": "2026-09-16T10:58:47.696814Z",
+      "age_minutes": 20.2,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -64,7 +64,7 @@
       "status": "CURRENT OK",
       "icon": "🟢",
       "timestamp_utc": "2026-09-16T10:19:16.199140Z",
-      "age_minutes": 1.0,
+      "age_minutes": 59.7,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -79,8 +79,8 @@
       "display_name": "Actor Retail",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-16T09:59:06.804018Z",
-      "age_minutes": 21.1,
+      "timestamp_utc": "2026-09-16T10:58:47.989541Z",
+      "age_minutes": 20.2,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -96,7 +96,7 @@
       "status": "CURRENT OK",
       "icon": "🟢",
       "timestamp_utc": "2026-09-15T23:38:34.112503Z",
-      "age_minutes": 641.7,
+      "age_minutes": 700.4,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -115,20 +115,7 @@
       }
     }
   ],
-  "registered_market_alerts": [
-    {
-      "source_id": "market_whales",
-      "display_name": "MARKET Whale Recorder",
-      "impact": "OPTIONAL",
-      "status": "FAILED",
-      "raw_source_health_status": "FAILED",
-      "reason_codes": [
-        "LATEST_WORKFLOW_FAILED"
-      ],
-      "state_age_minutes": 89.1,
-      "workflow_file": "market_whale_validation.yml"
-    }
-  ],
+  "registered_market_alerts": [],
   "policy": {
     "operational_health_only": true,
     "never_changes_master_score_or_direction": true,
