@@ -1,13 +1,13 @@
 {
   "engine": "MASTER_STABLECOIN_TREASURY_EXCHANGE_V1",
-  "generated_at_utc": "2026-09-16T07:29:09.200637Z",
-  "window_start_utc": "2026-09-16T06:29:07.372403Z",
-  "window_end_utc": "2026-09-16T07:29:07.372403Z",
+  "generated_at_utc": "2026-09-16T08:30:03.293822Z",
+  "window_start_utc": "2026-09-16T07:30:01.452011Z",
+  "window_end_utc": "2026-09-16T08:30:01.452011Z",
   "chain": "ethereum",
   "rpc_url": "https://ethereum-rpc.publicnode.com",
   "block_range": [
-    25988248,
-    25988546
+    25988551,
+    25988849
   ],
   "log_chunk_blocks": 50,
   "rpc_fallback_log": [],
@@ -23,7 +23,7 @@
       "token": "USDT",
       "chain": "ethereum",
       "mode": "treasury_outflow",
-      "status": "OK",
+      "status": "N/A",
       "issuer_transfer_count": 0,
       "issuer_transfer_amount": 0,
       "verified_exchange_match_count": 0,
@@ -31,15 +31,17 @@
       "verified_exchange_breakdown": {},
       "exchange_coverage": "PARTIAL_LABEL_SET",
       "matched_transfers": [],
-      "errors": []
+      "errors": [
+        "Tether Treasury:RuntimeError:{'code': -32602, 'message': 'block range extends beyond current head block'}"
+      ]
     },
     {
       "token": "USDC",
       "chain": "ethereum",
       "mode": "mint_destination_proxy",
       "status": "OK",
-      "issuer_transfer_count": 135,
-      "issuer_transfer_amount": 42637828.349759,
+      "issuer_transfer_count": 137,
+      "issuer_transfer_amount": 24060209.783986,
       "verified_exchange_match_count": 0,
       "verified_exchange_amount": 0,
       "verified_exchange_breakdown": {},
