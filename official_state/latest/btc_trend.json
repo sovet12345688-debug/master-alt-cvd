@@ -9,14 +9,14 @@
   "contract_path": "state/master_btc_trend_v2_6_contract.json",
   "run": {
     "run_type": "OFFICIAL",
-    "run_id": "MBTC-V26-20260916-1300-KST",
-    "executed_kst": "2026-09-16T13:00:00+09:00",
-    "updated_kst": "2026-09-16T13:00:00+09:00",
-    "prior_official_run_id": "MBTC-V26-20260916-0800-KST"
+    "run_id": "MBTC-V26-20260916-1700-KST",
+    "executed_kst": "2026-09-16T17:00:00+09:00",
+    "updated_kst": "2026-09-16T17:00:00+09:00",
+    "prior_official_run_id": "MBTC-V26-20260916-1300-KST"
   },
   "validity": {
     "valid_until_kst": null,
-    "next_official_run_kst": "2026-09-16T17:00:00+09:00",
+    "next_official_run_kst": "2026-09-16T21:00:00+09:00",
     "freshness_status": "CURRENT"
   },
   "data_quality": {
@@ -33,7 +33,7 @@
   },
   "decision": {
     "direction": "SHORT",
-    "permission_or_environment": "SHORT_DOMINANT_GAP20_WAIT_NONCHASE",
+    "permission_or_environment": "SHORT_DOMINANT_GAP30_WAIT_NONCHASE",
     "action": "⏳ 아직 신규포지션 대기",
     "risk_veto": [],
     "invalidations": [
@@ -42,23 +42,23 @@
   },
   "core_state": {
     "market_snapshot": {
-      "current_price_usdt": 76025.5,
+      "current_price_usdt": 75819.0,
       "price_source": "Bitget USDT Futures current validated derivatives summary",
       "latest_completed_1h_close_usdt": null,
       "latest_completed_4h_close_usdt": null,
       "latest_completed_1d_close_usdt": null,
-      "current_progressing_1d_price_usdt": 76025.5
+      "current_progressing_1d_price_usdt": 75819.0
     },
     "direction_ratio": {
-      "long": 40,
-      "short": 60,
+      "long": 35,
+      "short": 65,
       "dominant": "SHORT",
       "status": "CURRENT_LIMITED_DISPLAY_COVERAGE_68"
     },
     "trend": {
-      "state": "SHORT 20pt 우세",
-      "strength": 20,
-      "trajectory": "08:00 38:62에서 13:00 40:60으로 SHORT 우세 완화",
+      "state": "SHORT 30pt 우세",
+      "strength": 30,
+      "trajectory": "13:00 40:60에서 17:00 35:65로 SHORT 우세 강화",
       "coverage_pct": 68.0,
       "coverage_grade": "C",
       "strong_confirmation": false
@@ -103,18 +103,18 @@
     },
     "derivatives": {
       "source": "Bitget USDT Futures BTC same venue/contract family",
-      "snapshot_time_utc": "2026-09-16T03:00:00Z",
-      "status": "CURRENT_PRICE_UP_OI_UP",
-      "mark_price": 76025.5,
-      "oi_change_1h_pct": 0.14028151183000936,
-      "oi_change_4h_pct": 0.4082475008418074,
-      "oi_change_24h_pct": -2.0426845847104746,
-      "funding_rate": 8.2e-05
+      "snapshot_time_utc": "2026-09-16T07:00:00Z",
+      "status": "PRICE_DOWN_OI_UP_BEARISH_BUILD",
+      "mark_price": 75819.0,
+      "oi_change_1h_pct": -0.1838379245941435,
+      "oi_change_4h_pct": 0.5839743587064072,
+      "oi_change_24h_pct": -1.7784243109503994,
+      "funding_rate": 7.3e-05
     },
     "btc_leading_signal_engine": {
       "mode": "READ_ONLY_ZERO_WEIGHT",
       "selection_status": "UNVERIFIED_WAIT",
-      "logical_source_slot_kst": "2026-09-16T08:20:00+09:00",
+      "logical_source_slot_kst": "2026-09-16T13:20:00+09:00",
       "current_user_state": "확인 불가 · 대기",
       "strict_detection_rows": null,
       "strict_seeds": null,
@@ -122,7 +122,7 @@
       "ledger_integrity": "PASS_OBSERVED_BUT_LINEAGE_NOT_FULLY_RECOMPUTED",
       "frozen_identity": "PASS_OBSERVED",
       "production_weight": 0,
-      "verification_note": "Expected logical slot run completed successfully and same-run artifact exists, but this producer run could not independently recompute and match the provenance snapshot hash; fail-closed display applies."
+      "verification_note": "Expected logical-slot run completed successfully and same-run artifact exists, but this producer run could not independently recompute and match the provenance snapshot hash; fail-closed display applies."
     },
     "fractal": {
       "current_status": "N/A_CURRENT_ARTIFACT_UNVERIFIED",
@@ -151,7 +151,7 @@
   },
   "lineage": {
     "state_origin": "ACTUAL_STORED_RUN",
-    "run_record_source": "BASIC_OFFICIAL_AUTOMATION_2026-09-16T13:00:00+09:00",
+    "run_record_source": "BASIC_OFFICIAL_AUTOMATION_2026-09-16T17:00:00+09:00",
     "history_pointer": "official_state/history/btc_trend/2026-09.jsonl",
     "canonical_identity_verified": true,
     "cross_master_decision_dependency": false
