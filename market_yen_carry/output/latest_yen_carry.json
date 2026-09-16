@@ -1,7 +1,7 @@
 {
   "engine": "YEN_CARRY_RISK_LITE_V1",
   "schema_version": "1.0",
-  "generated_at_utc": "2026-09-15T23:38:34.112503Z",
+  "generated_at_utc": "2026-09-16T23:39:03.611536Z",
   "score_weight": 0,
   "status": "ok",
   "coverage_pct": 100,
@@ -15,8 +15,8 @@
   "sources": {
     "usd_jpy": {
       "provider": "ECB",
-      "asof_date": "2026-09-15",
-      "value": 155.00476644423262,
+      "asof_date": "2026-09-16",
+      "value": 155.04897286989686,
       "source_url": "https://data-api.ecb.europa.eu/service/data/EXR/D.USD+JPY.EUR.SP00.A?format=csvdata&lastNObservations=20",
       "method": "JPY per EUR divided by USD per EUR",
       "source_age_days": 0,
@@ -25,16 +25,16 @@
     "us10y": {
       "provider": "FRED_H15",
       "series_id": "DGS10",
-      "asof_date": "2026-09-14",
-      "value_pct": 4.97,
-      "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-08-01&coed=2026-09-15",
+      "asof_date": "2026-09-15",
+      "value_pct": 5.0,
+      "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-08-02&coed=2026-09-16",
       "source_age_days": 1,
       "freshness_max_age_days": 4
     },
     "jp10y": {
       "provider": "MOF_JAPAN",
-      "asof_date": "2026-09-14",
-      "value_pct": 2.988,
+      "asof_date": "2026-09-15",
+      "value_pct": 3.028,
       "source_url": "https://www.mof.go.jp/english/policy/jgbs/reference/interest_rate/jgbcme.csv",
       "retrieval_mode": "current",
       "source_age_days": 1,
@@ -42,8 +42,8 @@
     },
     "vix": {
       "provider": "CBOE",
-      "asof_date": "2026-09-14",
-      "value": 17.1,
+      "asof_date": "2026-09-15",
+      "value": 17.2,
       "source_url": "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv",
       "source_age_days": 1,
       "freshness_max_age_days": 4
@@ -51,34 +51,34 @@
   },
   "metrics": {
     "usd_jpy": {
-      "current": 155.004766,
-      "asof_date": "2026-09-15",
-      "change_1d_pct": 0.2946,
-      "change_3d_pct": 0.6281,
-      "change_7d_pct": 0.459,
+      "current": 155.048973,
+      "asof_date": "2026-09-16",
+      "change_1d_pct": 0.0285,
+      "change_3d_pct": 0.6568,
+      "change_7d_pct": 1.1608,
       "score": 0
     },
     "us_jp_10y_spread": {
-      "current_pct_point": 1.982,
-      "asof_date": "2026-09-14",
+      "current_pct_point": 1.972,
+      "asof_date": "2026-09-15",
       "prior_3d_date": "2026-09-11",
-      "change_3d_bp": 0.9,
+      "change_3d_bp": -0.1,
       "score": 0
     },
     "vix": {
-      "current": 17.1,
-      "asof_date": "2026-09-14",
-      "change_1d_pct": 7.9545,
-      "score": 5
+      "current": 17.2,
+      "asof_date": "2026-09-15",
+      "change_1d_pct": 0.5848,
+      "score": 0
     }
   },
   "risk": {
     "yen_score": 0,
     "spread_score": 0,
-    "vix_score": 5,
-    "raw_score": 5,
+    "vix_score": 0,
+    "raw_score": 0,
     "gate_applied": true,
-    "final_score": 5,
+    "final_score": 0,
     "level": "low",
     "label_ko": "낮음"
   },
