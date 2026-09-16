@@ -1,0 +1,130 @@
+{
+  "method": "BTC baseline universe preserved; V3 no-Fib score audited only as ranking/execution-strictness overlay",
+  "window": "2025-06-01..2026-08-31; OOS=2026",
+  "download_failures": [],
+  "baseline_all": {
+    "n": 506,
+    "expectancy_R": 0.17998449563569538,
+    "PF": 1.402917106466079,
+    "maxDD_R": -39.12393353273018,
+    "win_rate": 0.43280632411067194,
+    "sl_rate": 0.38537549407114624,
+    "false_start_rate": 0.16205533596837945,
+    "avg_MFE_R": 1.7149320909336123,
+    "avg_MAE_R": 1.2388920225938411
+  },
+  "high_70_plus": {
+    "n": 128,
+    "expectancy_R": 0.3305415182474232,
+    "PF": 1.6685084865190605,
+    "maxDD_R": -7.123416574423011,
+    "win_rate": 0.4296875,
+    "sl_rate": 0.4453125,
+    "false_start_rate": 0.15625,
+    "avg_MFE_R": 2.249183700913484,
+    "avg_MAE_R": 1.4652384159071925
+  },
+  "standard_60_69": {
+    "n": 222,
+    "expectancy_R": -0.009854461513056327,
+    "PF": 0.9806885974808409,
+    "maxDD_R": -36.99385516133073,
+    "win_rate": 0.3738738738738739,
+    "sl_rate": 0.45495495495495497,
+    "false_start_rate": 0.1891891891891892,
+    "avg_MFE_R": 1.7144069677895533,
+    "avg_MAE_R": 1.3976120816311997
+  },
+  "low_below_60": {
+    "n": 156,
+    "expectancy_R": 0.32660596738391157,
+    "PF": 2.03017858085486,
+    "maxDD_R": -9.437051782698905,
+    "win_rate": 0.5192307692307693,
+    "sl_rate": 0.23717948717948717,
+    "false_start_rate": 0.1282051282051282,
+    "avg_MFE_R": 1.2773190861935961,
+    "avg_MAE_R": 0.8273010517579268
+  },
+  "tier_metrics": {
+    "<55": {
+      "n": 64,
+      "expectancy_R": 0.4934041448981378,
+      "PF": 3.016364339344827,
+      "maxDD_R": -4.04341196408447,
+      "win_rate": 0.5625,
+      "sl_rate": 0.15625,
+      "false_start_rate": 0.078125,
+      "avg_MFE_R": 1.38405044109981,
+      "avg_MAE_R": 0.5620339215354324
+    },
+    "55-59": {
+      "n": 92,
+      "expectancy_R": 0.21057245259140653,
+      "PF": 1.5732038405290287,
+      "maxDD_R": -10.822638145055754,
+      "win_rate": 0.4891304347826087,
+      "sl_rate": 0.29347826086956524,
+      "false_start_rate": 0.16304347826086957,
+      "avg_MFE_R": 1.2030711871284043,
+      "avg_MAE_R": 1.0118347075648793
+    },
+    "60-64": {
+      "n": 116,
+      "expectancy_R": -0.09717764934143602,
+      "PF": 0.8074518910057868,
+      "maxDD_R": -29.294058087285904,
+      "win_rate": 0.3706896551724138,
+      "sl_rate": 0.43103448275862066,
+      "false_start_rate": 0.19827586206896552,
+      "avg_MFE_R": 1.4113449839270766,
+      "avg_MAE_R": 1.1903610046393613
+    },
+    "65-69": {
+      "n": 106,
+      "expectancy_R": 0.08570676290290631,
+      "PF": 1.1659632305447163,
+      "maxDD_R": -16.780510252192123,
+      "win_rate": 0.37735849056603776,
+      "sl_rate": 0.4811320754716981,
+      "false_start_rate": 0.1792452830188679,
+      "avg_MFE_R": 2.0460597048466034,
+      "avg_MAE_R": 1.6244151470184949
+    },
+    "70-74": {
+      "n": 73,
+      "expectancy_R": 0.3018775773700614,
+      "PF": 1.5650964284942397,
+      "maxDD_R": -5.899211873806895,
+      "win_rate": 0.3835616438356164,
+      "sl_rate": 0.4794520547945205,
+      "false_start_rate": 0.1643835616438356,
+      "avg_MFE_R": 2.4253815883659433,
+      "avg_MAE_R": 1.570162593513334
+    },
+    "75+": {
+      "n": 55,
+      "expectancy_R": 0.3685863852301034,
+      "PF": 1.8345194734415506,
+      "maxDD_R": -6.004819555353869,
+      "win_rate": 0.4909090909090909,
+      "sl_rate": 0.4,
+      "false_start_rate": 0.14545454545454545,
+      "avg_MFE_R": 2.0153210502947663,
+      "avg_MAE_R": 1.3259754165390403
+    }
+  },
+  "policy": {
+    "HIGH_70_PLUS": "BEST priority; canonical E1 SMALL ENTER may be considered only if all existing E1 gates pass",
+    "STANDARD_60_69": "baseline treatment; completed trigger preferred",
+    "LOW_BELOW_60": "setup preserved, but require completed 15m/30m trigger + participation before execution",
+    "FIB": "0 score; context-only confluence"
+  },
+  "verdict": "BASELINE+ EDGE OVERLAY SUPPORTED",
+  "hard_rules": [
+    "CURRENT MASTER remains setup/Entry/SL/TP/Trigger authority",
+    "V3 overlay cannot create/cancel baseline setup by score alone",
+    "Fib contributes zero points",
+    "15m/30m completed Trigger, Structural SL, >=3R, Non-Chasing, Risk Veto, Time Validity unchanged"
+  ]
+}
