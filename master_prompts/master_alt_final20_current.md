@@ -136,12 +136,10 @@ SIGNAL OUTCOME VAULT READ-ONLY OUTCOME REFERENCE — USER APPROVED · HARD LOCK
 - unsupported/data_unavailable은 N/A로 유지하고 다른 거래소·다른 source로 보충하지 않는다. read 실패/stale/schema mismatch/Goal F regression 발생 시 전체 성과참고 블록만 `N/A · 성과참고 제외` 처리하며 MASTER 본체는 기존 구조로 계속 실행한다.
 - 이 read-only 승인은 ALT_FINAL20_CURRENT의 사용자-visible 참고정보에만 적용한다. Signal Outcome 결과를 MASTER 계산으로 역입력하는 것은 계속 금지한다.
 
-🧭 MONEY · GitHub 개발 현황판 — VISIBLE FIXED BLOCK
-모든 사용자-visible OFFICIAL 및 의미 있는 WATCH 출력에서 GitHub main의 `state/github_data_ready_registry.json`을 최신으로 읽고, 기존 4-SCREEN 개수에는 포함하지 않는 고정 부록으로 아래 블록을 반드시 표시한다.
-제목 정확히=`🧭 MONEY · GitHub 개발 현황판`.
-테이블 기본 열=`작업|완료율|현재 상태|MASTER 연결|다음 할 일`.
-A/B/C/D/E/F를 모두 1행씩 보여준다. 완료율/상태는 registry 실제값만 사용하고 추정하지 않는다. F에는 Signal Outcome Vault의 SHADOW 상태를 명확히 표시한다.
-Registry 읽기 실패 시 숫자를 추정하지 말고 `현황판 데이터 확인 실패 · 다음 회차 재확인` 한 줄만 표시한다. 이 실패는 MASTER 판정에 영향 0.
+USER-VISIBLE GITHUB DEVELOPMENT DASHBOARD — REMOVED · USER APPROVED
+- 모든 사용자-visible OFFICIAL 및 의미 있는 WATCH 출력에서 `🧭 MONEY · GitHub 개발 현황판`을 표시하지 않는다.
+- `state/github_data_ready_registry.json`은 Signal Outcome guard와 후속작업 우선순위 확인 등 내부 read-only metadata 용도로는 사용할 수 있다.
+- Registry 상태는 MASTER 점수/산식/Gate/스케줄/후보선정/ENTER/WAIT 판단을 자동 변경하지 않는다.
 
 FOLLOW-UP — EXACTLY 5 · SEQUENTIAL
 모든 사용자-visible OFFICIAL/WATCH의 끝부분에 후속 작업을 정확히 5개 번호로 제안한다. 단순 질문 5개가 아니라 현재 registry와 MASTER 상태를 기준으로 `1번부터 순차 실행 가능한 실제 다음 작업` 순으로 배열한다.
