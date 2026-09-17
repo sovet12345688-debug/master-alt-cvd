@@ -2,7 +2,7 @@
   "engine": "MASTER_MARKET_SCORE_ENGINE_V1",
   "schema_version": "1.0",
   "status": "ACTIVE_OK",
-  "generated_at_utc": "2026-09-16T23:02:05.826805Z",
+  "generated_at_utc": "2026-09-17T00:02:27.013608Z",
   "activation_approval": {
     "explicit_user_approval": true,
     "approved_at_kst": "2026-09-11T10:04:10+09:00",
@@ -15,11 +15,11 @@
     ]
   },
   "source_age_minutes": {
-    "vault": 3.9,
-    "macro": 6.4,
-    "etf": 17.2,
-    "actors": 3.9,
-    "derivatives": 44.8
+    "vault": 3.8,
+    "macro": 6.6,
+    "etf": 18.2,
+    "actors": 3.8,
+    "derivatives": 45.4
   },
   "overall_coverage_pct": 100.0,
   "confidence_cap": null,
@@ -29,7 +29,7 @@
   "score_history_source": "state/master_market_score_history.csv",
   "scores": {
     "liquidity_lead": {
-      "score": 28.8,
+      "score": 33.8,
       "coverage_pct": 100.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
@@ -42,21 +42,21 @@
         "dxy": 25.0,
         "treasury_qra": 50.0,
         "treasury_buyback": 0.0,
-        "btc_etf_flow": 0.0,
-        "stablecoin_total_flow": 25.0
+        "btc_etf_flow": 25.0,
+        "stablecoin_total_flow": 50.0
       }
     },
     "crypto_money_inflow": {
-      "score": 23.8,
+      "score": 36.2,
       "coverage_pct": 100.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
       "threshold_alert_allowed": true,
       "components": {
-        "btc_etf_1d": 0.0,
+        "btc_etf_1d": 25.0,
         "btc_etf_3d": 25.0,
-        "eth_etf_1d": 25.0,
-        "stablecoin_total_1d": 25.0,
+        "eth_etf_1d": 50.0,
+        "stablecoin_total_1d": 50.0,
         "stablecoin_total_7d": 50.0,
         "btc_whale_net": 25.0,
         "eth_whale_net": 50.0,
@@ -65,34 +65,34 @@
       }
     },
     "alt_money_inflow": {
-      "score": 46.2,
+      "score": 55.0,
       "coverage_pct": 100.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
       "threshold_alert_allowed": true,
       "components": {
-        "eth_etf_1d": 25.0,
+        "eth_etf_1d": 50.0,
         "eth_etf_7d": 75.0,
         "eth_whale_net": 50.0,
         "eth_dominance_change": 50.0,
-        "btc_dominance_inverse_change": 50.0,
+        "btc_dominance_inverse_change": 75.0,
         "total_market_cap_1d": 50.0,
         "market_volume_1d": 25.0,
         "stablecoin_total_7d": 50.0
       }
     },
     "market_positive": {
-      "score": 35.5,
+      "score": 42.2,
       "coverage_pct": 100.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
       "threshold_alert_allowed": true,
       "components": {
-        "liquidity_lead": 28.8,
-        "crypto_money_inflow": 23.8,
-        "alt_money_inflow": 46.2,
+        "liquidity_lead": 33.8,
+        "crypto_money_inflow": 36.2,
+        "alt_money_inflow": 55.0,
         "btc_whale_net": 25.0,
-        "btc_derivatives_state": 50.0,
+        "btc_derivatives_state": 62.5,
         "market_breadth_state": 50.0,
         "rates_macro_state": 50.0,
         "oil_geopolitical_state": 75.0
