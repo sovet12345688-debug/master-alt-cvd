@@ -1,0 +1,30 @@
+{
+  "system_id": "alt_top100",
+  "display_name": "MASTER ALT 1 · TOP100 V4.8",
+  "status": "WORKER_SHADOW_BUILT",
+  "canonical_source": "master_prompts/master_alt_top100_v4_8_current.md",
+  "isolation_overlay": "money_os_work_v3/overlays/RUNTIME_ISOLATION_OVERLAY.md",
+  "ui": "EXISTING_4_SCREEN_UI_FROZEN",
+  "runtime_owner": "alt_top100_only",
+  "runtime_root": "money_os_work_v3/systems/alt_top100/runtime",
+  "local_stores": ["source_health", "latest", "history/official", "history/watch", "snapshots", "artifacts", "outcome"],
+  "worker_shadow": {
+    "prompt": "money_os_work_v3/systems/alt_top100/WORKER_SHADOW_PROMPT.md",
+    "prompt_blob": "2c8265d3905314c3aa8674184b9b84cfd45b0dfc",
+    "runtime_contract": "money_os_work_v3/systems/alt_top100/runtime/RUNTIME_CONTRACT.json",
+    "runtime_contract_blob": "9d3d2eb3f6f74b94ec576da9c222d674387fa36e",
+    "canonical_resolution": "CURRENT_MAIN",
+    "audited_main_head": "727f296e915f518acbdf948f758a0ffce650ce9b",
+    "canonical_blob": "27af5ac7f9acf4250f08ce06b601459e644da726",
+    "source_chat": "https://chatgpt.com/share/6aa75306-9b30-83e8-bc35-b936e6b5cb44",
+    "source_chat_sha256": "8a95e432e294a26062da89c57e64bd7f734c91739f2dc5e3a9865eccf49d217b",
+    "parity_audit": "money_os_work_v3/audit/SOURCE_CHAT_PARITY_20260914.json",
+    "parity_status": "PASS",
+    "notifications_enabled": false,
+    "production_cutover": false
+  },
+  "cross_system_read": false,
+  "cross_system_write": false,
+  "legacy_global_runtime_after_cutover": "FORBIDDEN",
+  "schedule": {"cadence": "hourly_HH30", "official_kst": ["10:30"], "other_slots": "WATCH_ONLY"}
+}

@@ -1,0 +1,49 @@
+name: TRADING V3 Shadow Backtest
+
+on:
+  push:
+    branches:
+      - money-os-work-v3-isolated-20260914
+    paths:
+      - research/v3_shadow_backtest/run_v3_shadow_backtest.py
+      - .github/workflows/trading_v3_shadow_backtest.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: money-os-work-v3-isolated-20260914
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install dependencies
+        run: pip install pandas numpy requests
+      - name: Run point-in-time BTC/ETH V3 shadow backtest
+        run: python research/v3_shadow_backtest/run_v3_shadow_backtest.py
+      - name: Commit durable research outputs
+        run: |
+          git config user.name "money-os-research-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add research/v3_shadow_backtest/output
+          if git diff --cached --quiet; then
+            echo "No output changes"
+          else
+            git commit -m "research: persist TRADING V3 shadow backtest results"
+            git pull --rebase origin money-os-work-v3-isolated-20260914
+            git push origin HEAD:money-os-work-v3-isolated-20260914
+          fi
+      - name: Upload backtest artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trading-v3-shadow-backtest
+          path: research/v3_shadow_backtest/output
+          retention-days: 30

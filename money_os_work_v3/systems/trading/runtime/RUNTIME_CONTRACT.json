@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "system_id": "trading",
+  "worker_instance": "money_os_work_v3_trading_shadow",
+  "runtime_root": "money_os_work_v3/systems/trading/runtime",
+  "stores": ["source_health", "latest", "history/manual", "snapshots", "inputs", "artifacts", "outcome"],
+  "read_scope": "OWN_RUNTIME_DIRECT_EXTERNAL_AND_APPROVED_OWN_CANONICAL_ONLY",
+  "write_scope": "OWN_RUNTIME_ONLY",
+  "history": {"prospective_only": true, "backfill": false, "manual_runs_only": true},
+  "missing_data": {"na_to_zero": false, "guessing": false, "unreadable_chart_value": "N/A"},
+  "schedule": {"mode": "MANUAL_ONLY"},
+  "manual_input": {"enabled": true, "purpose": "EXECUTION_ENTRY_STOP_TARGET_VALIDATION", "scope": "TRADING_ONLY"},
+  "privacy": {"public_repo_sensitive_state_forbidden": true},
+  "shadow": {"enabled": true, "notifications_enabled": false, "production_writes_enabled": false, "schedule_activation_enabled": false, "cutover_enabled": false}
+}

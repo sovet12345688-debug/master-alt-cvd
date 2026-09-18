@@ -284,7 +284,7 @@
       "mandatory easy-Korean derivative interpretation",
       "short-term whale profit-taking risk auxiliary is REQUIRED after whale/derivatives context and before SCREEN4 summary",
       "short-term whale risk table columns: signal|indicator|current|status",
-      "short-term whale risk rows in exact order: STH unrealized-profit state (Whale substitute)|STH-MVRV|STH-SOPR|Hyperliquid whale NET|BTC CVD",
+      "short-term whale risk rows in exact order: 단기 보유자 미실현 수익|단기 보유자 평균 수익권|단기 보유자 실제 매도 손익|대형 고래 롱·숏 순포지션|BTC 실제 체결 매수·매도 우위",
       "short-term whale risk is explicitly a FREE PROXY, not exact CryptoQuant STH Whale; overall levels low|medium|high|very high are display-only and score weight 0",
       "old full on-chain synthesis remains removed; only STH unrealized proxy, STH-MVRV and STH-SOPR are restored for this specific SCREEN4 auxiliary",
       "end with compact 💡 핵심 summary",
@@ -429,12 +429,19 @@
       "상태"
     ],
     "rows_in_order": [
-      "STH 미실현 수익상태 (Whale 대체)",
-      "STH-MVRV",
-      "STH-SOPR",
-      "Hyperliquid 고래 NET",
-      "BTC CVD"
+      "단기 보유자 미실현 수익",
+      "단기 보유자 평균 수익권",
+      "단기 보유자 실제 매도 손익",
+      "대형 고래 롱·숏 순포지션",
+      "BTC 실제 체결 매수·매도 우위"
     ],
+    "display_label_lock": {
+      "source_chat_parity_recovered_kst": "2026-09-14",
+      "presentation_only": true,
+      "engine_change": false,
+      "source_change": false,
+      "row_order_change": false
+    },
     "sources": {
       "sth_unrealized_proxy": "Checkonchain public static Plotly HTML STH cohort NUPL/unrealized-profit state; no key",
       "sth_mvrv": "Checkonchain public static Plotly HTML STH-MVRV; no key",

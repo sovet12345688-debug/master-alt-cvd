@@ -435,11 +435,13 @@ This latest additive rule supersedes the earlier generic on-chain-removal rule O
 
 ### Free 5-axis composition
 Read `onchain/output/latest_short_term_whale_risk.json` when fresh and `engine=MASTER_ST_WHALE_PROFIT_TAKING_RISK_PROXY_V1` / schema compatible. Required user-visible table columns = `신호 | 지표 | 현재 | 상태` and rows in this exact order:
-1. `STH 미실현 수익상태 (Whale 대체)` — Checkonchain public STH cohort NUPL/unrealized-profit-state proxy. Use current value + trailing 4Y percentile when supplied. This is the substitute for the unavailable exact STH Whale unrealized-P&L row.
-2. `STH-MVRV` — Checkonchain public STH MVRV. Profit-zone/upper-percentile context only.
-3. `STH-SOPR` — Checkonchain public STH SOPR. `>1` means realized spending is on average in profit; use current + 7D average/percentile context when supplied.
-4. `Hyperliquid 고래 NET` — existing BTC large-whale NET from actual >=$20M Hyperliquid signed-position aggregate. `NET = LONG USD - SHORT USD`; negative is short-leaning, positive is long-leaning.
-5. `BTC CVD` — existing Bitget 1H futures CVD; negative means aggressive selling dominates, positive means aggressive buying dominates.
+1. `단기 보유자 미실현 수익` — Checkonchain public STH cohort NUPL/unrealized-profit-state proxy. Use current value + trailing 4Y percentile when supplied. This is the substitute for the unavailable exact STH Whale unrealized-P&L row.
+2. `단기 보유자 평균 수익권` — Checkonchain public STH MVRV. Profit-zone/upper-percentile context only.
+3. `단기 보유자 실제 매도 손익` — Checkonchain public STH SOPR. `>1` means realized spending is on average in profit; use current + 7D average/percentile context when supplied.
+4. `대형 고래 롱·숏 순포지션` — existing BTC large-whale NET from actual >=$20M Hyperliquid signed-position aggregate. `NET = LONG USD - SHORT USD`; negative is short-leaning, positive is long-leaning.
+5. `BTC 실제 체결 매수·매도 우위` — existing Bitget 1H futures CVD; negative means aggressive selling dominates, positive means aggressive buying dominates.
+
+The five names above are a user-approved easy-Korean display lock recovered from the SOURCE CHAT during Work V3 parity review. This is presentation-only: underlying field IDs, sources, calculations, row order, risk logic, and score weight remain unchanged.
 
 ### Simple auxiliary risk logic
 - Collector row signal is display/risk context only: `🔴` risk confirmation, `🟡` caution/mixed, `🟢` low risk/opposite confirmation, `⚪` N/A.
@@ -455,7 +457,7 @@ Read `onchain/output/latest_short_term_whale_risk.json` when fresh and `engine=M
 - No backfill, interpolation, guessed values, screenshot OCR, or cross-source fill. Missing/ambiguous/stale component => that row is `N/A`; if user-visible, include it in consolidated `N/A 항목 안내`.
 
 ### Limited restoration boundary
-- User explicitly restored only the STH cohort proxy rows needed for this new auxiliary: `STH 미실현 수익상태(Whale 대체)`, `STH-MVRV`, `STH-SOPR`.
+- User explicitly restored only the STH cohort proxy rows needed for this new auxiliary: `단기 보유자 미실현 수익`, `단기 보유자 평균 수익권`, `단기 보유자 실제 매도 손익`. These are easy-Korean display labels for the underlying STH NUPL/MVRV/SOPR proxy metrics; the source/logic remains unchanged.
 - `STH Realized Price`, `Exchange Netflow`, and the old general on-chain synthesis block remain REMOVED and must not reappear unless separately restored by explicit user command.
 - SCREEN5 remains unchanged; this auxiliary belongs in SCREEN4 after the derivatives/whale context and before SCREEN4 `💡 핵심:`. SCREEN4 core data/score logic remains unchanged.
 
@@ -485,4 +487,3 @@ Read `onchain/output/latest_short_term_whale_risk.json` when fresh and `engine=M
 ### Production lock
 - `score_weight=0` remains fixed until explicit user approval after observation/validation.
 - Existing MASTER MARKET collectors, DXY interpretation, Market Positive Score, BTC Liquidity Lead, WATCH logic, and all other SCREEN1~5 blocks remain unchanged.
-

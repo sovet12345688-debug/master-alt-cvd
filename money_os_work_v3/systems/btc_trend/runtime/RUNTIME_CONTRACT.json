@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "system_id": "btc_trend",
+  "worker_instance": "money_os_work_v3_btc_trend_shadow",
+  "runtime_root": "money_os_work_v3/systems/btc_trend/runtime",
+  "stores": ["source_health", "latest", "history/official", "snapshots", "inputs", "artifacts", "outcome"],
+  "read_scope": "OWN_RUNTIME_DIRECT_EXTERNAL_AND_APPROVED_OWN_CANONICAL_ONLY",
+  "write_scope": "OWN_RUNTIME_ONLY",
+  "history": {"prospective_only": true, "backfill": false, "watch_store": false},
+  "missing_data": {"na_to_zero": false, "guessing": false, "silent_stale_reuse": false},
+  "schedule": {"timezone": "Asia/Seoul", "mode": "OFFICIAL_ONLY", "official_kst": ["05:00", "08:00", "13:00", "17:00", "21:00"], "watch": "NONE"},
+  "manual_input": {"enabled": true, "purpose": "PRECISION_REPORT", "scope": "BTC_TREND_ONLY"},
+  "shadow": {"enabled": true, "notifications_enabled": false, "production_writes_enabled": false, "schedule_activation_enabled": false, "cutover_enabled": false}
+}

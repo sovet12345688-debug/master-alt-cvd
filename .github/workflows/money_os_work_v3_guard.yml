@@ -1,0 +1,61 @@
+name: MONEY OS WORK V3 Isolation Guard
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'money_os_work_v3/**'
+      - 'master_prompts/master_alt_top100_v4_8_current.md'
+      - 'master_prompts/master_alt_final20_current.md'
+      - 'master_prompts/master_market_v1_2_current.md'
+      - 'master_prompts/master_btc_trend_v2_6_current.md'
+      - 'master_prompts/master_btc_trend_v2_6_ui_final.md'
+      - 'master_prompts/master_trading_current.md'
+      - 'state/master_market_v1_2_contract.json'
+      - 'state/master_btc_trend_v2_6_contract.json'
+      - 'state/master_trading_current_contract.json'
+      - 'money_master_os/masters/trading/MASTER-TRADING-UI-V2-FINAL.md'
+      - '.github/workflows/money_os_work_v3_guard.yml'
+  push:
+    branches:
+      - 'money-os-work-v3-isolated-20260914'
+    paths:
+      - 'money_os_work_v3/**'
+      - 'master_prompts/master_alt_top100_v4_8_current.md'
+      - 'master_prompts/master_alt_final20_current.md'
+      - 'master_prompts/master_market_v1_2_current.md'
+      - 'master_prompts/master_btc_trend_v2_6_current.md'
+      - 'master_prompts/master_btc_trend_v2_6_ui_final.md'
+      - 'master_prompts/master_trading_current.md'
+      - 'state/master_market_v1_2_contract.json'
+      - 'state/master_btc_trend_v2_6_contract.json'
+      - 'state/master_trading_current_contract.json'
+      - 'money_master_os/masters/trading/MASTER-TRADING-UI-V2-FINAL.md'
+      - '.github/workflows/money_os_work_v3_guard.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-v3-isolation-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Resolve current main canonicals
+        run: git fetch origin +main:refs/remotes/origin/main
+      - name: Validate six-system absolute runtime isolation
+        run: python money_os_work_v3/tools/validate_v3_isolation.py
+      - name: Validate six Worker Shadow packages and parity gates
+        run: python money_os_work_v3/tools/validate_worker_shadows.py
+      - name: Run Worker Shadow tests
+        run: python -m unittest discover -s money_os_work_v3/tests -v
+
+# Deliberately does NOT call legacy five-MASTER integration,
+# Shared Fact Vault, global Source Health, global WATCH, global OFFICIAL State,
+# or another system's runtime health. This guard validates only the V3 isolation contract.
