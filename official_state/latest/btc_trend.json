@@ -9,14 +9,14 @@
   "contract_path": "state/master_btc_trend_v2_6_contract.json",
   "run": {
     "run_type": "OFFICIAL",
-    "run_id": "MBTC-V26-20260917-2100-KST",
-    "executed_kst": "2026-09-17T21:00:00+09:00",
-    "updated_kst": "2026-09-17T21:00:00+09:00",
-    "prior_official_run_id": "MBTC-V26-20260917-1700-KST"
+    "run_id": "MBTC-V26-20260918-1300-KST",
+    "executed_kst": "2026-09-18T13:00:00+09:00",
+    "updated_kst": "2026-09-18T13:00:00+09:00",
+    "prior_official_run_id": "MBTC-V26-20260917-2100-KST"
   },
   "validity": {
     "valid_until_kst": null,
-    "next_official_run_kst": "2026-09-18T05:00:00+09:00",
+    "next_official_run_kst": "2026-09-18T17:00:00+09:00",
     "freshness_status": "CURRENT"
   },
   "data_quality": {
@@ -24,8 +24,7 @@
     "confidence": null,
     "known_na": [
       "FRACTAL_CURRENT_ARTIFACT_UNVERIFIED",
-      "SR_STRENGTH_CURRENT_REACTION_MODEL_UNVERIFIED",
-      "BTC_LEADING_SIGNAL_PROVENANCE_HASH_RECOMPUTE_UNVERIFIED"
+      "SR_STRENGTH_CURRENT_REACTION_MODEL_UNVERIFIED"
     ],
     "stale_sources": [],
     "time_mismatch_warnings": [],
@@ -33,7 +32,7 @@
   },
   "decision": {
     "direction": "SHORT",
-    "permission_or_environment": "SHORT_DOMINANT_GAP26_WAIT_NONCHASE",
+    "permission_or_environment": "NEUTRAL_GAP4_WAIT_NONCHASE",
     "action": "⏳ 아직 신규포지션 대기",
     "risk_veto": [],
     "invalidations": [
@@ -42,23 +41,23 @@
   },
   "core_state": {
     "market_snapshot": {
-      "current_price_usdt": 76325.9,
+      "current_price_usdt": 77549.9,
       "price_source": "Bitget USDT Futures current validated derivatives summary",
-      "latest_completed_1h_close_usdt": null,
-      "latest_completed_4h_close_usdt": null,
-      "latest_completed_1d_close_usdt": null,
-      "current_progressing_1d_price_usdt": 76325.9
+      "latest_completed_1h_close_usdt": 77383.47,
+      "latest_completed_4h_close_usdt": 77383.47,
+      "latest_completed_1d_close_usdt": 76417.01,
+      "current_progressing_1d_price_usdt": 77549.9
     },
     "direction_ratio": {
-      "long": 37,
-      "short": 63,
-      "dominant": "SHORT",
+      "long": 48,
+      "short": 52,
+      "dominant": "NEUTRAL",
       "status": "CURRENT_LIMITED_DISPLAY_COVERAGE_68"
     },
     "trend": {
-      "state": "SHORT 26pt 우세",
-      "strength": 26,
-      "trajectory": "17:00 33:67에서 21:00 37:63으로 SHORT 우세 완화",
+      "state": "방향충돌/중립 · SHORT +4pt",
+      "strength": 4,
+      "trajectory": "마지막 STORED OFFICIAL 37:63에서 현재 48:52로 SHORT 우세가 크게 완화되어 중립권 진입",
       "coverage_pct": 68.0,
       "coverage_grade": "C",
       "strong_confirmation": false
@@ -71,15 +70,15 @@
       "entry_gate_effect": 0
     },
     "top": {
-      "score": 59,
+      "score": 48,
       "band": "가능성 관찰",
       "coverage_pct": 50.0,
       "coverage_grade": "C",
       "entry_gate_effect": 0
     },
     "accumulation": {
-      "score": 33,
-      "status": "낮음",
+      "score": 43,
+      "status": "가능성 관찰",
       "coverage_pct": 53.0,
       "coverage_grade": "C",
       "entry_gate_effect": 0
@@ -103,28 +102,37 @@
     },
     "derivatives": {
       "source": "Bitget USDT Futures BTC same venue/contract family",
-      "snapshot_time_utc": "2026-09-17T11:00:00Z",
-      "status": "DELEVERAGING",
-      "mark_price": 76325.9,
-      "oi_change_1h_pct": 0.23156929079257704,
-      "oi_change_4h_pct": -0.05319011457687317,
-      "oi_change_24h_pct": 0.2612526943932547,
-      "funding_rate": 6.2e-05
+      "snapshot_time_utc": "2026-09-18T03:00:00Z",
+      "microstructure_generated_at_utc": "2026-09-18T03:18:15.625898Z",
+      "status": "PRICE_UP_OI_UP",
+      "mark_price": 77549.9,
+      "oi_change_1h_pct": -0.10257127712172132,
+      "price_change_1h_pct": 1.040503548474092,
+      "oi_change_4h_pct": 0.5493546703703389,
+      "price_change_4h_pct": 1.4229308976104527,
+      "oi_change_24h_pct": -0.18640567641742267,
+      "price_change_24h_pct": 1.5163990758134016,
+      "funding_rate": 5.7e-05,
+      "cvd_1h_usdt": 25408261.234260008,
+      "taker_buy_ratio_1h": 0.5768267547123885,
+      "taker_sell_ratio_1h": 0.4231732452876116,
+      "long_position_ratio_1h": 0.4919,
+      "short_position_ratio_1h": 0.5081
     },
     "btc_leading_signal_engine": {
       "mode": "READ_ONLY_ZERO_WEIGHT",
-      "selection_status": "UNVERIFIABLE",
-      "logical_source_slot_kst": "2026-09-17T17:20:00+09:00",
-      "actual_source_time_kst": "2026-09-17T17:32:07+09:00",
-      "direction": null,
-      "current_user_state": "확인 불가 · 대기",
-      "strict_detection_rows": null,
-      "strict_seeds": null,
-      "positions": null,
-      "ledger_integrity": "PASS_OBSERVED_BUT_LINEAGE_NOT_FULLY_VERIFIED",
-      "frozen_identity": "PASS_NO_DRIFT_OBSERVED",
+      "selection_status": "CURRENT",
+      "logical_source_slot_kst": "2026-09-18T08:20:00+09:00",
+      "actual_source_time_kst": "2026-09-18T08:24:57+09:00",
+      "direction": "SHORT",
+      "current_user_state": "집중관찰",
+      "strict_detection_rows": 12,
+      "strict_seeds": 0,
+      "positions": 0,
+      "ledger_integrity": "PASS",
+      "frozen_identity": "PASS_NO_DRIFT",
       "production_weight": 0,
-      "verification_note": "Workflow success and same-run artifact observed, but independent latest.md/state.json SHA256 plus canonical snapshot hash recomputation was not completed; CURRENT not asserted."
+      "verification_note": "Same-run workflow/artifact/provenance/file hashes/canonical snapshot hash/ledger/frozen identity all verified."
     },
     "fractal": {
       "current_status": "N/A_CURRENT_ARTIFACT_UNVERIFIED",
@@ -154,7 +162,7 @@
   },
   "lineage": {
     "state_origin": "ACTUAL_STORED_RUN",
-    "run_record_source": "BASIC_OFFICIAL_AUTOMATION_2026-09-17T21:00:00+09:00",
+    "run_record_source": "BASIC_OFFICIAL_AUTOMATION_2026-09-18T13:00:00+09:00",
     "history_pointer": "official_state/history/btc_trend/2026-09.jsonl",
     "canonical_identity_verified": true,
     "cross_master_decision_dependency": false
@@ -166,7 +174,6 @@
   "do_not_reconstruct": [
     "unverified current fractal artifact",
     "unverified S/R strength reaction artifact",
-    "unverified leading-signal lineage hash",
     "private user account or position data"
   ]
 }
