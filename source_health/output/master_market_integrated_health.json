@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "system": "MASTER_MARKET_INTEGRATED_HEALTH",
-  "evaluated_at_utc": "2026-09-18T00:25:21.237791Z",
+  "evaluated_at_utc": "2026-09-18T01:17:47.079778Z",
   "overall_status": "HISTORY RECOVERING",
   "overall_icon": "🟡",
   "status_order": [
@@ -22,8 +22,8 @@
       "display_name": "Data Vault",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-17T23:57:59.448450Z",
-      "age_minutes": 27.4,
+      "timestamp_utc": "2026-09-18T00:59:29.410649Z",
+      "age_minutes": 18.3,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -38,8 +38,8 @@
       "display_name": "Stablecoin Windows",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-17T23:58:01.476205Z",
-      "age_minutes": 27.3,
+      "timestamp_utc": "2026-09-18T00:59:31.731528Z",
+      "age_minutes": 18.3,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -60,8 +60,8 @@
       "display_name": "Derivatives",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-18T00:24:39.107581Z",
-      "age_minutes": 0.7,
+      "timestamp_utc": "2026-09-18T01:17:14.589191Z",
+      "age_minutes": 0.5,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -76,8 +76,8 @@
       "display_name": "Actor Retail",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-17T23:58:01.744883Z",
-      "age_minutes": 27.3,
+      "timestamp_utc": "2026-09-18T00:59:32.059333Z",
+      "age_minutes": 18.3,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -93,7 +93,7 @@
       "status": "CURRENT OK",
       "icon": "🟢",
       "timestamp_utc": "2026-09-17T23:36:55.174939Z",
-      "age_minutes": 48.4,
+      "age_minutes": 100.9,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -112,7 +112,21 @@
       }
     }
   ],
-  "registered_market_alerts": [],
+  "registered_market_alerts": [
+    {
+      "source_id": "market_whales",
+      "display_name": "MARKET Whale Recorder",
+      "impact": "OPTIONAL",
+      "status": "FAILED",
+      "raw_source_health_status": "FAILED",
+      "reason_codes": [
+        "STATE_AGING",
+        "LATEST_WORKFLOW_FAILED"
+      ],
+      "state_age_minutes": 91.0,
+      "workflow_file": "market_whale_validation.yml"
+    }
+  ],
   "policy": {
     "operational_health_only": true,
     "never_changes_master_score_or_direction": true,
