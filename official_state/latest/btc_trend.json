@@ -9,14 +9,14 @@
   "contract_path": "state/master_btc_trend_v2_6_contract.json",
   "run": {
     "run_type": "OFFICIAL",
-    "run_id": "MBTC-V26-20260918-1300-KST",
-    "executed_kst": "2026-09-18T13:00:00+09:00",
-    "updated_kst": "2026-09-18T13:00:00+09:00",
-    "prior_official_run_id": "MBTC-V26-20260917-2100-KST"
+    "run_id": "MBTC-V26-20260918-1700-KST",
+    "executed_kst": "2026-09-18T17:00:00+09:00",
+    "updated_kst": "2026-09-18T17:00:00+09:00",
+    "prior_official_run_id": "MBTC-V26-20260918-1300-KST"
   },
   "validity": {
     "valid_until_kst": null,
-    "next_official_run_kst": "2026-09-18T17:00:00+09:00",
+    "next_official_run_kst": "2026-09-18T21:00:00+09:00",
     "freshness_status": "CURRENT"
   },
   "data_quality": {
@@ -31,8 +31,8 @@
     "source_health_snapshot_pointer": "source_health/output/latest.json"
   },
   "decision": {
-    "direction": "SHORT",
-    "permission_or_environment": "NEUTRAL_GAP4_WAIT_NONCHASE",
+    "direction": "LONG",
+    "permission_or_environment": "LONG_DOMINANT_GAP10_WAIT_COVERAGE68_NONCHASE",
     "action": "⏳ 아직 신규포지션 대기",
     "risk_veto": [],
     "invalidations": [
@@ -41,43 +41,43 @@
   },
   "core_state": {
     "market_snapshot": {
-      "current_price_usdt": 77549.9,
+      "current_price_usdt": 77631.0,
       "price_source": "Bitget USDT Futures current validated derivatives summary",
-      "latest_completed_1h_close_usdt": 77383.47,
-      "latest_completed_4h_close_usdt": 77383.47,
-      "latest_completed_1d_close_usdt": 76417.01,
-      "current_progressing_1d_price_usdt": 77549.9
+      "latest_completed_1h_close_usdt": null,
+      "latest_completed_4h_close_usdt": null,
+      "latest_completed_1d_close_usdt": null,
+      "current_progressing_1d_price_usdt": 77631.0
     },
     "direction_ratio": {
-      "long": 48,
-      "short": 52,
-      "dominant": "NEUTRAL",
+      "long": 55,
+      "short": 45,
+      "dominant": "LONG",
       "status": "CURRENT_LIMITED_DISPLAY_COVERAGE_68"
     },
     "trend": {
-      "state": "방향충돌/중립 · SHORT +4pt",
-      "strength": 4,
-      "trajectory": "마지막 STORED OFFICIAL 37:63에서 현재 48:52로 SHORT 우세가 크게 완화되어 중립권 진입",
+      "state": "LONG 10pt 우세",
+      "strength": 10,
+      "trajectory": "13:00 STORED OFFICIAL 48:52 중립에서 17:00 55:45로 LONG 우세 전환",
       "coverage_pct": 68.0,
       "coverage_grade": "C",
       "strong_confirmation": false
     },
     "bottom": {
-      "score": 26,
+      "score": 31,
       "band": "낮음",
       "coverage_pct": 57.0,
       "coverage_grade": "C",
       "entry_gate_effect": 0
     },
     "top": {
-      "score": 48,
-      "band": "가능성 관찰",
+      "score": 38,
+      "band": "낮음",
       "coverage_pct": 50.0,
       "coverage_grade": "C",
       "entry_gate_effect": 0
     },
     "accumulation": {
-      "score": 43,
+      "score": 50,
       "status": "가능성 관찰",
       "coverage_pct": 53.0,
       "coverage_grade": "C",
@@ -102,31 +102,31 @@
     },
     "derivatives": {
       "source": "Bitget USDT Futures BTC same venue/contract family",
-      "snapshot_time_utc": "2026-09-18T03:00:00Z",
-      "microstructure_generated_at_utc": "2026-09-18T03:18:15.625898Z",
+      "snapshot_time_utc": "2026-09-18T07:00:00Z",
+      "microstructure_generated_at_utc": "2026-09-18T07:18:57.478721Z",
       "status": "PRICE_UP_OI_UP",
-      "mark_price": 77549.9,
-      "oi_change_1h_pct": -0.10257127712172132,
-      "price_change_1h_pct": 1.040503548474092,
-      "oi_change_4h_pct": 0.5493546703703389,
-      "price_change_4h_pct": 1.4229308976104527,
-      "oi_change_24h_pct": -0.18640567641742267,
-      "price_change_24h_pct": 1.5163990758134016,
-      "funding_rate": 5.7e-05,
-      "cvd_1h_usdt": 25408261.234260008,
-      "taker_buy_ratio_1h": 0.5768267547123885,
-      "taker_sell_ratio_1h": 0.4231732452876116,
-      "long_position_ratio_1h": 0.4919,
-      "short_position_ratio_1h": 0.5081
+      "mark_price": 77631.0,
+      "oi_change_1h_pct": 0.12072695877250109,
+      "price_change_1h_pct": 0.05478805345691529,
+      "oi_change_4h_pct": 0.3330369133653178,
+      "price_change_4h_pct": 0.1046470990571202,
+      "oi_change_24h_pct": -0.560865952314536,
+      "price_change_24h_pct": 1.4673821256813335,
+      "funding_rate": 2.4e-05,
+      "cvd_1h_usdt": 1490579.5449999943,
+      "taker_buy_ratio_1h": 0.5078646782732451,
+      "taker_sell_ratio_1h": 0.4921353217267549,
+      "long_position_ratio_1h": 0.4922,
+      "short_position_ratio_1h": 0.5078
     },
     "btc_leading_signal_engine": {
       "mode": "READ_ONLY_ZERO_WEIGHT",
       "selection_status": "CURRENT",
-      "logical_source_slot_kst": "2026-09-18T08:20:00+09:00",
-      "actual_source_time_kst": "2026-09-18T08:24:57+09:00",
+      "logical_source_slot_kst": "2026-09-18T13:20:00+09:00",
+      "actual_source_time_kst": "2026-09-18T13:29:16.545110+09:00",
       "direction": "SHORT",
       "current_user_state": "집중관찰",
-      "strict_detection_rows": 12,
+      "strict_detection_rows": 13,
       "strict_seeds": 0,
       "positions": 0,
       "ledger_integrity": "PASS",
@@ -162,7 +162,7 @@
   },
   "lineage": {
     "state_origin": "ACTUAL_STORED_RUN",
-    "run_record_source": "BASIC_OFFICIAL_AUTOMATION_2026-09-18T13:00:00+09:00",
+    "run_record_source": "BASIC_OFFICIAL_AUTOMATION_2026-09-18T17:00:00+09:00",
     "history_pointer": "official_state/history/btc_trend/2026-09.jsonl",
     "canonical_identity_verified": true,
     "cross_master_decision_dependency": false
