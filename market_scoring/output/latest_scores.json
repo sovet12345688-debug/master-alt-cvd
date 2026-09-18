@@ -2,7 +2,7 @@
   "engine": "MASTER_MARKET_SCORE_ENGINE_V1",
   "schema_version": "1.0",
   "status": "ACTIVE_OK",
-  "generated_at_utc": "2026-09-18T20:02:16.503082Z",
+  "generated_at_utc": "2026-09-18T21:02:01.204355Z",
   "activation_approval": {
     "explicit_user_approval": true,
     "approved_at_kst": "2026-09-11T10:04:10+09:00",
@@ -15,11 +15,11 @@
     ]
   },
   "source_age_minutes": {
-    "vault": 4.3,
-    "macro": 6.7,
-    "etf": 19.2,
-    "actors": 4.3,
-    "derivatives": 45.4
+    "vault": 3.6,
+    "macro": 6.1,
+    "etf": 17.2,
+    "actors": 3.6,
+    "derivatives": 43.7
   },
   "overall_coverage_pct": 100.0,
   "confidence_cap": null,
@@ -29,25 +29,25 @@
   "score_history_source": "state/master_market_score_history.csv",
   "scores": {
     "liquidity_lead": {
-      "score": 27.5,
+      "score": 52.5,
       "coverage_pct": 100.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
       "threshold_alert_allowed": true,
       "components": {
-        "us_net_liquidity": 0.0,
-        "tga_change": 50.0,
-        "fed_reserves": 0.0,
+        "us_net_liquidity": 50.0,
+        "tga_change": 75.0,
+        "fed_reserves": 50.0,
         "us10y_real_yield": 25.0,
         "dxy": 50.0,
         "treasury_qra": 50.0,
         "treasury_buyback": 25.0,
         "btc_etf_flow": 75.0,
-        "stablecoin_total_flow": 0.0
+        "stablecoin_total_flow": 75.0
       }
     },
     "crypto_money_inflow": {
-      "score": 46.2,
+      "score": 57.5,
       "coverage_pct": 100.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
@@ -56,7 +56,7 @@
         "btc_etf_1d": 75.0,
         "btc_etf_3d": 25.0,
         "eth_etf_1d": 50.0,
-        "stablecoin_total_1d": 0.0,
+        "stablecoin_total_1d": 75.0,
         "stablecoin_total_7d": 50.0,
         "btc_whale_net": 25.0,
         "eth_whale_net": 25.0,
@@ -82,17 +82,17 @@
       }
     },
     "market_positive": {
-      "score": 48.9,
+      "score": 51.8,
       "coverage_pct": 100.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
       "threshold_alert_allowed": true,
       "components": {
-        "liquidity_lead": 27.5,
-        "crypto_money_inflow": 46.2,
+        "liquidity_lead": 52.5,
+        "crypto_money_inflow": 57.5,
         "alt_money_inflow": 53.8,
         "btc_whale_net": 25.0,
-        "btc_derivatives_state": 100.0,
+        "btc_derivatives_state": 25.0,
         "market_breadth_state": 100.0,
         "rates_macro_state": 25.0,
         "oil_geopolitical_state": 100.0
@@ -100,7 +100,7 @@
     }
   },
   "display": {
-    "liquidity_stage": "Risk-Off",
+    "liquidity_stage": "Neutral/Weak",
     "liquidity_thresholds": [
       55,
       65,
