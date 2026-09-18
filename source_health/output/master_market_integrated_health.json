@@ -1,9 +1,9 @@
 {
   "schema_version": "1.0",
   "system": "MASTER_MARKET_INTEGRATED_HEALTH",
-  "evaluated_at_utc": "2026-09-18T11:17:43.168357Z",
-  "overall_status": "HISTORY RECOVERING",
-  "overall_icon": "🟡",
+  "evaluated_at_utc": "2026-09-18T12:22:48.146030Z",
+  "overall_status": "FAILED",
+  "overall_icon": "🔴",
   "status_order": [
     "CURRENT OK",
     "HISTORY RECOVERING",
@@ -22,8 +22,8 @@
       "display_name": "Data Vault",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-18T10:58:05.616401Z",
-      "age_minutes": 19.6,
+      "timestamp_utc": "2026-09-18T11:58:35.657313Z",
+      "age_minutes": 24.2,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -38,8 +38,8 @@
       "display_name": "Stablecoin Windows",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-18T10:58:50.925297Z",
-      "age_minutes": 18.9,
+      "timestamp_utc": "2026-09-18T11:58:37.616113Z",
+      "age_minutes": 24.2,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -61,7 +61,7 @@
       "status": "CURRENT OK",
       "icon": "🟢",
       "timestamp_utc": "2026-09-18T11:17:08.619287Z",
-      "age_minutes": 0.6,
+      "age_minutes": 65.7,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -76,8 +76,8 @@
       "display_name": "Actor Retail",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-18T10:58:51.190404Z",
-      "age_minutes": 18.9,
+      "timestamp_utc": "2026-09-18T11:58:37.949688Z",
+      "age_minutes": 24.2,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -93,7 +93,7 @@
       "status": "CURRENT OK",
       "icon": "🟢",
       "timestamp_utc": "2026-09-17T23:36:55.174939Z",
-      "age_minutes": 700.8,
+      "age_minutes": 765.9,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -112,7 +112,33 @@
       }
     }
   ],
-  "registered_market_alerts": [],
+  "registered_market_alerts": [
+    {
+      "source_id": "market_macro_liquidity",
+      "display_name": "MARKET Macro Backbone",
+      "impact": "CORE",
+      "status": "FAILED",
+      "raw_source_health_status": "FAILED",
+      "reason_codes": [
+        "QUALITY_CHECK_FAILED",
+        "LATEST_WORKFLOW_FAILED"
+      ],
+      "state_age_minutes": 26.7,
+      "workflow_file": "market_macro_liquidity_free_hourly.yml"
+    },
+    {
+      "source_id": "market_treasury_buyback",
+      "display_name": "MARKET Treasury Buyback",
+      "impact": "OPTIONAL",
+      "status": "FAILED",
+      "raw_source_health_status": "FAILED",
+      "reason_codes": [
+        "LATEST_WORKFLOW_FAILED"
+      ],
+      "state_age_minutes": 26.7,
+      "workflow_file": "market_macro_liquidity_free_hourly.yml"
+    }
+  ],
   "policy": {
     "operational_health_only": true,
     "never_changes_master_score_or_direction": true,
