@@ -1,0 +1,59 @@
+{
+  "schema_version": "2.1",
+  "contract_id": "BTC_TREND_V26_LIQUIDITY_MACRO_R21_PROMOTION_CANDIDATE",
+  "master_id": "btc_trend",
+  "production_version": "V2.6",
+  "status": "REGRESSION_PASS_READY_FOR_EXPLICIT_APPROVAL",
+  "weight_in_trend": 10,
+  "engine": "btc_trend_v26/liquidity_macro_engine_r21.py",
+  "current_source": "market_vault/output/latest_summary.json",
+  "scored_components": [
+    "US10Y_REAL 7D change: falling is BTC-positive",
+    "US10Y nominal 7D change: falling is BTC-positive",
+    "STABLECOIN_TOTAL_SUPPLY 7D change: rising is BTC-positive",
+    "TGA_CLOSING_BALANCE 7D change: falling is BTC-positive"
+  ],
+  "auxiliary_not_scored": {
+    "US_NET_LIQUIDITY_PROXY": "0 weight until sufficiently long validated history is available"
+  },
+  "oos_gate_frozen": {
+    "recent_exclusion_days": 120,
+    "evaluation_days": 1080,
+    "sampling": "weekly non-overlapping",
+    "forward_target_days": 7,
+    "min_signals": 80,
+    "min_hit_rate_pct": 52,
+    "positive_average_return_required": true,
+    "min_holdout_signals": 15,
+    "min_holdout_hit_rate_pct": 50,
+    "holdout_positive_average_return_required": true,
+    "min_positive_folds": 3
+  },
+  "latest_main_regression": {
+    "workflow": "BTC TREND V2.6 Macro R2.1 Promotion Regression",
+    "status": "PASS",
+    "oos_signals": 85,
+    "oos_hit_rate_pct": 60.0,
+    "oos_avg_signed_forward_return_pct": 1.4205,
+    "holdout_signals": 21,
+    "holdout_hit_rate_pct": 61.9,
+    "holdout_avg_signed_forward_return_pct": 2.0528,
+    "positive_folds": 3,
+    "baseline_coverage_pct_at_validation": 60.0,
+    "candidate_coverage_pct_at_validation": 70.0,
+    "candidate_coverage_grade": "B",
+    "strong_confirmation_coverage_met": true,
+    "non_macro_feature_mutation": false
+  },
+  "activation_note": "Current production Machine Ratio Bridge is pinned to a frozen runtime commit. This candidate is not active until an explicit activation patch updates the validated runtime source and related bridge provenance under separate approval.",
+  "anti_fabrication": {
+    "missing_as_zero": false,
+    "stale_substitution": false,
+    "chat_memory_backfill": false,
+    "other_master_decision_input": false,
+    "silent_threshold_retuning_after_result": false,
+    "silent_production_promotion": false
+  },
+  "production_approved": false,
+  "official_state_write_allowed": false
+}
