@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "system": "MASTER_MARKET_INTEGRATED_HEALTH",
-  "evaluated_at_utc": "2026-09-18T22:17:40.028100Z",
+  "evaluated_at_utc": "2026-09-18T23:17:00.215502Z",
   "overall_status": "HISTORY RECOVERING",
   "overall_icon": "🟡",
   "status_order": [
@@ -22,8 +22,8 @@
       "display_name": "Data Vault",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-18T21:58:14.108326Z",
-      "age_minutes": 19.4,
+      "timestamp_utc": "2026-09-18T22:58:17.687736Z",
+      "age_minutes": 18.7,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -38,8 +38,8 @@
       "display_name": "Stablecoin Windows",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-18T21:58:16.477342Z",
-      "age_minutes": 19.4,
+      "timestamp_utc": "2026-09-18T22:58:19.369378Z",
+      "age_minutes": 18.7,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -61,7 +61,7 @@
       "status": "CURRENT OK",
       "icon": "🟢",
       "timestamp_utc": "2026-09-18T22:17:10.559533Z",
-      "age_minutes": 0.5,
+      "age_minutes": 59.8,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -76,8 +76,8 @@
       "display_name": "Actor Retail",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-18T21:58:16.833203Z",
-      "age_minutes": 19.4,
+      "timestamp_utc": "2026-09-18T22:58:19.734705Z",
+      "age_minutes": 18.7,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -93,7 +93,7 @@
       "status": "CURRENT OK",
       "icon": "🟢",
       "timestamp_utc": "2026-09-17T23:36:55.174939Z",
-      "age_minutes": 1360.7,
+      "age_minutes": 1420.1,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -112,20 +112,7 @@
       }
     }
   ],
-  "registered_market_alerts": [
-    {
-      "source_id": "market_whales",
-      "display_name": "MARKET Whale Recorder",
-      "impact": "OPTIONAL",
-      "status": "FAILED",
-      "raw_source_health_status": "FAILED",
-      "reason_codes": [
-        "LATEST_WORKFLOW_FAILED"
-      ],
-      "state_age_minutes": 89.8,
-      "workflow_file": "market_whale_validation.yml"
-    }
-  ],
+  "registered_market_alerts": [],
   "policy": {
     "operational_health_only": true,
     "never_changes_master_score_or_direction": true,
