@@ -2,7 +2,7 @@
   "engine": "MASTER_MARKET_SCORE_ENGINE_V1",
   "schema_version": "1.0",
   "status": "ACTIVE_OK",
-  "generated_at_utc": "2026-09-18T01:02:18.343320Z",
+  "generated_at_utc": "2026-09-18T02:02:12.514767Z",
   "activation_approval": {
     "explicit_user_approval": true,
     "approved_at_kst": "2026-09-11T10:04:10+09:00",
@@ -15,11 +15,11 @@
     ]
   },
   "source_age_minutes": {
-    "vault": 2.8,
-    "macro": 4.6,
-    "etf": 12.9,
-    "actors": 2.8,
-    "derivatives": 37.5
+    "vault": 4.0,
+    "macro": 6.3,
+    "etf": 17.0,
+    "actors": 4.0,
+    "derivatives": 44.8
   },
   "overall_coverage_pct": 100.0,
   "confidence_cap": null,
@@ -47,7 +47,7 @@
       }
     },
     "crypto_money_inflow": {
-      "score": 41.2,
+      "score": 42.5,
       "coverage_pct": 100.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
@@ -60,12 +60,12 @@
         "stablecoin_total_7d": 50.0,
         "btc_whale_net": 25.0,
         "eth_whale_net": 25.0,
-        "total_market_cap_1d": 50.0,
+        "total_market_cap_1d": 75.0,
         "market_volume_1d": 0.0
       }
     },
     "alt_money_inflow": {
-      "score": 47.5,
+      "score": 50.0,
       "coverage_pct": 100.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
@@ -76,24 +76,24 @@
         "eth_whale_net": 25.0,
         "eth_dominance_change": 50.0,
         "btc_dominance_inverse_change": 75.0,
-        "total_market_cap_1d": 50.0,
+        "total_market_cap_1d": 75.0,
         "market_volume_1d": 0.0,
         "stablecoin_total_7d": 50.0
       }
     },
     "market_positive": {
-      "score": 44.5,
+      "score": 46.4,
       "coverage_pct": 100.0,
       "status": "ACTIVE_OK",
       "confidence_cap": null,
       "threshold_alert_allowed": true,
       "components": {
         "liquidity_lead": 40.0,
-        "crypto_money_inflow": 41.2,
-        "alt_money_inflow": 47.5,
+        "crypto_money_inflow": 42.5,
+        "alt_money_inflow": 50.0,
         "btc_whale_net": 25.0,
         "btc_derivatives_state": 50.0,
-        "market_breadth_state": 50.0,
+        "market_breadth_state": 75.0,
         "rates_macro_state": 75.0,
         "oil_geopolitical_state": 75.0
       }
@@ -107,7 +107,7 @@
       75
     ],
     "liquidity_threshold_alert_allowed": true,
-    "market_positive_band": "부정적"
+    "market_positive_band": "혼합"
   },
   "anti_fallback": {
     "last_known_score_reuse": false,
