@@ -1,6 +1,6 @@
 # MASTER BTC TREND V3 R2.6 — Forward Scorecard
 
-- As-of UTC: `2026-09-19T04:28:35.896554+00:00`
+- As-of UTC: `2026-09-19T08:29:18.907485+00:00`
 - Strict Forward days: **11 / 365**
 - Automated assessment: **HOLD_COLLECTING**
 - Production decision: **HOLD** (automatic promotion prohibited)
