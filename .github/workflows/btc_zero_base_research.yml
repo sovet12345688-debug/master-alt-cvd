@@ -1,0 +1,26 @@
+name: Isolated BTC zero-base research
+on:
+  push:
+    branches: [research/btc-zero-base-20260919]
+    paths: [research/btc_zero_base_20260919/research.py]
+permissions:
+  contents: read
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy pandas requests numba
+      - name: Public-data backtest only; no account credentials or order endpoints
+        run: python research/btc_zero_base_20260919/research.py --out research_output
+      - name: Retain reproducibility evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-zero-base-20260919-research
+          path: research_output
+          retention-days: 30
