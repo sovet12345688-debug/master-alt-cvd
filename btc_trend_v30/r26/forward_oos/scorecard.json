@@ -2,7 +2,7 @@
   "model": "MASTER_BTC_TREND_V3_R2_6",
   "scorecard": "R26_FORWARD_SCORECARD_V1",
   "promotion_spec": "R26_FORWARD_PROMOTION_SPEC_V1",
-  "asof_utc": "2026-09-18T23:27:07.835045+00:00",
+  "asof_utc": "2026-09-19T04:28:35.896554+00:00",
   "strict_forward_start": "2026-09-08T04:00:00+00:00",
   "automated_assessment": "HOLD_COLLECTING",
   "production_decision": "HOLD",
@@ -10,7 +10,7 @@
   "formal_review_required": true,
   "eligibility": {
     "complete": false,
-    "strict_calendar_days": 10,
+    "strict_calendar_days": 11,
     "minimum_strict_calendar_days": 365,
     "resolved_total": 0,
     "minimum_resolved_total": 12,
@@ -26,7 +26,7 @@
     "minimum_state_n": 10,
     "items": {
       "calendar": {
-        "value": 10,
+        "value": 11,
         "minimum": 365,
         "status": "WAIT"
       },
@@ -64,7 +64,7 @@
   },
   "performance": {
     "long": {
-      "episodes": 0,
+      "episodes": 1,
       "resolved": 0,
       "mean_R": null,
       "wins": 0,
@@ -78,6 +78,8 @@
       "losses": 0
     },
     "resolved_total": 0,
+    "gross_positive_R": 0.0,
+    "gross_negative_R": 0.0,
     "capture_to_loss_ratio": null,
     "episode_order_mdd_R": null
   },
@@ -97,9 +99,14 @@
     "minimum_n": 10,
     "all_required_eligible": false,
     "all_required_pass": null,
-    "every_eligible_direction_pass": null,
+    "every_eligible_direction_pass": true,
     "result": "N/A_NOT_MATURE",
     "structural_invariants": {
+      "no_core_without_confirm": true,
+      "no_derisk_without_core": true,
+      "confirm_time_not_before_seed": true,
+      "core_time_not_before_confirm": true,
+      "derisk_time_not_before_core": true,
       "all_pass": true
     }
   },
@@ -117,15 +124,15 @@
     "result": "N/A_NOT_MATURE"
   },
   "early_detection": {
-    "strict_chains": 3,
+    "strict_chains": 4,
     "early_chains": 1,
     "priority_chains": 2,
-    "raw_seed_chains": 0,
-    "executed_chains": 0,
+    "raw_seed_chains": 1,
+    "executed_chains": 1,
     "early_to_seed_conversion": 0.0,
     "early_to_executed_conversion": 0.0,
     "priority_to_seed_conversion": 0.0,
-    "noise_chain_rate": 1.0,
+    "noise_chain_rate": 0.75,
     "explicit_early_to_executed_n": 0,
     "median_explicit_early_lead_hours": null,
     "lead_result": "N/A_NOT_MATURE"
@@ -201,21 +208,21 @@
         "pass": true
       },
       "phase_firewall_detections": {
-        "rows": 26,
+        "rows": 28,
         "unknown_phase": 0,
         "strict_before_start": 0,
         "bridge_at_or_after_start": 0,
         "pass": true
       },
       "phase_firewall_seeds": {
-        "rows": 0,
+        "rows": 2,
         "unknown_phase": 0,
         "strict_before_start": 0,
         "bridge_at_or_after_start": 0,
         "pass": true
       },
       "phase_firewall_positions": {
-        "rows": 0,
+        "rows": 1,
         "unknown_phase": 0,
         "strict_before_start": 0,
         "bridge_at_or_after_start": 0,
