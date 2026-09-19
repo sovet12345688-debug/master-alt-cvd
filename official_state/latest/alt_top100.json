@@ -6,56 +6,69 @@
   "master_version": "V4.8 FINAL",
   "source_path": "master_prompts/master_alt_top100_v4_8_current.md",
   "current_canonical_source_sha": "27af5ac7f9acf4250f08ce06b601459e644da726",
-  "contract_path": null,
   "run": {
     "run_type": "OFFICIAL",
-    "run_id": "ALT_TOP100_20260914_1030",
-    "executed_kst": "2026-09-14T10:30:00+09:00",
-    "updated_kst": "2026-09-14T10:30:00+09:00",
-    "prior_official_run_id": "ALT_TOP100_20260909_1030"
+    "run_id": "ALT_TOP100_20260919_1030",
+    "executed_kst": "2026-09-19T10:30:00+09:00",
+    "updated_kst": "2026-09-19T10:30:00+09:00",
+    "prior_official_run_id": "ALT_TOP100_20260914_1030"
   },
   "validity": {
-    "valid_until_kst": "2026-09-15T10:30:00+09:00",
-    "next_official_run_kst": "2026-09-15T10:30:00+09:00",
+    "valid_until_kst": "2026-09-20T10:30:00+09:00",
+    "next_official_run_kst": "2026-09-20T10:30:00+09:00",
     "freshness_status": "CURRENT"
   },
   "data_quality": {
-    "coverage_pct": 80,
+    "coverage_pct": 84,
     "confidence": "B+",
-    "known_na": ["TOTAL3_DIRECT_SR_NOT_CONFIRMED_THIS_RUN"],
+    "known_na": ["TOTAL3_DIRECT_LEVEL_NOT_EXPOSED_BY_PUBLIC_PAGE_THIS_RUN"],
     "stale_sources": [],
     "time_mismatch_warnings": [],
     "source_health_snapshot_pointer": "source_health/output/latest.json"
   },
   "decision": {
-    "direction": "DEFENSIVE_SELECTIVE_LONG",
-    "permission_or_environment": "ALT_MARKET_59_100_DEFENSIVE_SELECTIVE",
-    "action": "WAIT_FOR_NONCHASE_RECLAIM",
-    "risk_veto": ["BROAD_ALT_BREADTH_WEAK", "BTC_DOMINANCE_ELEVATED", "EXTENDED_FIL_ZEC_UNI"],
-    "invalidations": ["BROAD_MARKET_PARTICIPATION_WEAKENS_FURTHER", "BTC_DOMINANCE_REACCELERATES_WITH_ALT_RS_DETERIORATION"]
+    "direction": "RISK_ON_SELECTIVE_LONG",
+    "permission_or_environment": "ALT_MARKET_81_100_RISK_ON_SELECTIVE",
+    "action": "WAIT_FOR_RETEST_NONCHASE",
+    "risk_veto": ["BTC_DOMINANCE_RISING", "BROAD_TOP100_EXTENSION", "GREED_73"],
+    "invalidations": ["BROAD_MARKET_PARTICIPATION_REVERSES", "BTC_DOMINANCE_ACCELERATES_WITH_ALT_RS_DETERIORATION", "TOTAL3_AND_TOTAL3ES_MOMENTUM_ROLLOVER"]
   },
   "core_state": {
-    "alt_market_score": 59,
-    "delta_score": -14,
-    "delta_reason": "MARKET_CAP_AND_PARTICIPATION_WEAKER_BTC_DOMINANCE_HIGHER_ALT_BREADTH_WEAK",
+    "alt_market_score": 81,
+    "delta_score": 22,
+    "delta_reason": "GLOBAL_MARKET_CAP_AND_VOLUME_SURGED_BREADTH_EXPANDED_TOTAL3_TOTAL3ES_POSITIVE_ALTSEASON_IMPROVED_BUT_BTC_DOMINANCE_AND_EXTENSION_REMAIN_RISKS",
     "market_snapshot": {
-      "global_market_cap_usd": 2612606593703,
-      "global_24h_volume_usd": 54789800930,
-      "btc_dominance_pct": 58.89,
-      "eth_dominance_pct": 11.57
+      "global_market_cap_usd": 2770000000000,
+      "global_market_cap_change_24h_pct": 5.48,
+      "global_24h_volume_usd": 119290000000,
+      "global_24h_volume_change_pct": 64.08,
+      "spot_volume_change_24h_pct": 23.77,
+      "btc_dominance_pct": 58.84,
+      "btc_dominance_change_vs_yesterday_pp": 0.30,
+      "eth_dominance_pct": 11.49,
+      "altcoin_season_index": 45,
+      "altcoin_season_index_last_week": 39,
+      "fear_greed_index": 73,
+      "total3_change_1d_pct": 2.73,
+      "total3_change_1w_pct": 4.86,
+      "total3es_change_1d_pct": 5.00,
+      "total3es_change_1w_pct": 8.80
     },
     "best3": [
-      {"ticker":"TRX","direction":"LONG","trend_score":78,"hunter_score":79,"accum_score":76,"early_score":78,"trend_flip_score":77,"breakout_ready_score":81,"absorption_score":74,"non_chase":true,"status":"WAIT","trigger":"0.3442 above completed 30m close then retest hold"},
-      {"ticker":"HBAR","direction":"LONG","trend_score":72,"hunter_score":76,"accum_score":78,"early_score":72,"trend_flip_score":69,"breakout_ready_score":74,"absorption_score":74,"non_chase":true,"status":"WAIT","trigger":"0.07752 reclaim on completed 30m candle then retest hold"},
-      {"ticker":"AVAX","direction":"LONG","trend_score":71,"hunter_score":75,"accum_score":75,"early_score":71,"trend_flip_score":69,"breakout_ready_score":73,"absorption_score":70,"non_chase":true,"status":"WAIT","trigger":"8.20 above completed 30m close then retest hold"}
+      {"ticker":"ONDO","direction":"LONG","trend_score":80,"hunter_score":84,"accum_score":79,"early_score":84,"trend_flip_score":82,"breakout_ready_score":85,"absorption_score":78,"volume_state":"STRONG","rs_state":"7D_OUTPERFORM_30D_UNDERPERFORM_BTC","non_chase":true,"status":"WAIT","trigger":"0.4049 above completed 30m close then 0.3990-0.4049 retest hold"},
+      {"ticker":"ASTER","direction":"LONG","trend_score":82,"hunter_score":83,"accum_score":78,"early_score":86,"trend_flip_score":84,"breakout_ready_score":84,"absorption_score":77,"volume_state":"IMPROVING","rs_state":"7D_30D_OUTPERFORM_BTC","non_chase":true,"status":"WAIT","trigger":"0.792 above completed 30m close then 0.780-0.792 retest hold"},
+      {"ticker":"HBAR","direction":"LONG","trend_score":75,"hunter_score":78,"accum_score":78,"early_score":80,"trend_flip_score":76,"breakout_ready_score":82,"absorption_score":75,"volume_state":"MIXED_HIGH_VOLUME_REJECTION","rs_state":"7D_SLIGHT_OUTPERFORM_30D_UNDERPERFORM_BTC","non_chase":true,"status":"WAIT","trigger":"0.07998 above completed 30m close then 0.0794-0.0800 retest hold"}
     ],
     "pre_runner_confirmed": [],
     "actual_enter_count": 0,
-    "overextended_watch": ["FIL","ZEC","UNI"]
+    "hunter_short_watch": [
+      {"ticker":"ARB","direction":"SHORT","hunter_score":77,"status":"WAIT","reason":"0.2300 intrabar false break followed by repeated lower closes; long extension remains extreme so short requires support break confirmation","trigger":"0.2150 below completed 30m close then 0.2150-0.2180 retest rejection"}
+    ],
+    "overextended_watch": ["PIEVERSE","APT","ARB","SKY","INJ","NEAR","RAY","UNI","ETHFI","SOL","ADA","ZEC"]
   },
   "lineage": {
     "state_origin": "ACTUAL_STORED_RUN",
-    "run_record_source": "official_state/history/alt_top100/2026-09-14T10-30-00+09-00.json",
+    "run_record_source": "official_state/history/alt_top100/2026-09-19T10-30-00+09-00.json",
     "history_pointer": "official_state/history/alt_top100/",
     "canonical_identity_verified": true,
     "cross_master_decision_dependency": false
