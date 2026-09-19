@@ -1,0 +1,39 @@
+{
+  "evaluated_at_utc": "2026-09-18T12:57:35.155125+00:00",
+  "config_id": "BREAKOUT_S1_D25_BASIC_FULL_H12",
+  "variants_tested": 252,
+  "performance_pass": false,
+  "verdict": "REJECT_FOR_ADOPTION",
+  "gates": {
+    "VALIDATION_2025": {
+      "win_rate": false,
+      "payoff": true,
+      "fill_rate": true,
+      "sample_size": true,
+      "positive_expectancy": false
+    },
+    "CHECK_2026_TO_SEP17": {
+      "win_rate": false,
+      "payoff": true,
+      "fill_rate": true,
+      "sample_size": true,
+      "positive_expectancy": false
+    }
+  },
+  "champion_actual_performance": "N/A",
+  "runtime": "NOT_ACTIVATED",
+  "production_weight": 0,
+  "existing_champion": "PRESERVE",
+  "selected_configuration": {
+    "family": "BREAKOUT",
+    "stop_bars": 1,
+    "depth": 0.25,
+    "quality": "BASIC",
+    "exits": "FULL",
+    "holding_hours": 12,
+    "entry_mode": "EARLY"
+  },
+  "promotion_status": "RESEARCH_REJECTED",
+  "shadow_entry_enabled": false,
+  "target_interpretation": "historical acceptance thresholds, not guaranteed future probabilities"
+}

@@ -1,0 +1,29 @@
+{
+  "schema_version": "0.1.0-shadow",
+  "registry_scope": "PARTIAL_DEVELOPMENT_SLICE",
+  "runtime_verified": false,
+  "workers": {
+    "W5": {
+      "name": "TRADING ROOM / EXECUTION",
+      "entrypoint": "money_os_v4.workers.w5_trading_room.evaluate",
+      "owner_role": "SOLE_FINAL_EXECUTION_PLAN_OWNER",
+      "request_owner": "NAVIGATOR",
+      "final_action_owner": "FINAL_NAVIGATOR",
+      "delivery_owner": "ALERT_ROUTER",
+      "profiles": {
+        "BTC_DAILY": {
+          "contract": "money_os_v4/contracts/w5_btc_daily.json",
+          "release": "money_os_v4/contracts/w5_btc_daily_release.json",
+          "mode": "SHADOW",
+          "promotion_status": "RESEARCH_REJECTED",
+          "execution_enabled": false,
+          "production_weight": 0
+        }
+      },
+      "legacy_manual_room": "PRESERVE_UNCHANGED",
+      "live_runtime_adapter": "NOT_CONNECTED",
+      "durable_state": "NOT_PROVISIONED_BY_THIS_CHANGE",
+      "schedule": "NOT_ACTIVATED"
+    }
+  }
+}
