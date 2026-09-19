@@ -16,7 +16,7 @@ jobs:
           python-version: '3.11'
       - run: python -m pip install numpy pandas requests numba
       - name: Public-data backtest only; no account credentials or order endpoints
-        run: python research/btc_zero_base_20260919/research.py --out research_output
+        run: python research/btc_zero_base_20260919/RUN_RESEARCH.py --out research_output
       - name: Retain reproducibility evidence
         if: always()
         uses: actions/upload-artifact@v4
