@@ -1,9 +1,9 @@
 {
   "schema_version": "1.0",
   "system": "MASTER_MARKET_INTEGRATED_HEALTH",
-  "evaluated_at_utc": "2026-09-19T12:22:36.529460Z",
-  "overall_status": "HISTORY RECOVERING",
-  "overall_icon": "🟡",
+  "evaluated_at_utc": "2026-09-19T13:18:07.540595Z",
+  "overall_status": "FAILED",
+  "overall_icon": "🔴",
   "status_order": [
     "CURRENT OK",
     "HISTORY RECOVERING",
@@ -22,8 +22,8 @@
       "display_name": "Data Vault",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-19T11:58:06.914325Z",
-      "age_minutes": 24.5,
+      "timestamp_utc": "2026-09-19T12:58:41.918481Z",
+      "age_minutes": 19.4,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -38,8 +38,8 @@
       "display_name": "Stablecoin Windows",
       "status": "HISTORY RECOVERING",
       "icon": "🟡",
-      "timestamp_utc": "2026-09-19T11:58:08.695774Z",
-      "age_minutes": 24.5,
+      "timestamp_utc": "2026-09-19T12:58:44.884041Z",
+      "age_minutes": 19.4,
       "history_status": "PARTIAL_WINDOWS",
       "reason_codes": [
         "CURRENT_OK_COMPARISON_HISTORY_INCOMPLETE"
@@ -60,8 +60,8 @@
       "display_name": "Derivatives",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-19T12:21:45.778689Z",
-      "age_minutes": 0.8,
+      "timestamp_utc": "2026-09-19T13:17:25.978454Z",
+      "age_minutes": 0.7,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -76,8 +76,8 @@
       "display_name": "Actor Retail",
       "status": "CURRENT OK",
       "icon": "🟢",
-      "timestamp_utc": "2026-09-19T11:58:09.060951Z",
-      "age_minutes": 24.5,
+      "timestamp_utc": "2026-09-19T12:58:45.204472Z",
+      "age_minutes": 19.4,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -93,7 +93,7 @@
       "status": "CURRENT OK",
       "icon": "🟢",
       "timestamp_utc": "2026-09-17T23:36:55.174939Z",
-      "age_minutes": 2205.7,
+      "age_minutes": 2261.2,
       "history_status": "OK",
       "reason_codes": [
         "OK"
@@ -112,7 +112,20 @@
       }
     }
   ],
-  "registered_market_alerts": [],
+  "registered_market_alerts": [
+    {
+      "source_id": "market_etf_flows",
+      "display_name": "MARKET BTC/ETH ETF Flows",
+      "impact": "CORE",
+      "status": "FAILED",
+      "raw_source_health_status": "FAILED",
+      "reason_codes": [
+        "LATEST_WORKFLOW_FAILED"
+      ],
+      "state_age_minutes": 94.6,
+      "workflow_file": "market_etf_flows_hourly.yml"
+    }
+  ],
   "policy": {
     "operational_health_only": true,
     "never_changes_master_score_or_direction": true,
